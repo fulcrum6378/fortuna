@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="Theme.Fortuna" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">@color/CP</item>
+        <item name="colorPrimaryVariant">@color/CPV</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorSecondary">@color/CS</item>
+        <item name="colorSecondaryVariant">@color/CSV</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
+</resources>
