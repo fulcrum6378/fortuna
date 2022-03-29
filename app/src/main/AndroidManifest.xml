@@ -4,11 +4,26 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:roundIcon="@mipmap/launcher_round"
         android:theme="@style/Theme.Fortuna">
 
+        <activity
+            android:name=".Main"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
+
+    <!-- You cannot simply start coding Groovy classes just because Android Studio recognises them;
+      Gradle will not compile them in the DEX files, so you'll certainly need a plugin like
+      https://github.com/groovy/groovy-android-gradle-plugin to do that for ya. But since this
+      plugin sucks greatly, I didn't write this app in Groovy. The same thing applies to the other
+      JVM based languages like Scala and Clojure. -->
 </manifest>
