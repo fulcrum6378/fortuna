@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.MenuItem
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
@@ -26,10 +25,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     lateinit var b: MainBinding
     val m: Model by viewModels()
     lateinit var toggleNav: ActionBarDrawerToggle
-    lateinit var fontTitle: Typeface
-    lateinit var fontBold: Typeface
-    lateinit var fontRegular: Typeface
-    //var tbTitle: TextView? = null
+    lateinit var fontTitle: Typeface // may be removed later
+    lateinit var fontBold: Typeface // may be removed later
+    lateinit var fontRegular: Typeface // may be removed later
+    lateinit var calendar: PersianCalendar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +44,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         // From https://www.1001fonts.com/quattrocento-font.html
         // Later try https://www.1001fonts.com/day-roman-font.html
 
-        // Navigation
+        // Toolbar & Navigation
         toggleNav = ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
         ).apply {
@@ -56,16 +55,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.nav.setNavigationItemSelectedListener(this)
         b.toolbar.navigationIcon?.colorFilter =
             pdcf(color(com.google.android.material.R.attr.colorOnPrimary))
+    }
 
-        // Toolbar
-        /*for (g in 0 until b.toolbar.childCount) {
-            val getTitle = b.toolbar.getChildAt(g)
-            if (getTitle is TextView && getTitle.text.toString() == getString(R.string.app_name))
-                tbTitle = getTitle
-        }*/
-
-        // Grid
-        b.grid
+    override fun onResume() {
+        super.onResume()
+        calendar = PersianCalendar()
+        b.grid.adapter = ItemDay(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -80,4 +75,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     fun pdcf(@ColorInt color: Int) = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
 
     class Model : ViewModel()
+
 }

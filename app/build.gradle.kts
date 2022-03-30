@@ -12,7 +12,7 @@ android {
         minSdk = 28
         targetSdk = 31
         versionCode = 1
-        versionName = "0.1"
+        versionName = "0.4"
     }
 
     android.sourceSets.all { kotlin.srcDir("src/main/kotlin") }
@@ -24,6 +24,7 @@ android {
     buildFeatures { viewBinding = true }
 }
 
+@Suppress("SpellCheckingInspection")
 dependencies {
     val roomVersion = "2.4.2"
 

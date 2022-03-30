@@ -14,6 +14,12 @@
 
     <style name="Theme.Fortuna.Toolbar" parent="Theme.Fortuna">
         <item name="android:fontFamily">@font/morris_roman_black</item>
-        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <style name="Theme.Fortuna.Navigation" parent="Theme.Fortuna">
+        <item name="android:fontFamily">@font/quattrocento_bold</item>
+        <item name="android:textSize">17sp</item>
     </style>
 </resources>

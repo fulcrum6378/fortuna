@@ -3,4 +3,6 @@
 
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
+    <string name="navExport">Export to Json</string>
+    <string name="navImport">Import from Json</string>
 </resources>
