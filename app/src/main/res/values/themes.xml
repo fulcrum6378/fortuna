@@ -1,12 +1,19 @@
 <resources>
 
-    <style name="Theme.Fortuna" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <item name="colorPrimary">@color/CP</item>
-        <item name="colorPrimaryVariant">@color/CPV</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/CS</item>
-        <item name="colorSecondaryVariant">@color/CSV</item>
-        <item name="colorOnSecondary">@color/black</item>
+    <style name="Theme.Fortuna" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#4CAF50</item>
+        <item name="colorPrimaryVariant">#128717</item>
+        <item name="colorOnPrimary">#FFF</item>
+        <item name="colorSecondary">#F44336</item>
+        <item name="colorSecondaryVariant">#BF1C10</item>
+        <item name="colorOnSecondary">?attr/colorOnPrimary</item>
+        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="android:textColor">#777</item>
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
+
+    <style name="Theme.Fortuna.Toolbar" parent="Theme.Fortuna">
+        <item name="android:fontFamily">@font/morris_roman_black</item>
+        <item name="android:textSize">30sp</item>
     </style>
 </resources>
