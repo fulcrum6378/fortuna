@@ -12,7 +12,7 @@ android {
         minSdk = 28
         targetSdk = 31
         versionCode = 1
-        versionName = "0.4"
+        versionName = "0.6"
     }
 
     android.sourceSets.all { kotlin.srcDir("src/main/kotlin") }
@@ -24,7 +24,6 @@ android {
     buildFeatures { viewBinding = true }
 }
 
-@Suppress("SpellCheckingInspection")
 dependencies {
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.activity:activity-ktx:1.4.0")

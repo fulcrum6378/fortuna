@@ -2,7 +2,7 @@
 
     <style name="Theme.Fortuna" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">#222</item>
-        <item name="colorPrimaryVariant">#555</item>
+        <item name="colorPrimaryVariant">#333</item>
         <item name="colorOnPrimary">?android:attr/textColor</item>
         <item name="colorSecondary">?attr/colorPrimary</item>
         <item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>

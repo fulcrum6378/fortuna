@@ -10,6 +10,8 @@ import java.io.FileOutputStream
 
 class Vita : HashMap<String, Luna>() {
 
+    fun findByKey(key: String): Luna? = getOrElse(key) { null }
+
     fun findByCalendar(cal: PersianCalendar): Luna? = getOrElse(cal.toKey()) { null }
 
     fun save(c: Context) {
@@ -17,6 +19,9 @@ class Vita : HashMap<String, Luna>() {
     }
 
     companion object {
+        const val MAX_RANGE = 3f
+        const val MIN_RANGE = -MAX_RANGE
+
         fun load(c: Context): Vita = if (Stored(c).exists()) {
             val data: ByteArray
             FileInputStream(Stored(c)).use { data = it.readBytes() }
@@ -31,31 +36,22 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
-        fun PersianCalendar.toKey(): String =
-            "${this[Calendar.YEAR]}.${z(this[Calendar.MONTH] + 1)}"
+        fun emptyLuna() = Array<Float?>(31) { null }
 
-        fun z(n: Int): String {
-            val s = n.toString()
-            return if (s.length == 1) "0$s" else s
+        fun PersianCalendar.toKey(): String =
+            "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
+
+        fun String.toPersianCalendar(): PersianCalendar =
+            PersianCalendar(substring(0, 4).toInt(), substring(5, 7).toInt(), 1)
+
+        fun z(n: Any?, ideal: Int = 2): String {
+            var s = n.toString()
+            while (s.length < ideal) s = "0$s"
+            return s
         }
     }
 
     class Stored(c: Context) : File(c.filesDir, "vita.json")
 }
 
-class Luna : ArrayList<Float?>(arrayOfNulls<Float?>(31).toList()) {
-    /*override fun add(element: Float?): Boolean = false
-    override fun add(index: Int, element: Float?) {}
-    override fun addAll(elements: Collection<Float?>): Boolean = false
-    override fun addAll(index: Int, elements: Collection<Float?>): Boolean = false
-    override fun removeAt(index: Int): Float? = null
-    override fun remove(element: Float?): Boolean = false
-    override fun removeAll(elements: Collection<Float?>): Boolean = false
-    override fun removeIf(filter: Predicate<in Float?>): Boolean = false
-    override fun removeRange(fromIndex: Int, toIndex: Int) {}*/
-
-    companion object {
-        const val MAX_RANGE = 3f
-        const val MIN_RANGE = -MAX_RANGE
-    }
-}
+typealias Luna = Array<Float?>
