@@ -6,7 +6,6 @@ import android.graphics.PorterDuffColorFilter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
@@ -15,6 +14,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.lifecycle.ViewModel
 import com.google.android.material.navigation.NavigationView
+import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 
 // adb connect adb-R58MA6P17YD-MEhKF8._adb-tls-connect._tcp
@@ -60,6 +60,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onResume() {
         super.onResume()
         calendar = PersianCalendar()
+        m.vita = Vita.load(c)
+        if (!Vita.Stored(c).exists()) {
+            m.vita!![calendar.toKey()] = Luna()
+            m.vita!!.save(c)
+        }
         b.grid.adapter = ItemDay(this)
     }
 
@@ -68,12 +73,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     @ColorInt
-    fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
+    fun color(@AttrRes attr: Int) = TypedValue().apply {
         theme.resolveAttribute(attr, this, true)
     }.data
 
     fun pdcf(@ColorInt color: Int) = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
 
-    class Model : ViewModel()
-
+    class Model : ViewModel() {
+        var vita: Vita? = null
+    }
 }
