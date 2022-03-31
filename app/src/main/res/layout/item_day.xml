@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="100dp"
-    android:background="@drawable/item_day"
     tools:ignore="MissingConstraints">
 
     <View
         android:id="@+id/highlight"
         style="@style/parentConstraint"
         android:layout_width="0dp"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"
+        android:background="@drawable/item_day" />
 
     <TextView
         android:id="@+id/dies"

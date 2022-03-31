@@ -11,8 +11,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import ir.mahdiparastesh.fortuna.Main.Companion.color
+import ir.mahdiparastesh.fortuna.Main.Companion.stylise
+import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toPersianCalendar
+import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.ItemDayBinding
+import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 
 class ItemDay(private val c: Main) : ListAdapter {
     private val roman: Array<String> by lazy { c.resources.getStringArray(R.array.romanNumbers) }
@@ -21,7 +26,7 @@ class ItemDay(private val c: Main) : ListAdapter {
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
-    private val luna = c.m.vita?.findByKey(c.m.luna) ?: Vita.emptyLuna()
+    private val luna = c.m.vita?.find(c.m.luna) ?: Vita.emptyLuna()
     private val calendar = c.m.luna.toPersianCalendar()
 
     override fun registerDataSetObserver(observer: DataSetObserver) {}
@@ -36,9 +41,9 @@ class ItemDay(private val c: Main) : ListAdapter {
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
         ItemDayBinding.inflate(c.layoutInflater, parent, false).apply {
             dies.text = roman[i]
-            variabilis.text = luna[i]?.toString() ?: "_"
+            variabilis.text = luna[i].showScore()
 
-            highlight.setBackgroundColor(
+            root.setBackgroundColor(
                 when {
                     luna[i] != null && luna[i]!! > 0f -> {
                         dies.setTextColor(cpo)
@@ -53,19 +58,40 @@ class ItemDay(private val c: Main) : ListAdapter {
                         variabilis.setTextColor(cso)
                         Color.valueOf(
                             cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
-                            luna[i]!! / Vita.MAX_RANGE
+                            -luna[i]!! / Vita.MAX_RANGE
                         ).toArgb()
                     }
                     else -> {
                         dies.setTextColor(tc)
                         variabilis.setTextColor(tc)
-                        Color.valueOf(0f, 0f, 0f, 0f).toArgb()
+                        Color.TRANSPARENT
                     }
                 }
             )
 
-            root.setOnClickListener {
-                //AlertDialog.Builder(c).apply {}
+            highlight.setOnClickListener {
+                val bv = VariabilisBinding.inflate(c.layoutInflater)
+                bv.root.apply {
+                    maxValue = 12 // this range is reverse
+                    minValue = 0 // must be >= 0
+                    value = luna[i]?.let { (-(it * 2f) + 6f).toInt() } ?: 6
+                    wrapSelectorWheel = false
+                    setFormatter { it.toScore().showScore() }
+                    //textColor =
+                    textSize = c.resources.displayMetrics.density * 19f
+                    //forEach { (it as EditText).setText("TEST") }
+                }
+                AlertDialog.Builder(c).apply {
+                    setTitle(c.getString(R.string.variabilis, "${c.m.luna}.${z(i + 1)}"))
+                    setView(bv.root)
+                    setNegativeButton(R.string.cancel, null)
+                    setPositiveButton(R.string.save) { _, _ ->
+                        if (c.m.vita != null) saveScore(i, bv.root.value.toScore())
+                    }
+                    setNeutralButton(R.string.clear) { _, _ ->
+                        if (c.m.vita != null) saveScore(i, null)
+                    }
+                }.show().stylise(c)
             }
         }.root
 
@@ -76,8 +102,17 @@ class ItemDay(private val c: Main) : ListAdapter {
     override fun areAllItemsEnabled(): Boolean = true
     override fun isEnabled(i: Int): Boolean = true
 
+    private fun saveScore(i: Int, score: Float?) {
+        luna[i] = score
+        c.m.vita!![c.m.luna] = luna
+        c.m.vita!!.save(c.c)
+        c.updateGrid()
+    }
+
     companion object {
         @ColorInt
         fun Int.toValue() = toFloat() / 256f
+
+        fun Int.toScore() = -(toFloat() - 6f) / 2f
     }
 }

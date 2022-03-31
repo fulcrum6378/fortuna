@@ -2,8 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navExport"
+        android:icon="@drawable/json_export"
         android:title="@string/navExport" />
     <item
         android:id="@+id/navImport"
+        android:icon="@drawable/json_import"
         android:title="@string/navImport" />
 </menu>

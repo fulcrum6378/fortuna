@@ -65,9 +65,21 @@
         <item>Esf</item>
     </string-array>
 
+    <string name="variabilis">Variabilis: %s</string>
     <string name="year">Year</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
     <string name="navExport">Export to Json</string>
     <string name="navImport">Import from Json</string>
+    <string name="exportDone">Done!</string>
+    <string name="exportUndone">Failed!</string>
+    <string name="importDone">Done!</string>
+    <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
+    <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
+    <string name="askImport">Are you sure you want to replace all these records?</string>
 </resources>

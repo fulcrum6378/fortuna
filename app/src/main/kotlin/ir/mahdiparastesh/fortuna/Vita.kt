@@ -2,6 +2,7 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.File
@@ -10,17 +11,24 @@ import java.io.FileOutputStream
 
 class Vita : HashMap<String, Luna>() {
 
-    fun findByKey(key: String): Luna? = getOrElse(key) { null }
-
-    fun findByCalendar(cal: PersianCalendar): Luna? = getOrElse(cal.toKey()) { null }
+    fun find(key: String): Luna? = getOrElse(key) { null }
 
     fun save(c: Context) {
         save(c, this)
     }
 
+    fun removeEmptyFields(c: Context) {
+        val removal = arrayListOf<String>()
+        forEach { key, luna -> if (luna.all { it == null }) removal.add(key) }
+        removal.forEach { remove(it) }
+        save(c)
+    }
+
     companion object {
         const val MAX_RANGE = 3f
-        const val MIN_RANGE = -MAX_RANGE
+        val MIME_TYPE =
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
+            else "application/json"
 
         fun load(c: Context): Vita = if (Stored(c).exists()) {
             val data: ByteArray
@@ -41,8 +49,12 @@ class Vita : HashMap<String, Luna>() {
         fun PersianCalendar.toKey(): String =
             "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
 
-        fun String.toPersianCalendar(): PersianCalendar =
-            PersianCalendar(substring(0, 4).toInt(), substring(5, 7).toInt(), 1)
+        fun String.toPersianCalendar(): PersianCalendar {
+            val spl = split(".")
+            return PersianCalendar(spl[0].toInt(), spl[1].toInt(), 1)
+        }
+
+        fun Float?.showScore(): String = if (this != 0f) this?.toString() ?: "_" else "0"
 
         fun z(n: Any?, ideal: Int = 2): String {
             var s = n.toString()

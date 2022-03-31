@@ -1,14 +1,15 @@
 <resources>
 
     <style name="Theme.Fortuna" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#222</item>
-        <item name="colorPrimaryVariant">#333</item>
+        <item name="colorPrimary">#034C06</item>
+        <item name="colorPrimaryVariant">#444CAF50</item>
         <item name="colorOnPrimary">?android:attr/textColor</item>
-        <item name="colorSecondary">?attr/colorPrimary</item>
-        <item name="colorSecondaryVariant">?attr/colorPrimaryVariant</item>
+        <item name="colorSecondary">#670D06</item>
+        <item name="colorSecondaryVariant">#44F44336</item>
         <item name="colorOnSecondary">?android:attr/textColor</item>
         <item name="colorAccent">?attr/colorPrimary</item>
         <item name="android:textColor">#FFF</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
     </style>
 </resources>

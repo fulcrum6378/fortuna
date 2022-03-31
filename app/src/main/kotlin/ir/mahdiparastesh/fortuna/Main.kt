@@ -1,53 +1,51 @@
 package ir.mahdiparastesh.fortuna
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.Typeface
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.Gson
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 // adb connect adb-R58MA6P17YD-MEhKF8._adb-tls-connect._tcp
 
-@Suppress("MemberVisibilityCanBePrivate")
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var c: Context
     lateinit var b: MainBinding
     val m: Model by viewModels()
-    lateinit var toggleNav: ActionBarDrawerToggle
-    lateinit var fontTitle: Typeface // may be removed later
-    lateinit var fontBold: Typeface // may be removed later
-    lateinit var fontRegular: Typeface // may be removed later
+    private lateinit var toggleNav: ActionBarDrawerToggle
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         c = applicationContext
         b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
-
-        // Fonts
-        fontTitle = resources.getFont(R.font.morris_roman_black)
-        // From https://www.1001fonts.com/morris-roman-font.html
-        fontBold = resources.getFont(R.font.quattrocento_bold)
-        fontRegular = resources.getFont(R.font.quattrocento_regular)
-        // From https://www.1001fonts.com/quattrocento-font.html
-        // Later try https://www.1001fonts.com/day-roman-font.html
 
         // Toolbar & Navigation
         toggleNav = ActionBarDrawerToggle(
@@ -63,7 +61,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         // Header
         b.luna.adapter = ArrayAdapter(
-            c, R.layout.spinner, resources.getStringArray(R.array.luna)
+            this, R.layout.spinner, resources.getStringArray(R.array.luna)
         ).apply { setDropDownViewResource(R.layout.spinner_dd) }
         b.luna.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -80,6 +78,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
+    private var firstResume = false
     override fun onResume() {
         super.onResume()
         m.vita = Vita.load(c)
@@ -92,13 +91,81 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         updateGrid()
+        if (!firstResume) m.vita?.removeEmptyFields(c)
+        firstResume = true
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = Vita.MIME_TYPE
+                putExtra(Intent.EXTRA_TITLE, "fortuna.json")
+            })
+            R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = Vita.MIME_TYPE
+            })
+        }
         return true
     }
 
-    fun updateHeader(cal: PersianCalendar) {
+    private val exportLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+            m.vita?.removeEmptyFields(c)
+            val bExp = try {
+                c.contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
+                    FileOutputStream(des.fileDescriptor).use { fos ->
+                        fos.write(Gson().toJson(m.vita).encodeToByteArray())
+                    }
+                }
+                true
+            } catch (ignored: Exception) {
+                false
+            }
+            Toast.makeText(
+                c, if (bExp) R.string.exportDone else R.string.exportUndone, Toast.LENGTH_LONG
+            ).show()
+        }
+
+    private val importLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+            var data: String? = null
+            try {
+                c.contentResolver.openFileDescriptor(it.data!!.data!!, "r")?.use { des ->
+                    val sb = StringBuffer()
+                    FileInputStream(des.fileDescriptor).use { fis ->
+                        var i: Int
+                        while (fis.read().also { r -> i = r } != -1) sb.append(i.toChar())
+                    }
+                    data = sb.toString()
+                }
+                data!!
+            } catch (e: Exception) {
+                Toast.makeText(c, R.string.importOpenError, Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+            val imported: Vita
+            try {
+                imported = Gson().fromJson(data, Vita::class.java)
+            } catch (e: Exception) {
+                Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
+                return@registerForActivityResult
+            }
+            AlertDialog.Builder(this@Main).apply {
+                setTitle(c.resources.getString(R.string.navImport))
+                setMessage(c.resources.getString(R.string.askImport))
+                setPositiveButton(R.string.yes) { _, _ ->
+                    m.vita = imported.also { vita -> vita.save(c) }
+                    updateGrid()
+                }
+                setNegativeButton(R.string.no, null)
+            }.show().stylise(this@Main)
+        }
+
+    private fun updateHeader(cal: PersianCalendar) {
         b.annus.setText(cal[Calendar.YEAR].toString())
         b.luna.setSelection(cal[Calendar.MONTH])
     }
@@ -107,12 +174,38 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.grid.adapter = ItemDay(this)
     }
 
-    @ColorInt
-    fun color(@AttrRes attr: Int) = TypedValue().apply {
-        theme.resolveAttribute(attr, this, true)
-    }.data
+    private fun pdcf(@ColorInt color: Int) = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
 
-    fun pdcf(@ColorInt color: Int) = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
+    companion object {
+        @ColorInt
+        fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
+            theme.resolveAttribute(attr, this, true)
+        }.data
+
+        fun AlertDialog.stylise(c: Main): AlertDialog {
+            val tc = c.color(android.R.attr.textColor)
+            window?.findViewById<TextView>(androidx.appcompat.R.id.alertTitle)?.apply {
+                typeface = c.resources.getFont(R.font.quattrocento_bold)
+            }
+            window?.findViewById<TextView>(android.R.id.message)?.apply {
+                typeface = c.resources.getFont(R.font.quattrocento_regular)
+                setTextColor(tc)
+            }
+            getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                typeface = c.resources.getFont(R.font.quattrocento_bold)
+                setTextColor(tc)
+            }
+            getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                typeface = c.resources.getFont(R.font.quattrocento_bold)
+                setTextColor(tc)
+            }
+            getButton(AlertDialog.BUTTON_NEUTRAL)?.apply {
+                typeface = c.resources.getFont(R.font.quattrocento_bold)
+                setTextColor(tc)
+            }
+            return this
+        }
+    }
 
     class Model : ViewModel() {
         var vita: Vita? = null
