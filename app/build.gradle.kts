@@ -11,7 +11,7 @@ android {
         minSdk = 28
         targetSdk = 31
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
     }
 
     android.sourceSets.all { kotlin.srcDir("src/main/kotlin") }

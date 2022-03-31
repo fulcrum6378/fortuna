@@ -97,7 +97,11 @@ class ItemDay(private val c: Main) : ListAdapter {
                 //forEach { (it as EditText).setText("TEST") }
             }
             AlertDialog.Builder(c).apply {
-                setTitle(c.getString(R.string.variabilis, "${c.m.luna}.${z(i + 1)}"))
+                setTitle(
+                    c.getString(
+                        R.string.variabilis, if (i != 31) "${c.m.luna}.${z(i + 1)}" else "DEFAULT"
+                    )
+                )
                 setView(bv.root)
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.save) { _, _ ->

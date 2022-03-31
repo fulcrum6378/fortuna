@@ -56,6 +56,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
                             android:background="@null"
+                            android:focusedByDefault="false"
                             android:fontFamily="@font/quattrocento_bold"
                             android:hint="@string/year"
                             android:importantForAutofill="no"

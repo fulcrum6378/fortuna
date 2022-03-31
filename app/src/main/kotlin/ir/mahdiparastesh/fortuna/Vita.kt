@@ -51,7 +51,7 @@ class Vita : HashMap<String, Luna>() {
 
         fun String.toPersianCalendar(): PersianCalendar {
             val spl = split(".")
-            return PersianCalendar(spl[0].toInt(), spl[1].toInt(), 1)
+            return PersianCalendar(spl[0].toInt(), spl[1].toInt() - 1, 1)
         }
 
         fun Float?.showScore(): String = if (this != 0f) this?.toString() ?: "_" else "0"

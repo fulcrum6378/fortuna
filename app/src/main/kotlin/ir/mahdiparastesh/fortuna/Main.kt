@@ -83,7 +83,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             updateGrid()
         }
         b.defaultVar.setOnClickListener {
-            m.vita?.find(m.luna)?.changeVar(this@Main, 31)
+            m.thisLuna().changeVar(this@Main, 31)
         }
     }
 
