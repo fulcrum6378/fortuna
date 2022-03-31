@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
 }
 
 android {
@@ -12,7 +11,7 @@ android {
         minSdk = 28
         targetSdk = 31
         versionCode = 1
-        versionName = "0.9"
+        versionName = "1.0"
     }
 
     android.sourceSets.all { kotlin.srcDir("src/main/kotlin") }

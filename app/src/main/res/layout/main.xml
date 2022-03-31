@@ -38,6 +38,7 @@
                     android:layout_height="wrap_content">
 
                     <LinearLayout
+                        android:id="@+id/headerLl"
                         style="@style/parentConstraint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -64,7 +65,30 @@
                             android:paddingVertical="20dp"
                             android:textColor="?android:attr/textColor"
                             android:textSize="19sp" />
+
+                        <TextView
+                            android:id="@+id/defaultVar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="15dp"
+                            android:background="@drawable/button"
+                            android:fontFamily="@font/quattrocento_regular"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="10dp"
+                            android:textSize="18sp" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/lunaMean"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/quattrocento_regular"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/headerLl"
+                        app:layout_constraintVertical_bias="0.6" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <GridView

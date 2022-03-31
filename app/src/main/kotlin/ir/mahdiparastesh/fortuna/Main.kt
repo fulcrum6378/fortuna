@@ -27,7 +27,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
+import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
+import ir.mahdiparastesh.fortuna.Vita.Companion.mean
+import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.Vita.Companion.toPersianCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import java.io.FileInputStream
@@ -68,13 +72,18 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, i: Int, id: Long) {
                 m.lunaChanged = true
                 m.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
+                m.calendar = m.luna.toPersianCalendar()
                 updateGrid()
             }
         }
         b.annus.addTextChangedListener {
             if (it.toString().length != 4) return@addTextChangedListener
             m.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
+            m.calendar = m.luna.toPersianCalendar()
             updateGrid()
+        }
+        b.defaultVar.setOnClickListener {
+            m.vita?.find(m.luna)?.changeVar(this@Main, 31)
         }
     }
 
@@ -82,11 +91,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onResume() {
         super.onResume()
         m.vita = Vita.load(c)
-        if (!m.lunaChanged) PersianCalendar().apply {
-            m.luna = toKey()
-            updateHeader(this)
+        if (!m.lunaChanged) {
+            m.calendar = PersianCalendar()
+            m.luna = m.calendar.toKey()
+            updateHeader(m.calendar)
             if (!Vita.Stored(c).exists()) {
-                m.vita!![toKey()] = Vita.emptyLuna()
+                m.vita!![m.luna] = Vita.emptyLuna()
                 m.vita!!.save(c)
             }
         }
@@ -171,7 +181,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun updateGrid() {
-        b.grid.adapter = ItemDay(this)
+        b.grid.adapter = ItemDay(this).also {
+            b.defaultVar.text = it.luna.last().showScore()
+            b.lunaMean.text =
+                it.luna.mean(m.calendar.getActualMaximum(Calendar.DAY_OF_MONTH)).toString()
+        }
     }
 
     private fun pdcf(@ColorInt color: Int) = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN)
@@ -210,6 +224,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     class Model : ViewModel() {
         var vita: Vita? = null
         lateinit var luna: String
+        lateinit var calendar: PersianCalendar
         var lunaChanged = false
+
+        fun thisLuna() = vita?.find(luna) ?: Vita.emptyLuna()
     }
 }

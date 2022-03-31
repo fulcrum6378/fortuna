@@ -44,7 +44,7 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
-        fun emptyLuna() = Array<Float?>(31) { null }
+        fun emptyLuna() = Array<Float?>(32) { null }
 
         fun PersianCalendar.toKey(): String =
             "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
@@ -60,6 +60,19 @@ class Vita : HashMap<String, Luna>() {
             var s = n.toString()
             while (s.length < ideal) s = "0$s"
             return s
+        }
+
+        fun Luna.saveScore(c: Main, i: Int, score: Float?) {
+            this[i] = score
+            c.m.vita!![c.m.luna] = this
+            c.m.vita!!.save(c.c)
+            c.updateGrid()
+        }
+
+        fun Luna.mean(maxDays: Int): Float {
+            val scores = arrayListOf<Float>()
+            for (v in 0 until maxDays) (this[v] ?: this[31])?.let { scores.add(it) }
+            return if (scores.isEmpty()) 0f else scores.sum() / scores.size
         }
     }
 
