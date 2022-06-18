@@ -9,8 +9,8 @@
     <item>
         <shape android:shape="rectangle">
             <stroke
-                android:width="0.5dp"
-                android:color="@color/gridCellBorder" />
+                android:width="5dp"
+                android:color="@color/diesBorderToday" />
         </shape>
     </item>
 </ripple>
