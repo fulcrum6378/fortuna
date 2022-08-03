@@ -6,15 +6,15 @@
         android:title="@string/navStat" />
     <item
         android:id="@+id/navExport"
-        android:icon="@drawable/json_export"
+        android:icon="@drawable/data_export"
         android:title="@string/navExport" />
     <item
         android:id="@+id/navImport"
-        android:icon="@drawable/json_import"
+        android:icon="@drawable/data_import"
         android:title="@string/navImport" />
     <item
         android:id="@+id/navSend"
-        android:icon="@drawable/json_send"
+        android:icon="@drawable/data_send"
         android:title="@string/navSend" />
     <item
         android:id="@+id/navHelp"

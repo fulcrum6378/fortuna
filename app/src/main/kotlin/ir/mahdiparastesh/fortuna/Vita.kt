@@ -2,12 +2,10 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
-import android.os.Build
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.StringReader
 
 class Vita : HashMap<String, Luna>() {
 
@@ -19,39 +17,93 @@ class Vita : HashMap<String, Luna>() {
 
     fun export(c: Context): ByteArray {
         reform(c)
-        return Gson().toJson(toSortedMap()).encodeToByteArray()
+        return dump().encodeToByteArray()
     }
+
+    fun dump(): String = StringBuilder().apply {
+        this@Vita.toSortedMap().forEach { (k, luna) ->
+            append("@$k")
+            luna.default?.also { score ->
+                append("~$score")
+                if (luna.verbum?.isNotBlank() == true)
+                    append(";${luna.verbum!!.saveVitaText()}")
+            }
+            append("\n")
+            var skipped = false
+            for (d in luna.diebus.indices) {
+                if (luna.diebus[d] == null) {
+                    skipped = true
+                    continue; }
+                if (skipped) {
+                    append("${d + 1}:")
+                    skipped = false
+                }
+                append(luna.diebus[d])
+                if (luna.verba[d]?.isNotBlank() == true)
+                    append(";${luna.verba[d]!!.saveVitaText()}")
+                append("\n")
+            }
+            append("\n")
+        }
+    }.toString()
 
     fun reform(c: Context) {
         val removal = arrayListOf<String>()
-        forEach { key, luna -> if (luna.all { it == null }) removal.add(key) }
+        forEach { key, luna -> if (luna.isEmpty()) removal.add(key) }
         removal.forEach { remove(it) }
         save(c)
     }
 
     companion object {
         const val MAX_RANGE = 3f
-        val MIME_TYPE =
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) "application/octet-stream"
-            else "application/json"
-        const val EXPORT_NAME = "fortuna.json"
+        const val MIME_TYPE = "application/octet-stream"
 
-        fun load(c: Context): Vita = if (Stored(c).exists()) {
-            val data: ByteArray
-            FileInputStream(Stored(c)).use { data = it.readBytes() }
-            Gson().fromJson(String(data), Vita::class.java)
-        } else Vita()
+        fun load(c: Context): Vita {
+            val stored = Stored(c)
+            return if (stored.exists()) {
+                val data: ByteArray
+                FileInputStream(stored).use { data = it.readBytes() }
+                loads(String(data))
+            } else VitaLegacy.load(c)?.migrate(c) ?: Vita()
+        }
+
+        fun loads(text: String): Vita {
+            val vita = Vita()
+            val cal = Main.calType.newInstance()
+            var key: String? = null
+            var dies = 0
+            for (ln in StringReader(text).readLines())
+                if (key == null) {
+                    if (!ln.startsWith('@')) continue
+                    val sn = ln.split(";", limit = 2)
+                    val s = sn[0].split("~")
+                    key = s[0].substring(1)
+                    vita[key] = Luna(
+                        cal, s.getOrNull(1)?.toFloat(), sn.getOrNull(1)?.loadVitaText()
+                    )
+                    dies = 0
+                } else {
+                    if (ln.isEmpty()) {
+                        key = null
+                        continue; }
+                    val sn = ln.split(";", limit = 2)
+                    val s = sn[0].split(":")
+                    if (s.size == 2) dies = s[0].toInt() - 1
+                    vita[key]!!.diebus[dies] = (s.getOrNull(1) ?: s[0]).toFloat()
+                    vita[key]!!.verba[dies] = sn.getOrNull(1)?.loadVitaText()
+                    dies++
+                }
+            return vita
+        }
+
+        private fun String.loadVitaText() = replace("\\n", "\n")
+        fun String.saveVitaText() = replace("\n", "\\n")
 
         fun save(c: Context, vita: Vita) {
             FileOutputStream(Stored(c)).use { fos ->
-                fos.write(
-                    GsonBuilder().setPrettyPrinting().create().toJson(vita.toSortedMap())
-                        .encodeToByteArray()
-                )
+                fos.write(vita.dump().encodeToByteArray())
             }
         }
-
-        fun Calendar.emptyLuna() = Array<Float?>(defPos() + 1) { null }
 
         fun Calendar.toKey(): String =
             "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
@@ -75,10 +127,14 @@ class Vita : HashMap<String, Luna>() {
 
         fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        fun Calendar.defPos() = getMaximum(Calendar.DAY_OF_MONTH)
-
-        fun Luna.saveScore(c: Main, i: Int, score: Float?) {
-            this[i] = score
+        fun Luna.saveDies(c: Main, i: Int?, score: Float?, verbum: String?) {
+            if (i != null) {
+                diebus[i] = score
+                verba[i] = verbum
+            } else {
+                default = score
+                this.verbum = verbum
+            }
             c.m.vita!![c.m.luna!!] = this
             c.m.vita!!.save(c.c)
             c.updateGrid()
@@ -89,15 +145,23 @@ class Vita : HashMap<String, Luna>() {
             for (v in 0 until maxDays) (this[v] ?: this.default)?.let { scores.add(it) }
             return if (scores.isEmpty()) 0f else scores.sum() / scores.size
         }
-
-        var Luna.default: Float?
-            get() = last()
-            set(f) {
-                this[size - 1] = f
-            }
     }
 
-    class Stored(c: Context) : File(c.filesDir, "vita.json")
+    class Stored(c: Context) : File(c.filesDir, c.getString(R.string.export_file))
 }
 
-typealias Luna = Array<Float?>
+class Luna(
+    cal: Calendar = Main.calType.newInstance(),
+    var default: Float? = null,
+    var verbum: String? = null
+) {
+    val diebus: Array<Float?> = Array(cal.getMaximum(Calendar.DAY_OF_MONTH)) { null }
+    val verba: Array<String?> = Array(cal.getMaximum(Calendar.DAY_OF_MONTH)) { null }
+
+    operator fun get(index: Int): Float? = diebus[index]
+    operator fun set(index: Int, value: Float?) {
+        diebus[index] = value
+    }
+
+    fun isEmpty() = diebus.all { it == null } && default == null
+}

@@ -2,7 +2,7 @@
 <full-backup-content>
     <include
         domain="file"
-        path="vita.json" />
+        path="@string/export_file" />
     <include
         domain="sharedpref"
         path="settings.xml" />

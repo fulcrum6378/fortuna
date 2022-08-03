@@ -18,10 +18,8 @@ import androidx.core.graphics.red
 import androidx.core.view.get
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
-import ir.mahdiparastesh.fortuna.Vita.Companion.defPos
-import ir.mahdiparastesh.fortuna.Vita.Companion.default
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
-import ir.mahdiparastesh.fortuna.Vita.Companion.saveScore
+import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
@@ -116,13 +114,14 @@ class ItemDay(private val c: Main) : ListAdapter {
 
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
-        fun Luna.changeVar(c: Main, i: Int) {
+        fun Luna.changeVar(c: Main, i: Int?) {
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
             bv.picker.apply {
                 maxValue = 12
                 minValue = 0
-                value = this@changeVar[i]?.toVariabilis() ?: lastOrNull()?.toVariabilis() ?: 6
+                value =
+                    i?.let { this@changeVar[it]?.toVariabilis() } ?: default?.toVariabilis() ?: 6
                 wrapSelectorWheel = false
                 setFormatter { it.toScore().showScore() }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -131,21 +130,23 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
             }
+            bv.verbum.setText(i?.let { this@changeVar.verba[it] } ?: verbum)
             AlertDialog.Builder(c).apply {
                 setTitle(
                     c.getString(
                         R.string.variabilis,
-                        if (i != c.m.calendar.defPos()) "${c.m.luna!!}.${z(i + 1)}"
+                        if (i != null) "${c.m.luna!!}.${z(i + 1)}"
                         else c.getString(R.string.defValue)
                     )
                 )
                 setView(bv.root)
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.save) { _, _ ->
-                    if (c.m.vita != null) saveScore(c, i, bv.picker.value.toScore())
+                    if (c.m.vita != null)
+                        saveDies(c, i, bv.picker.value.toScore(), bv.verbum.text.toString())
                 }
                 setNeutralButton(R.string.clear) { _, _ ->
-                    if (c.m.vita != null) saveScore(c, i, null)
+                    if (c.m.vita != null) saveDies(c, i, null, null)
                 }
                 setOnDismissListener { c.m.changingVar = null }
             }.show()

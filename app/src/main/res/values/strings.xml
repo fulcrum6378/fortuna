@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fortuna</string>
+    <string name="export_file">fortuna.vita</string>
 
     <string name="variabilis">Variabilis: %s</string>
     <string name="year">Year</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="clear">Clear</string>
+    <string name="notesHint" translatable="false">.....</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
@@ -16,15 +18,15 @@
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s</string>
     <string name="copy">Copy</string>
-    <string name="navExport">Export to Json</string>
-    <string name="navImport">Import from Json</string>
+    <string name="navExport">Export data</string>
+    <string name="navImport">Import data</string>
     <string name="done">Done!</string>
     <string name="exportUndone">Failed!</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
     <string name="defValue">DEFAULT</string>
-    <string name="navSend">Send Json to</string>
+    <string name="navSend">Send data to</string>
     <string name="navHelp">Help</string>
     <string name="help">This app is designed based on the \"Hedonist\" philosophy! It\'s used to calculate the amount of pleasure and pain one senses in their life.\n\nYou can enter the quality of your life in a scale between -3 to +3 for each day.\n\nAlternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.\n\nThen you can see how much pleasure and pain you\'ve sensed overall in your life.\n\nHold a day button a bit longer to view that day in the calendar of your device.</string>
     <string name="ntfReminderTitle">Daily Reminder</string>
