@@ -1,30 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:ignore="MissingConstraints">
+    android:orientation="vertical">
 
-    <!-- Simulated version of CupertinoPicker in Flutter:
-    https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/cupertino/picker.dart -->
-
-    <View
-        android:id="@+id/highlight"
-        style="@style/parentConstraint"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@drawable/picker_highlight"
-        app:layout_constraintHeight_percent="0.4"
-        app:layout_constraintWidth_percent="0.5" />
-
-    <ir.mahdiparastesh.fortuna.Variabilis
-        android:id="@+id/picker"
-        style="@style/parentConstraint"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:solidColor="@color/bgDialog"
-        android:theme="@style/Theme.Fortuna.Picker" />
-    <!-- android:solidColor is the colour of the vertical gradient. -->
-    <!-- android:selectionDividerHeight is the height of the divider. -->
-</androidx.constraintlayout.widget.ConstraintLayout>
+        tools:ignore="MissingConstraints">
+
+        <!-- Simulated version of CupertinoPicker in Flutter:
+        https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/cupertino/picker.dart -->
+
+        <View
+            android:id="@+id/highlight"
+            style="@style/parentConstraint"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/picker_highlight"
+            app:layout_constraintHeight_percent="0.4"
+            app:layout_constraintWidth_percent="0.5" />
+
+        <ir.mahdiparastesh.fortuna.Variabilis
+            android:id="@+id/picker"
+            style="@style/parentConstraint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:solidColor="@color/bgDialog"
+            android:theme="@style/Theme.Fortuna.Picker" />
+        <!-- android:solidColor is the colour of the vertical gradient. -->
+        <!-- android:selectionDividerHeight is the height of the divider. -->
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/verbum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/picker_highlight"
+            android:hint="@string/notesHint"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:lineSpacingExtra="4sp"
+            android:maxLines="10"
+            android:paddingHorizontal="16sp"
+            android:paddingVertical="12sp"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.87" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

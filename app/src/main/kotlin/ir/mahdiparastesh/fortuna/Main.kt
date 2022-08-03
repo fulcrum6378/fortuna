@@ -29,11 +29,7 @@ import androidx.core.view.forEachIndexed
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.navigation.NavigationView
-import com.google.gson.Gson
 import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
-import ir.mahdiparastesh.fortuna.Vita.Companion.defPos
-import ir.mahdiparastesh.fortuna.Vita.Companion.default
-import ir.mahdiparastesh.fortuna.Vita.Companion.emptyLuna
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -116,7 +112,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.next.setOnClickListener { rollCalendar(true) }
         b.prev.setOnClickListener { rollCalendar(false) }
         b.defaultVar.setOnClickListener {
-            m.thisLuna().changeVar(this@Main, m.calendar.defPos())
+            m.thisLuna().changeVar(this@Main, null)
         }
 
         // Miscellaneous
@@ -149,7 +145,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             updatePanel()
             if (!Vita.Stored(c).exists()) {
-                m.vita!![m.luna!!] = m.calendar.emptyLuna()
+                m.vita!![m.luna!!] = Luna(m.calendar)
                 m.vita!!.save(c)
             }
         }
@@ -170,7 +166,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
-                putExtra(Intent.EXTRA_TITLE, Vita.EXPORT_NAME)
+                putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
             })
             R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
@@ -178,7 +174,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             })
             R.id.navSend -> {
                 val binary = m.vita?.export(c) ?: return false
-                val exported = File(cacheDir, Vita.EXPORT_NAME)
+                val exported = File(cacheDir, c.getString(R.string.export_file))
                 CoroutineScope(Dispatchers.IO).launch {
                     runCatching {
                         FileOutputStream(exported).use { it.write(binary) }
@@ -238,7 +234,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             val imported: Vita
             try {
-                imported = Gson().fromJson(data, Vita::class.java)
+                imported = Vita.loads(data!!)
             } catch (e: Exception) {
                 Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
                 return@registerForActivityResult
@@ -262,7 +258,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     fun updateGrid() {
         b.grid.adapter = ItemDay(this).also {
-            b.defaultVar.text = it.luna.last().showScore()
+            b.defaultVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
         }
     }
@@ -352,6 +348,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var showingStat = false
         var showingHelp = false
 
-        fun thisLuna() = vita?.find(luna!!) ?: calendar.emptyLuna()
+        fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 }
