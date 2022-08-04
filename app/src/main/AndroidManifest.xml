@@ -25,6 +25,9 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Fuck Android and subsequently the file managers, you cannot associate an app to
+                 a certain file extension on content:// scheme. -->
         </activity>
 
         <provider
@@ -48,10 +51,4 @@
             </intent-filter>
         </receiver>
     </application>
-
-    <!-- You cannot simply start coding Groovy classes just because Android Studio recognises them;
-      Gradle will not compile them in the DEX files, so you'll certainly need a plugin like
-      https://github.com/groovy/groovy-android-gradle-plugin to do that for ya. But since this
-      plugin sucks greatly, I didn't write this app in Groovy. The same thing applies to the other
-      JVM based languages like Scala and Clojure. -->
 </manifest>
