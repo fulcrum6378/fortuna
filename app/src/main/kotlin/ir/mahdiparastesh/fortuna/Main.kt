@@ -48,13 +48,12 @@ import java.io.FileOutputStream
 @SuppressLint("InvalidFragmentVersionForActivityResult")
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
     val c: Context get() = applicationContext
-    lateinit var b: MainBinding
+    val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = MainBinding.inflate(layoutInflater)
         setContentView(b.root)
 
         // Toolbar & Navigation
@@ -114,6 +113,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.defaultVar.setOnClickListener {
             m.thisLuna().changeVar(this@Main, null)
         }
+        b.verbum.setColorFilter(color(android.R.attr.textColor))
 
         // Miscellaneous
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
@@ -260,6 +260,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.grid.adapter = ItemDay(this).also {
             b.defaultVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
+            b.verbum.vis(it.luna.verbum?.isNotBlank() == true)
         }
     }
 
@@ -338,6 +339,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
             PorterDuffColorFilter(color, mode)
+
+        fun View.vis(bb: Boolean) {
+            visibility = if (bb) View.VISIBLE else View.GONE
+        }
     }
 
     class Model : ViewModel() {

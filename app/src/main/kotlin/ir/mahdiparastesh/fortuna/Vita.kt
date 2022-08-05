@@ -64,7 +64,7 @@ class Vita : HashMap<String, Luna>() {
                 val data: ByteArray
                 FileInputStream(stored).use { data = it.readBytes() }
                 loads(String(data))
-            } else VitaLegacy.load(c)?.migrate(c) ?: Vita()
+            } else Vita()
         }
 
         fun loads(text: String): Vita {
