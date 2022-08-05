@@ -12,12 +12,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListAdapter
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.get
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
+import ir.mahdiparastesh.fortuna.Main.Companion.vis
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -49,6 +51,7 @@ class ItemDay(private val c: Main) : ListAdapter {
             val isEstimated = luna[i] == null && luna.default != null
             val numType = c.sp.getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                 .let { if (it == Main.arNumType) null else it }
+
             dies.text = (numType?.let { BaseNumeral.find(it) }
                 ?.constructors?.getOrNull(0)?.newInstance(i + 1) as BaseNumeral?)
                 ?.toString() ?: "${i + 1}"
@@ -57,11 +60,18 @@ class ItemDay(private val c: Main) : ListAdapter {
             if (enlarge) dies.textSize =
                 (dies.textSize / c.resources.displayMetrics.density) * 1.75f
             variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
+            (luna.verba[i]?.isNotBlank() == true).also { show ->
+                verbum.vis(show)
+                if (show) verbum.setImageResource(R.drawable.verbum)
+                else verbum.setImageDrawable(null)
+            }
+
             root.setBackgroundColor(
                 when {
                     score != null && score > 0f -> {
                         dies.setTextColor(cpo)
                         variabilis.setTextColor(cpo)
+                        verbum.setColorFilter(cpo)
                         Color.valueOf(
                             cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
                             score / Vita.MAX_RANGE
@@ -70,6 +80,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     score != null && score < 0f -> {
                         dies.setTextColor(cso)
                         variabilis.setTextColor(cso)
+                        verbum.setColorFilter(cso)
                         Color.valueOf(
                             cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
                             -score / Vita.MAX_RANGE
@@ -78,12 +89,13 @@ class ItemDay(private val c: Main) : ListAdapter {
                     else -> {
                         dies.setTextColor(tc)
                         variabilis.setTextColor(tc)
+                        verbum.setColorFilter(tc)
                         Color.TRANSPARENT
                     }
                 }
             )
-            highlight.setOnClickListener { luna.changeVar(c, i) }
-            highlight.setOnLongClickListener {
+            root.setOnClickListener { luna.changeVar(c, i) }
+            root.setOnLongClickListener {
                 val cal = calType.newInstance()
                     .apply { timeInMillis = c.m.calendar.timeInMillis }
                 cal[Calendar.DAY_OF_MONTH] = i + 1
@@ -97,7 +109,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 true
             }
             if (c.m.luna == todayLuna && todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
-                highlight.setBackgroundResource(R.drawable.dies_today)
+                root.foreground = ContextCompat.getDrawable(c, R.drawable.dies_today)
         }.root
 
     override fun hasStableIds(): Boolean = true
@@ -130,7 +142,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
             }
-            bv.verbum.setText(i?.let { this@changeVar.verba[it] } ?: verbum)
+            bv.verbum.setText(if (i != null) this@changeVar.verba[i] else verbum)
             AlertDialog.Builder(c).apply {
                 setTitle(
                     c.getString(

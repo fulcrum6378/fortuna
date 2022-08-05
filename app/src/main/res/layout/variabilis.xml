@@ -52,7 +52,7 @@
             android:maxLines="10"
             android:paddingHorizontal="16sp"
             android:paddingVertical="12sp"
-            android:textSize="18sp"
+            android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
