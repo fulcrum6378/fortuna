@@ -6,7 +6,6 @@
     <color name="weakWhite">#44FFFFFF</color>
     <color name="diesBorder">#F0F0F0</color>
     <color name="diesBorderToday">#44000000</color>
-    <color name="bgDialog">#FFF</color>
-    <color name="pickerHighlight">#EFEFF0</color>
+    <color name="pickerHighlight">#FFF</color><!--#EFEFF0-->
     <color name="shadow">#40000000</color>
 </resources>

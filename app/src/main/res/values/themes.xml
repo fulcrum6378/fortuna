@@ -11,8 +11,10 @@
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
         <item name="android:layoutDirection">ltr</item>
         <item name="android:fontFamily">@font/quattrocento</item>
-        <item name="alertDialogTheme">@style/Theme.Fortuna.Dialogue</item>
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Fortuna.Dialogue</item>
+        <item name="navigationViewStyle">@style/Widget.Fortuna.NavigationView</item>
+        <!--<item name="colorSurface">@color/bgDialog</item>-->
     </style>
 
     <style name="Theme.Fortuna" parent="Theme.Fortuna.Base">
@@ -26,24 +28,54 @@
         <item name="android:textColorHighlight">#70999999</item>
     </style>
 
-    <style name="Theme.Fortuna.Dialogue" parent="Theme.Material3.DayNight.Dialog.Alert">
-        <item name="android:fontFamily">@font/quattrocento_bold</item>
-        <!-- applying these colours to those elements vary by parent Theme type. -->
-        <item name="android:textColor">@color/textColor</item><!-- title -->
-        <item name="android:textColorPrimary">@color/textColorThin</item><!-- message -->
-        <!-- buttons' text colour and their ripple effects -->
-        <item name="colorPrimary">@color/textColor</item>
-        <item name="android:textAppearanceSmall">@style/TextAppearance.Fortuna.Dialog.Message</item>
-        <item name="android:textAppearanceButton">@style/TextAppearance.Fortuna.Dialog.Button</item>
+    <style name="Widget.Fortuna.NavigationView" parent="Widget.Material3.NavigationView">
+        <item name="itemIconTint">?attr/colorOnPrimary</item>
+        <item name="shapeAppearance">@style/ShapeAppearance_Fortuna_Nav</item>
+        <item name="itemRippleColor">@color/weakWhite</item>
+        <item name="itemTextAppearance">@style/TextAppearance.Fortuna.Navigation</item>
+        <item name="itemTextColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.Fortuna.Dialogue" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="alertDialogStyle">@style/Theme.Fortuna.Dialogue</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Theme.Fortuna.Dialogue.Title.Text
+        </item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
+    </style>
+
+    <style name="Theme.Fortuna.Dialogue" parent="MaterialAlertDialog.Material3">
+        <item name="shapeAppearance">@style/ShapeAppearance.Fortuna.Dialogue</item>
+        <item name="shapeAppearanceOverlay">@null</item>
         <item name="android:lineSpacingExtra">9sp</item>
-        <item name="android:windowBackground">@color/bgDialog</item>
+    </style>
+
+    <style name="Theme.Fortuna.Dialogue.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:textColor">@color/textColor</item>
+    </style>
+
+    <style name="Widget.Fortuna.Dialogue.Button" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/textColor</item>
+    </style>
+
+    <style name="ShapeAppearance_Fortuna_Nav">
+        <item name="cornerFamilyBottomRight">cut</item>
+        <item name="cornerFamilyTopRight">cut</item>
+        <item name="cornerSizeBottomRight">15dp</item>
+        <item name="cornerSizeTopRight">15dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Fortuna.Dialogue" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">cut</item><!--rounded|cut-->
+        <item name="cornerSize">15dp</item>
     </style>
 
     <style name="Theme.Fortuna.Picker" parent="Theme.Fortuna">
         <item name="android:colorControlNormal">@android:color/transparent</item><!--divider-->
     </style>
 
-    <style name="Widget.Fortuna.OverflowButton" parent="Widget.AppCompat.ActionButton.Overflow">
+    <style name="Widget.Fortuna.OverflowButton" parent="@android:style/Widget.Material.ActionButton.Overflow">
         <item name="android:src">@drawable/arabic_numerals</item>
     </style>
 </resources>

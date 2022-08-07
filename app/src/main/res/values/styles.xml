@@ -38,12 +38,4 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">17sp</item>
     </style>
-
-    <style name="TextAppearance.Fortuna.Dialog.Message" parent="@android:style/TextAppearance">
-        <item name="android:fontFamily">@font/quattrocento</item>
-    </style>
-
-    <style name="TextAppearance.Fortuna.Dialog.Button" parent="@android:style/TextAppearance">
-        <item name="android:fontFamily">@font/quattrocento</item>
-    </style>
 </resources>

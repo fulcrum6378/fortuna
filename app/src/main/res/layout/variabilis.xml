@@ -28,7 +28,7 @@
             style="@style/parentConstraint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:solidColor="@color/bgDialog"
+            android:solidColor="@android:color/transparent"
             android:theme="@style/Theme.Fortuna.Picker" />
         <!-- android:solidColor is the colour of the vertical gradient. -->
         <!-- android:selectionDividerHeight is the height of the divider. -->

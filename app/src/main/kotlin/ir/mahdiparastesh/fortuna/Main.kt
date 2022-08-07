@@ -23,11 +23,12 @@ import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
+import androidx.core.content.edit
 import androidx.core.view.forEachIndexed
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
@@ -49,7 +50,7 @@ import java.io.FileOutputStream
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
     val c: Context get() = applicationContext
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
-    val m: Model by viewModels()
+    val m: Model by viewModels() // belongs to ComponentActivity
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,10 +77,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         b.toolbar.setOnMenuItemClickListener { mItem ->
-            sp.edit().putString(
-                SP_NUMERAL_TYPE,
-                BaseNumeral.all.find { it.id == mItem.itemId }?.jClass?.canonicalName ?: arNumType
-            ).apply()
+            sp.edit {
+                putString(
+                    SP_NUMERAL_TYPE,
+                    BaseNumeral.all.find { it.id == mItem.itemId }?.jClass?.canonicalName
+                        ?: arNumType
+                )
+            }
             updateGrid(); updateOverflow(); true
         }
 
@@ -239,7 +243,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
                 return@registerForActivityResult
             }
-            AlertDialog.Builder(this@Main).apply {
+            MaterialAlertDialogBuilder(this@Main).apply {
                 setTitle(c.resources.getString(R.string.navImport))
                 setMessage(c.resources.getString(R.string.askImport))
                 setPositiveButton(R.string.yes) { _, _ ->
@@ -287,7 +291,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private fun stat() {
         m.showingStat = true
-        AlertDialog.Builder(this).apply {
+        MaterialAlertDialogBuilder(this).apply {
             val scores = arrayListOf<Float>()
             m.vita?.forEach { key, luna ->
                 for (v in 0 until key.toCalendar(calType).lunaMaxima())
@@ -314,7 +318,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private fun help() {
         m.showingHelp = true
-        AlertDialog.Builder(this).apply {
+        MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navHelp)
             setMessage(R.string.help)
             setPositiveButton(R.string.ok, null)
