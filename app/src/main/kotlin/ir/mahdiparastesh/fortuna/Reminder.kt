@@ -1,14 +1,14 @@
 package ir.mahdiparastesh.fortuna
 
 import android.app.AlarmManager
+import android.app.Notification
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
 class Reminder : BroadcastReceiver() {
@@ -43,11 +43,10 @@ class Reminder : BroadcastReceiver() {
                 val cal = Main.calType.newInstance().apply { timeInMillis -= 86400000L }
                 val score = Vita.load(c).getOrDefault(cal.toKey(), null)
                     ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
-                if (score == null) NotificationManagerCompat.from(c).notify(
-                    CHANNEL, NotificationCompat.Builder(c, REMIND)
+                if (score == null) (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(
+                    CHANNEL, Notification.Builder(c, REMIND)
                         .setSmallIcon(R.drawable.notification)
                         .setContentTitle(c.getString(R.string.ntfReminder))
-                        .setPriority(NotificationCompat.PRIORITY_LOW)
                         .setContentIntent(
                             PendingIntent.getActivity(
                                 c, 0,

@@ -11,12 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListAdapter
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.get
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
 import ir.mahdiparastesh.fortuna.Main.Companion.vis
@@ -44,7 +43,7 @@ class ItemDay(private val c: Main) : ListAdapter {
     override fun getItem(i: Int): Float = 0f
     override fun getItemId(i: Int): Long = i.toLong()
 
-    @SuppressLint("SetTextI18n", "ViewHolder")
+    @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
         ItemDayBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? = luna[i] ?: luna.default
@@ -109,7 +108,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 true
             }
             if (c.m.luna == todayLuna && todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
-                root.foreground = ContextCompat.getDrawable(c, R.drawable.dies_today)
+                root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
 
     override fun hasStableIds(): Boolean = true
@@ -143,7 +142,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
             }
             bv.verbum.setText(if (i != null) this@changeVar.verba[i] else verbum)
-            AlertDialog.Builder(c).apply {
+            MaterialAlertDialogBuilder(c).apply {
                 setTitle(
                     c.getString(
                         R.string.variabilis,

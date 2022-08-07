@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Main"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="ContentDescription,MissingConstraints"
+    tools:openDrawer="start">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/body"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
@@ -135,9 +136,5 @@
         android:layout_gravity="start"
         android:background="?attr/colorPrimary"
         android:paddingTop="10dp"
-        app:itemIconTint="?attr/colorOnPrimary"
-        app:itemRippleColor="@color/weakWhite"
-        app:itemTextAppearance="@style/TextAppearance.Fortuna.Navigation"
-        app:itemTextColor="?attr/colorOnPrimary"
         app:menu="@menu/nav" />
 </androidx.drawerlayout.widget.DrawerLayout>
