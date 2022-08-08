@@ -15,6 +15,7 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.get
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
@@ -128,11 +129,12 @@ class ItemDay(private val c: Main) : ListAdapter {
         fun Luna.changeVar(c: Main, i: Int?) {
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
+            arrayOf(bv.highlight, bv.verbum).forEach { it.background = c.varFieldBg }
             bv.picker.apply {
                 maxValue = 12
                 minValue = 0
-                value =
-                    i?.let { this@changeVar[it]?.toVariabilis() } ?: default?.toVariabilis() ?: 6
+                value = c.m.changingVarScore ?: i?.let { this@changeVar[it]?.toVariabilis() }
+                        ?: default?.toVariabilis() ?: 6
                 wrapSelectorWheel = false
                 setFormatter { it.toScore().showScore() }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -140,8 +142,14 @@ class ItemDay(private val c: Main) : ListAdapter {
                     textSize = c.resources.displayMetrics.density * 25f
                 }
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
+                setOnValueChangedListener { _, _, newVal -> c.m.changingVarScore = newVal }
             }
-            bv.verbum.setText(if (i != null) this@changeVar.verba[i] else verbum)
+            bv.verbum.apply {
+                setText(
+                    c.m.changingVarVerbum ?: (if (i != null) this@changeVar.verba[i] else verbum)
+                )
+                addTextChangedListener { c.m.changingVarVerbum = it.toString() }
+            }
             MaterialAlertDialogBuilder(c).apply {
                 setTitle(
                     c.getString(
@@ -159,7 +167,12 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setNeutralButton(R.string.clear) { _, _ ->
                     if (c.m.vita != null) saveDies(c, i, null, null)
                 }
-                setOnDismissListener { c.m.changingVar = null }
+                setOnDismissListener {
+                    c.m.changingVar = null
+                    c.m.changingVarScore = null
+                    c.m.changingVarVerbum = null
+                }
+                setCancelable(false)
             }.show()
         }
     }

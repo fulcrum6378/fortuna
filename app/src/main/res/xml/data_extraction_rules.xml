@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<data-extraction-rules>
+<data-extraction-rules xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="FullBackupContent">
     <cloud-backup>
         <include
             domain="file"
             path="@string/export_file" />
         <include
             domain="sharedpref"
-            path="settings.xml" />
+            path="@string/shared_prefs" />
     </cloud-backup>
     <device-transfer>
         <include
@@ -14,6 +15,6 @@
             path="@string/export_file" />
         <include
             domain="sharedpref"
-            path="settings.xml" />
+            path="@string/shared_prefs" />
     </device-transfer>
 </data-extraction-rules>

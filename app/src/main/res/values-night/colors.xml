@@ -5,5 +5,5 @@
     <color name="textColorThin">#FFF</color>
     <color name="diesBorder">#252525</color>
     <color name="diesBorderToday">#44FFFFFF</color>
-    <color name="pickerHighlight">#313133</color><!--#4E4E51-->
+    <color name="varField">#313133</color><!--#4E4E51-->
 </resources>
