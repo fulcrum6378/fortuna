@@ -14,7 +14,6 @@
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Fortuna.Dialogue</item>
         <item name="navigationViewStyle">@style/Widget.Fortuna.NavigationView</item>
-        <!--<item name="colorSurface">@color/bgDialog</item>-->
     </style>
 
     <style name="Theme.Fortuna" parent="Theme.Fortuna.Base">
@@ -38,37 +37,48 @@
 
     <style name="ThemeOverlay.Fortuna.Dialogue" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="alertDialogStyle">@style/Theme.Fortuna.Dialogue</item>
-        <item name="materialAlertDialogTitleTextStyle">@style/Theme.Fortuna.Dialogue.Title.Text
-        </item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Theme.Fortuna.Dialogue.Title</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Theme.Fortuna.Dialogue.Body</item>
         <item name="buttonBarPositiveButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
         <item name="buttonBarNegativeButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
         <item name="buttonBarNeutralButtonStyle">@style/Widget.Fortuna.Dialogue.Button</item>
     </style>
 
     <style name="Theme.Fortuna.Dialogue" parent="MaterialAlertDialog.Material3">
-        <item name="shapeAppearance">@style/ShapeAppearance.Fortuna.Dialogue</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Fortuna.Medium</item>
         <item name="shapeAppearanceOverlay">@null</item>
-        <item name="android:lineSpacingExtra">9sp</item>
     </style>
 
-    <style name="Theme.Fortuna.Dialogue.Title.Text" parent="MaterialAlertDialog.Material3.Title.Text">
+    <style name="Theme.Fortuna.Dialogue.Title" parent="MaterialAlertDialog.Material3.Title.Text">
         <item name="android:textColor">@color/textColor</item>
+    </style>
+
+    <style name="Theme.Fortuna.Dialogue.Body" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:textColor">@color/textColor</item>
+        <item name="android:textSize">15.5sp</item>
+        <item name="lineHeight">25sp</item><!--android:lineSpacingExtra doesn't work here.-->
     </style>
 
     <style name="Widget.Fortuna.Dialogue.Button" parent="Widget.Material3.Button.TextButton.Dialog">
         <item name="android:textColor">@color/textColor</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Fortuna.Small</item>
     </style>
 
     <style name="ShapeAppearance_Fortuna_Nav">
         <item name="cornerFamilyBottomRight">cut</item>
         <item name="cornerFamilyTopRight">cut</item>
-        <item name="cornerSizeBottomRight">15dp</item>
-        <item name="cornerSizeTopRight">15dp</item>
+        <item name="cornerSizeBottomRight">@dimen/largeCornerSize</item>
+        <item name="cornerSizeTopRight">@dimen/largeCornerSize</item>
     </style>
 
-    <style name="ShapeAppearance.Fortuna.Dialogue" parent="ShapeAppearance.Material3.MediumComponent">
+    <style name="ShapeAppearance.Fortuna.Medium" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">cut</item><!--rounded|cut-->
-        <item name="cornerSize">15dp</item>
+        <item name="cornerSize">@dimen/mediumCornerSize</item>
+    </style>
+
+    <style name="ShapeAppearance.Fortuna.Small" parent="ShapeAppearance.Material3.SmallComponent">
+        <item name="cornerFamily">cut</item><!--rounded|cut-->
+        <item name="cornerSize">@dimen/smallCornerSize</item>
     </style>
 
     <style name="Theme.Fortuna.Picker" parent="Theme.Fortuna">

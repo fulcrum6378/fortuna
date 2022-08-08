@@ -46,8 +46,7 @@ abstract class BaseNumeral(
             Class.forName(jc)
         } catch (e: ClassNotFoundException) {
             null
-        }
-        // Putting this in ItemDay::getView caused a nasty build time error.
+        } // Putting this in ItemDay::getView caused a nasty build time error.
     }
     // https://en.wikipedia.org/wiki/List_of_numeral_systems
 }

@@ -30,6 +30,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
@@ -52,6 +55,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels() // belongs to ComponentActivity
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
+    val varFieldBg: MaterialShapeDrawable by lazy {
+        MaterialShapeDrawable(
+            ShapeAppearanceModel.Builder()
+                .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
+                .build()
+        ).apply { fillColor = c.resources.getColorStateList(R.color.variabilis_field, null) }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,8 +106,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, i: Int, id: Long) {
                 if (firstResume) return
                 if (rollingLuna) {
-                    rollingLuna = false
-                    return; }
+                    rollingLuna = false; return; }
                 m.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
                 m.calendar = m.luna!!.toCalendar(calType)
                 updateGrid()
@@ -301,7 +310,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val text = getString(
                 R.string.statText,
                 (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).toString(),
-                sum.toString()
+                sum.toString(), scores.size.toString()
             )
             setTitle(R.string.navStat)
             setMessage(text)
@@ -354,6 +363,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var luna: String? = null
         lateinit var calendar: Calendar
         var changingVar: Int? = null
+        var changingVarScore: Int? = null
+        var changingVarVerbum: String? = null
         var showingStat = false
         var showingHelp = false
 

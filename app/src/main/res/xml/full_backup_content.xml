@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<full-backup-content>
+<full-backup-content xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="FullBackupContent">
     <include
         domain="file"
         path="@string/export_file" />
     <include
         domain="sharedpref"
-        path="settings.xml" />
+        path="@string/shared_prefs" />
 </full-backup-content>

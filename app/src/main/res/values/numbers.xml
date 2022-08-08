@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Dimensions -->
+    <dimen name="smallCornerSize">6dp</dimen>
+    <dimen name="mediumCornerSize">10dp</dimen>
+    <dimen name="largeCornerSize">14dp</dimen>
+
+    <!-- IDs -->
     <item name="numArabic" type="id" />
     <item name="numRoman" type="id" />
     <item name="numEtruscan" type="id" />
