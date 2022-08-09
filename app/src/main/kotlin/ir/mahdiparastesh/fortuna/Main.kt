@@ -8,7 +8,7 @@ import android.content.*
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
-import android.os.Bundle
+import android.os.*
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.MenuItem
@@ -94,7 +94,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         ?: arNumType
                 )
             }
-            updateGrid(); updateOverflow(); true
+            updateGrid(); updateOverflow(); shake(); true
         }
 
         // Panel
@@ -333,6 +333,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setPositiveButton(R.string.ok, null)
             setOnDismissListener { m.showingHelp = false }
         }.show()
+    }
+
+    @Suppress("DEPRECATION")
+    fun shake(dur: Long = 40L) {
+        val vib = (if (Build.VERSION.SDK_INT >= 31)
+            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        else getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+        vib.vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
     companion object {
