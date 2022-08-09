@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -129,6 +130,7 @@ class ItemDay(private val c: Main) : ListAdapter {
         fun Luna.changeVar(c: Main, i: Int?) {
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
+            var dialogue: AlertDialog? = null
             arrayOf(bv.highlight, bv.verbum).forEach { it.background = c.varFieldBg }
             bv.picker.apply {
                 maxValue = 12
@@ -142,15 +144,21 @@ class ItemDay(private val c: Main) : ListAdapter {
                     textSize = c.resources.displayMetrics.density * 25f
                 }
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
-                setOnValueChangedListener { _, _, newVal -> c.m.changingVarScore = newVal }
+                setOnValueChangedListener { _, _, newVal ->
+                    c.m.changingVarScore = newVal
+                    dialogue?.setCancelable(false)
+                }
             }
             bv.verbum.apply {
                 setText(
                     c.m.changingVarVerbum ?: (if (i != null) this@changeVar.verba[i] else verbum)
                 )
-                addTextChangedListener { c.m.changingVarVerbum = it.toString() }
+                addTextChangedListener {
+                    c.m.changingVarVerbum = it.toString()
+                    dialogue?.setCancelable(false)
+                }
             }
-            MaterialAlertDialogBuilder(c).apply {
+            dialogue = MaterialAlertDialogBuilder(c).apply {
                 setTitle(
                     c.getString(
                         R.string.variabilis,
@@ -161,18 +169,21 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setView(bv.root)
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.save) { _, _ ->
-                    if (c.m.vita != null)
-                        saveDies(c, i, bv.picker.value.toScore(), bv.verbum.text.toString())
+                    if (c.m.vita == null) return@setPositiveButton
+                    saveDies(c, i, bv.picker.value.toScore(), bv.verbum.text.toString())
+                    c.shake()
                 }
                 setNeutralButton(R.string.clear) { _, _ ->
-                    if (c.m.vita != null) saveDies(c, i, null, null)
+                    if (c.m.vita == null) return@setNeutralButton
+                    saveDies(c, i, null, null)
+                    c.shake()
                 }
                 setOnDismissListener {
                     c.m.changingVar = null
                     c.m.changingVarScore = null
                     c.m.changingVarVerbum = null
                 }
-                setCancelable(false)
+                setCancelable(true)
             }.show()
         }
     }
