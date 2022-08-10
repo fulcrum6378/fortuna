@@ -141,6 +141,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         Reminder.alarm(c) // Reminder.test(c)
         if (m.showingStat) stat()
         if (m.showingHelp) help()
+        m.showingDate?.also { ItemDay.showDate(this, it) }
     }
 
     private var firstResume = true
@@ -353,6 +354,16 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             /*"persian"*/ else -> PersianCalendar::class.java
         }
 
+        val otherCalendars = arrayOf(
+            android.icu.util.GregorianCalendar::class.java,
+            PersianCalendar::class.java,
+            android.icu.util.IslamicCalendar::class.java,
+            android.icu.util.JapaneseCalendar::class.java,
+            android.icu.util.ChineseCalendar::class.java,
+            android.icu.util.IndianCalendar::class.java,
+            android.icu.util.HebrewCalendar::class.java,
+        ).filter { it != calType }
+
         @ColorInt
         fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
             theme.resolveAttribute(attr, this, true)
@@ -375,6 +386,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarVerbum: String? = null
         var showingStat = false
         var showingHelp = false
+        var showingDate: Int? = null
 
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
