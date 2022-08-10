@@ -176,6 +176,15 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.navToday -> {
+                m.calendar = calType.newInstance()
+                m.luna = m.calendar.toKey()
+                rollingAnnus = true
+                rollingLuna = true
+                updatePanel()
+                updateGrid()
+                b.root.closeDrawers()
+            }
             R.id.navStat -> stat()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)

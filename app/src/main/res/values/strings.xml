@@ -16,6 +16,7 @@
     <string name="viewInCalendar">Calendar</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
+    <string name="navToday">Today</string>
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.</string>
