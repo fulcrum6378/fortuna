@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
@@ -183,7 +184,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 rollingLuna = true
                 updatePanel()
                 updateGrid()
-                b.root.closeDrawers()
+                b.root.closeDrawer(GravityCompat.START, true)
             }
             R.id.navStat -> stat()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -353,6 +354,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         vib.vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
+    override fun onBackPressed() {
+        if (b.root.isDrawerOpen(GravityCompat.START)) {
+            b.root.closeDrawer(GravityCompat.START, true)
+            return; }
+        super.onBackPressed()
+    }
+
     companion object {
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
@@ -367,9 +375,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             android.icu.util.GregorianCalendar::class.java,
             PersianCalendar::class.java,
             android.icu.util.IslamicCalendar::class.java,
-            android.icu.util.JapaneseCalendar::class.java,
             android.icu.util.ChineseCalendar::class.java,
             android.icu.util.IndianCalendar::class.java,
+            android.icu.util.CopticCalendar::class.java,
             android.icu.util.HebrewCalendar::class.java,
         ).filter { it != calType }
 
