@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.database.DataSetObserver
 import android.graphics.Color
+import android.icu.text.DateFormatSymbols
 import android.icu.util.Calendar
 import android.os.Build
 import android.provider.CalendarContract
@@ -28,6 +29,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.ItemDayBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
+import java.util.*
 
 class ItemDay(private val c: Main) : ListAdapter {
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -182,7 +184,10 @@ class ItemDay(private val c: Main) : ListAdapter {
                 this[Calendar.DAY_OF_MONTH] = i + 1
             }
             MaterialAlertDialogBuilder(c).apply {
-                setTitle("${c.m.luna!!}.${z(i + 1)}")
+                setTitle(
+                    "${c.m.luna!!}.${z(i + 1)} - " +
+                            DateFormatSymbols.getInstance(Locale.UK).weekdays[cal[Calendar.DAY_OF_WEEK]]
+                )
                 val sb = StringBuilder()
                 for (oc in Main.otherCalendars) {
                     val d = oc.newInstance()
