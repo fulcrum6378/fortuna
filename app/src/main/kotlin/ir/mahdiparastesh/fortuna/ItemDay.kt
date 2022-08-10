@@ -96,19 +96,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
             )
             root.setOnClickListener { luna.changeVar(c, i) }
-            root.setOnLongClickListener {
-                val cal = calType.newInstance()
-                    .apply { timeInMillis = c.m.calendar.timeInMillis }
-                cal[Calendar.DAY_OF_MONTH] = i + 1
-                c.startActivity(
-                    Intent(Intent.ACTION_VIEW).setData(
-                        CalendarContract.CONTENT_URI.buildUpon()
-                            .appendPath("time")
-                            .appendEncodedPath(cal.timeInMillis.toString()).build()
-                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-                true
-            }
+            root.setOnLongClickListener { showDate(c, i); true }
             if (c.m.luna == todayLuna && todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
@@ -184,6 +172,37 @@ class ItemDay(private val c: Main) : ListAdapter {
                     c.m.changingVarVerbum = null
                 }
                 setCancelable(true)
+            }.show()
+        }
+
+        fun showDate(c: Main, i: Int) {
+            c.m.showingDate = i
+            val cal = calType.newInstance().apply {
+                timeInMillis = c.m.calendar.timeInMillis
+                this[Calendar.DAY_OF_MONTH] = i + 1
+            }
+            MaterialAlertDialogBuilder(c).apply {
+                setTitle("${c.m.luna!!}.${z(i + 1)}")
+                val sb = StringBuilder()
+                for (oc in Main.otherCalendars) {
+                    val d = oc.newInstance()
+                    d.timeInMillis = cal.timeInMillis
+                    sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
+                    sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
+                }
+                setMessage(sb.toString())
+                setPositiveButton(R.string.ok, null)
+                setNeutralButton(R.string.viewInCalendar) { _, _ ->
+                    cal[Calendar.DAY_OF_MONTH] = i + 1
+                    c.startActivity(
+                        Intent(Intent.ACTION_VIEW).setData(
+                            CalendarContract.CONTENT_URI.buildUpon()
+                                .appendPath("time")
+                                .appendEncodedPath(cal.timeInMillis.toString()).build()
+                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                }
+                setOnDismissListener { c.m.showingDate = null }
             }.show()
         }
     }

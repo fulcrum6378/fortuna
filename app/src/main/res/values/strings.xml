@@ -13,6 +13,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
+    <string name="viewInCalendar">Calendar</string>
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
     <string name="navStat">Statistics</string>
