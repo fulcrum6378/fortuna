@@ -195,6 +195,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
                     sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
                 }
+                sb.deleteCharAt(sb.length - 1)
                 setMessage(sb.toString())
                 setPositiveButton(R.string.ok, null)
                 setNeutralButton(R.string.viewInCalendar) { _, _ ->

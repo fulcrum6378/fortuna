@@ -15,6 +15,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -23,10 +24,12 @@ import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
+import androidx.core.view.get
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -87,6 +90,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         (nt.jClass?.canonicalName ?: arNumType)
             }
         }
+        // AndroidX Toolbar children:
+        // 0 => title(AppCompatTextView)
+        // 1 => actionButtons(ActionMenuView<ActionMenuPresenter$OverflowMenuButton>)
+        // 2 => drawerButton(AppCompatImageButton)
+        ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
+            .tooltipText = getString(R.string.numerals)
         b.toolbar.setOnMenuItemClickListener { mItem ->
             sp.edit {
                 putString(
@@ -94,8 +103,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     BaseNumeral.all.find { it.id == mItem.itemId }?.jClass?.canonicalName
                         ?: arNumType
                 )
-            }
-            updateGrid(); updateOverflow(); shake(); true
+            }; updateGrid(); updateOverflow(); shake(); true
         }
 
         // Panel
