@@ -304,7 +304,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private var rollingAnnus = false
-    private var rollingLuna = false
+    private var rollingLuna = true // in order to trick onItemSelected
     private fun rollCalendar(up: Boolean) {
         m.calendar.roll(Calendar.MONTH, up)
         if ((up && m.calendar[Calendar.MONTH] == 0) ||
