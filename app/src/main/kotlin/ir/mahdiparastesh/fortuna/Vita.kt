@@ -2,10 +2,7 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.StringReader
+import java.io.*
 
 class Vita : HashMap<String, Luna>() {
 
@@ -72,12 +69,15 @@ class Vita : HashMap<String, Luna>() {
             val cal = Main.calType.newInstance()
             var key: String? = null
             var dies = 0
-            for (ln in StringReader(text).readLines())
+            for (ln in StringReader(text).readLines()) try {
                 if (key == null) {
                     if (!ln.startsWith('@')) continue
                     val sn = ln.split(";", limit = 2)
                     val s = sn[0].split("~")
                     key = s[0].substring(1)
+                    val splitKey = key.split(".")
+                    cal.set(Calendar.YEAR, splitKey[0].toInt())
+                    cal.set(Calendar.MONTH, splitKey[1].toInt() - 1)
                     vita[key] = Luna(
                         cal, s.getOrNull(1)?.toFloat(), sn.getOrNull(1)?.loadVitaText()
                     )
@@ -93,6 +93,11 @@ class Vita : HashMap<String, Luna>() {
                     vita[key]!!.verba[dies] = sn.getOrNull(1)?.loadVitaText()
                     dies++
                 }
+            } catch (e: Exception) {
+                throw IOException(
+                    "Luna $key Dies $dies threw ${e.javaClass.simpleName}\n${e.stackTraceToString()}"
+                )
+            }
             return vita
         }
 
@@ -155,8 +160,14 @@ class Luna(
     var default: Float? = null,
     var verbum: String? = null
 ) {
-    val diebus: Array<Float?> = Array(cal.getMaximum(Calendar.DAY_OF_MONTH)) { null }
-    val verba: Array<String?> = Array(cal.getMaximum(Calendar.DAY_OF_MONTH)) { null }
+    val diebus: Array<Float?>
+    val verba: Array<String?>
+
+    init {
+        val maxDies = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        diebus = Array(maxDies) { null }
+        verba = Array(maxDies) { null }
+    }
 
     operator fun get(index: Int): Float? = diebus[index]
     operator fun set(index: Int, value: Float?) {
