@@ -61,6 +61,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.87" />
             <!-- Android appears to lack the ability to underline the misspelled words!! -->
+
+            <TextView
+                android:id="@+id/sexbook"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:lineSpacingExtra="3sp"
+                android:textSize="13.5sp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/verbum"
+                app:layout_constraintWidth_percent="0.8" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </ScrollView>

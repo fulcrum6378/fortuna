@@ -5,9 +5,11 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
+import android.net.Uri
 import android.os.*
 import android.util.TypedValue
 import android.view.ContextThemeWrapper
@@ -138,6 +140,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.verbum.setColorFilter(color(android.R.attr.textColor))
 
         // Miscellaneous
+        if (try {
+                packageManager.getPackageInfo(SEXBOOK, 0)
+                true
+            } catch (e: PackageManager.NameNotFoundException) {
+                false
+            }
+        ) Sexbook().start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Reminder.CHANNEL)
             createNotificationChannel(
@@ -374,6 +383,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val EXTRA_DIES = "dies"
         const val SP_NUMERAL_TYPE = "numeral_type"
         const val arNumType = "0"
+        const val SEXBOOK = "ir.mahdiparastesh.sexbook"
         val calType = when (BuildConfig.FLAVOR) {
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
             /*"persian"*/ else -> PersianCalendar::class.java
@@ -397,8 +407,42 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
             PorterDuffColorFilter(color, mode)
 
-        fun View.vis(bb: Boolean) {
+        fun View.vis(bb: Boolean = true) {
             visibility = if (bb) View.VISIBLE else View.GONE
+        }
+    }
+
+    inner class Sexbook : Thread() {
+        override fun run() {
+            val places = hashMapOf<Long, String>()
+            contentResolver.query(
+                Uri.parse("content://$SEXBOOK/place"),
+                null, null, null, null
+            )?.use { cur ->
+                while (cur.moveToNext())
+                    places[cur.getLong(0)] = cur.getString(1)
+            }
+            val cur = contentResolver.query(
+                Uri.parse("content://$SEXBOOK/report"),
+                null, null, null, null
+            ) ?: return
+            val sexbook = arrayListOf<Sex>()
+            while (cur.moveToNext()) {
+                val cal = calType.newInstance()
+                cal.timeInMillis = cur.getLong(1)
+                sexbook.add(
+                    Sex(
+                        cal[Calendar.YEAR].toShort(), (cal[Calendar.MONTH] + 1).toShort(),
+                        cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR].toByte(),
+                        cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
+                        cur.getString(2), cur.getShort(3).toByte(),
+                        cur.getString(4), cur.getInt(5) == 1,
+                        places[cur.getLong(6)]
+                    )
+                )
+            }
+            cur.close()
+            m.sexbook = sexbook.toList()
         }
     }
 
@@ -406,6 +450,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var vita: Vita? = null
         var luna: String? = null
         lateinit var calendar: Calendar
+        var sexbook: List<Sex>? = null
         var changingVar: Int? = null
         var changingVarScore: Int? = null
         var changingVarVerbum: String? = null
@@ -415,4 +460,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
+
+    data class Sex(
+        val year: Short, val month: Short, val day: Short, // never compare bytes!
+        val hour: Byte, val minute: Byte, val second: Byte,
+        val key: String, val type: Byte, val desc: String, val accurate: Boolean, val place: String?
+    )
 }

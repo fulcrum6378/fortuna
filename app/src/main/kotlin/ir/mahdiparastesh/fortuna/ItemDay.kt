@@ -40,6 +40,14 @@ class ItemDay(private val c: Main) : ListAdapter {
     val luna = c.m.thisLuna()
     private val todayCalendar = calType.newInstance()
     private val todayLuna = todayCalendar.toKey()
+    private val sexbook: List<Main.Sex>? by lazy {
+        c.m.sexbook?.let {
+            val spl = c.m.luna!!.split(".")
+            val yr = spl[0].toShort()
+            val mo = spl[1].toShort()
+            it.filter { x -> x.year == yr && x.month == mo }
+        }
+    }
 
     override fun registerDataSetObserver(observer: DataSetObserver) {}
     override fun unregisterDataSetObserver(observer: DataSetObserver) {}
@@ -97,7 +105,9 @@ class ItemDay(private val c: Main) : ListAdapter {
                     }
                 }
             )
-            root.setOnClickListener { luna.changeVar(c, i) }
+            root.setOnClickListener {
+                luna.changeVar(c, i, sexbook?.filter { it.day == (i + 1).toShort() })
+            }
             root.setOnLongClickListener { showDate(c, i); true }
             if (c.m.luna == todayLuna && todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
@@ -117,7 +127,7 @@ class ItemDay(private val c: Main) : ListAdapter {
 
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
-        fun Luna.changeVar(c: Main, i: Int?) {
+        fun Luna.changeVar(c: Main, i: Int?, sex: List<Main.Sex>? = null) {
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
             var dialogue: AlertDialog? = null
@@ -147,6 +157,30 @@ class ItemDay(private val c: Main) : ListAdapter {
                     c.m.changingVarVerbum = it.toString()
                     dialogue?.setCancelable(false)
                 }
+            }
+            if (i != null && sex?.isNotEmpty() == true) {
+                val sb = StringBuilder()
+                for (x in sex) {
+                    sb.append(
+                        when (x.type) {
+                            0.toByte() -> "Had a wet dream"
+                            1.toByte() -> "Masturbated"
+                            2.toByte() -> "Had oral sex"
+                            3.toByte() -> "Had anal sex"
+                            4.toByte() -> "Had vaginal sex"
+                            else -> continue
+                        }
+                    )
+                    if (x.key.isNotBlank()) sb.append(" with ${x.key}")
+                    if (x.accurate) sb.append(" at ${z(x.hour)}:${z(x.minute)}:${z(x.second)}")
+                    else sb.append(" at ~${z(x.hour)}:${z(x.minute)}")
+                    if (x.place?.isNotBlank() == true) sb.append(" in ${x.place}")
+                    if (x.desc.isBlank()) sb.append(".\n")
+                    else sb.append(": ${x.desc}\n")
+                }
+                sb.deleteCharAt(sb.length - 1)
+                bv.sexbook.text = sb.toString()
+                bv.sexbook.vis()
             }
             dialogue = MaterialAlertDialogBuilder(c).apply {
                 setTitle(
