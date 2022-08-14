@@ -135,7 +135,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.next.setOnClickListener { rollCalendar(true) }
         b.prev.setOnClickListener { rollCalendar(false) }
         b.defaultVar.setOnClickListener {
-            m.thisLuna().changeVar(this@Main, null)
+            m.thisLuna().changeVar(this@Main, -1)
         }
         b.verbum.setColorFilter(color(android.R.attr.textColor))
 
@@ -424,7 +424,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             val cur = contentResolver.query(
                 Uri.parse("content://$SEXBOOK/report"),
-                null, null, null, null
+                null, null, null, "time ASC" // DESC
             ) ?: return
             val sexbook = arrayListOf<Sex>()
             while (cur.moveToNext()) {
@@ -432,8 +432,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 cal.timeInMillis = cur.getLong(1)
                 sexbook.add(
                     Sex(
+                        cur.getLong(0),
                         cal[Calendar.YEAR].toShort(), (cal[Calendar.MONTH] + 1).toShort(),
-                        cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR].toByte(),
+                        cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR_OF_DAY].toByte(),
                         cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
                         cur.getString(2), cur.getShort(3).toByte(),
                         cur.getString(4), cur.getInt(5) == 1,
@@ -445,6 +446,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.sexbook = sexbook.toList()
         }
     }
+
+    data class Sex(
+        val id: Long, val year: Short, val month: Short, val day: Short, // never compare bytes!
+        val hour: Byte, val minute: Byte, val second: Byte,
+        val key: String, val type: Byte, val desc: String, val accurate: Boolean, val place: String?
+    )
 
     class Model : ViewModel() {
         var vita: Vita? = null
@@ -460,10 +467,4 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
-
-    data class Sex(
-        val year: Short, val month: Short, val day: Short, // never compare bytes!
-        val hour: Byte, val minute: Byte, val second: Byte,
-        val key: String, val type: Byte, val desc: String, val accurate: Boolean, val place: String?
-    )
 }

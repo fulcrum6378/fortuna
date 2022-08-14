@@ -1,6 +1,8 @@
 package ir.mahdiparastesh.fortuna
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
 import android.database.DataSetObserver
 import android.graphics.Color
@@ -19,6 +21,7 @@ import androidx.core.graphics.red
 import androidx.core.view.get
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
 import ir.mahdiparastesh.fortuna.Main.Companion.vis
@@ -127,7 +130,8 @@ class ItemDay(private val c: Main) : ListAdapter {
 
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
-        fun Luna.changeVar(c: Main, i: Int?, sex: List<Main.Sex>? = null) {
+        fun Luna.changeVar(c: Main, i: Int, sex: List<Main.Sex>? = null) {
+            if (c.m.changingVar != null) return
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
             var dialogue: AlertDialog? = null
@@ -135,8 +139,9 @@ class ItemDay(private val c: Main) : ListAdapter {
             bv.picker.apply {
                 maxValue = 12
                 minValue = 0
-                value = c.m.changingVarScore ?: i?.let { this@changeVar[it]?.toVariabilis() }
-                        ?: default?.toVariabilis() ?: 6
+                value = c.m.changingVarScore
+                    ?: (if (i != -1) this@changeVar[i]?.toVariabilis() else null)
+                            ?: default?.toVariabilis() ?: 6
                 wrapSelectorWheel = false
                 setFormatter { it.toScore().showScore() }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -151,14 +156,14 @@ class ItemDay(private val c: Main) : ListAdapter {
             }
             bv.verbum.apply {
                 setText(
-                    c.m.changingVarVerbum ?: (if (i != null) this@changeVar.verba[i] else verbum)
+                    c.m.changingVarVerbum ?: (if (i != -1) this@changeVar.verba[i] else verbum)
                 )
                 addTextChangedListener {
                     c.m.changingVarVerbum = it.toString()
                     dialogue?.setCancelable(false)
                 }
             }
-            if (i != null && sex?.isNotEmpty() == true) {
+            if (i != -1 && sex?.isNotEmpty() == true) {
                 val sb = StringBuilder()
                 for (x in sex) {
                     sb.append(
@@ -181,12 +186,25 @@ class ItemDay(private val c: Main) : ListAdapter {
                 sb.deleteCharAt(sb.length - 1)
                 bv.sexbook.text = sb.toString()
                 bv.sexbook.vis()
+                bv.sexbook.setOnLongClickListener {
+                    try {
+                        c.startActivity(
+                            Intent("$SEXBOOK.ACTION_VIEW")
+                                .setComponent(ComponentName(SEXBOOK, "$SEXBOOK.Main"))
+                                .setData(android.net.Uri.parse(sex.first().id.toString()))
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                        true
+                    } catch (e: ActivityNotFoundException) {
+                        false
+                    }
+                }
             }
             dialogue = MaterialAlertDialogBuilder(c).apply {
                 setTitle(
                     c.getString(
                         R.string.variabilis,
-                        if (i != null) "${c.m.luna!!}.${z(i + 1)}"
+                        if (i != -1) "${c.m.luna!!}.${z(i + 1)}"
                         else c.getString(R.string.defValue)
                     )
                 )
@@ -212,6 +230,7 @@ class ItemDay(private val c: Main) : ListAdapter {
         }
 
         fun showDate(c: Main, i: Int) {
+            if (c.m.showingDate != null) return
             c.m.showingDate = i
             val cal = calType.newInstance().apply {
                 timeInMillis = c.m.calendar.timeInMillis
