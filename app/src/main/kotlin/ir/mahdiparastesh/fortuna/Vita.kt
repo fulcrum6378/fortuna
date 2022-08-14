@@ -132,8 +132,8 @@ class Vita : HashMap<String, Luna>() {
 
         fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        fun Luna.saveDies(c: Main, i: Int?, score: Float?, verbum: String?) {
-            if (i != null) {
+        fun Luna.saveDies(c: Main, i: Int, score: Float?, verbum: String?) {
+            if (i != -1) {
                 diebus[i] = score
                 verba[i] = verbum
             } else {
