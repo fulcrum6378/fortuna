@@ -31,7 +31,21 @@
     <string name="defValue">DEFAULT</string>
     <string name="navSend">Send data to</string>
     <string name="navHelp">Help</string>
-    <string name="help">This app is designed based on the \"Hedonist\" philosophy! It\'s used to calculate the amount of pleasure and pain one senses in their life.\n\nYou can enter the quality of your life in a scale between -3 to +3 for each day.\n\nAlternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.\n\nThen you can see how much pleasure and pain you\'ve sensed overall in your life.\n\nHold a day button a bit longer to view that day in the calendar of your device.</string>
+    <string name="help">
+        This app is designed based on the \"Hedonist\" philosophy!
+        It\'s used to calculate the amount of pleasure and pain one senses in their life.\n
+        \n
+        You can enter the quality of your life in a scale between -3 to +3 for each day.\n
+        \n
+        Alternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.\n
+        \n
+        Then you can see how much pleasure and pain you\'ve sensed overall in your life or in a particular month.\n
+        \n
+        >> How to work with it:\n
+        * Hold your finger on a day to view that day in multiple calendar systems and inside the calendar application of your device.\n
+        * Press the left and right arrows to navigate in month and press longer to jump to 6 months earlier or later.\n
+        * Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.
+    </string>
     <string name="ntfReminderTitle">Daily Reminder</string>
     <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>
     <string name="ntfReminder">How was your day?</string>

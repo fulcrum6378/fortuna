@@ -132,9 +132,15 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.calendar = m.luna!!.toCalendar(calType)
             updateGrid()
         }
+        b.annusUp.setOnClickListener { rollAnnus(1) }
+        b.annusDown.setOnClickListener { rollAnnus(-1) }
+        b.annusUp.setOnLongClickListener { rollAnnus(5); true }
+        b.annusDown.setOnLongClickListener { rollAnnus(-5); true }
         b.next.setOnClickListener { rollCalendar(true) }
         b.prev.setOnClickListener { rollCalendar(false) }
-        b.defaultVar.setOnClickListener {
+        b.next.setOnLongClickListener { rollCalendar(true, 6); true }
+        b.prev.setOnLongClickListener { rollCalendar(false, 6); true }
+        b.defVar.setOnClickListener {
             m.thisLuna().changeVar(this@Main, -1)
         }
         b.verbum.setColorFilter(color(android.R.attr.textColor))
@@ -299,7 +305,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     fun updateGrid() {
         b.grid.adapter = ItemDay(this).also {
-            b.defaultVar.text = it.luna.default.showScore()
+            b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
             b.verbum.vis(it.luna.verbum?.isNotBlank() == true)
         }
@@ -314,16 +320,23 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private var rollingAnnus = false
     private var rollingLuna = true // in order to trick onItemSelected
-    private fun rollCalendar(up: Boolean) {
-        m.calendar.roll(Calendar.MONTH, up)
-        if ((up && m.calendar[Calendar.MONTH] == 0) ||
-            (!up && m.calendar[Calendar.MONTH] == m.calendar.getActualMaximum(Calendar.MONTH))
-        ) m.calendar.roll(Calendar.YEAR, up)
+    private fun rollCalendar(up: Boolean, repeat: Int = 1) {
+        repeat(repeat) {
+            m.calendar.roll(Calendar.MONTH, up)
+            if ((up && m.calendar[Calendar.MONTH] == 0) ||
+                (!up && m.calendar[Calendar.MONTH] == m.calendar.getActualMaximum(Calendar.MONTH))
+            ) m.calendar.roll(Calendar.YEAR, up)
+        }
         m.luna = m.calendar.toKey()
         rollingAnnus = true
         rollingLuna = true
         updatePanel()
         updateGrid()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun rollAnnus(to: Int) {
+        b.annus.setText((b.annus.text.toString().toInt() + to).toString())
     }
 
     private fun stat() {
@@ -332,7 +345,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val scores = arrayListOf<Float>()
             m.vita?.forEach { key, luna ->
                 for (v in 0 until key.toCalendar(calType).lunaMaxima())
-                    (luna[v] ?: luna.default)?.let { scores.add(it) }
+                    (luna[v] ?: luna.default)?.also { scores.add(it) }
             }
             val sum = scores.sum()
             val text = getString(
