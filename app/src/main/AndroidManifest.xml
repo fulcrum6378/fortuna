@@ -7,8 +7,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="ir.mahdiparastesh.sexbook.READ_DATABASE" />
 
-    <permission android:name="ir.mahdiparastesh.sexbook.READ_DATABASE" />
-
     <queries>
         <package android:name="ir.mahdiparastesh.sexbook" />
     </queries>

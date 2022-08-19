@@ -4,6 +4,7 @@
     <dimen name="smallCornerSize">6dp</dimen>
     <dimen name="mediumCornerSize">10dp</dimen>
     <dimen name="largeCornerSize">14dp</dimen>
+    <dimen name="verbumIconSize">16dp</dimen>
 
     <!-- IDs -->
     <item name="numArabic" type="id" />
