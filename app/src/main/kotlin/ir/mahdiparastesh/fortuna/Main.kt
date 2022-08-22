@@ -143,7 +143,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.defVar.setOnClickListener {
             m.thisLuna().changeVar(this@Main, -1)
         }
-        b.verbum.setColorFilter(color(android.R.attr.textColor))
+        b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Miscellaneous
         if (try {
@@ -168,7 +168,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         m.showingDate?.also { ItemDay.showDate(this, it) }
     }
 
-    private var firstResume = true
+    var firstResume = true
     override fun onResume() {
         super.onResume()
         m.vita = Vita.load(c)
@@ -307,7 +307,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.grid.adapter = ItemDay(this).also {
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
-            b.verbum.vis(it.luna.verbum?.isNotBlank() == true)
+            b.verbumIcon.vis(it.luna.verbum?.isNotBlank() == true)
         }
     }
 
@@ -340,6 +340,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun stat() {
+        if (m.showingStat && !firstResume) return
         m.showingStat = true
         MaterialAlertDialogBuilder(this).apply {
             val scores = arrayListOf<Float>()
@@ -367,6 +368,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun help() {
+        if (m.showingHelp && !firstResume) return
         m.showingHelp = true
         MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navHelp)
@@ -378,10 +380,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
-        val vib = (if (Build.VERSION.SDK_INT >= 31)
+        (if (Build.VERSION.SDK_INT >= 31)
             (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         else getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
-        vib.vibrate(VibrationEffect.createOneShot(dur, 100))
+            .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
     override fun onBackPressed() {

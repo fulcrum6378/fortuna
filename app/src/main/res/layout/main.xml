@@ -41,10 +41,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingHorizontal="6dp"
-                    android:paddingVertical="6dp">
+                    android:paddingVertical="9dp">
 
                     <ImageView
-                        android:id="@+id/verbum"
+                        android:id="@+id/verbumIcon"
                         android:layout_width="@dimen/verbumIconSize"
                         android:layout_height="@dimen/verbumIconSize"
                         android:layout_marginTop="20dp"
@@ -66,6 +66,7 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/annus"
+                        app:layout_constraintHorizontal_chainStyle="spread"
                         app:layout_constraintStart_toEndOf="@id/prev"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,7 +80,6 @@
                         android:id="@+id/annus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="5dp"
                         android:background="@null"
                         android:focusedByDefault="false"
                         android:hint="@string/year"
@@ -103,12 +103,12 @@
 
                     <TextView
                         android:id="@+id/defVar"
-                        android:layout_width="wrap_content"
+                        android:layout_width="56sp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="7dp"
                         android:background="@drawable/button"
-                        android:paddingHorizontal="15dp"
-                        android:paddingVertical="10dp"
+                        android:gravity="center_horizontal"
+                        android:padding="10sp"
+                        android:textAlignment="center"
                         android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/next"

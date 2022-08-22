@@ -131,7 +131,7 @@ class ItemDay(private val c: Main) : ListAdapter {
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
         fun Luna.changeVar(c: Main, i: Int, sex: List<Main.Sex>? = null) {
-            if (c.m.changingVar != null) return
+            if (c.m.changingVar != null && !c.firstResume) return
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
             var dialogue: AlertDialog? = null
@@ -221,6 +221,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     c.shake()
                 }
                 setOnDismissListener {
+                    bv.verbum.clearFocus()
                     c.m.changingVar = null
                     c.m.changingVarScore = null
                     c.m.changingVarVerbum = null
@@ -230,7 +231,7 @@ class ItemDay(private val c: Main) : ListAdapter {
         }
 
         fun showDate(c: Main, i: Int) {
-            if (c.m.showingDate != null) return
+            if (c.m.showingDate != null && !c.firstResume) return
             c.m.showingDate = i
             val cal = calType.newInstance().apply {
                 timeInMillis = c.m.calendar.timeInMillis
