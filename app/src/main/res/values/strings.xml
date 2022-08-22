@@ -44,7 +44,9 @@
         >> How to work with it:\n
         * Hold your finger on a day to view that day in multiple calendar systems and inside the calendar application of your device.\n
         * Press the left and right arrows to navigate in month and press longer to jump to 6 months earlier or later.\n
-        * Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.
+        * Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.\n
+        \n
+        Note: this app does not believe in weeks!!
     </string>
     <string name="ntfReminderTitle">Daily Reminder</string>
     <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>

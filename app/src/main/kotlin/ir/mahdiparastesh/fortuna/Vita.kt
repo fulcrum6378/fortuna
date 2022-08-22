@@ -122,7 +122,7 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
-        fun Float?.showScore(): String = if (this != 0f) this?.toString() ?: "_" else "0"
+        fun Float?.showScore(): String = if (this != 0f) (this?.toString() ?: "_") else "0"
 
         fun z(n: Any?, ideal: Int = 2): String {
             var s = n.toString()
