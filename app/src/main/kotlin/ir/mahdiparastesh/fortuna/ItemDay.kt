@@ -24,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
+import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
 import ir.mahdiparastesh.fortuna.Main.Companion.vis
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
@@ -33,6 +34,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.ItemDayBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import java.util.*
+import kotlin.math.absoluteValue
 
 class ItemDay(private val c: Main) : ListAdapter {
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -41,8 +43,6 @@ class ItemDay(private val c: Main) : ListAdapter {
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
     val luna = c.m.thisLuna()
-    private val todayCalendar = calType.newInstance()
-    private val todayLuna = todayCalendar.toKey()
     private val sexbook: List<Main.Sex>? by lazy {
         c.m.sexbook?.let {
             val spl = c.m.luna!!.split(".")
@@ -111,8 +111,8 @@ class ItemDay(private val c: Main) : ListAdapter {
             root.setOnClickListener {
                 luna.changeVar(c, i, sexbook?.filter { it.day == (i + 1).toShort() })
             }
-            root.setOnLongClickListener { showDate(c, i); true }
-            if (c.m.luna == todayLuna && todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
+            root.setOnLongClickListener { detailDate(c, i); true }
+            if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
 
@@ -230,12 +230,13 @@ class ItemDay(private val c: Main) : ListAdapter {
             }.show()
         }
 
-        fun showDate(c: Main, i: Int) {
+        fun detailDate(c: Main, i: Int) {
             if (c.m.showingDate != null && !c.firstResume) return
             c.m.showingDate = i
             val cal = calType.newInstance().apply {
                 timeInMillis = c.m.calendar.timeInMillis
-                this[Calendar.DAY_OF_MONTH] = i + 1
+                set(Calendar.DAY_OF_MONTH, i + 1)
+                resetHours()
             }
             MaterialAlertDialogBuilder(c).apply {
                 setTitle(
@@ -248,8 +249,17 @@ class ItemDay(private val c: Main) : ListAdapter {
                     d.timeInMillis = cal.timeInMillis
                     sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
                     sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
-                }
-                sb.deleteCharAt(sb.length - 1)
+                } // sb.deleteCharAt(sb.length - 1)
+                val dif = ((cal.timeInMillis - c.todayCalendar.timeInMillis) / 86400000L).toInt()
+                sb.append(" => ").append(
+                    when {
+                        dif == -1 -> "Yesterday"
+                        dif == 1 -> "Tomorrow"
+                        dif < 0 -> "${dif.absoluteValue} days ago"
+                        dif > 0 -> "$dif days later"
+                        else -> "Today"
+                    }
+                ).append(".")
                 setMessage(sb.toString())
                 setPositiveButton(R.string.ok, null)
                 setNeutralButton(R.string.viewInCalendar) { _, _ ->
