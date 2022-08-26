@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.os.Build
+import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
 class Reminder : BroadcastReceiver() {
@@ -20,9 +21,7 @@ class Reminder : BroadcastReceiver() {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
                 AlarmManager.RTC, Calendar.getInstance().apply {
                     timeInMillis += 86400000L
-                    set(Calendar.HOUR_OF_DAY, 0)
-                    set(Calendar.MINUTE, 0)
-                    set(Calendar.SECOND, 0)
+                    resetHours()
                 }.timeInMillis, AlarmManager.INTERVAL_DAY, broadcast(c)
             )
         }

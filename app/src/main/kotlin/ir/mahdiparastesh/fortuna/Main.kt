@@ -61,6 +61,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels() // belongs to ComponentActivity
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
+    val todayCalendar: Calendar = calType.newInstance().resetHours()
+    val todayLuna: String = todayCalendar.toKey()
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -165,7 +167,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         Reminder.alarm(c) // Reminder.test(c)
         if (m.showingStat) stat()
         if (m.showingHelp) help()
-        m.showingDate?.also { ItemDay.showDate(this, it) }
+        m.showingDate?.also { ItemDay.detailDate(this, it) }
     }
 
     var firstResume = true
@@ -419,6 +421,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         fun View.vis(bb: Boolean = true) {
             visibility = if (bb) View.VISIBLE else View.GONE
+        }
+
+        fun Calendar.resetHours(): Calendar {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+            return this
         }
     }
 
