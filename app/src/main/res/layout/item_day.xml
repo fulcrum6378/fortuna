@@ -8,13 +8,24 @@
     tools:ignore="ContentDescription,MissingConstraints">
 
     <ImageView
-        android:id="@+id/verbum"
+        android:id="@+id/verbumIcon"
         style="@style/parentConstraint"
         android:layout_width="@dimen/verbumIconSize"
         android:layout_height="@dimen/verbumIconSize"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintVertical_bias="0.1" />
+
+    <TextView
+        android:id="@+id/emoji"
+        style="@style/parentConstraint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/emojiOutputTextSize"
+        android:visibility="gone"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintVertical_bias="0.1"
+        tools:ignore="SpUsage" />
 
     <TextView
         android:id="@+id/dies"

@@ -5,14 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pickerCl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="MissingConstraints">
 
             <!-- Simulated version of CupertinoPicker in Flutter:
@@ -38,42 +39,55 @@
             <!-- android:selectionDividerHeight is the height of the divider. -->
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/emoji"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_marginBottom="10dp"
+            android:background="@null"
+            android:hint="@string/emojiHint"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="3"
+            android:maxLines="1"
+            android:padding="7sp"
+            android:textSize="19sp"
+            app:layout_constraintBottom_toTopOf="@id/verbum"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.075"
+            app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-                android:id="@+id/verbum"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
-                android:hint="@string/notesHint"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:lineSpacingExtra="4sp"
-                android:maxLines="10"
-                android:paddingHorizontal="16sp"
-                android:paddingVertical="12sp"
-                android:textSize="17sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.87" />
-            <!-- Android appears to lack the ability to underline the misspelled words!! -->
+        <EditText
+            android:id="@+id/verbum"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:hint="@string/notesHint"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:lineSpacingExtra="4sp"
+            android:maxLines="10"
+            android:paddingHorizontal="16sp"
+            android:paddingVertical="12sp"
+            android:textSize="17sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pickerCl"
+            app:layout_constraintWidth_percent="0.87" />
+        <!-- Android appears to lack the ability to underline the misspelled words!! -->
 
-            <TextView
-                android:id="@+id/sexbook"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:lineSpacingExtra="3sp"
-                android:textSize="13.5sp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verbum"
-                app:layout_constraintWidth_percent="0.8" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </LinearLayout>
+        <TextView
+            android:id="@+id/sexbook"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:lineSpacingExtra="3sp"
+            android:textSize="13.5sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/verbum"
+            app:layout_constraintWidth_percent="0.8" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

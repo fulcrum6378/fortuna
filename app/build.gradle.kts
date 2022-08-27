@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 33
     buildToolsVersion = "33.0.0"
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 33
         versionCode = 1
-        versionName = "5.4"
+        versionName = "5.6"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -44,5 +44,6 @@ android {
 dependencies {
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.activity:activity-ktx:1.5.1")
+    implementation("androidx.emoji2:emoji2:1.2.0")
 }
 // Trying to exclude the unnecessary modules from material seems to be impossible!

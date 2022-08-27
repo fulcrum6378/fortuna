@@ -3,7 +3,7 @@
     <item
         android:id="@+id/navToday"
         android:icon="@drawable/today"
-        android:title="@string/navToday" />
+        android:title="@string/today" />
     <item
         android:id="@+id/navStat"
         android:icon="@drawable/calculate"
