@@ -4,31 +4,41 @@
     <string name="export_file" translatable="false">fortuna.vita</string>
     <string name="shared_prefs" translatable="false">settings.xml</string>
 
-    <string name="variabilis">Variabilis: %s</string>
-    <string name="year">Year</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="clear">Clear</string>
-    <string name="notesHint" translatable="false">.....</string>
+    <!-- GLOBAL -->
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="copy">Copy</string>
+    <string name="done">Done!</string>
+    <string name="today">Today</string>
+
+    <!-- Main -->
+    <string name="year">Year</string>
+    <string name="variabilis">Variabilis: %s</string>
+    <string name="emojiHint">😃</string>
+    <string name="notesHint" translatable="false">.....</string>
+    <string name="defValue">DEFAULT</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="difAgo">%d days ago</string>
+    <string name="difLater">%d days later</string>
     <string name="viewInCalendar">Calendar</string>
+
+    <!-- Drawer -->
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
-    <string name="navToday">Today</string>
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.</string>
-    <string name="copy">Copy</string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
-    <string name="done">Done!</string>
     <string name="exportUndone">Failed!</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
-    <string name="defValue">DEFAULT</string>
     <string name="navSend">Send data to</string>
     <string name="navHelp">Help</string>
     <string name="help">
@@ -48,6 +58,8 @@
         \n
         Note: this app does not believe in weeks!!
     </string>
+
+    <!-- Reminder -->
     <string name="ntfReminderTitle">Daily Reminder</string>
     <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>
     <string name="ntfReminder">How was your day?</string>

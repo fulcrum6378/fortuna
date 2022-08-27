@@ -43,16 +43,34 @@
                     android:paddingHorizontal="6dp"
                     android:paddingVertical="9dp">
 
-                    <ImageView
-                        android:id="@+id/verbumIcon"
-                        android:layout_width="@dimen/verbumIconSize"
-                        android:layout_height="@dimen/verbumIconSize"
+                    <LinearLayout
+                        android:id="@+id/icons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:layout_marginEnd="30dp"
-                        android:src="@drawable/verbum"
-                        android:visibility="gone"
+                        android:layout_marginEnd="20dp"
+                        android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="UseCompoundDrawables">
+
+                        <TextView
+                            android:id="@+id/emoji"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            android:textSize="@dimen/emojiOutputTextSize"
+                            android:visibility="gone"
+                            tools:ignore="SpUsage" />
+
+                        <ImageView
+                            android:id="@+id/verbumIcon"
+                            android:layout_width="@dimen/verbumIconSize"
+                            android:layout_height="@dimen/verbumIconSize"
+                            android:layout_marginEnd="10dp"
+                            android:src="@drawable/verbum"
+                            android:visibility="gone" />
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/prev"

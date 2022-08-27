@@ -149,6 +149,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         // Miscellaneous
         if (try {
+                @Suppress("DEPRECATION")
                 packageManager.getPackageInfo(SEXBOOK, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
@@ -305,6 +306,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
             b.verbumIcon.vis(it.luna.verbum?.isNotBlank() == true)
+            b.emoji.text = it.luna.emoji
+            b.emoji.vis(it.luna.emoji?.isNotBlank() == true)
         }
     }
 
@@ -383,6 +386,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
+    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.root.isDrawerOpen(GravityCompat.START)) {
             b.root.closeDrawer(GravityCompat.START, true)
@@ -480,6 +484,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var sexbook: List<Sex>? = null
         var changingVar: Int? = null
         var changingVarScore: Int? = null
+        var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
         var showingStat = false
         var showingHelp = false

@@ -22,6 +22,10 @@ class Vita : HashMap<String, Luna>() {
             append("@$k")
             luna.default?.also { score ->
                 append("~$score")
+                if (luna.emoji?.isNotBlank() == true)
+                    append(";${luna.emoji!!}")
+                else if (luna.verbum?.isNotBlank() == true)
+                    append(";")
                 if (luna.verbum?.isNotBlank() == true)
                     append(";${luna.verbum!!.saveVitaText()}")
             }
@@ -36,6 +40,10 @@ class Vita : HashMap<String, Luna>() {
                     skipped = false
                 }
                 append(luna.diebus[d])
+                if (luna.emojis[d]?.isNotBlank() == true)
+                    append(";${luna.emojis[d]!!}")
+                else if (luna.verba[d]?.isNotBlank() == true)
+                    append(";")
                 if (luna.verba[d]?.isNotBlank() == true)
                     append(";${luna.verba[d]!!.saveVitaText()}")
                 append("\n")
@@ -72,25 +80,29 @@ class Vita : HashMap<String, Luna>() {
             for (ln in StringReader(text).readLines()) try {
                 if (key == null) {
                     if (!ln.startsWith('@')) continue
-                    val sn = ln.split(";", limit = 2)
+                    val sn = ln.split(";", limit = 3)
                     val s = sn[0].split("~")
                     key = s[0].substring(1)
                     val splitKey = key.split(".")
                     cal.set(Calendar.YEAR, splitKey[0].toInt())
                     cal.set(Calendar.MONTH, splitKey[1].toInt() - 1)
                     vita[key] = Luna(
-                        cal, s.getOrNull(1)?.toFloat(), sn.getOrNull(1)?.loadVitaText()
+                        cal,
+                        s.getOrNull(1)?.toFloat(),
+                        sn.getOrNull(1)?.ifBlank { null },
+                        sn.getOrNull(2)?.loadVitaText()
                     )
                     dies = 0
                 } else {
                     if (ln.isEmpty()) {
                         key = null
                         continue; }
-                    val sn = ln.split(";", limit = 2)
+                    val sn = ln.split(";", limit = 3)
                     val s = sn[0].split(":")
                     if (s.size == 2) dies = s[0].toInt() - 1
                     vita[key]!!.diebus[dies] = (s.getOrNull(1) ?: s[0]).toFloat()
-                    vita[key]!!.verba[dies] = sn.getOrNull(1)?.loadVitaText()
+                    vita[key]!!.emojis[dies] = sn.getOrNull(1)?.ifBlank { null }
+                    vita[key]!!.verba[dies] = sn.getOrNull(2)?.loadVitaText()
                     dies++
                 }
             } catch (e: Exception) {
@@ -132,13 +144,15 @@ class Vita : HashMap<String, Luna>() {
 
         fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        fun Luna.saveDies(c: Main, i: Int, score: Float?, verbum: String?) {
+        fun Luna.saveDies(c: Main, i: Int, score: Float?, emoji: String?, verbum: String?) {
             if (i != -1) {
                 diebus[i] = score
-                verba[i] = verbum
+                verba[i] = verbum?.ifBlank { null }
+                emojis[i] = emoji?.ifBlank { null }
             } else {
                 default = score
-                this.verbum = verbum
+                this.verbum = verbum?.ifBlank { null }
+                this.emoji = emoji?.ifBlank { null }
             }
             c.m.vita!![c.m.luna!!] = this
             c.m.vita!!.save(c.c)
@@ -158,15 +172,18 @@ class Vita : HashMap<String, Luna>() {
 class Luna(
     cal: Calendar = Main.calType.newInstance(),
     var default: Float? = null,
-    var verbum: String? = null
+    var emoji: String? = null,
+    var verbum: String? = null,
 ) {
     val diebus: Array<Float?>
+    val emojis: Array<String?>
     val verba: Array<String?>
 
     init {
         val maxDies = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
         diebus = Array(maxDies) { null }
         verba = Array(maxDies) { null }
+        emojis = Array(maxDies) { null }
     }
 
     operator fun get(index: Int): Float? = diebus[index]

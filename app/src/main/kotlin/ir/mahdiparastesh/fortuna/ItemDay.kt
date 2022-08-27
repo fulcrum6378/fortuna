@@ -10,6 +10,8 @@ import android.icu.text.DateFormatSymbols
 import android.icu.util.Calendar
 import android.os.Build
 import android.provider.CalendarContract
+import android.text.InputFilter
+import android.text.Spanned
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -20,6 +22,7 @@ import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.get
 import androidx.core.widget.addTextChangedListener
+import androidx.emoji2.text.EmojiCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
@@ -74,18 +77,22 @@ class ItemDay(private val c: Main) : ListAdapter {
             if (enlarge) dies.textSize =
                 (dies.textSize / c.resources.displayMetrics.density) * 1.75f
             variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
+
             (luna.verba[i]?.isNotBlank() == true).also { show ->
-                verbum.vis(show)
-                if (show) verbum.setImageResource(R.drawable.verbum)
-                else verbum.setImageDrawable(null)
+                verbumIcon.vis(show)
+                if (show) verbumIcon.setImageResource(R.drawable.verbum)
+                else verbumIcon.setImageDrawable(null)
             }
+            val emj = luna.emojis.getOrNull(i) ?: luna.emoji
+            emoji.text = emj
+            emoji.vis(emj != null)
 
             root.setBackgroundColor(
                 when {
                     score != null && score > 0f -> {
                         dies.setTextColor(cpo)
                         variabilis.setTextColor(cpo)
-                        verbum.setColorFilter(cpo)
+                        verbumIcon.setColorFilter(cpo)
                         Color.valueOf(
                             cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
                             score / Vita.MAX_RANGE
@@ -94,7 +101,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     score != null && score < 0f -> {
                         dies.setTextColor(cso)
                         variabilis.setTextColor(cso)
-                        verbum.setColorFilter(cso)
+                        verbumIcon.setColorFilter(cso)
                         Color.valueOf(
                             cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
                             -score / Vita.MAX_RANGE
@@ -103,7 +110,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     else -> {
                         dies.setTextColor(tc)
                         variabilis.setTextColor(tc)
-                        verbum.setColorFilter(tc)
+                        verbumIcon.setColorFilter(tc)
                         Color.TRANSPARENT
                     }
                 }
@@ -151,6 +158,29 @@ class ItemDay(private val c: Main) : ListAdapter {
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
                 setOnValueChangedListener { _, _, newVal ->
                     c.m.changingVarScore = newVal
+                    dialogue?.setCancelable(false)
+                }
+            }
+            bv.emoji.apply {
+                setText(
+                    c.m.changingVarEmoji
+                        ?: (if (i != -1) this@changeVar.emojis[i] else emoji)?.toString()
+                )
+                if (text.isEmpty()) emoji?.also { hint = it }
+                filters = arrayOf(object : InputFilter {
+                    @Suppress("DEPRECATION")
+                    override fun filter(
+                        source: CharSequence?, start: Int, end: Int,
+                        dest: Spanned?, dstart: Int, dend: Int
+                    ): CharSequence? = when {
+                        this@apply.text.isNotEmpty() -> ""
+                        source == null -> null
+                        EmojiCompat.get().hasEmojiGlyph(source) -> null
+                        else -> ""
+                    }
+                })
+                addTextChangedListener {
+                    c.m.changingVarEmoji = it.toString()
                     dialogue?.setCancelable(false)
                 }
             }
@@ -212,18 +242,22 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setNegativeButton(R.string.cancel, null)
                 setPositiveButton(R.string.save) { _, _ ->
                     if (c.m.vita == null) return@setPositiveButton
-                    saveDies(c, i, bv.picker.value.toScore(), bv.verbum.text.toString())
+                    saveDies(
+                        c, i, bv.picker.value.toScore(),
+                        bv.emoji.text.toString(), bv.verbum.text.toString()
+                    )
                     c.shake()
                 }
                 setNeutralButton(R.string.clear) { _, _ ->
                     if (c.m.vita == null) return@setNeutralButton
-                    saveDies(c, i, null, null)
+                    saveDies(c, i, null, null, null)
                     c.shake()
                 }
                 setOnDismissListener {
                     bv.verbum.clearFocus()
                     c.m.changingVar = null
                     c.m.changingVarScore = null
+                    c.m.changingVarEmoji = null
                     c.m.changingVarVerbum = null
                 }
                 setCancelable(true)
@@ -253,13 +287,13 @@ class ItemDay(private val c: Main) : ListAdapter {
                 val dif = ((cal.timeInMillis - c.todayCalendar.timeInMillis) / 86400000L).toInt()
                 sb.append(" => ").append(
                     when {
-                        dif == -1 -> "Yesterday"
-                        dif == 1 -> "Tomorrow"
-                        dif < 0 -> "${dif.absoluteValue} days ago"
-                        dif > 0 -> "$dif days later"
-                        else -> "Today"
+                        dif == -1 -> c.getString(R.string.yesterday)
+                        dif == 1 -> c.getString(R.string.tomorrow)
+                        dif < 0 -> c.getString(R.string.difAgo, dif.absoluteValue)
+                        dif > 0 -> c.getString(R.string.difLater, dif)
+                        else -> c.getString(R.string.today)
                     }
-                ).append(".")
+                )
                 setMessage(sb.toString())
                 setPositiveButton(R.string.ok, null)
                 setNeutralButton(R.string.viewInCalendar) { _, _ ->
