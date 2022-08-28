@@ -83,7 +83,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 if (show) verbumIcon.setImageResource(R.drawable.verbum)
                 else verbumIcon.setImageDrawable(null)
             }
-            val emj = luna.emojis.getOrNull(i) ?: luna.emoji
+            val emj = luna.emojis.getOrNull(i)// ?: luna.emoji
             emoji.text = emj
             emoji.vis(emj != null)
 
@@ -168,16 +168,15 @@ class ItemDay(private val c: Main) : ListAdapter {
                 )
                 if (text.isEmpty()) emoji?.also { hint = it }
                 filters = arrayOf(object : InputFilter {
-                    @Suppress("DEPRECATION")
                     override fun filter(
                         source: CharSequence?, start: Int, end: Int,
                         dest: Spanned?, dstart: Int, dend: Int
                     ): CharSequence? = when {
                         this@apply.text.isNotEmpty() -> ""
                         source == null -> null
-                        EmojiCompat.get().hasEmojiGlyph(source) -> null
+                        EmojiCompat.get().getEmojiMatch(source, 16) in 1..2 -> null
                         else -> ""
-                    }
+                    } // do NOT invoke "setText()" in a filter!
                 })
                 addTextChangedListener {
                     c.m.changingVarEmoji = it.toString()

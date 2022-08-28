@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="12dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statGridMaxHeight"
+        tools:ignore="UselessParent">
+        <!-- TODO: Max Height -->
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="8dp"
+            android:paddingStart="3dp">
+
+            <LinearLayout
+                android:id="@+id/years"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/table"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/years"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</RelativeLayout>

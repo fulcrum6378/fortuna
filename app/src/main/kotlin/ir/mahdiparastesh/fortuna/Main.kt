@@ -6,19 +6,16 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
 import android.net.Uri
 import android.os.*
+import android.util.SparseArray
 import android.util.TypedValue
-import android.view.ContextThemeWrapper
-import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,8 +24,14 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.ActionMenuView
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
+import androidx.core.util.containsKey
+import androidx.core.util.forEach
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
@@ -40,6 +43,7 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
+import ir.mahdiparastesh.fortuna.ItemDay.Companion.toValue
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -47,6 +51,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -344,18 +349,70 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         m.showingStat = true
         MaterialAlertDialogBuilder(this).apply {
             val scores = arrayListOf<Float>()
+            val keyMeanMap = hashMapOf<String, Float>()
             m.vita?.forEach { key, luna ->
+                val lunaScores = arrayListOf<Float>()
                 for (v in 0 until key.toCalendar(calType).lunaMaxima())
-                    (luna[v] ?: luna.default)?.also { scores.add(it) }
-            }
+                    (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
+                scores.addAll(lunaScores)
+                keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()
+            } // don't use Luna.mean() for efficiency.
             val sum = scores.sum()
             val text = getString(
                 R.string.statText,
                 (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).toString(),
                 sum.toString(), scores.size.toString()
             )
+
+            val maxMonths = calType.newInstance().getMaximum(Calendar.MONTH) + 1
+            val meanMap = SparseArray<Array<Float?>>()
+            keyMeanMap.forEach { (key, mean) ->
+                val spl = key.split(".")
+                val y = spl[0].toInt()
+                val m = spl[1].toInt() - 1
+                if (!meanMap.containsKey(y)) meanMap[y] = Array(maxMonths) { null }
+                meanMap[y][m] = mean
+            }
+            val bw = WholeBinding.inflate(layoutInflater)
+            val cp = color(com.google.android.material.R.attr.colorPrimary)
+            val cs = color(com.google.android.material.R.attr.colorSecondary)
+            val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
+            val zeroCellColour = ContextCompat.getColor(c, R.color.statCell)
+            meanMap.forEach { year, array ->
+                bw.years.addView(TextView(this@Main).apply {
+                    setText(year.toString())
+                    textSize = cellH.toFloat() * 0.28f
+                    gravity = Gravity.CENTER_VERTICAL
+                }, LinearLayout.LayoutParams(-2, cellH))
+
+                val tr = LinearLayout(this@Main)
+                tr.orientation = LinearLayout.HORIZONTAL
+                tr.weightSum = maxMonths.toFloat()
+                array.forEach { score ->
+                    tr.addView(View(this@Main).apply {
+                        setBackgroundColor(
+                            when {
+                                score != null && score > 0f -> Color.valueOf(
+                                    cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
+                                    score / Vita.MAX_RANGE
+                                ).toArgb()
+                                score != null && score < 0f -> Color.valueOf(
+                                    cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
+                                    -score / Vita.MAX_RANGE
+                                ).toArgb()
+                                score != null -> zeroCellColour
+                                else -> Color.TRANSPARENT
+                            }
+                        )
+                    }, LinearLayout.LayoutParams(0, cellH, 1f)
+                        .apply { setMargins(1, 1, 1, 1) })
+                }
+                bw.table.addView(tr, ViewGroup.LayoutParams(-1, cellH))
+            }
+
             setTitle(R.string.navStat)
             setMessage(text)
+            setView(bw.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.copy) { _, _ ->
                 (c.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?)?.setPrimaryClip(
