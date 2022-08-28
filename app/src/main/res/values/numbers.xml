@@ -5,7 +5,9 @@
     <dimen name="mediumCornerSize">10dp</dimen>
     <dimen name="largeCornerSize">14dp</dimen>
     <dimen name="verbumIconSize">16dp</dimen>
-    <dimen name="emojiOutputTextSize">15.5dp</dimen>
+    <dimen name="emojiOutputTextSize">15dp</dimen>
+    <dimen name="statGridMaxHeight">400dp</dimen>
+    <dimen name="statCellHeight">20dp</dimen>
 
     <!-- IDs -->
     <item name="numArabic" type="id" />

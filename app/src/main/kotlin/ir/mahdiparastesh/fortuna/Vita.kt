@@ -21,7 +21,7 @@ class Vita : HashMap<String, Luna>() {
         this@Vita.toSortedMap().forEach { (k, luna) ->
             append("@$k")
             luna.default?.also { score ->
-                append("~$score")
+                append("~${score.writeScore()}")
                 if (luna.emoji?.isNotBlank() == true)
                     append(";${luna.emoji!!}")
                 else if (luna.verbum?.isNotBlank() == true)
@@ -39,7 +39,7 @@ class Vita : HashMap<String, Luna>() {
                     append("${d + 1}:")
                     skipped = false
                 }
-                append(luna.diebus[d])
+                append(luna.diebus[d]!!.writeScore())
                 if (luna.emojis[d]?.isNotBlank() == true)
                     append(";${luna.emojis[d]!!}")
                 else if (luna.verba[d]?.isNotBlank() == true)
@@ -113,17 +113,23 @@ class Vita : HashMap<String, Luna>() {
             return vita
         }
 
-        private fun String.loadVitaText() = replace("\\n", "\n")
-        fun String.saveVitaText() = replace("\n", "\\n")
-
         fun save(c: Context, vita: Vita) {
             FileOutputStream(Stored(c)).use { fos ->
                 fos.write(vita.dump().encodeToByteArray())
             }
         }
 
-        fun Calendar.toKey(): String =
-            "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
+        fun z(n: Any?, ideal: Int = 2): String {
+            var s = n.toString()
+            while (s.length < ideal) s = "0$s"
+            return s
+        }
+
+
+        // String Extensions
+        private fun String.loadVitaText() = replace("\\n", "\n")
+
+        fun String.saveVitaText() = replace("\n", "\\n")
 
         fun <CAL> String.toCalendar(klass: Class<CAL>): CAL where CAL : Calendar {
             val spl = split(".")
@@ -134,16 +140,21 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
-        fun Float?.showScore(): String = if (this != 0f) (this?.toString() ?: "_") else "0"
 
-        fun z(n: Any?, ideal: Int = 2): String {
-            var s = n.toString()
-            while (s.length < ideal) s = "0$s"
-            return s
-        }
+        // Calendar Extensions
+        fun Calendar.toKey(): String =
+            "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
 
         fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
+
+        // Float Extensions
+        fun Float?.showScore(): String = if (this != 0f) (this?.toString() ?: "_") else "0"
+
+        fun Float.writeScore(): String = if (this % 1f == 0f) toInt().toString() else toString()
+
+
+        // Luna Extensions
         fun Luna.saveDies(c: Main, i: Int, score: Float?, emoji: String?, verbum: String?) {
             if (i != -1) {
                 diebus[i] = score
