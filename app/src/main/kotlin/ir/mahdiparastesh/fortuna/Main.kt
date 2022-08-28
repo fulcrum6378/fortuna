@@ -381,7 +381,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             meanMap.forEach { year, array ->
                 bw.years.addView(TextView(this@Main).apply {
                     setText(year.toString())
-                    textSize = cellH.toFloat() * 0.28f
+                    textSize = cellH.toFloat() * 0.25f
                     gravity = Gravity.CENTER_VERTICAL
                 }, LinearLayout.LayoutParams(-2, cellH))
 

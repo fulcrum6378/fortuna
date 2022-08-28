@@ -131,6 +131,8 @@ class ItemDay(private val c: Main) : ListAdapter {
     override fun isEnabled(i: Int): Boolean = true
 
     companion object {
+        val additionalNonEmoji = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "#", "*")
+
         fun Int.toValue() = toFloat() / 256f
 
         private fun Int.toScore() = -(toFloat() - 6f) / 2f
@@ -174,7 +176,8 @@ class ItemDay(private val c: Main) : ListAdapter {
                     ): CharSequence? = when {
                         this@apply.text.isNotEmpty() -> ""
                         source == null -> null
-                        EmojiCompat.get().getEmojiMatch(source, 16) in 1..2 -> null
+                        EmojiCompat.get().getEmojiMatch(source, 16) in 1..2
+                                && !additionalNonEmoji.any { it in source } -> null
                         else -> ""
                     } // do NOT invoke "setText()" in a filter!
                 })
