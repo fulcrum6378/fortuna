@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="0dp"
+    android:maxHeight="@dimen/statGridMaxHeight"
+    android:minHeight="0dp"
     android:paddingTop="12dp">
+    <!-- A well-tested method instead of extending MaxHeightScrollView.
+         All attributes are necessary! -->
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statGridMaxHeight"
-        tools:ignore="UselessParent">
-        <!-- TODO: Max Height -->
+        android:layout_height="wrap_content"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_max="@dimen/statGridMaxHeight"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/body"
@@ -38,4 +43,4 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
