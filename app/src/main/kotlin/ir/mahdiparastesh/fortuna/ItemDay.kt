@@ -131,7 +131,19 @@ class ItemDay(private val c: Main) : ListAdapter {
     override fun isEnabled(i: Int): Boolean = true
 
     companion object {
-        val additionalNonEmoji = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "#", "*")
+        private val telEmojis = arrayOf(
+            Pair("1", "1️⃣"), Pair("2", "2️⃣"), Pair("3", "3️⃣"),
+            Pair("4", "4️⃣"), Pair("5", "5️⃣"), Pair("6", "6️⃣"),
+            Pair("7", "7️⃣"), Pair("8", "8️⃣"), Pair("9", "9️⃣"),
+            Pair("*", "*️⃣"), Pair("0", "0️⃣"), Pair("#", "#️⃣"),
+        )
+
+        fun hasNonEmojiNumber(source: CharSequence): Boolean {
+            for (te in telEmojis)
+                if (te.first in source && te.second !in source)
+                    return true
+            return false
+        }
 
         fun Int.toValue() = toFloat() / 256f
 
@@ -177,7 +189,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                         this@apply.text.isNotEmpty() -> ""
                         source == null -> null
                         EmojiCompat.get().getEmojiMatch(source, 16) in 1..2
-                                && !additionalNonEmoji.any { it in source } -> null
+                                && !hasNonEmojiNumber(source) -> null
                         else -> ""
                     } // do NOT invoke "setText()" in a filter!
                 })
