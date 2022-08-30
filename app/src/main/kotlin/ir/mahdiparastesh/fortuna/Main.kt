@@ -14,7 +14,10 @@ import android.net.Uri
 import android.os.*
 import android.util.SparseArray
 import android.util.TypedValue
-import android.view.*
+import android.view.ContextThemeWrapper
+import android.view.Gravity
+import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -23,6 +26,7 @@ import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -210,12 +214,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         when (item.itemId) {
             R.id.navToday -> {
                 m.calendar = calType.newInstance()
-                m.luna = m.calendar.toKey()
-                rollingAnnus = true
-                rollingLuna = true
-                updatePanel()
-                updateGrid()
-                b.root.closeDrawer(GravityCompat.START, true)
+                onCalendarChanged()
+                closeDrawer()
             }
             R.id.navStat -> stat()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -332,6 +332,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 (!up && m.calendar[Calendar.MONTH] == m.calendar.getActualMaximum(Calendar.MONTH))
             ) m.calendar.roll(Calendar.YEAR, up)
         }
+        onCalendarChanged()
+    }
+
+    private fun onCalendarChanged() {
         m.luna = m.calendar.toKey()
         rollingAnnus = true
         rollingLuna = true
@@ -347,7 +351,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun stat() {
         if (m.showingStat && !firstResume) return
         m.showingStat = true
-        MaterialAlertDialogBuilder(this).apply {
+        var dialogue: AlertDialog? = null
+        dialogue = MaterialAlertDialogBuilder(this).apply {
             val scores = arrayListOf<Float>()
             val keyMeanMap = hashMapOf<String, Float>()
             m.vita?.forEach { key, luna ->
@@ -378,6 +383,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val cs = color(com.google.android.material.R.attr.colorSecondary)
             val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
             val zeroCellColour = ContextCompat.getColor(c, R.color.statCell)
+            val monthNames = resources.getStringArray(R.array.luna)
             meanMap.forEach { year, array ->
                 bw.years.addView(TextView(this@Main).apply {
                     setText(year.toString())
@@ -388,7 +394,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 val tr = LinearLayout(this@Main)
                 tr.orientation = LinearLayout.HORIZONTAL
                 tr.weightSum = maxMonths.toFloat()
-                array.forEach { score ->
+                array.forEachIndexed { month, score ->
                     tr.addView(View(this@Main).apply {
                         setBackgroundColor(
                             when {
@@ -404,10 +410,24 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                 else -> Color.TRANSPARENT
                             }
                         )
+                        tooltipText = "${monthNames[month]} $year\n$score"
+                        setOnClickListener(object : DoubleClickListener() {
+                            override fun onDoubleClick() {
+                                m.calendar = calType.newInstance().apply {
+                                    set(Calendar.YEAR, year)
+                                    set(Calendar.MONTH, month)
+                                    set(Calendar.DAY_OF_MONTH, 1)
+                                    resetHours()
+                                }
+                                onCalendarChanged()
+                                dialogue?.cancel()
+                                closeDrawer()
+                            }
+                        })
                     }, LinearLayout.LayoutParams(0, cellH, 1f)
                         .apply { setMargins(1, 1, 1, 1) })
                 }
-                bw.table.addView(tr, ViewGroup.LayoutParams(-1, cellH))
+                bw.table.addView(tr, LinearLayout.LayoutParams(-1, cellH))
             }
 
             setTitle(R.string.navStat)
@@ -443,10 +463,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
+    private fun closeDrawer() {
+        b.root.closeDrawer(GravityCompat.START, true)
+    }
+
     @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.root.isDrawerOpen(GravityCompat.START)) {
-            b.root.closeDrawer(GravityCompat.START, true)
+            closeDrawer()
             return; }
         super.onBackPressed()
     }
@@ -491,6 +515,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             set(Calendar.MILLISECOND, 0)
             return this
         }
+    }
+
+    abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
+        private var times: Long = 0
+
+        override fun onClick(v: View) {
+            if ((SystemClock.elapsedRealtime() - times) < span) onDoubleClick()
+            times = SystemClock.elapsedRealtime()
+        }
+
+        abstract fun onDoubleClick()
     }
 
     inner class Sexbook : Thread() {
