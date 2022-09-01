@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 32
     buildToolsVersion = "33.0.0"
 
     defaultConfig {
@@ -12,7 +12,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "5.9"
+        versionName = "5.9.5"
     }
 
     setFlavorDimensions(listOf("calendar"))

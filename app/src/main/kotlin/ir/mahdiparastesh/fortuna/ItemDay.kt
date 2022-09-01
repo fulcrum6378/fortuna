@@ -12,6 +12,7 @@ import android.os.Build
 import android.provider.CalendarContract
 import android.text.InputFilter
 import android.text.Spanned
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -151,6 +152,7 @@ class ItemDay(private val c: Main) : ListAdapter {
 
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
+        @SuppressLint("ClickableViewAccessibility")
         fun Luna.changeVar(c: Main, i: Int, sex: List<Main.Sex>? = null) {
             if (c.m.changingVar != null && !c.firstResume) return
             c.m.changingVar = i
@@ -205,6 +207,15 @@ class ItemDay(private val c: Main) : ListAdapter {
                 addTextChangedListener {
                     c.m.changingVarVerbum = it.toString()
                     dialogue?.setCancelable(false)
+                }
+                setOnTouchListener { v, event -> // scroll inside ScrollView
+                    var ret = false
+                    v.parent.requestDisallowInterceptTouchEvent(true)
+                    if ((event.action and MotionEvent.ACTION_MASK) == MotionEvent.ACTION_SCROLL) {
+                        v.parent.requestDisallowInterceptTouchEvent(false)
+                        ret = true
+                    }
+                    ret
                 }
             }
             if (i != -1 && sex?.isNotEmpty() == true) {
