@@ -410,7 +410,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                 else -> Color.TRANSPARENT
                             }
                         )
-                        tooltipText = "${monthNames[month]} $year\n$score"
+                        tooltipText = "${monthNames[month]} $year${score?.let { "\n$it" } ?: ""}"
                         setOnClickListener(object : DoubleClickListener() {
                             override fun onDoubleClick() {
                                 m.calendar = calType.newInstance().apply {
@@ -585,3 +585,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 }
+
+/* TODO:
+* Extension:
+* Select multiple day cells in order to score them once
+*/
