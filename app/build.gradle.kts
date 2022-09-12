@@ -42,8 +42,8 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.activity:activity-ktx:1.5.1")
     implementation("androidx.emoji2:emoji2:1.2.0")
+    implementation("com.google.android.material:material:1.6.1")
 }
 // Trying to exclude the unnecessary modules from material seems to be impossible!

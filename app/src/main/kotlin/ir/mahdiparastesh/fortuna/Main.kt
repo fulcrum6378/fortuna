@@ -588,5 +588,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
 * Extension:
+* Lock variabilis in fully scored months, e.g. Mehr 1400
+* Restrict scoring the future
 * Select multiple day cells in order to score them once
 */
