@@ -23,8 +23,8 @@
     <string name="defValue">DEFAULT</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="difAgo">%d days ago</string>
-    <string name="difLater">%d days later</string>
+    <string name="difAgo">%d day(s) ago</string>
+    <string name="difLater">%d day(s) later</string>
     <string name="viewInCalendar">Calendar</string>
 
     <!-- Drawer -->

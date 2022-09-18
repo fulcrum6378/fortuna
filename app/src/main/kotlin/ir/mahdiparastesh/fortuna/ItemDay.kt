@@ -153,6 +153,7 @@ class ItemDay(private val c: Main) : ListAdapter {
         private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
         @SuppressLint("ClickableViewAccessibility")
+        @Suppress("KotlinConstantConditions")
         fun Luna.changeVar(c: Main, i: Int, sex: List<Main.Sex>? = null) {
             if (c.m.changingVar != null && !c.firstResume) return
             c.m.changingVar = i

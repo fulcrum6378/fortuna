@@ -169,7 +169,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             cancel(Reminder.CHANNEL)
             createNotificationChannel(
                 NotificationChannel(
-                    Reminder.REMIND, c.getString(R.string.ntfReminderDesc),
+                    Reminder.REMIND, c.getString(R.string.ntfReminderTitle),
                     NotificationManager.IMPORTANCE_LOW
                 ).apply { description = getString(R.string.ntfReminderDesc) }
             )

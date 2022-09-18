@@ -2,7 +2,6 @@
 <resources>
 
     <color name="textColor">#777</color>
-    <color name="textColorThin">#555</color>
     <color name="weakWhite">#44FFFFFF</color>
     <color name="diesBorder">#F0F0F0</color>
     <color name="diesBorderToday">#44000000</color>
