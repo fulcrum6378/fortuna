@@ -20,7 +20,7 @@ class Reminder : BroadcastReceiver() {
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
                 AlarmManager.RTC, Calendar.getInstance().apply {
-                    timeInMillis += 86400000L
+                    timeInMillis += Main.A_DAY
                     resetHours()
                 }.timeInMillis, AlarmManager.INTERVAL_DAY, broadcast(c)
             )
@@ -39,7 +39,7 @@ class Reminder : BroadcastReceiver() {
     override fun onReceive(c: Context, intent: Intent) {
         when (intent.action) {
             REMIND -> {
-                val cal = Main.calType.newInstance().apply { timeInMillis -= 86400000L }
+                val cal = Main.calType.newInstance().apply { timeInMillis -= Main.A_DAY }
                 val score = Vita.load(c).getOrDefault(cal.toKey(), null)
                     ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
                 if (score == null) (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(
