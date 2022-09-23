@@ -39,6 +39,7 @@ import androidx.core.util.forEach
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -310,9 +311,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.grid.adapter = ItemDay(this).also {
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
-            b.verbumIcon.vis(it.luna.verbum?.isNotBlank() == true)
+            b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
             b.emoji.text = it.luna.emoji
-            b.emoji.vis(it.luna.emoji?.isNotBlank() == true)
+            b.emoji.isVisible = it.luna.emoji?.isNotBlank() == true
         }
     }
 
@@ -504,10 +505,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
             PorterDuffColorFilter(color, mode)
 
-        fun View.vis(bb: Boolean = true) {
-            visibility = if (bb) View.VISIBLE else View.GONE
-        }
-
         fun Calendar.resetHours(): Calendar {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -526,6 +523,16 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         abstract fun onDoubleClick()
+    }
+
+    class LimitedToastAlert(private val c: Context) : View.OnClickListener {
+        private var last = 0L
+
+        override fun onClick(v: View?) {
+            if (SystemClock.elapsedRealtime() - last < 2000L) return
+            Toast.makeText(c, R.string.holdLonger, Toast.LENGTH_SHORT).show()
+            last = SystemClock.elapsedRealtime()
+        }
     }
 
     inner class Sexbook : Thread() {
@@ -588,7 +595,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
 * Extension:
-* Lock variabilis in fully scored months, e.g. Mehr 1400
 * Restrict scoring the future
 * Select multiple day cells in order to score them once
 */

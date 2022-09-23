@@ -26,6 +26,7 @@
     <string name="difAgo">%d day(s) ago</string>
     <string name="difLater">%d day(s) later</string>
     <string name="viewInCalendar">Calendar</string>
+    <string name="holdLonger">Hold a little longer&#8230;</string>
 
     <!-- Drawer -->
     <string name="navOpen">Open</string>

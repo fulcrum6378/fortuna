@@ -22,6 +22,7 @@ import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.emoji2.text.EmojiCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -29,7 +30,6 @@ import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
 import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
-import ir.mahdiparastesh.fortuna.Main.Companion.vis
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -80,13 +80,13 @@ class ItemDay(private val c: Main) : ListAdapter {
             variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
 
             (luna.verba[i]?.isNotBlank() == true).also { show ->
-                verbumIcon.vis(show)
+                verbumIcon.isVisible = show
                 if (show) verbumIcon.setImageResource(R.drawable.verbum)
                 else verbumIcon.setImageDrawable(null)
             }
             val emj = luna.emojis.getOrNull(i)// ?: luna.emoji
             emoji.text = emj
-            emoji.vis(emj != null)
+            emoji.isVisible = emj != null
 
             root.setBackgroundColor(
                 when {
@@ -241,7 +241,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 sb.deleteCharAt(sb.length - 1)
                 bv.sexbook.text = sb.toString()
-                bv.sexbook.vis()
+                bv.sexbook.isVisible = true
                 bv.sexbook.setOnLongClickListener {
                     try {
                         c.startActivity(
@@ -274,11 +274,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     )
                     c.shake()
                 }
-                setNeutralButton(R.string.clear) { _, _ ->
-                    if (c.m.vita == null) return@setNeutralButton
-                    saveDies(c, i, null, null, null)
-                    c.shake()
-                }
+                setNeutralButton(R.string.clear) { _, _ -> }
                 setOnDismissListener {
                     bv.verbum.clearFocus()
                     c.m.changingVar = null
@@ -288,6 +284,29 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 setCancelable(true)
             }.show()
+            if (this@changeVar[i] != null) {
+                bv.picker.isEnabled = false
+                bv.picker.alpha = 0.4f
+                bv.lock.isVisible = true
+                bv.lock.setOnClickListener(Main.LimitedToastAlert(c))
+                bv.lock.setOnLongClickListener {
+                    bv.lock.isVisible = false
+                    bv.lock.setOnClickListener(null)
+                    bv.lock.setOnLongClickListener(null)
+                    bv.picker.alpha = 1f
+                    bv.picker.isEnabled = true
+                    true
+                }
+            }
+            dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
+                setOnClickListener(Main.LimitedToastAlert(c))
+                setOnLongClickListener {
+                    if (c.m.vita == null) return@setOnLongClickListener true
+                    saveDies(c, i, null, null, null)
+                    c.shake()
+                    dialogue?.dismiss(); true
+                }
+            }
         }
 
         fun detailDate(c: Main, i: Int) {

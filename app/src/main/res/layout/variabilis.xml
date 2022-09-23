@@ -37,6 +37,14 @@
                 app:layout_constraintWidth_percent="0.7" />
             <!-- android:solidColor is the colour of the vertical gradient. -->
             <!-- android:selectionDividerHeight is the height of the divider. -->
+
+            <View
+                android:id="@+id/lock"
+                style="@style/parentConstraint"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/button"
+                android:visibility="gone" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <EditText
