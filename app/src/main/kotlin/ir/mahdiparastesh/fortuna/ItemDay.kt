@@ -84,7 +84,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 if (show) verbumIcon.setImageResource(R.drawable.verbum)
                 else verbumIcon.setImageDrawable(null)
             }
-            val emj = luna.emojis.getOrNull(i)// ?: luna.emoji
+            val emj = luna.emojis.getOrNull(i)
             emoji.text = emj
             emoji.isVisible = emj != null
 
@@ -116,10 +116,17 @@ class ItemDay(private val c: Main) : ListAdapter {
                     }
                 }
             )
-            root.setOnClickListener {
-                luna.changeVar(c, i, sexbook?.filter { it.day == (i + 1).toShort() })
+            val cal = calType.newInstance().apply {
+                timeInMillis = c.m.calendar.timeInMillis
+                set(Calendar.DAY_OF_MONTH, i + 1)
+                resetHours()
             }
-            root.setOnLongClickListener { detailDate(c, i); true }
+            if (c.todayCalendar.timeInMillis + (Main.A_DAY * 1L) < cal.timeInMillis)
+                root.setOnClickListener(Main.LimitedToastAlert(c, R.string.scoreFuture))
+            else root.setOnClickListener {
+                luna.changeVar(c, i, cal, sexbook?.filter { it.day == (i + 1).toShort() })
+            }
+            root.setOnLongClickListener { detailDate(c, i, cal); true }
             if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
@@ -154,7 +161,10 @@ class ItemDay(private val c: Main) : ListAdapter {
 
         @SuppressLint("ClickableViewAccessibility")
         @Suppress("KotlinConstantConditions")
-        fun Luna.changeVar(c: Main, i: Int, sex: List<Main.Sex>? = null) {
+        fun Luna.changeVar(
+            c: Main, i: Int,
+            cal: Calendar = c.m.calendar, sex: List<Main.Sex>? = null
+        ) {
             if (c.m.changingVar != null && !c.firstResume) return
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
@@ -215,8 +225,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     if ((event.action and MotionEvent.ACTION_MASK) == MotionEvent.ACTION_SCROLL) {
                         v.parent.requestDisallowInterceptTouchEvent(false)
                         ret = true
-                    }
-                    ret
+                    }; ret
                 }
             }
             if (i != -1 && sex?.isNotEmpty() == true) {
@@ -249,8 +258,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                                 .setComponent(ComponentName(SEXBOOK, "$SEXBOOK.Main"))
                                 .setData(android.net.Uri.parse(sex.first().id.toString()))
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
-                        true
+                        ); true
                     } catch (e: ActivityNotFoundException) {
                         false
                     }
@@ -284,11 +292,13 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 setCancelable(true)
             }.show()
-            if (this@changeVar[i] != null) {
+            if (this@changeVar[i] != null &&
+                c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
+            ) {
                 bv.picker.isEnabled = false
                 bv.picker.alpha = 0.4f
                 bv.lock.isVisible = true
-                bv.lock.setOnClickListener(Main.LimitedToastAlert(c))
+                bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
                 bv.lock.setOnLongClickListener {
                     bv.lock.isVisible = false
                     bv.lock.setOnClickListener(null)
@@ -299,7 +309,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
             }
             dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
-                setOnClickListener(Main.LimitedToastAlert(c))
+                setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
                 setOnLongClickListener {
                     if (c.m.vita == null) return@setOnLongClickListener true
                     saveDies(c, i, null, null, null)
@@ -309,14 +319,9 @@ class ItemDay(private val c: Main) : ListAdapter {
             }
         }
 
-        fun detailDate(c: Main, i: Int) {
+        fun detailDate(c: Main, i: Int, cal: Calendar) {
             if (c.m.showingDate != null && !c.firstResume) return
             c.m.showingDate = i
-            val cal = calType.newInstance().apply {
-                timeInMillis = c.m.calendar.timeInMillis
-                set(Calendar.DAY_OF_MONTH, i + 1)
-                resetHours()
-            }
             MaterialAlertDialogBuilder(c).apply {
                 setTitle(
                     "${c.m.luna!!}.${z(i + 1)} - " +
@@ -328,8 +333,8 @@ class ItemDay(private val c: Main) : ListAdapter {
                     d.timeInMillis = cal.timeInMillis
                     sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
                     sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
-                } // sb.deleteCharAt(sb.length - 1)
-                val dif = ((cal.timeInMillis - c.todayCalendar.timeInMillis) / 86400000L).toInt()
+                }
+                val dif = ((cal.timeInMillis - c.todayCalendar.timeInMillis) / Main.A_DAY).toInt()
                 sb.append(" => ").append(
                     when {
                         dif == -1 -> c.getString(R.string.yesterday)
@@ -342,7 +347,6 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setMessage(sb.toString())
                 setPositiveButton(R.string.ok, null)
                 setNeutralButton(R.string.viewInCalendar) { _, _ ->
-                    cal[Calendar.DAY_OF_MONTH] = i + 1
                     c.startActivity(
                         Intent(Intent.ACTION_VIEW).setData(
                             CalendarContract.CONTENT_URI.buildUpon()

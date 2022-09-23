@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
@@ -178,7 +179,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         Reminder.alarm(c) // Reminder.test(c)
         if (m.showingStat) stat()
         if (m.showingHelp) help()
-        m.showingDate?.also { ItemDay.detailDate(this, it) }
+        m.showingDate?.also { ItemDay.detailDate(this, it, m.calendar) }
     }
 
     var firstResume = true
@@ -481,6 +482,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val EXTRA_DIES = "dies"
         const val SP_NUMERAL_TYPE = "numeral_type"
         const val arNumType = "0"
+        const val A_DAY = 86400000L
         const val SEXBOOK = "ir.mahdiparastesh.sexbook"
         val calType = when (BuildConfig.FLAVOR) {
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
@@ -525,12 +527,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         abstract fun onDoubleClick()
     }
 
-    class LimitedToastAlert(private val c: Context) : View.OnClickListener {
+    class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int) :
+        View.OnClickListener {
         private var last = 0L
 
         override fun onClick(v: View?) {
             if (SystemClock.elapsedRealtime() - last < 2000L) return
-            Toast.makeText(c, R.string.holdLonger, Toast.LENGTH_SHORT).show()
+            Toast.makeText(c, msg, Toast.LENGTH_SHORT).show()
             last = SystemClock.elapsedRealtime()
         }
     }
@@ -595,6 +598,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
 * Extension:
-* Restrict scoring the future
 * Select multiple day cells in order to score them once
 */

@@ -27,6 +27,7 @@
     <string name="difLater">%d day(s) later</string>
     <string name="viewInCalendar">Calendar</string>
     <string name="holdLonger">Hold a little longer&#8230;</string>
+    <string name="scoreFuture">You don\'t know your future!!!</string>
 
     <!-- Drawer -->
     <string name="navOpen">Open</string>
