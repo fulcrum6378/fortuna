@@ -38,6 +38,7 @@
         Average of Total: %1$s\n
         Sum: %2$s\n
         Covering %3$s days.
+        \n
     </string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>

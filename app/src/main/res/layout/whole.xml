@@ -4,10 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="0dp"
     android:maxHeight="@dimen/statGridMaxHeight"
-    android:minHeight="0dp"
-    android:paddingTop="12dp">
+    android:minHeight="0dp">
     <!-- A well-tested method instead of extending MaxHeightScrollView.
-         All attributes are necessary! -->
+         All attributes are necessary! Never set padding here! Margins won't work! -->
 
     <ScrollView
         android:layout_width="match_parent"
@@ -16,6 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_max="@dimen/statGridMaxHeight"
         app:layout_constraintTop_toTopOf="parent">
+        <!-- Never set margin here! -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/body"

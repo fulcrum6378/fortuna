@@ -384,7 +384,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val cp = color(com.google.android.material.R.attr.colorPrimary)
             val cs = color(com.google.android.material.R.attr.colorSecondary)
             val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
-            val zeroCellColour = ContextCompat.getColor(c, R.color.statCell)
+            val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
             val monthNames = resources.getStringArray(R.array.luna)
             meanMap.forEach { year, array ->
                 bw.years.addView(TextView(this@Main).apply {
@@ -408,8 +408,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                     cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
                                     -score / Vita.MAX_RANGE
                                 ).toArgb()
-                                score != null -> zeroCellColour
-                                else -> Color.TRANSPARENT
+                                score != null -> Color.TRANSPARENT
+                                else -> nullCellColour
                             }
                         )
                         tooltipText = "${monthNames[month]} $year${score?.let { "\n$it" } ?: ""}"
@@ -532,7 +532,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         private var last = 0L
 
         override fun onClick(v: View?) {
-            if (SystemClock.elapsedRealtime() - last < 2000L) return
+            if (SystemClock.elapsedRealtime() - last < 2500L) return
             Toast.makeText(c, msg, Toast.LENGTH_SHORT).show()
             last = SystemClock.elapsedRealtime()
         }
