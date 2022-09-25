@@ -292,7 +292,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 setCancelable(true)
             }.show()
-            if (this@changeVar[i] != null &&
+            if (i > -1 && diebus[i] != null && // or instead (if (i > -1) diebus[i] else default)
                 c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
             ) {
                 bv.picker.isEnabled = false
