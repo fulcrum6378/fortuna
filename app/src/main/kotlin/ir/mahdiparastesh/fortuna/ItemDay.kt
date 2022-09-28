@@ -121,9 +121,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 set(Calendar.DAY_OF_MONTH, i + 1)
                 resetHours()
             }
-            if (c.todayCalendar.timeInMillis + (Main.A_DAY * 1L) < cal.timeInMillis)
-                root.setOnClickListener(Main.LimitedToastAlert(c, R.string.scoreFuture))
-            else root.setOnClickListener {
+            root.setOnClickListener {
                 luna.changeVar(c, i, cal, sexbook?.filter { it.day == (i + 1).toShort() })
             }
             root.setOnLongClickListener { detailDate(c, i, cal); true }
@@ -292,20 +290,26 @@ class ItemDay(private val c: Main) : ListAdapter {
                 }
                 setCancelable(true)
             }.show()
-            if (i > -1 && diebus[i] != null && // or instead (if (i > -1) diebus[i] else default)
-                c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
-            ) {
-                bv.picker.isEnabled = false
-                bv.picker.alpha = 0.4f
-                bv.lock.isVisible = true
-                bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
-                bv.lock.setOnLongClickListener {
-                    bv.lock.isVisible = false
-                    bv.lock.setOnClickListener(null)
-                    bv.lock.setOnLongClickListener(null)
-                    bv.picker.alpha = 1f
-                    bv.picker.isEnabled = true
-                    true
+            if (i > -1) {
+                val isPast = c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
+                val isFuture = c.todayCalendar.timeInMillis + (Main.A_DAY * 1L) < cal.timeInMillis
+                if (isPast || isFuture) {
+                    bv.picker.isEnabled = false
+                    bv.picker.alpha = 0.4f
+                    bv.lock.isVisible = true
+                    if (isFuture)
+                        bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.scoreFuture))
+                    else if (diebus[i] != null) { // obviously is past
+                        bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
+                        bv.lock.setOnLongClickListener {
+                            bv.lock.isVisible = false
+                            bv.lock.setOnClickListener(null)
+                            bv.lock.setOnLongClickListener(null)
+                            bv.picker.alpha = 1f
+                            bv.picker.isEnabled = true
+                            true
+                        }
+                    }
                 }
             }
             dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
