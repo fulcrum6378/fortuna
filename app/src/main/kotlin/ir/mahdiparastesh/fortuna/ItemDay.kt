@@ -293,13 +293,13 @@ class ItemDay(private val c: Main) : ListAdapter {
             if (i > -1) {
                 val isPast = c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
                 val isFuture = c.todayCalendar.timeInMillis + (Main.A_DAY * 1L) < cal.timeInMillis
-                if (isPast || isFuture) {
+                if ((isPast && diebus[i] != null) || isFuture) {
                     bv.picker.isEnabled = false
                     bv.picker.alpha = 0.4f
                     bv.lock.isVisible = true
                     if (isFuture)
                         bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.scoreFuture))
-                    else if (diebus[i] != null) { // obviously is past
+                    else { // obviously is past
                         bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
                         bv.lock.setOnLongClickListener {
                             bv.lock.isVisible = false
