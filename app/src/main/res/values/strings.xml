@@ -34,12 +34,7 @@
     <string name="navClose">Close</string>
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
-    <string name="statText">
-        Average of Total: %1$s\n
-        Sum: %2$s\n
-        Covering %3$s days.
-        \n
-    </string>
+    <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.\n</string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
     <string name="exportUndone">Failed!</string>
@@ -50,21 +45,22 @@
     <string name="navHelp">Help</string>
     <string name="help">
         This app is designed based on the \"Hedonist\" philosophy!
-        It\'s used to calculate the amount of pleasure and pain one senses in their life.\n
+        It\'s used to calculate the amount of pleasure and pain one senses in their life.
         \n
-        You can enter the quality of your life in a scale between -3 to +3 for each day.\n
+        \nYou can enter the quality of your life in a scale between -3 to +3 for each day.
         \n
-        Alternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.\n
+        \nAlternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.
         \n
-        Then you can see how much pleasure and pain you\'ve sensed overall in your life or in a particular month.\n
+        \nThen you can see how much pleasure and pain you\'ve sensed overall in your life or in a particular month.
         \n
-        >> How to work with it:\n
-        * Hold your finger on a day to view that day in multiple calendar systems and inside the calendar application of your device.\n
-        * Press the left and right arrows to navigate in month and press longer to jump to 6 months earlier or later.\n
-        * Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.\n
-        * The \"Statistics\" section describes the status of your entire life, plus a table of tiny cells, each describing a month of your life; long click on the cells to see brief details, double click on them to jump to that month.\n
+        \n>> How to work with it:
+        \n* Hold your finger on a day to view that day in multiple calendar systems and inside the calendar application of your device.
+        \n* Press the left and right arrows to navigate in month and press longer to jump to 6 months earlier or later.
+        \n* Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.
+        \n* The \"Statistics\" section describes the status of your entire life, plus a table of tiny cells, each describing a month of your life;
+          long click on the cells to see brief details, double click on them to jump to that month.
         \n
-        Note: this app does not believe in weeks!!
+        \nNote: this app does not believe in weeks!!
     </string>
 
     <!-- Reminder -->
