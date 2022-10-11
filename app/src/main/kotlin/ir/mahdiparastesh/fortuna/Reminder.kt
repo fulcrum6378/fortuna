@@ -19,10 +19,9 @@ class Reminder : BroadcastReceiver() {
 
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
-                AlarmManager.RTC, Calendar.getInstance().apply {
-                    timeInMillis += Main.A_DAY
-                    resetHours()
-                }.timeInMillis, AlarmManager.INTERVAL_DAY, broadcast(c)
+                AlarmManager.RTC, Calendar.getInstance()
+                    .apply { timeInMillis += Main.A_DAY; resetHours() }.timeInMillis,
+                Main.A_DAY, broadcast(c)
             )
         }
 
