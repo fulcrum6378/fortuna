@@ -48,7 +48,7 @@
         </provider>
 
         <receiver
-            android:name=".Reminder"
+            android:name=".Nyx"
             android:enabled="true"
             android:exported="true">
 

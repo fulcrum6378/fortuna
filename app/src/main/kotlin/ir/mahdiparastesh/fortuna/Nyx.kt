@@ -8,11 +8,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import android.os.Build
 import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
-class Reminder : BroadcastReceiver() {
+class Nyx : BroadcastReceiver() {
     companion object {
         const val REMIND = "${BuildConfig.APPLICATION_ID}.remind"
         const val CHANNEL = 666
@@ -26,7 +25,7 @@ class Reminder : BroadcastReceiver() {
         }
 
         private fun broadcast(c: Context): PendingIntent = PendingIntent.getBroadcast(
-            c, 0, Intent(c, Reminder::class.java).setAction(REMIND), PendingIntent.FLAG_IMMUTABLE
+            c, 0, Intent(c, Nyx::class.java).setAction(REMIND), PendingIntent.FLAG_IMMUTABLE
         )
 
         @Suppress("unused")
@@ -45,20 +44,13 @@ class Reminder : BroadcastReceiver() {
                     CHANNEL, Notification.Builder(c, REMIND)
                         .setSmallIcon(R.drawable.notification)
                         .setContentTitle(c.getString(R.string.ntfReminder))
-                        .setContentIntent(
-                            PendingIntent.getActivity(
-                                c, 0,
-                                Intent(c, Main::class.java)
-                                    .putExtra(Main.EXTRA_LUNA, cal.toKey())
-                                    .putExtra(Main.EXTRA_DIES, cal.get(Calendar.DAY_OF_MONTH)),
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                                    PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-                            )
-                        )
+                        .setContentIntent(Main.openInDate(c, cal))
                         .setAutoCancel(true)
                         .setShowWhen(false)
                         .build()
                 )
+
+                TodayWidget.externalUpdate(c)
             }
             Intent.ACTION_BOOT_COMPLETED -> alarm(c)
         }

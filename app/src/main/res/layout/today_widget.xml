@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorPrimary"
     android:theme="@style/Theme.Fortuna"
     tools:viewBindingIgnore="true">
     <!-- It fucking doesn't accept:
-    1. Any non-default view which contains a package name,
+    1. Any non-default view which starts with a package name,
     2. MaterialShapeDrawable,
     3. Font resources or a custom TypefaceSpan, -->
 
@@ -22,5 +23,8 @@
         android:gravity="center"
         android:textAlignment="center"
         android:textColor="?attr/colorOnPrimary"
-        android:textSize="20sp" />
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+
 </RelativeLayout>
