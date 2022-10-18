@@ -63,7 +63,7 @@
         \nNote: this app does not believe in weeks!!
     </string>
 
-    <!-- Reminder -->
+    <!-- Nyx -->
     <string name="ntfReminderTitle">Daily Reminder</string>
     <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>
     <string name="ntfReminder">How was your day?</string>

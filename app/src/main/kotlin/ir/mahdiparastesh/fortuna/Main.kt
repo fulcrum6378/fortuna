@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -168,15 +169,15 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         ) Sexbook().start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-            cancel(Reminder.CHANNEL)
+            cancel(Nyx.CHANNEL)
             createNotificationChannel(
                 NotificationChannel(
-                    Reminder.REMIND, c.getString(R.string.ntfReminderTitle),
+                    Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
                     NotificationManager.IMPORTANCE_LOW
                 ).apply { description = getString(R.string.ntfReminderDesc) }
             )
         }
-        Reminder.alarm(c) // Reminder.test(c)
+        Nyx.alarm(c) // Nyx.test(c)
         if (m.showingStat) stat()
         if (m.showingHelp) help()
         m.showingDate?.also { ItemDay.detailDate(this, it, m.calendar) }
@@ -477,6 +478,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         super.onBackPressed()
     }
 
+    override fun onStop() {
+        super.onStop()
+        TodayWidget.externalUpdate(c)
+    }
+
     companion object {
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
@@ -516,6 +522,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             set(Calendar.MILLISECOND, 0)
             return this
         }
+
+        fun openInDate(c: Context, cal: Calendar): PendingIntent = PendingIntent.getActivity(
+            c, 0, Intent(c, Main::class.java)
+                .putExtra(EXTRA_LUNA, cal.toKey())
+                .putExtra(EXTRA_DIES, cal.get(Calendar.DAY_OF_MONTH)),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
