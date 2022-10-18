@@ -68,6 +68,9 @@
     <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>
     <string name="ntfReminder">How was your day?</string>
 
+    <!-- TodayWidget -->
+    <string name="widTodayDesc">Show the current day with the ability to score it.</string>
+
     <!-- Numerals -->
     <string name="numerals">Numerals</string>
     <string name="numArabic">Arabic</string>

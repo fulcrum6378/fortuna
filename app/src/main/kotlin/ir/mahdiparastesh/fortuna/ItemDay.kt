@@ -70,9 +70,7 @@ class ItemDay(private val c: Main) : ListAdapter {
             val numType = c.sp.getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                 .let { if (it == Main.arNumType) null else it }
 
-            dies.text = (numType?.let { BaseNumeral.find(it) }
-                ?.constructors?.getOrNull(0)?.newInstance(i + 1) as BaseNumeral?)
-                ?.toString() ?: "${i + 1}"
+            dies.text = diesNum(i + 1, numType)
             val enlarge =
                 BaseNumeral.all.find { it.jClass?.canonicalName == numType }?.enlarge ?: false
             if (enlarge) dies.textSize =
@@ -362,5 +360,9 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setOnDismissListener { c.m.showingDate = null }
             }.show()
         }
+
+        fun diesNum(i: Int, numType: String?): String = (numType?.let { BaseNumeral.find(it) }
+            ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
+            ?.toString() ?: i.toString()
     }
 }
