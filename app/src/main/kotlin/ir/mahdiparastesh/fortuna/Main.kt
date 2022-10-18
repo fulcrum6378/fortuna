@@ -71,7 +71,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val c: Context get() = applicationContext
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels() // belongs to ComponentActivity
-    val sp: SharedPreferences by lazy { getSharedPreferences("settings", Context.MODE_PRIVATE) }
+    val sp: SharedPreferences by lazy { sp() }
     val todayCalendar: Calendar = calType.newInstance().resetHours()
     val todayLuna: String = todayCalendar.toKey()
     val varFieldBg: MaterialShapeDrawable by lazy {
@@ -498,6 +498,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             android.icu.util.CopticCalendar::class.java,
             android.icu.util.HebrewCalendar::class.java,
         ).filter { it != calType }
+
+        fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
         @ColorInt
         fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
