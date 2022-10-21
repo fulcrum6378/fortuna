@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <corners android:radius="@dimen/mediumCornerSize" />
-    <solid android:color="?attr/colorPrimary" />
-</shape>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/weakWhite">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/largeCornerSize" />
+            <solid android:color="@color/todayWidget" />
+        </shape>
+    </item>
+</ripple>

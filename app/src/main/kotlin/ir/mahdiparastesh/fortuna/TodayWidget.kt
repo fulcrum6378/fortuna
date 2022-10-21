@@ -24,7 +24,11 @@ class TodayWidget : AppWidgetProvider() {
                     c.sp().getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                         .let { if (it == Main.arNumType) null else it })
             )
-        }
+            setTextViewText(
+                R.id.luna, c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]] +
+                        "\n${cal[Calendar.YEAR]}"
+            )
+        } // RemoteViews has no getters.
 
         fun externalUpdate(c: Context) {
             AppWidgetManager.getInstance(c).updateAppWidget(
