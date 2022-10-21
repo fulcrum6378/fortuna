@@ -169,4 +169,5 @@
         android:background="?attr/colorPrimary"
         android:paddingTop="10dp"
         app:menu="@menu/nav" />
+    <!--app:itemShapeAppearance="@style/ShapeAppearance.Fortuna.Small"-->
 </androidx.drawerlayout.widget.DrawerLayout>
