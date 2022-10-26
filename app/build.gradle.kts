@@ -12,7 +12,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "6.4.5"
+        versionName = "6.5"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -42,8 +42,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.6.0")
+    implementation("androidx.activity:activity-ktx:1.6.1")
     implementation("androidx.emoji2:emoji2:1.2.0")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.7.0")
 }
 // Trying to exclude the unnecessary modules from material seems to be impossible!
