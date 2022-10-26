@@ -523,13 +523,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             return this
         }
 
-        fun openInDate(c: Context, cal: Calendar): PendingIntent = PendingIntent.getActivity(
-            c, 0, Intent(c, Main::class.java)
-                .putExtra(EXTRA_LUNA, cal.toKey())
-                .putExtra(EXTRA_DIES, cal.get(Calendar.DAY_OF_MONTH)),
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-        )
+        fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
+            PendingIntent.getActivity(
+                c, req, Intent(c, Main::class.java)
+                    .putExtra(EXTRA_LUNA, cal.toKey())
+                    .putExtra(EXTRA_DIES, cal[Calendar.DAY_OF_MONTH]),
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+            ) // A unique request code protects the PendingIntent from being recycled!
     }
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {

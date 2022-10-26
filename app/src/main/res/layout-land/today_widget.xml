@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/today_widget"
+    android:theme="@style/Theme.Fortuna"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    tools:ignore="ContentDescription"
+    tools:viewBindingIgnore="true">
+
+    <TextView
+        android:id="@+id/dies"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/luna"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="7sp"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textColor="?attr/colorOnPrimary"
+        android:textSize="11sp" />
+</LinearLayout>
