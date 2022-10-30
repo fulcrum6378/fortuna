@@ -73,8 +73,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels() // belongs to ComponentActivity
     val sp: SharedPreferences by lazy { sp() }
-    val todayCalendar: Calendar = calType.newInstance().resetHours()
-    val todayLuna: String = todayCalendar.toKey()
+    lateinit var todayCalendar: Calendar
+    lateinit var todayLuna: String
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -170,6 +170,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         ) Sexbook().start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Nyx.CHANNEL)
+            deleteNotificationChannel("${BuildConfig.APPLICATION_ID}.remind")
             createNotificationChannel(
                 NotificationChannel(
                     Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
@@ -187,30 +188,38 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onResume() {
         super.onResume()
         m.vita = Vita.load(c)
-        if (m.luna == null) {
-            val extraLuna = intent.getStringExtra(EXTRA_LUNA)
-            if (firstResume && extraLuna != null) {
-                m.luna = extraLuna
-                m.calendar = extraLuna.toCalendar(calType)
-            } else {
-                m.calendar = calType.newInstance()
-                m.luna = m.calendar.toKey()
-            }
-            updatePanel()
-            if (!Vita.Stored(c).exists()) {
-                m.vita!![m.luna!!] = Luna(m.calendar)
-                m.vita!!.save(c)
-            }
-        }
+        todayCalendar = calType.newInstance().resetHours()
+        todayLuna = todayCalendar.toKey()
+        if (firstResume) intent?.resolveIntent()
+        else b.annus.clearFocus()
         updateGrid()
-        if (firstResume) {
-            if (intent.hasExtra(EXTRA_DIES))
-                intent?.getIntExtra(EXTRA_DIES, 0)
-                    ?.also { m.vita!![m.luna!!]?.changeVar(this@Main, it - 1) }
-            else m.changingVar?.also { m.vita!![m.luna!!]?.changeVar(this@Main, it) }
-            m.vita?.reform(c)
-        } else b.annus.clearFocus()
         firstResume = false
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.resolveIntent()
+    }
+
+    private fun Intent.resolveIntent() {
+        val extraLuna = getStringExtra(EXTRA_LUNA)
+        if (extraLuna != null) {
+            m.luna = extraLuna
+            m.calendar = extraLuna.toCalendar(calType)
+        } else {
+            m.calendar = calType.newInstance()
+            m.luna = m.calendar.toKey()
+        }
+        updatePanel()
+        if (!Vita.Stored(c).exists()) {
+            m.vita!![m.luna!!] = Luna(m.calendar)
+            m.vita!!.save(c)
+        }
+        if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
+            m.vita!![m.luna!!]?.changeVar(this@Main, it - 1,
+                (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+        } else m.changingVar?.also { m.vita!![m.luna!!]?.changeVar(this@Main, it) }
+        m.vita?.reform(c)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -616,4 +625,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 /* TODO:
 * Extension:
 * Select multiple day cells in order to score them once
+* How many years/month past/remaining to a specific day?
 */

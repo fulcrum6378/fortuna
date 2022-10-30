@@ -119,6 +119,12 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
+        fun backup(c: Context) {
+            FileOutputStream(Backup(c)).use { fos ->
+                fos.write(FileInputStream(Stored(c)).use { it.readBytes() })
+            }
+        }
+
         fun z(n: Any?, ideal: Int = 2): String {
             var s = n.toString()
             while (s.length < ideal) s = "0$s"
@@ -178,6 +184,8 @@ class Vita : HashMap<String, Luna>() {
     }
 
     class Stored(c: Context) : File(c.filesDir, c.getString(R.string.export_file))
+
+    class Backup(c: Context) : File(c.filesDir, c.getString(R.string.backup_file))
 }
 
 class Luna(
