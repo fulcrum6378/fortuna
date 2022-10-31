@@ -73,8 +73,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels() // belongs to ComponentActivity
     val sp: SharedPreferences by lazy { sp() }
-    lateinit var todayCalendar: Calendar
-    lateinit var todayLuna: String
+    var todayCalendar: Calendar = calType.newInstance().resetHours()
+    var todayLuna: String = todayCalendar.toKey()
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -86,6 +86,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(b.root)
+        m.vita = Vita.load(c)
 
         // Toolbar & Navigation
         ActionBarDrawerToggle(
@@ -129,7 +130,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.luna.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, i: Int, id: Long) {
-                if (firstResume) return
+                if (resolvingIntent) return
                 if (rollingLuna) {
                     rollingLuna = false; return; }
                 m.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
@@ -138,7 +139,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         b.annus.addTextChangedListener {
-            if (it.toString().length != 4 || firstResume) return@addTextChangedListener
+            if (it.toString().length != 4 || resolvingIntent) return@addTextChangedListener
             if (rollingAnnus) {
                 rollingAnnus = false
                 return@addTextChangedListener; }
@@ -158,6 +159,28 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.thisLuna().changeVar(this@Main, -1)
         }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
+
+        // Handler
+        handler = object : Handler(Looper.getMainLooper()) {
+            override fun handleMessage(msg: Message) {
+                when (msg.what) {
+                    HANDLE_NEW_DAY -> {
+                        todayCalendar = calType.newInstance().resetHours()
+                        todayLuna = todayCalendar.toKey()
+                        updateGrid()
+                    }
+                }
+            }
+        }
+
+        // Restore the saved states (null-safe)
+        m.changingVar?.also {
+            m.vita!![m.luna!!]?.changeVar(this@Main, it,
+                (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+        }
+        if (m.showingStat) stat()
+        if (m.showingHelp) help()
+        m.showingDate?.also { ItemDay.detailDate(this, it, m.calendar) }
 
         // Miscellaneous
         if (try {
@@ -179,20 +202,18 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             )
         }
         Nyx.alarm(c) // Nyx.test(c)
-        if (m.showingStat) stat()
-        if (m.showingHelp) help()
-        m.showingDate?.also { ItemDay.detailDate(this, it, m.calendar) }
     }
 
-    var firstResume = true
+    var firstResume = true // a new instance of Main is created on a configuration change.
     override fun onResume() {
         super.onResume()
-        m.vita = Vita.load(c)
-        todayCalendar = calType.newInstance().resetHours()
-        todayLuna = todayCalendar.toKey()
-        if (firstResume) intent?.resolveIntent()
-        else b.annus.clearFocus()
-        updateGrid()
+        if (m.luna == null) {
+            intent.resolveIntent()
+            if (!Vita.Stored(c).exists()) {
+                m.vita!![m.luna!!] = Luna(m.calendar)
+                m.vita!!.save(c)
+            } else m.vita?.reform(c)
+        }
         firstResume = false
     }
 
@@ -201,7 +222,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         intent.resolveIntent()
     }
 
+    var resolvingIntent = false
     private fun Intent.resolveIntent() {
+        if (m.changingVar != null) return
+        resolvingIntent = true
         val extraLuna = getStringExtra(EXTRA_LUNA)
         if (extraLuna != null) {
             m.luna = extraLuna
@@ -211,15 +235,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.luna = m.calendar.toKey()
         }
         updatePanel()
-        if (!Vita.Stored(c).exists()) {
-            m.vita!![m.luna!!] = Luna(m.calendar)
-            m.vita!!.save(c)
-        }
         if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
             m.vita!![m.luna!!]?.changeVar(this@Main, it - 1,
                 (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
-        } else m.changingVar?.also { m.vita!![m.luna!!]?.changeVar(this@Main, it) }
-        m.vita?.reform(c)
+        }
+        updateGrid()
+        resolvingIntent = false
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -492,6 +513,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         TodayWidget.externalUpdate(c)
     }
 
+    override fun onDestroy() {
+        handler = null
+        super.onDestroy()
+    }
+
     companion object {
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
@@ -499,6 +525,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val arNumType = "0"
         const val A_DAY = 86400000L
         const val SEXBOOK = "ir.mahdiparastesh.sexbook"
+        const val HANDLE_NEW_DAY = 0
+        var handler: Handler? = null
         val calType = when (BuildConfig.FLAVOR) {
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
             /*"persian"*/ else -> PersianCalendar::class.java
