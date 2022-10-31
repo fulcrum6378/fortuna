@@ -165,6 +165,7 @@ class ItemDay(private val c: Main) : ListAdapter {
             c.m.changingVar = i
             val bv = VariabilisBinding.inflate(c.layoutInflater)
             var dialogue: AlertDialog? = null
+            var isCancelable = true
             arrayOf(bv.highlight, bv.verbum).forEach { it.background = c.varFieldBg }
             bv.picker.apply {
                 maxValue = 12
@@ -179,6 +180,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     textSize = c.resources.displayMetrics.density * 25f
                 }
                 (this@apply[0] as EditText).also { it.filters = arrayOf() }
+                if (c.m.changingVarScore != null) isCancelable = false
                 setOnValueChangedListener { _, _, newVal ->
                     c.m.changingVarScore = newVal
                     dialogue?.setCancelable(false)
@@ -202,6 +204,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                         else -> ""
                     } // do NOT invoke "setText()" in a filter!
                 })
+                if (c.m.changingVarEmoji != null) isCancelable = false
                 addTextChangedListener {
                     c.m.changingVarEmoji = it.toString()
                     dialogue?.setCancelable(false)
@@ -211,6 +214,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                 setText(
                     c.m.changingVarVerbum ?: (if (i != -1) this@changeVar.verba[i] else verbum)
                 )
+                if (c.m.changingVarVerbum != null) isCancelable = false
                 addTextChangedListener {
                     c.m.changingVarVerbum = it.toString()
                     dialogue?.setCancelable(false)
@@ -286,7 +290,7 @@ class ItemDay(private val c: Main) : ListAdapter {
                     c.m.changingVarEmoji = null
                     c.m.changingVarVerbum = null
                 }
-                setCancelable(true)
+                setCancelable(isCancelable)
             }.show()
             if (i > -1) {
                 val isPast = c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis

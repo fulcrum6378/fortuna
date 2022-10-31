@@ -55,5 +55,6 @@ class Nyx : BroadcastReceiver() {
         // Miscellaneous
         Vita.backup(c)
         TodayWidget.externalUpdate(c)
+        Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
     }
 }
