@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,6 +18,8 @@ import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -75,6 +76,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val sp: SharedPreferences by lazy { sp() }
     var todayCalendar: Calendar = calType.newInstance().resetHours()
     var todayLuna: String = todayCalendar.toKey()
+    private var rollingLuna = true // "true" in order to trick onItemSelected
+    private var rollingLunaWithAnnus = false
+    private var rollingAnnusItself = false
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -139,13 +143,23 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         b.annus.addTextChangedListener {
-            if (it.toString().length != 4 || resolvingIntent) return@addTextChangedListener
-            if (rollingAnnus) {
-                rollingAnnus = false
-                return@addTextChangedListener; }
+            if (it.toString().length != 4 && !rollingAnnusItself) {
+                rollingAnnusItself = false; return@addTextChangedListener; }
+            if (resolvingIntent) return@addTextChangedListener
+            if (rollingLunaWithAnnus) {
+                rollingLunaWithAnnus = false; return@addTextChangedListener; }
+
             m.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
             m.calendar = m.luna!!.toCalendar(calType)
             updateGrid()
+        }
+        b.annus.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId != EditorInfo.IME_ACTION_GO) return@setOnEditorActionListener false
+            m.luna = "${z(v.text.toString(), 4)}.${z(b.luna.selectedItemPosition + 1)}"
+            m.calendar = m.luna!!.toCalendar(calType)
+            updateGrid()
+            b.annus.blur(c)
+            return@setOnEditorActionListener true
         }
         b.annusUp.setOnClickListener { rollAnnus(1) }
         b.annusDown.setOnClickListener { rollAnnus(-1) }
@@ -193,7 +207,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         ) Sexbook().start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Nyx.CHANNEL)
-            deleteNotificationChannel("${BuildConfig.APPLICATION_ID}.remind")
             createNotificationChannel(
                 NotificationChannel(
                     Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
@@ -286,7 +299,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private val exportLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+            if (it.resultCode != RESULT_OK) return@registerForActivityResult
             val bExp = try {
                 c.contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
                     FileOutputStream(des.fileDescriptor).use { fos ->
@@ -304,7 +317,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private val importLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != Activity.RESULT_OK) return@registerForActivityResult
+            if (it.resultCode != RESULT_OK) return@registerForActivityResult
             var data: String? = null
             try {
                 c.contentResolver.openFileDescriptor(it.data!!.data!!, "r")?.use { des ->
@@ -356,8 +369,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
-    private var rollingAnnus = false
-    private var rollingLuna = true // in order to trick onItemSelected
     private fun rollCalendar(up: Boolean, repeat: Int = 1) {
         repeat(repeat) {
             m.calendar.roll(Calendar.MONTH, up)
@@ -370,15 +381,18 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     private fun onCalendarChanged() {
         m.luna = m.calendar.toKey()
-        rollingAnnus = true
+        rollingLunaWithAnnus = true
         rollingLuna = true
         updatePanel()
         updateGrid()
+        b.annus.blur(c)
     }
 
     @SuppressLint("SetTextI18n")
     private fun rollAnnus(to: Int) {
+        rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
+        b.annus.blur(c)
     }
 
     private fun stat() {
@@ -568,6 +582,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                     PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
             ) // A unique request code protects the PendingIntent from being recycled!
+
+        fun EditText.blur(c: Context) {
+            (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+                ?.hideSoftInputFromWindow(windowToken, 0)
+            clearFocus()
+        }
     }
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
@@ -652,6 +672,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
 * Extension:
+* BACKUP in menu
 * Select multiple day cells in order to score them once
 * How many years/month past/remaining to a specific day?
 */
