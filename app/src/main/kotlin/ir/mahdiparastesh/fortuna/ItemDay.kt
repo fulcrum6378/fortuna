@@ -29,6 +29,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
 import ir.mahdiparastesh.fortuna.Main.Companion.calType
 import ir.mahdiparastesh.fortuna.Main.Companion.color
+import ir.mahdiparastesh.fortuna.Main.Companion.decSep
 import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
@@ -330,8 +331,8 @@ class ItemDay(private val c: Main) : ListAdapter {
             c.m.showingDate = i
             MaterialAlertDialogBuilder(c).apply {
                 setTitle(
-                    "${c.m.luna!!}.${z(i + 1)} - " +
-                            DateFormatSymbols.getInstance(Locale.UK).weekdays[cal[Calendar.DAY_OF_WEEK]]
+                    "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Main.locale)
+                        .weekdays[cal[Calendar.DAY_OF_WEEK]]
                 )
                 val sb = StringBuilder()
                 for (oc in Main.otherCalendars) {
@@ -345,8 +346,8 @@ class ItemDay(private val c: Main) : ListAdapter {
                     when {
                         dif == -1 -> c.getString(R.string.yesterday)
                         dif == 1 -> c.getString(R.string.tomorrow)
-                        dif < 0 -> c.getString(R.string.difAgo, dif.absoluteValue)
-                        dif > 0 -> c.getString(R.string.difLater, dif)
+                        dif < 0 -> c.getString(R.string.difAgo, dif.absoluteValue.decSep())
+                        dif > 0 -> c.getString(R.string.difLater, dif.decSep())
                         else -> c.getString(R.string.today)
                     }
                 )

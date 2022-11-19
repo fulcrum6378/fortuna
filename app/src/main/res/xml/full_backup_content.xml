@@ -5,6 +5,9 @@
         domain="file"
         path="@string/export_file" />
     <include
+        domain="file"
+        path="@string/backup_file" />
+    <include
         domain="sharedpref"
         path="@string/shared_prefs" />
 </full-backup-content>

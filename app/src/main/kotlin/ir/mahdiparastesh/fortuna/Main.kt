@@ -58,6 +58,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
+import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +68,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.*
+import kotlin.math.ceil
 
 @SuppressLint("InvalidFragmentVersionForActivityResult")
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -143,9 +146,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
         b.annus.addTextChangedListener {
-            if (it.toString().length != 4 && !rollingAnnusItself) {
+            if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself) {
                 rollingAnnusItself = false; return@addTextChangedListener; }
-            if (resolvingIntent) return@addTextChangedListener
+            if (m.luna?.split(".")?.get(0) == it.toString() || resolvingIntent)
+                return@addTextChangedListener
             if (rollingLunaWithAnnus) {
                 rollingLunaWithAnnus = false; return@addTextChangedListener; }
 
@@ -154,8 +158,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             updateGrid()
         }
         b.annus.setOnEditorActionListener { v, actionId, _ ->
-            if (actionId != EditorInfo.IME_ACTION_GO) return@setOnEditorActionListener false
-            m.luna = "${z(v.text.toString(), 4)}.${z(b.luna.selectedItemPosition + 1)}"
+            if (actionId != EditorInfo.IME_ACTION_GO) return@setOnEditorActionListener true
+            val annus = v.text.toString()
+            if (annus == "" || annus == "-") return@setOnEditorActionListener true
+            m.luna = "${z(annus, 4)}.${z(b.luna.selectedItemPosition + 1)}"
             m.calendar = m.luna!!.toCalendar(calType)
             updateGrid()
             b.annus.blur(c)
@@ -292,6 +298,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     }
                 }
             }
+            R.id.navBackup -> navBackup()
             R.id.navHelp -> help()
         }
         return true
@@ -359,6 +366,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
             b.emoji.text = it.luna.emoji
             b.emoji.isVisible = it.luna.emoji?.isNotBlank() == true
+        }
+        b.grid.layoutParams.apply {
+            height = ((resources.getDimension(R.dimen.gridItemHeight) *
+                    ceil(m.calendar.lunaMaxima().toFloat() / 5f)) +
+                    resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
         }
     }
 
@@ -491,6 +503,31 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
+    private fun navBackup() {
+        if (m.showingBack && !firstResume) return
+        m.showingBack = true
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(R.string.backup)
+            setMessage(R.string.backupDesc)
+            setView(
+                BackupBinding.inflate(layoutInflater).apply {
+                    status.text = lastBackup()
+                }.root
+            )
+            setCancelable(true)
+            setOnDismissListener { m.showingBack = false }
+        }.show()
+    }
+
+    private fun lastBackup(): String {
+        val d = calType.newInstance().apply { timeInMillis = Vita.Backup(c).lastModified() }
+        return getString(
+            R.string.backupTime,
+            "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH])}.${z(d[Calendar.DAY_OF_MONTH])}" +
+                    " - ${z(d[Calendar.HOUR])}:${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
+        )
+    }
+
     private fun help() {
         if (m.showingHelp && !firstResume) return
         m.showingHelp = true
@@ -545,6 +582,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
             /*"persian"*/ else -> PersianCalendar::class.java
         }
+        val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
         val otherCalendars = arrayOf(
             android.icu.util.GregorianCalendar::class.java,
@@ -587,6 +625,23 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
                 ?.hideSoftInputFromWindow(windowToken, 0)
             clearFocus()
+        }
+
+        fun Number.decSep(): String {
+            val s: String
+            var fraction = ""
+            val ss = StringBuilder()
+            toString().split(".").also {
+                if (it.size == 2) fraction = "." + it[1]
+                s = it[0]
+            }
+            var sep = 0
+            for (i in s.length - 1 downTo 0) {
+                ss.insert(0, s[i])
+                sep++
+                if (sep % 3 == 0 && i != 0) ss.insert(0, ",")
+            }
+            return ss.toString() + fraction
         }
     }
 
@@ -663,6 +718,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
         var showingStat = false
+        var showingBack = false
         var showingHelp = false
         var showingDate: Int? = null
 
@@ -671,8 +727,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-* Extension:
-* BACKUP in menu
-* Select multiple day cells in order to score them once
-* How many years/month past/remaining to a specific day?
-*/
+  * Problems:
+  * Implement the backup actions: BACKUP | RESTORE | EXPORT
+  * GregorianCalendar shows weird numbers in BC!
+  * -
+  * Improvements:
+  * DataSetObserver is not implemented!
+  * -
+  * Extension:
+  * Select multiple day cells in order to score them once
+  * How many years/month past/remaining to a specific day?
+  */

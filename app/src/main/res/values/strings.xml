@@ -24,8 +24,8 @@
     <string name="defValue">DEFAULT</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="difAgo">%d day(s) ago</string>
-    <string name="difLater">%d day(s) later</string>
+    <string name="difAgo">%s day(s) ago</string>
+    <string name="difLater">%s day(s) later</string>
     <string name="viewInCalendar">Calendar</string>
     <string name="holdLonger">Hold a little longer&#8230;</string>
     <string name="scoreFuture">You don\'t know your future!!!</string>
@@ -43,6 +43,11 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
     <string name="navSend">Send data to</string>
+    <string name="backup">Backup</string>
+    <string name="backupDesc">
+        Your data is automatically backed up in a separate file everyday at 12 AM.
+    </string>
+    <string name="backupTime">Last time at %s</string>
     <string name="navHelp">Help</string>
     <string name="help">
         This app is designed based on the \"Hedonist\" philosophy!
