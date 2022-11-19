@@ -21,6 +21,10 @@
         android:icon="@drawable/data_send"
         android:title="@string/navSend" />
     <item
+        android:id="@+id/navBackup"
+        android:icon="@drawable/backup"
+        android:title="@string/backup" />
+    <item
         android:id="@+id/navHelp"
         android:icon="@drawable/help"
         android:title="@string/navHelp" />

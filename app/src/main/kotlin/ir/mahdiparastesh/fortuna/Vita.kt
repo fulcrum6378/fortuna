@@ -127,8 +127,13 @@ class Vita : HashMap<String, Luna>() {
 
         fun z(n: Any?, ideal: Int = 2): String {
             var s = n.toString()
+            var neg = false
+            if (s.startsWith("-")) {
+                s = s.substring(1)
+                neg = true
+            }
             while (s.length < ideal) s = "0$s"
-            return s
+            return if (!neg) s else "-$s"
         }
 
 

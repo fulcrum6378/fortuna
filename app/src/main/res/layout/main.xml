@@ -100,12 +100,14 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:focusedByDefault="false"
+                        android:gravity="center"
                         android:hint="@string/year"
                         android:imeOptions="actionGo"
                         android:importantForAutofill="no"
-                        android:inputType="numberSigned|numberDecimal"
-                        android:maxLength="4"
-                        android:paddingHorizontal="15dp"
+                        android:inputType="number|numberSigned"
+                        android:maxLength="5"
+                        android:minEms="4"
+                        android:paddingHorizontal="5dp"
                         android:paddingVertical="10dp"
                         android:textColor="?android:attr/textColor"
                         android:textSize="19sp"
@@ -114,6 +116,8 @@
                         app:layout_constraintEnd_toStartOf="@id/defVar"
                         app:layout_constraintStart_toEndOf="@id/luna"
                         app:layout_constraintTop_toTopOf="parent" />
+                    <!-- I wonder why android:textColor="?android:attr/textColor" is necessary?!? -->
+                    <!-- "ems" means "as long as <N> "M" characters wide"; which is the widest character. -->
 
                     <ImageView
                         android:id="@+id/annusDown"
@@ -153,7 +157,7 @@
                 <GridView
                     android:id="@+id/grid"
                     android:layout_width="match_parent"
-                    android:layout_height="775dp"
+                    android:layout_height="766dp"
                     android:nestedScrollingEnabled="false"
                     android:numColumns="5" />
             </LinearLayout>

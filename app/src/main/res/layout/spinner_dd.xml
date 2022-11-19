@@ -5,6 +5,6 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="17dp"
     android:paddingVertical="15dp"
-    android:textSize="14sp"
+    android:textSize="14.5sp"
     android:textStyle="bold"
     tools:viewBindingIgnore="true" />
