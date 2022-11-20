@@ -148,10 +148,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.addTextChangedListener {
             if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself) {
                 rollingAnnusItself = false; return@addTextChangedListener; }
-            if (m.luna?.split(".")?.get(0) == it.toString() || resolvingIntent)
-                return@addTextChangedListener
             if (rollingLunaWithAnnus) {
                 rollingLunaWithAnnus = false; return@addTextChangedListener; }
+            if (m.luna?.split(".")?.get(0) == it.toString() || resolvingIntent)
+                return@addTextChangedListener // don't move this before rollingLunaWithAnnus
 
             m.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
             m.calendar = m.luna!!.toCalendar(calType)
@@ -488,13 +488,18 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 }
                 bw.table.addView(tr, LinearLayout.LayoutParams(-1, cellH))
             }
+            bw.sv.post {
+                bw.sv.smoothScrollTo(
+                    0, (bw.body.bottom + bw.sv.paddingBottom) - (bw.sv.scrollY + bw.sv.height)
+                )
+            }
 
             setTitle(R.string.navStat)
             setMessage(text)
             setView(bw.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.copy) { _, _ ->
-                (c.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?)?.setPrimaryClip(
+                (c.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.setPrimaryClip(
                     ClipData.newPlainText(getString(R.string.fortunaStat), text)
                 )
                 Toast.makeText(c, R.string.done, Toast.LENGTH_SHORT).show()
