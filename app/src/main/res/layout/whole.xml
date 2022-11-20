@@ -9,6 +9,7 @@
          All attributes are necessary! Never set padding here! Margins won't work! -->
 
     <ScrollView
+        android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constrainedHeight="true"

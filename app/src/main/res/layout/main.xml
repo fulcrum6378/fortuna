@@ -96,7 +96,7 @@
 
                     <EditText
                         android:id="@+id/annus"
-                        android:layout_width="wrap_content"
+                        android:layout_width="61sp"
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:focusedByDefault="false"
@@ -106,8 +106,6 @@
                         android:importantForAutofill="no"
                         android:inputType="number|numberSigned"
                         android:maxLength="5"
-                        android:minEms="4"
-                        android:paddingHorizontal="5dp"
                         android:paddingVertical="10dp"
                         android:textColor="?android:attr/textColor"
                         android:textSize="19sp"
@@ -118,6 +116,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
                     <!-- I wonder why android:textColor="?android:attr/textColor" is necessary?!? -->
                     <!-- "ems" means "as long as <N> "M" characters wide"; which is the widest character. -->
+                    <!-- android:maxEms="5" android:minEms="4" -->
 
                     <ImageView
                         android:id="@+id/annusDown"
