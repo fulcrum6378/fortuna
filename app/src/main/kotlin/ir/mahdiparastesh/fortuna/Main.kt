@@ -590,6 +590,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
         val otherCalendars = arrayOf(
+            IranianCalendar::class.java,
             android.icu.util.GregorianCalendar::class.java,
             PersianCalendar::class.java,
             android.icu.util.IslamicCalendar::class.java,
