@@ -45,7 +45,7 @@
     <string name="navSend">Send data to</string>
     <string name="backup">Backup</string>
     <string name="backupDesc">
-        Your data is automatically backed up in a separate file everyday at 12 AM.
+        Your data is automatically backed up in a separate file every night.
     </string>
     <string name="backupTime">Last time at %s</string>
     <string name="navHelp">Help</string>
