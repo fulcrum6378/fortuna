@@ -135,16 +135,18 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             this, R.layout.spinner, resources.getStringArray(R.array.luna)
         ).apply { setDropDownViewResource(R.layout.spinner_dd) }
         b.luna.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, i: Int, id: Long) {
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, i: Int, id: Long) {
                 if (resolvingIntent) return
                 if (rollingLuna) {
                     rollingLuna = false; return; }
+                if (m.changingConfigForLunaSpinner) {
+                    m.changingConfigForLunaSpinner = false; return; }
                 m.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
                 m.calendar = m.luna!!.toCalendar(calType)
                 updateGrid()
             }
-        }
+        } // setOnItemClickListener cannot be used with a spinner
         b.annus.addTextChangedListener {
             if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself) {
                 rollingAnnusItself = false; return@addTextChangedListener; }
@@ -232,7 +234,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 m.vita!![m.luna!!] = Luna(m.calendar)
                 m.vita!!.save(c)
             } else m.vita?.reform(c)
-        }
+        } else if (firstResume) updateGrid()
         firstResume = false
     }
 
@@ -570,6 +572,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     override fun onDestroy() {
+        m.changingConfigForLunaSpinner = true
         handler = null
         super.onDestroy()
     }
@@ -727,6 +730,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var showingBack = false
         var showingHelp = false
         var showingDate: Int? = null
+        var changingConfigForLunaSpinner = false
 
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
@@ -734,6 +738,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Problems:
+  * onConfigurationChanged doesn't reload the Grid only in each Farvardin!!!!
+  * because the Spinner doesn't change in Farvardin and therefore doesn't execute updateGrid().
   * Implement the backup actions: BACKUP | RESTORE | EXPORT
   * GregorianCalendar shows weird numbers in BC!
   * -
