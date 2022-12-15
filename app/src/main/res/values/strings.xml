@@ -14,18 +14,19 @@
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
     <string name="done">Done!</string>
-    <string name="today">Today</string>
-
-    <!-- Main -->
     <string name="year">Year</string>
-    <string name="variabilis">Variabilis: %s</string>
-    <string name="emojiHint">😃</string>
-    <string name="notesHint" translatable="false">.....</string>
-    <string name="defValue">DEFAULT</string>
+    <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="difAgo">%s day(s) ago</string>
     <string name="difLater">%s day(s) later</string>
+    <string name="never">Never</string>
+
+    <!-- Main -->
+    <string name="variabilis">Variabilis: %s</string>
+    <string name="emojiHint">😃</string>
+    <string name="notesHint" translatable="false">.....</string>
+    <string name="defValue">DEFAULT</string>
     <string name="viewInCalendar">Calendar</string>
     <string name="holdLonger">Hold a little longer&#8230;</string>
     <string name="scoreFuture">You don\'t know your future!!!</string>

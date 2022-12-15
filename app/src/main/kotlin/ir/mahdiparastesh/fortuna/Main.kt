@@ -527,7 +527,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     private fun lastBackup(): String {
-        val d = calType.newInstance().apply { timeInMillis = Vita.Backup(c).lastModified() }
+        val f = Vita.Backup(c)
+        if (!f.exists()) return getString(R.string.never)
+        val d = calType.newInstance().apply { timeInMillis = f.lastModified() }
         return getString(
             R.string.backupTime,
             "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH])}.${z(d[Calendar.DAY_OF_MONTH])}" +
@@ -588,15 +590,15 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var handler: Handler? = null
         val calType = when (BuildConfig.FLAVOR) {
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
-            /*"persian"*/ else -> PersianCalendar::class.java
+            "iranian" -> HumanistIranianCalendar::class.java
+            else -> throw Exception()
         }
         val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
         val otherCalendars = arrayOf(
             HumanistIranianCalendar::class.java,
-            ImperialIranianCalendar::class.java,
+            // ImperialIranianCalendar::class.java,
             android.icu.util.GregorianCalendar::class.java,
-            PersianCalendar::class.java,
             android.icu.util.IslamicCalendar::class.java,
             android.icu.util.ChineseCalendar::class.java,
             android.icu.util.IndianCalendar::class.java,

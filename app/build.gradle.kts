@@ -12,13 +12,13 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "7.3.0"
+        versionName = "7.4.0"
     }
 
     setFlavorDimensions(listOf("calendar"))
     productFlavors {
         all { dimension = "calendar" }
-        create("persian")
+        create("iranian")
         create("gregorian") { applicationIdSuffix = ".gregorian" }
     }
 
@@ -26,8 +26,8 @@ android {
         java.srcDirs("src/main/java")
         kotlin.srcDirs("src/main/kotlin")
     }
-    sourceSets.getByName("persian") {
-        res.setSrcDirs(listOf("src/main/res", "src/main/res_persian"))
+    sourceSets.getByName("iranian") {
+        res.setSrcDirs(listOf("src/main/res", "src/main/res_iranian"))
     }
     sourceSets.getByName("gregorian") {
         res.setSrcDirs(listOf("src/main/res", "src/main/res_gregorian"))
