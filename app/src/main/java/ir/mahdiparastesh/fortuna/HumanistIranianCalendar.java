@@ -12,12 +12,12 @@ import java.util.Locale;
  * Humanist Iranian Calendar is an implementation of the Iranian calendar whose numbering system
  * starts with the foundation of the ancient city Susa of Iran, marking the spark of civilisation
  * in this land.
- *
+ * <p>
  * The exact number is 4395 BC (a calibrated radio-carbon date), 5016 year before Hijrah. In order
  * to make it easy 16 is subtracted from it. So it only needs to add "5" to the first digit of the
  * previous calendar:
  * Humanist Iranian year = 5000 + Islamic Iranian year (e.g. 1401 -> 6401)
- *
+ * <p>
  * For more information:
  * https://en.wikipedia.org/wiki/Susa
  */
