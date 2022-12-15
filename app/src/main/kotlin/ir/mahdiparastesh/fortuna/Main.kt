@@ -593,7 +593,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
         val otherCalendars = arrayOf(
-            IranianCalendar::class.java,
+            HumanistIranianCalendar::class.java,
+            ImperialIranianCalendar::class.java,
             android.icu.util.GregorianCalendar::class.java,
             PersianCalendar::class.java,
             android.icu.util.IslamicCalendar::class.java,
@@ -738,8 +739,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Problems:
-  * onConfigurationChanged doesn't reload the Grid only in each Farvardin!!!!
-  * because the Spinner doesn't change in Farvardin and therefore doesn't execute updateGrid().
   * Implement the backup actions: BACKUP | RESTORE | EXPORT
   * GregorianCalendar shows weird numbers in BC!
   * -

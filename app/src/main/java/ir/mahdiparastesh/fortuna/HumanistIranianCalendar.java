@@ -8,15 +8,28 @@ import android.icu.util.ULocale.Category;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Humanist Iranian Calendar is an implementation of the Iranian calendar whose numbering system
+ * starts with the foundation of the ancient city Susa of Iran, marking the spark of civilisation
+ * in this land.
+ *
+ * The exact number is 4395 BC (a calibrated radio-carbon date), 5016 year before Hijrah. In order
+ * to make it easy 16 is subtracted from it. So it only needs to add "5" to the first digit of the
+ * previous calendar:
+ * Humanist Iranian year = 5000 + Islamic Iranian year (e.g. 1401 -> 6401)
+ *
+ * For more information:
+ * https://en.wikipedia.org/wiki/Susa
+ */
 @SuppressWarnings("unused")
-public class IranianCalendar extends Calendar {
+public class HumanistIranianCalendar extends Calendar {
 
     private static final int[][] MONTH_COUNT = {
             //len len2 st
-            {31, 31, 0}, // Farvardin
-            {31, 31, 31}, // Ordibehesht
-            {31, 31, 62}, // Khordad
-            {31, 31, 93}, // Tir
+            {31, 31, 0},   // Farvardin
+            {31, 31, 31},  // Ordibehesht
+            {31, 31, 62},  // Khordad
+            {31, 31, 93},  // Tir
             {31, 31, 124}, // Mordad
             {31, 31, 155}, // Shahrivar
             {30, 30, 186}, // Mehr
@@ -29,50 +42,47 @@ public class IranianCalendar extends Calendar {
             // len2 length of month in a leap year
             // st   days in year before start of month
     };
+    private static final int EPOCH = 122108;
 
-    // Gregorian 1/1/1 => 1721426, Persian 1/1/1 => 1948320
-    private static final int IRANIAN_EPOCH = 122108;
-    // Why didn't it become 122070 ?!? while (1948320 - (5000 * 365.25)) => 122070 (38 days diff)
-
-    public IranianCalendar() {
+    public HumanistIranianCalendar() {
         this(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
     }
 
-    public IranianCalendar(TimeZone zone) {
+    public HumanistIranianCalendar(TimeZone zone) {
         this(zone, ULocale.getDefault(Category.FORMAT));
     }
 
-    public IranianCalendar(Locale aLocale) {
+    public HumanistIranianCalendar(Locale aLocale) {
         this(TimeZone.getDefault(), aLocale);
     }
 
-    public IranianCalendar(ULocale locale) {
+    public HumanistIranianCalendar(ULocale locale) {
         this(TimeZone.getDefault(), locale);
     }
 
-    public IranianCalendar(TimeZone zone, Locale aLocale) {
+    public HumanistIranianCalendar(TimeZone zone, Locale aLocale) {
         super(zone, aLocale);
         setTimeInMillis(System.currentTimeMillis());
     }
 
-    public IranianCalendar(TimeZone zone, ULocale locale) {
+    public HumanistIranianCalendar(TimeZone zone, ULocale locale) {
         super(zone, locale);
         setTimeInMillis(System.currentTimeMillis());
     }
 
-    public IranianCalendar(Date date) {
+    public HumanistIranianCalendar(Date date) {
         super(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
         this.setTime(date);
     }
 
-    public IranianCalendar(int year, int month, int date) {
+    public HumanistIranianCalendar(int year, int month, int date) {
         super(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
         this.set(Calendar.YEAR, year);
         this.set(Calendar.MONTH, month);
         this.set(Calendar.DATE, date);
     }
 
-    public IranianCalendar(int year, int month, int date, int hour, int minute, int second) {
+    public HumanistIranianCalendar(int year, int month, int date, int hour, int minute, int second) {
         super(TimeZone.getDefault(), ULocale.getDefault(Category.FORMAT));
         this.set(Calendar.YEAR, year);
         this.set(Calendar.MONTH, month);
@@ -149,7 +159,7 @@ public class IranianCalendar extends Calendar {
             eYear += floorDivide(month, 12, rem);
             month = rem[0];
         }
-        int julianDay = IRANIAN_EPOCH - 1 + 365 * (eYear - 1) + floorDivide(8 * eYear + 21, 33);
+        int julianDay = EPOCH - 1 + 365 * (eYear - 1) + floorDivide(8 * eYear + 21, 33);
         if (month != 0) julianDay += MONTH_COUNT[month][2];
         return julianDay;
     }
@@ -163,7 +173,7 @@ public class IranianCalendar extends Calendar {
     @Override
     protected void handleComputeFields(int julianDay) {
         int year, month, dayOfMonth, dayOfYear;
-        long daysSinceEpoch = julianDay - IRANIAN_EPOCH;
+        long daysSinceEpoch = julianDay - EPOCH;
         year = 1 + (int) floorDivide(33 * daysSinceEpoch + 3, 12053);
         long farvardin1 = 365L * (year - 1) + floorDivide(8 * year + 21, 33);
         dayOfYear = (int) (daysSinceEpoch - farvardin1); // 0-based
@@ -183,6 +193,6 @@ public class IranianCalendar extends Calendar {
 
     @Override
     public String getType() {
-        return "iranian";
+        return "humanist_iranian";
     }
 }
