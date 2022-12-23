@@ -519,6 +519,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setView(
                 BackupBinding.inflate(layoutInflater).apply {
                     status.text = lastBackup()
+                    backup.setOnClickListener { Vita.backup(c) }
+                    restore.setOnClickListener { }
+                    export.setOnClickListener { }
                 }.root
             )
             setCancelable(true)
@@ -598,6 +601,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         val otherCalendars = arrayOf(
             HumanistIranianCalendar::class.java,
             // ImperialIranianCalendar::class.java,
+            // GregorianCalendar does not show a negative number in BCE, which is correct!
             android.icu.util.GregorianCalendar::class.java,
             android.icu.util.IslamicCalendar::class.java,
             android.icu.util.ChineseCalendar::class.java,
@@ -741,8 +745,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Problems:
-  * Implement the backup actions: BACKUP | RESTORE | EXPORT
-  * GregorianCalendar shows weird numbers in BC!
+  * Implement RESTORE | EXPORT
   * -
   * Improvements:
   * DataSetObserver is not implemented!

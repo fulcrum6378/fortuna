@@ -19,7 +19,7 @@
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
         <item name="android:src">@drawable/arrow</item>
-        <item name="android:background">@drawable/button</item>
+        <item name="android:background">@drawable/button_small</item>
         <item name="android:padding">6dp</item>
     </style>
 
@@ -31,6 +31,18 @@
     <style name="vArrow" parent="arrow">
         <item name="layout_constraintStart_toStartOf">@id/annus</item>
         <item name="layout_constraintEnd_toEndOf">@id/annus</item>
+    </style>
+
+    <style name="backupAction">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/button_round</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingVertical">15sp</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 

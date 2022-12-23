@@ -127,7 +127,7 @@
                         android:id="@+id/defVar"
                         android:layout_width="56sp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/button"
+                        android:background="@drawable/button_small"
                         android:gravity="center_horizontal"
                         android:padding="10sp"
                         android:textAlignment="center"
