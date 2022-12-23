@@ -17,6 +17,23 @@
         android:id="@+id/actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal"
-        android:weightSum="3" />
+        android:weightSum="3">
+
+        <TextView
+            android:id="@+id/backup"
+            style="@style/backupAction"
+            android:text="@string/backup" />
+
+        <TextView
+            android:id="@+id/restore"
+            style="@style/backupAction"
+            android:text="@string/restore" />
+
+        <TextView
+            android:id="@+id/export"
+            style="@style/backupAction"
+            android:text="@string/export" />
+    </LinearLayout>
 </LinearLayout>

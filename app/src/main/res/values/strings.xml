@@ -21,6 +21,9 @@
     <string name="difAgo">%s day(s) ago</string>
     <string name="difLater">%s day(s) later</string>
     <string name="never">Never</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="export">Export</string>
 
     <!-- Main -->
     <string name="variabilis">Variabilis: %s</string>
@@ -44,7 +47,6 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
     <string name="navSend">Send data to</string>
-    <string name="backup">Backup</string>
     <string name="backupDesc">
         Your data is automatically backed up in a separate file every night.
     </string>
