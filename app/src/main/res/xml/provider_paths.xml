@@ -3,4 +3,7 @@
     <cache-path
         name="@string/export_file"
         path="/" />
+    <cache-path
+        name="@string/backup_file"
+        path="/" />
 </paths>

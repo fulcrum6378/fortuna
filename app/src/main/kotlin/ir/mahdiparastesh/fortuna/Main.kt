@@ -281,25 +281,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
             })
-            R.id.navSend -> {
-                val binary = m.vita?.export(c) ?: return false
-                val exported = File(cacheDir, c.getString(R.string.export_file))
-                CoroutineScope(Dispatchers.IO).launch {
-                    runCatching {
-                        FileOutputStream(exported).use { it.write(binary) }
-                    }.onSuccess {
-                        withContext(Dispatchers.Main) {
-                            Intent(Intent.ACTION_SEND).apply {
-                                type = Vita.MIME_TYPE
-                                putExtra(
-                                    Intent.EXTRA_STREAM,
-                                    FileProvider.getUriForFile(c, packageName, exported)
-                                )
-                            }.also { startActivity(it) }
-                        }
-                    }
-                }
-            }
+            R.id.navSend -> m.vita?.export(c)?.also { sendFile(it, R.string.export_file) }
             R.id.navBackup -> navBackup()
             R.id.navHelp -> help()
         }
@@ -355,6 +337,25 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 setNegativeButton(R.string.no, null)
             }.show()
         }
+
+    private fun sendFile(binary: ByteArray, @StringRes fileName: Int) {
+        val exported = File(cacheDir, c.getString(fileName))
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                FileOutputStream(exported).use { it.write(binary) }
+            }.onSuccess {
+                withContext(Dispatchers.Main) {
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = Vita.MIME_TYPE
+                        putExtra(
+                            Intent.EXTRA_STREAM,
+                            FileProvider.getUriForFile(c, packageName, exported)
+                        )
+                    }.also { startActivity(it) }
+                }
+            }
+        }
+    }
 
     private fun updatePanel() {
         b.annus.setText(m.calendar[Calendar.YEAR].toString())
@@ -518,10 +519,30 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setMessage(R.string.backupDesc)
             setView(
                 BackupBinding.inflate(layoutInflater).apply {
-                    status.text = lastBackup()
-                    backup.setOnClickListener { Vita.backup(c) }
-                    restore.setOnClickListener { }
-                    export.setOnClickListener { }
+                    updateStatus()
+                    backup.setOnClickListener { Vita.backup(c); updateStatus() }
+                    restore.setOnClickListener {
+                        MaterialAlertDialogBuilder(this@Main).apply {
+                            setTitle(c.resources.getString(R.string.restore))
+                            setMessage(
+                                c.resources.getString(R.string.backupRestoreSure, lastBackup())
+                            )
+                            setPositiveButton(R.string.yes) { _, _ ->
+                                m.vita = Vita.loads(
+                                    FileInputStream(Vita.Backup(c)).use { String(it.readBytes()) }
+                                ).also { vita -> vita.save(c) }
+                                updateGrid()
+                                Toast.makeText(c, R.string.done, Toast.LENGTH_LONG).show()
+                            }
+                            setNegativeButton(R.string.no, null)
+                        }.show()
+                    }
+                    export.setOnClickListener {
+                        sendFile(
+                            FileInputStream(Vita.Backup(c)).use { it.readBytes() },
+                            R.string.backup_file
+                        )
+                    }
                 }.root
             )
             setCancelable(true)
@@ -529,15 +550,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
+    private fun BackupBinding.updateStatus() {
+        status.text = getString(R.string.backupTime, lastBackup())
+    }
+
     private fun lastBackup(): String {
         val f = Vita.Backup(c)
         if (!f.exists()) return getString(R.string.never)
         val d = calType.newInstance().apply { timeInMillis = f.lastModified() }
-        return getString(
-            R.string.backupTime,
-            "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH])}.${z(d[Calendar.DAY_OF_MONTH])}" +
-                    " - ${z(d[Calendar.HOUR])}:${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
-        )
+        return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH])}." +
+                "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
+                "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
     }
 
     private fun help() {
@@ -744,9 +767,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Problems:
-  * Implement RESTORE | EXPORT
-  * -
   * Improvements:
   * DataSetObserver is not implemented!
   * -
