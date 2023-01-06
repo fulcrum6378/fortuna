@@ -12,7 +12,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "7.5.2"
+        versionName = "7.6.8"
     }
 
     setFlavorDimensions(listOf("calendar"))
