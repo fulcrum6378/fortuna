@@ -50,7 +50,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import ir.mahdiparastesh.fortuna.ItemDay.Companion.changeVar
 import ir.mahdiparastesh.fortuna.ItemDay.Companion.toValue
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
@@ -177,9 +176,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.prev.setOnClickListener { rollCalendar(false) }
         b.next.setOnLongClickListener { rollCalendar(true, 6); true }
         b.prev.setOnLongClickListener { rollCalendar(false, 6); true }
-        b.defVar.setOnClickListener {
-            m.thisLuna().changeVar(this@Main, -1)
-        }
+        b.defVar.setOnClickListener { (b.grid.adapter as? ItemDay)?.changeVar(-1) }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Handler
@@ -191,18 +188,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
+                    HANDLE_SEXBOOK_LOADED -> (b.grid.adapter as? ItemDay)?.apply {
+                        sexbook = mirrorSexbook()
+                        m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
+                    }
                 }
             }
         }
 
-        // Restore the saved states (null-safe)
-        m.changingVar?.also {
-            m.vita!![m.luna!!]?.changeVar(this@Main, it,
-                (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
-        }
+        // Restore saved states
         if (m.showingStat) stat()
         if (m.showingHelp) help()
-        m.showingDate?.also { ItemDay.detailDate(this, it, m.calendar) }
 
         // Miscellaneous
         if (try {
@@ -211,7 +207,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 true
             } catch (e: PackageManager.NameNotFoundException) {
                 false
-            }
+            } && m.sexbook == null
         ) Sexbook().start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Nyx.CHANNEL)
@@ -234,7 +230,16 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 m.vita!![m.luna!!] = Luna(m.calendar)
                 m.vita!!.save(c)
             } else m.vita?.reform(c)
-        } else if (firstResume) updateGrid()
+        } else if (firstResume) {
+            updateGrid()
+
+            // Restore saved states (null-safe)
+            m.changingVar?.also {
+                (b.grid.adapter as? ItemDay)?.changeVar(it,
+                    (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+            }
+            m.showingDate?.also { (b.grid.adapter as? ItemDay)?.detailDate(it, m.calendar) }
+        }
         firstResume = false
     }
 
@@ -256,11 +261,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.luna = m.calendar.toKey()
         }
         updatePanel()
+        updateGrid()
         if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
-            m.vita!![m.luna!!]?.changeVar(this@Main, it - 1,
+            (b.grid.adapter as? ItemDay)?.changeVar(it - 1,
                 (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
         }
-        updateGrid()
         resolvingIntent = false
     }
 
@@ -363,7 +368,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun updateGrid() {
-        b.grid.adapter = ItemDay(this).also {
+        if (b.grid.adapter == null) b.grid.adapter = ItemDay(this)
+        else {
+            b.grid.invalidateViews()
+            (b.grid.adapter as ItemDay).luna = m.thisLuna()
+        }
+        (b.grid.adapter as ItemDay).also {
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
@@ -613,6 +623,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val A_DAY = 86400000L
         const val SEXBOOK = "ir.mahdiparastesh.sexbook"
         const val HANDLE_NEW_DAY = 0
+        const val HANDLE_SEXBOOK_LOADED = 1
         var handler: Handler? = null
         val calType = when (BuildConfig.FLAVOR) {
             "gregorian" -> android.icu.util.GregorianCalendar::class.java
@@ -738,6 +749,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             cur.close()
             m.sexbook = sexbook.toList()
+            handler?.obtainMessage(HANDLE_SEXBOOK_LOADED)?.sendToTarget()
         }
     }
 
@@ -767,10 +779,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Improvements:
-  * DataSetObserver is not implemented!
-  * -
-  * Extension:
   * Select multiple day cells in order to score them once
   * How many years/month past/remaining to a specific day?
   */
