@@ -17,10 +17,10 @@ class TodayWidget : AppWidgetProvider() {
 
     companion object {
         fun update(c: Context) = RemoteViews(c.packageName, R.layout.today_widget).apply {
-            val cal = Main.calType.newInstance()
+            val cal = Kit.calType.newInstance()
             setOnClickPendingIntent(R.id.root, Main.openInDate(c, cal, 1))
             setTextViewText(
-                R.id.dies, ItemDay.diesNum(cal[Calendar.DAY_OF_MONTH],
+                R.id.dies, Kit.diesNum(cal[Calendar.DAY_OF_MONTH],
                     c.sp().getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                         .let { if (it == Main.arNumType) null else it })
             )

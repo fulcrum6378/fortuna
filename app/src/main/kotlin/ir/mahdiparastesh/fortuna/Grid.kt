@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListAdapter
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -27,30 +28,41 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.emoji2.text.EmojiCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.fortuna.Main.Companion.SEXBOOK
-import ir.mahdiparastesh.fortuna.Main.Companion.calType
+import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.Kit.calType
+import ir.mahdiparastesh.fortuna.Kit.compareByDays
+import ir.mahdiparastesh.fortuna.Kit.decSep
+import ir.mahdiparastesh.fortuna.Kit.diesNum
+import ir.mahdiparastesh.fortuna.Kit.resetHours
+import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Main.Companion.color
-import ir.mahdiparastesh.fortuna.Main.Companion.decSep
-import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.Vita.Companion.z
-import ir.mahdiparastesh.fortuna.databinding.ItemDayBinding
+import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import java.util.*
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-class ItemDay(private val c: Main) : ListAdapter {
+class Grid(private val c: Main) : ListAdapter {
     var luna = c.m.thisLuna()
+    var sexbook: List<Main.Sex>? = mirrorSexbook()
+    var cvTvSexbook: TextView? = null
+
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
     private val cs: Int by lazy { c.color(com.google.android.material.R.attr.colorSecondary) }
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
-    var sexbook: List<Main.Sex>? = mirrorSexbook()
-    var cvTvSexbook: TextView? = null
+    private val telEmojis = arrayOf(
+        Pair("1", "1️⃣"), Pair("2", "2️⃣"), Pair("3", "3️⃣"),
+        Pair("4", "4️⃣"), Pair("5", "5️⃣"), Pair("6", "6️⃣"),
+        Pair("7", "7️⃣"), Pair("8", "8️⃣"), Pair("9", "9️⃣"),
+        Pair("*", "*️⃣"), Pair("0", "0️⃣"), Pair("#", "#️⃣"),
+    )
 
     override fun getCount(): Int = c.m.calendar.lunaMaxima()
     override fun isEmpty(): Boolean = false
@@ -66,7 +78,7 @@ class ItemDay(private val c: Main) : ListAdapter {
 
     @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
-        ItemDayBinding.inflate(c.layoutInflater, parent, false).apply {
+        ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? = luna[i] ?: luna.default
             val isEstimated = luna[i] == null && luna.default != null
             val numType = c.sp.getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
@@ -126,6 +138,18 @@ class ItemDay(private val c: Main) : ListAdapter {
             if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
+
+    fun onRefresh() {
+        luna = c.m.thisLuna()
+        sexbook = mirrorSexbook()
+    }
+
+    fun mirrorSexbook() = c.m.sexbook?.let {
+        val spl = c.m.luna!!.split(".")
+        val yr = spl[0].toShort()
+        val mo = spl[1].toShort()
+        it.filter { x -> x.year == yr && x.month == mo }
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
@@ -226,16 +250,16 @@ class ItemDay(private val c: Main) : ListAdapter {
             setCancelable(isCancelable)
         }.show()
         if (i > -1) {
-            val isPast = c.todayCalendar.timeInMillis - (Main.A_DAY * 6L) > cal.timeInMillis
-            val isFuture = c.todayCalendar.timeInMillis + (Main.A_DAY * 1L) < cal.timeInMillis
+            val isPast = c.todayCalendar.timeInMillis - (Kit.A_DAY * 6L) > cal.timeInMillis
+            val isFuture = c.todayCalendar.timeInMillis + (Kit.A_DAY * 1L) < cal.timeInMillis
             if ((isPast && luna.diebus[i] != null) || isFuture) {
                 bv.picker.isEnabled = false
                 bv.picker.alpha = 0.4f
                 bv.lock.isVisible = true
                 if (isFuture)
-                    bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.scoreFuture))
+                    bv.lock.setOnClickListener(Kit.LimitedToastAlert(c, R.string.scoreFuture))
                 else { // obviously is past
-                    bv.lock.setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
+                    bv.lock.setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
                     bv.lock.setOnLongClickListener {
                         bv.lock.isVisible = false
                         bv.lock.setOnClickListener(null)
@@ -248,7 +272,7 @@ class ItemDay(private val c: Main) : ListAdapter {
             }
         }
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
-            setOnClickListener(Main.LimitedToastAlert(c, R.string.holdLonger))
+            setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
                 if (c.m.vita == null) return@setOnLongClickListener true
                 luna.saveDies(c, i, null, null, null)
@@ -258,51 +282,15 @@ class ItemDay(private val c: Main) : ListAdapter {
         }
     }
 
-    fun detailDate(i: Int, cal: Calendar) {
-        if (c.m.showingDate != null && !c.firstResume) return
-        c.m.showingDate = i
-        MaterialAlertDialogBuilder(c).apply {
-            setTitle(
-                "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Main.locale)
-                    .weekdays[cal[Calendar.DAY_OF_WEEK]]
-            )
-            val sb = StringBuilder()
-            for (oc in Main.otherCalendars) {
-                val d = oc.newInstance()
-                d.timeInMillis = cal.timeInMillis
-                sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
-                sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
-            }
-            val dif = ((cal.timeInMillis - c.todayCalendar.timeInMillis) / Main.A_DAY).toInt()
-            sb.append(" => ").append(
-                when {
-                    dif == -1 -> c.getString(R.string.yesterday)
-                    dif == 1 -> c.getString(R.string.tomorrow)
-                    dif < 0 -> c.getString(R.string.difAgo, dif.absoluteValue.decSep())
-                    dif > 0 -> c.getString(R.string.difLater, dif.decSep())
-                    else -> c.getString(R.string.today)
-                }
-            )
-            setMessage(sb.toString())
-            setPositiveButton(R.string.ok, null)
-            setNeutralButton(R.string.viewInCalendar) { _, _ ->
-                c.startActivity(
-                    Intent(Intent.ACTION_VIEW).setData(
-                        CalendarContract.CONTENT_URI.buildUpon()
-                            .appendPath("time")
-                            .appendEncodedPath(cal.timeInMillis.toString()).build()
-                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
-            }
-            setOnDismissListener { c.m.showingDate = null }
-        }.show()
-    }
+    private fun Int.toScore() = -(toFloat() - 6f) / 2f
 
-    fun mirrorSexbook() = c.m.sexbook?.let {
-        val spl = c.m.luna!!.split(".")
-        val yr = spl[0].toShort()
-        val mo = spl[1].toShort()
-        it.filter { x -> x.year == yr && x.month == mo }
+    private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
+
+    private fun hasNonEmojiNumber(source: CharSequence): Boolean {
+        for (te in telEmojis)
+            if (te.first in source && te.second !in source)
+                return true
+        return false
     }
 
     fun TextView.showSexbook(i: Int) {
@@ -346,29 +334,78 @@ class ItemDay(private val c: Main) : ListAdapter {
         }
     }
 
-    companion object {
-        private val telEmojis = arrayOf(
-            Pair("1", "1️⃣"), Pair("2", "2️⃣"), Pair("3", "3️⃣"),
-            Pair("4", "4️⃣"), Pair("5", "5️⃣"), Pair("6", "6️⃣"),
-            Pair("7", "7️⃣"), Pair("8", "8️⃣"), Pair("9", "9️⃣"),
-            Pair("*", "*️⃣"), Pair("0", "0️⃣"), Pair("#", "#️⃣"),
-        )
+    fun detailDate(i: Int, cal: Calendar) {
+        if (c.m.showingDate != null && !c.firstResume) return
+        c.m.showingDate = i
+        MaterialAlertDialogBuilder(c).apply {
+            setTitle(
+                "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Kit.locale)
+                    .weekdays[cal[Calendar.DAY_OF_WEEK]]
+            )
+            val sb = StringBuilder()
+            for (oc in Kit.otherCalendars) {
+                val d = oc.newInstance()
+                d.timeInMillis = cal.timeInMillis
+                sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
+                sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
+            }
+            val dif = c.todayCalendar.compareByDays(cal)
+            sb.append(" => ").append(
+                when {
+                    dif == -1 -> c.getString(R.string.yesterday)
+                    dif == 1 -> c.getString(R.string.tomorrow)
+                    dif < 0 -> enumerate(R.string.difAgo, dif.absoluteValue)
+                    dif > 0 -> enumerate(R.string.difLater, dif)
+                    else -> c.getString(R.string.today)
+                }
+            )
+            if (abs(dif) > c.todayCalendar.getLeastMaximum(Calendar.DAY_OF_MONTH)) {
+                val expDif = explainDatesDif(c.todayCalendar, cal, dif > 0)
+                if (expDif[0] != 0 || expDif[1] != 0) {
+                    sb.append(" (")
+                    val sep = c.getString(R.string.difSep)
+                    if (expDif[0] != 0)
+                        sb.append(enumerate(R.string.difYears, abs(expDif[0])) + sep)
+                    if (expDif[1] != 0)
+                        sb.append(enumerate(R.string.difMonths, abs(expDif[1])) + sep)
+                    if (expDif[2] != 0)
+                        sb.append(enumerate(R.string.difDays, abs(expDif[2])) + sep)
+                    sb.deleteRange(sb.length - sep.length, sb.length)
+                    sb.append(")")
+                }
+            }
+            setMessage(sb.toString())
+            setPositiveButton(R.string.ok, null)
+            setNeutralButton(R.string.viewInCalendar) { _, _ ->
+                c.startActivity(
+                    Intent(Intent.ACTION_VIEW).setData(
+                        CalendarContract.CONTENT_URI.buildUpon()
+                            .appendPath("time")
+                            .appendEncodedPath(cal.timeInMillis.toString()).build()
+                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+            }
+            setOnDismissListener { c.m.showingDate = null }
+        }.show()
+    }
 
-        fun hasNonEmojiNumber(source: CharSequence): Boolean {
-            for (te in telEmojis)
-                if (te.first in source && te.second !in source)
-                    return true
-            return false
+    // only one "(" and one ")" are allowed and required in "res".
+    private fun enumerate(@StringRes res: Int, num: Int): String {
+        var ret = c.getString(res, num.decSep())
+        ret = if (num == 1) ret.removeRange(ret.indexOf("("), ret.indexOf(")") + 1)
+        else ret.substringBefore("(") + ret.substringAfter("(")
+            .substringBefore(")") + ret.substringAfter(")")
+        return ret
+    }
+
+    private fun explainDatesDif(main: Calendar, other: Calendar, isFuture: Boolean): IntArray {
+        val arr = IntArray(3)
+        arr[0] = other[Calendar.YEAR] - main[Calendar.YEAR]
+        arr[1] = other[Calendar.MONTH] - main[Calendar.MONTH]
+        arr[2] = other[Calendar.DAY_OF_MONTH] - main[Calendar.DAY_OF_MONTH]
+        if (isFuture) { // FIXME
+        } else {
         }
-
-        fun Int.toValue() = toFloat() / 256f
-
-        private fun Int.toScore() = -(toFloat() - 6f) / 2f
-
-        private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
-
-        fun diesNum(i: Int, numType: String?): String = (numType?.let { BaseNumeral.find(it) }
-            ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
-            ?.toString() ?: i.toString()
+        return arr
     }
 }

@@ -74,7 +74,7 @@ class Vita : HashMap<String, Luna>() {
 
         fun loads(text: String): Vita {
             val vita = Vita()
-            val cal = Main.calType.newInstance()
+            val cal = Kit.calType.newInstance()
             var key: String? = null
             var dies = 0
             for (ln in StringReader(text).readLines()) try {
@@ -194,7 +194,7 @@ class Vita : HashMap<String, Luna>() {
 }
 
 class Luna(
-    cal: Calendar = Main.calType.newInstance(),
+    cal: Calendar = Kit.calType.newInstance(),
     var default: Float? = null,
     var emoji: String? = null,
     var verbum: String? = null,
