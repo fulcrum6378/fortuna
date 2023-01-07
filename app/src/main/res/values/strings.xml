@@ -20,6 +20,10 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="difAgo">%s day(s) ago</string>
     <string name="difLater">%s day(s) later</string>
+    <string name="difYears">%s year(s)</string>
+    <string name="difMonths">%s month(s)</string>
+    <string name="difDays">%s day(s)</string>
+    <string name="difSep">,&#160;</string>
     <string name="never">Never</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>

@@ -50,7 +50,10 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import ir.mahdiparastesh.fortuna.ItemDay.Companion.toValue
+import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.Kit.calType
+import ir.mahdiparastesh.fortuna.Kit.resetHours
+import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -176,7 +179,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.prev.setOnClickListener { rollCalendar(false) }
         b.next.setOnLongClickListener { rollCalendar(true, 6); true }
         b.prev.setOnLongClickListener { rollCalendar(false, 6); true }
-        b.defVar.setOnClickListener { (b.grid.adapter as? ItemDay)?.changeVar(-1) }
+        b.defVar.setOnClickListener { (b.grid.adapter as? Grid)?.changeVar(-1) }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Handler
@@ -188,7 +191,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
-                    HANDLE_SEXBOOK_LOADED -> (b.grid.adapter as? ItemDay)?.apply {
+                    HANDLE_SEXBOOK_LOADED -> (b.grid.adapter as? Grid)?.apply {
                         sexbook = mirrorSexbook()
                         m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
                     }
@@ -235,10 +238,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
             // Restore saved states (null-safe)
             m.changingVar?.also {
-                (b.grid.adapter as? ItemDay)?.changeVar(it,
+                (b.grid.adapter as? Grid)?.changeVar(it,
                     (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
             }
-            m.showingDate?.also { (b.grid.adapter as? ItemDay)?.detailDate(it, m.calendar) }
+            m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, m.calendar) }
         }
         firstResume = false
     }
@@ -263,7 +266,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         updatePanel()
         updateGrid()
         if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
-            (b.grid.adapter as? ItemDay)?.changeVar(it - 1,
+            (b.grid.adapter as? Grid)?.changeVar(it - 1,
                 (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
         }
         resolvingIntent = false
@@ -368,12 +371,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     fun updateGrid() {
-        if (b.grid.adapter == null) b.grid.adapter = ItemDay(this)
+        if (b.grid.adapter == null) b.grid.adapter = Grid(this)
         else {
             b.grid.invalidateViews()
-            (b.grid.adapter as ItemDay).luna = m.thisLuna()
+            (b.grid.adapter as Grid).onRefresh()
         }
-        (b.grid.adapter as ItemDay).also {
+        (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
@@ -483,7 +486,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                             }
                         )
                         tooltipText = "${monthNames[month]} $year${score?.let { "\n$it" } ?: ""}"
-                        setOnClickListener(object : DoubleClickListener() {
+                        setOnClickListener(object : Kit.DoubleClickListener() {
                             override fun onDoubleClick() {
                                 m.calendar = calType.newInstance().apply {
                                     set(Calendar.YEAR, year)
@@ -620,29 +623,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val EXTRA_DIES = "dies"
         const val SP_NUMERAL_TYPE = "numeral_type"
         const val arNumType = "0"
-        const val A_DAY = 86400000L
-        const val SEXBOOK = "ir.mahdiparastesh.sexbook"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_SEXBOOK_LOADED = 1
         var handler: Handler? = null
-        val calType = when (BuildConfig.FLAVOR) {
-            "gregorian" -> android.icu.util.GregorianCalendar::class.java
-            "iranian" -> HumanistIranianCalendar::class.java
-            else -> throw Exception()
-        }
-        val locale: Locale = Locale.UK // never ever use SimpleDateFormat
-
-        val otherCalendars = arrayOf(
-            HumanistIranianCalendar::class.java,
-            // ImperialIranianCalendar::class.java,
-            // GregorianCalendar does not show a negative number in BCE, which is correct!
-            android.icu.util.GregorianCalendar::class.java,
-            android.icu.util.IslamicCalendar::class.java,
-            android.icu.util.ChineseCalendar::class.java,
-            android.icu.util.IndianCalendar::class.java,
-            android.icu.util.CopticCalendar::class.java,
-            android.icu.util.HebrewCalendar::class.java,
-        ).filter { it != calType }
 
         fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
@@ -653,14 +636,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
             PorterDuffColorFilter(color, mode)
-
-        fun Calendar.resetHours(): Calendar {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-            return this
-        }
 
         fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
             PendingIntent.getActivity(
@@ -675,45 +650,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
                 ?.hideSoftInputFromWindow(windowToken, 0)
             clearFocus()
-        }
-
-        fun Number.decSep(): String {
-            val s: String
-            var fraction = ""
-            val ss = StringBuilder()
-            toString().split(".").also {
-                if (it.size == 2) fraction = "." + it[1]
-                s = it[0]
-            }
-            var sep = 0
-            for (i in s.length - 1 downTo 0) {
-                ss.insert(0, s[i])
-                sep++
-                if (sep % 3 == 0 && i != 0) ss.insert(0, ",")
-            }
-            return ss.toString() + fraction
-        }
-    }
-
-    abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
-        private var times: Long = 0
-
-        override fun onClick(v: View) {
-            if ((SystemClock.elapsedRealtime() - times) < span) onDoubleClick()
-            times = SystemClock.elapsedRealtime()
-        }
-
-        abstract fun onDoubleClick()
-    }
-
-    class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int) :
-        View.OnClickListener {
-        private var last = 0L
-
-        override fun onClick(v: View?) {
-            if (SystemClock.elapsedRealtime() - last < 2500L) return
-            Toast.makeText(c, msg, Toast.LENGTH_SHORT).show()
-            last = SystemClock.elapsedRealtime()
         }
     }
 
@@ -780,5 +716,4 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Select multiple day cells in order to score them once
-  * How many years/month past/remaining to a specific day?
   */

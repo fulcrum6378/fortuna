@@ -8,7 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
-import ir.mahdiparastesh.fortuna.Main.Companion.resetHours
+import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
 class Nyx : BroadcastReceiver() {
@@ -19,8 +19,8 @@ class Nyx : BroadcastReceiver() {
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
                 AlarmManager.RTC, Calendar.getInstance()
-                    .apply { timeInMillis += Main.A_DAY; resetHours() }.timeInMillis,
-                Main.A_DAY, broadcast(c)
+                    .apply { timeInMillis += Kit.A_DAY; resetHours() }.timeInMillis,
+                Kit.A_DAY, broadcast(c)
             )
         }
 
@@ -39,7 +39,7 @@ class Nyx : BroadcastReceiver() {
             alarm(c); return; }
 
         // Remind the user to score the recent day if already has not
-        val cal = Main.calType.newInstance().apply { timeInMillis -= Main.A_DAY }
+        val cal = Kit.calType.newInstance().apply { timeInMillis -= Kit.A_DAY }
         val score = Vita.load(c).getOrDefault(cal.toKey(), null)
             ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
         if (score == null) (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(
