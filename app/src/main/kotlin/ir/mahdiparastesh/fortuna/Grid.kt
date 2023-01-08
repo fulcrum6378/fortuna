@@ -32,24 +32,28 @@ import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.Kit.decSep
-import ir.mahdiparastesh.fortuna.Kit.diesNum
+import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.toValue
+import ir.mahdiparastesh.fortuna.Kit.z
 import ir.mahdiparastesh.fortuna.Main.Companion.color
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
+/**
+ * Main table of our calendar
+ * Subclass of ListAdapter, customised to be used in a GridView, and list the days.
+ */
 class Grid(private val c: Main) : ListAdapter {
     var luna = c.m.thisLuna()
-    var sexbook: List<Main.Sex>? = mirrorSexbook()
+    var sexbook: List<Main.Sex>? = cacheSexbook()
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -84,9 +88,9 @@ class Grid(private val c: Main) : ListAdapter {
             val numType = c.sp.getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                 .let { if (it == Main.arNumType) null else it }
 
-            dies.text = diesNum(i + 1, numType)
+            dies.text = Numerals.make(i + 1, numType)
             val enlarge =
-                BaseNumeral.all.find { it.jClass?.canonicalName == numType }?.enlarge ?: false
+                Numerals.all.find { it.jClass?.canonicalName == numType }?.enlarge ?: false
             if (enlarge) dies.textSize =
                 (dies.textSize / c.resources.displayMetrics.density) * 1.75f
             variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
@@ -139,18 +143,29 @@ class Grid(private val c: Main) : ListAdapter {
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
 
+    /** Invoked via {@link Main#updateGrid()} */
     fun onRefresh() {
         luna = c.m.thisLuna()
-        sexbook = mirrorSexbook()
+        sexbook = cacheSexbook()
     }
 
-    fun mirrorSexbook() = c.m.sexbook?.let {
+    /**
+     * Return a copy of the main Sexbook records (<code>m.sexbook</code>)
+     * in order to cache it in this class.
+     */
+    fun cacheSexbook() = c.m.sexbook?.let {
         val spl = c.m.luna!!.split(".")
         val yr = spl[0].toShort()
         val mo = spl[1].toShort()
         it.filter { x -> x.year == yr && x.month == mo }
     }
 
+    /**
+     * Open an AlertDialog in order to let the user change the score of this day.
+     *
+     * @param i day
+     * @param cal the calendar indicating that day
+     */
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
     fun changeVar(i: Int, cal: Calendar = c.m.calendar) {
@@ -282,10 +297,13 @@ class Grid(private val c: Main) : ListAdapter {
         }
     }
 
+    /** Converts a NumberPicker integer into a Fortuna score. */
     private fun Int.toScore() = -(toFloat() - 6f) / 2f
 
+    /** Converts a Fortuna score into a NumberPicker integer. */
     private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
+    /** Checks if "<code>source</code>" has no emoji indicating a telephone character. */
     private fun hasNonEmojiNumber(source: CharSequence): Boolean {
         for (te in telEmojis)
             if (te.first in source && te.second !in source)
@@ -293,6 +311,12 @@ class Grid(private val c: Main) : ListAdapter {
         return false
     }
 
+    /**
+     * Explains the sex records imported from the Sexbook app and put them inside the TextView,
+     * and make the TextView visible and clickable.
+     *
+     * @param i day
+     */
     fun TextView.showSexbook(i: Int) {
         if (i == -1) return
         val sex = sexbook?.filter { it.day == (i + 1).toShort() }
@@ -334,6 +358,13 @@ class Grid(private val c: Main) : ListAdapter {
         }
     }
 
+    /**
+     * When the user holds on a date, it must explain that date in other calendars and its
+     * difference from today inside an AlertDialog.
+     *
+     * @param i day
+     * @param cal the calendar indicating that day
+     */
     fun detailDate(i: Int, cal: Calendar) {
         if (c.m.showingDate != null && !c.firstResume) return
         c.m.showingDate = i
@@ -364,12 +395,9 @@ class Grid(private val c: Main) : ListAdapter {
                 if (expDif[0] != 0 || expDif[1] != 0) {
                     sb.append(" (")
                     val sep = c.getString(R.string.difSep)
-                    if (expDif[0] != 0)
-                        sb.append(enumerate(R.string.difYears, abs(expDif[0])) + sep)
-                    if (expDif[1] != 0)
-                        sb.append(enumerate(R.string.difMonths, abs(expDif[1])) + sep)
-                    if (expDif[2] != 0)
-                        sb.append(enumerate(R.string.difDays, abs(expDif[2])) + sep)
+                    if (expDif[0] != 0) sb.append(enumerate(R.string.difYears, expDif[0]) + sep)
+                    if (expDif[1] != 0) sb.append(enumerate(R.string.difMonths, expDif[1]) + sep)
+                    if (expDif[2] != 0) sb.append(enumerate(R.string.difDays, expDif[2]) + sep)
                     sb.deleteRange(sb.length - sep.length, sb.length)
                     sb.append(")")
                 }
@@ -389,7 +417,16 @@ class Grid(private val c: Main) : ListAdapter {
         }.show()
     }
 
-    // only one "(" and one ")" are allowed and required in "res".
+    /**
+     * Helper function for string resources which contain a number and a word with a probable
+     * plurality; namely "(s)".
+     * Only one "(" and one ")" are allowed and required in "res".
+     *
+     * @param res string resource
+     * @param num number
+     *
+     * @return a clean string
+     */
     private fun enumerate(@StringRes res: Int, num: Int): String {
         var ret = c.getString(res, num.decSep())
         ret = if (num == 1) ret.removeRange(ret.indexOf("("), ret.indexOf(")") + 1)
@@ -398,13 +435,38 @@ class Grid(private val c: Main) : ListAdapter {
         return ret
     }
 
+    /** Explains the difference of the Calendar instances in years, months and days */
     private fun explainDatesDif(main: Calendar, other: Calendar, isFuture: Boolean): IntArray {
         val arr = IntArray(3)
         arr[0] = other[Calendar.YEAR] - main[Calendar.YEAR]
-        arr[1] = other[Calendar.MONTH] - main[Calendar.MONTH]
+        arr[1] = (other[Calendar.MONTH] + 1) - (main[Calendar.MONTH] + 1)
         arr[2] = other[Calendar.DAY_OF_MONTH] - main[Calendar.DAY_OF_MONTH]
-        if (isFuture) { // FIXME
+        if (isFuture) {
+            /* the first part of the month always starts with 1,
+             * but the second part of the month ends with changeable numbers;
+             * therefore we need to use the previous month's maximum when explaining the future! */
+            val prev = calType.newInstance().apply {
+                timeInMillis = other.timeInMillis
+                moveCalendarInMonths(false)
+            }
+            if (arr[2] < 0) {
+                arr[2] += prev.getActualMaximum(Calendar.DAY_OF_MONTH)
+                arr[1]--
+            }
+            if (arr[1] < 0) { // Can this part make mistakes in the Hebrew calendar?
+                arr[1] += prev.getActualMaximum(Calendar.MONTH) + 1
+                arr[0]--
+            }
         } else {
+            if (arr[2] > 0) {
+                arr[2] = other.getActualMaximum(Calendar.DAY_OF_MONTH) - arr[2]
+                arr[1]++
+            } else arr[2] = abs(arr[2])
+            if (arr[1] > 0) {
+                arr[1] = (other.getActualMaximum(Calendar.MONTH) + 1) - arr[1]
+                arr[0]++
+            } else arr[1] = abs(arr[1])
+            arr[0] = abs(arr[0])
         }
         return arr
     }

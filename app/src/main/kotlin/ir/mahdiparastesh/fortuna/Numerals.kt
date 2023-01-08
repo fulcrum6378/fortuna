@@ -4,6 +4,67 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import kotlin.math.pow
 
+/**
+ * Ancient Numeral Systems
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/List_of_numeral_systems">More on Wikipedia</a>
+ */
+object Numerals {
+    /** List of all the supported ancient numeral systems */
+    val all = arrayOf(
+        NumeralType(null, R.string.numArabic, R.id.numArabic),
+        NumeralType(
+            RomanNumeral::class.java, R.string.numRoman, R.id.numRoman
+        ), // -~0..+1400 preceded Arabic (sources claiming -900 mistake/mix it with Etruscan)
+        NumeralType(
+            BrahmiNumeral::class.java, R.string.numBrahmi, R.id.numBrahmi
+        ), // -300..+500 preceded Gupta script.
+        NumeralType(
+            OldPersianNumeral::class.java, R.string.numOldPersian, R.id.numOldPersian
+        ), // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
+        NumeralType(
+            EtruscanNumeral::class.java, R.string.numEtruscan, R.id.numEtruscan
+        ), // -700..+50 inspired and was replaced by Roman numerals.
+        NumeralType(
+            AtticNumeral::class.java, R.string.numAttic, R.id.numAttic
+        ), // -700..-300 preceded Greek numerals.
+        NumeralType(
+            HieroglyphNumeral::class.java, R.string.numHieroglyph, R.id.numHieroglyph, true
+        ), // -3200..+400 preceded Coptic script.
+    )
+
+    /**
+     * Find the Numeral type by its Java class name.
+     * Putting this in Grid::getView caused a nasty build time error.
+     *
+     * @param jc full Java class name
+     */
+    private fun find(jc: String): Class<*>? = try {
+        Class.forName(jc)
+    } catch (e: ClassNotFoundException) {
+        null
+    }
+
+    /** Turn a number to an ancient numeral! */
+    fun make(i: Int, numType: String?): String = (numType?.let { find(it) }
+        ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
+        ?.toString() ?: i.toString()
+}
+
+/**
+ * Data class containing information about a Numeral type
+ *
+ * @param jClass Java class
+ * @param name string resource for its visible name
+ * @param id its unique ID resource used in various places
+ * @param enlarge Are its characters complicated and require enlarging, like the hieroglyphs?
+ */
+data class NumeralType(
+    val jClass: Class<*>?, @StringRes val name: Int, @IdRes val id: Int,
+    val enlarge: Boolean = false
+)
+
+/** Base class for the ancient numeral systems */
 abstract class BaseNumeral(
     protected val num: Int,
     private val supportsZero: Boolean = false, private val supportsNegative: Boolean = false
@@ -18,44 +79,9 @@ abstract class BaseNumeral(
         } catch (e: Exception) {
             defaultStr
         } else defaultStr
-
-    companion object {
-        val all = arrayOf(
-            NumeralType(null, R.string.numArabic, R.id.numArabic),
-            NumeralType(
-                RomanNumeral::class.java, R.string.numRoman, R.id.numRoman
-            ), // -~0..+1400 preceded Arabic (sources claiming -900 mistake/mix it with Etruscan)
-            NumeralType(
-                BrahmiNumeral::class.java, R.string.numBrahmi, R.id.numBrahmi
-            ), // -300..+500 preceded Gupta script.
-            NumeralType(
-                OldPersianNumeral::class.java, R.string.numOldPersian, R.id.numOldPersian
-            ), // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
-            NumeralType(
-                EtruscanNumeral::class.java, R.string.numEtruscan, R.id.numEtruscan
-            ), // -700..+50 inspired and was replaced by Roman numerals.
-            NumeralType(
-                AtticNumeral::class.java, R.string.numAttic, R.id.numAttic
-            ), // -700..-300 preceded Greek numerals.
-            NumeralType(
-                HieroglyphNumeral::class.java, R.string.numHieroglyph, R.id.numHieroglyph, true
-            ), // -3200..+400 preceded Coptic script.
-        )
-
-        fun find(jc: String): Class<*>? = try {
-            Class.forName(jc)
-        } catch (e: ClassNotFoundException) {
-            null
-        } // Putting this in Grid::getView caused a nasty build time error.
-    }
-    // https://en.wikipedia.org/wiki/List_of_numeral_systems
 }
 
-data class NumeralType(
-    val jClass: Class<*>?, @StringRes val name: Int, @IdRes val id: Int,
-    val enlarge: Boolean = false
-)
-
+/** Base class for systems which resemble the Attic system, like Roman and Etruscan. */
 abstract class AtticBasedNumeral(num: Int) : BaseNumeral(num) {
     abstract val subtract4th: Boolean
     open val rtl: Boolean = false
@@ -85,6 +111,7 @@ abstract class AtticBasedNumeral(num: Int) : BaseNumeral(num) {
     }
 }
 
+/** @see <a href="https://en.wikipedia.org/wiki/Attic_numerals">Wikipedia</a> */
 class AtticNumeral(num: Int) : AtticBasedNumeral(num) {
     override val subtract4th = true
     override val chars = arrayOf(
@@ -98,6 +125,7 @@ class AtticNumeral(num: Int) : AtticBasedNumeral(num) {
     // https://unicode-table.com/en/blocks/ancient-greek-numbers/
 }
 
+/** @see <a href="https://en.wikipedia.org/wiki/Etruscan_numerals">Wikipedia</a> */
 class EtruscanNumeral(num: Int) : AtticBasedNumeral(num) {
     override val subtract4th = true
     override val rtl = true
@@ -106,6 +134,7 @@ class EtruscanNumeral(num: Int) : AtticBasedNumeral(num) {
     )
 }
 
+/** @see <a href="https://en.wikipedia.org/wiki/Roman_numerals">Wikipedia</a> */
 class RomanNumeral(num: Int) : AtticBasedNumeral(num) {
     override val subtract4th = false
     override val chars = arrayOf(
@@ -116,6 +145,10 @@ class RomanNumeral(num: Int) : AtticBasedNumeral(num) {
 }
 
 
+/**
+ * Base class for systems which resemble Gematria.
+ * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria, Wikipedia</a>
+ */
 abstract class GematriaLikeNumeral(num: Int) : BaseNumeral(num) {
     override fun parse(): String {
         val n: String = num.toString()
@@ -130,6 +163,7 @@ abstract class GematriaLikeNumeral(num: Int) : BaseNumeral(num) {
     }
 }
 
+/** @see <a href="https://en.wikipedia.org/wiki/Egyptian_numerals">Wikipedia</a> */
 class HieroglyphNumeral(num: Int) : GematriaLikeNumeral(num) {
     override val chars = arrayOf(
         // 1..9
@@ -152,6 +186,7 @@ class HieroglyphNumeral(num: Int) : GematriaLikeNumeral(num) {
     // https://unicode-table.com/en/blocks/egyptian-hieroglyphs/
 }
 
+/** @see <a href="https://en.wikipedia.org/wiki/Brahmi_numerals">Wikipedia</a> */
 class BrahmiNumeral(num: Int) : GematriaLikeNumeral(num) {
     override val chars = arrayOf(
         // 1..9
@@ -170,13 +205,20 @@ class BrahmiNumeral(num: Int) : GematriaLikeNumeral(num) {
 }
 
 
+/**
+ * Old Persian numbers written in cuneiform
+ *
+ * Babylonian cuneiforms weren't available in unicode!
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Old_Persian_cuneiform#Signs">Wikipedia</a>
+ * @see <a href="https://unicode-table.com/en/blocks/old-persian/">Unicode-Table.com</a>
+ */
 class OldPersianNumeral(num: Int) : BaseNumeral(num) {
     override val chars = arrayOf(
         "\uD800\uDFD1", "\uD800\uDFD2", // 1, 2
         "\uD800\uDFD3", "\uD800\uDFD4", // 10, 20
         "\uD800\uDFD5" // 100
     )
-    // https://unicode-table.com/en/blocks/old-persian/
 
     private fun charToInt(i: Int): Int {
         var ii = i.toDouble()
@@ -202,6 +244,4 @@ class OldPersianNumeral(num: Int) : BaseNumeral(num) {
         }
         return s.toString()
     }
-    // https://en.wikipedia.org/wiki/Old_Persian_cuneiform#Signs
-    // Babylonian cuneiforms weren't available in unicode.
 }

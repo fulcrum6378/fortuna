@@ -12,11 +12,20 @@ object Kit {
     const val A_DAY = 86400000L
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
+    /**
+     * Default Calendar Type
+     * This is a very important constant containing the class type of our calendar, which must be
+     * a subclass of android.icu.util.Calendar.
+     *
+     * @see android.icu.util.Calendar
+     */
     val calType = when (BuildConfig.FLAVOR) {
         "gregorian" -> android.icu.util.GregorianCalendar::class.java
         "iranian" -> HumanistIranianCalendar::class.java
         else -> throw Exception()
     }
+
+    /** Other supported Calendar types */
     val otherCalendars = arrayOf(
         HumanistIranianCalendar::class.java,
         // GregorianCalendar does not show a negative number in BCE, which is correct!
@@ -29,6 +38,25 @@ object Kit {
     ).filter { it != calType }
     val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
+    /**
+     * Fills a String with a number and zeroes before it.
+     * E.g. 2 -> "02"
+     *
+     * @param n number
+     * @param ideal the desired length of the returned string
+     */
+    fun z(n: Any?, ideal: Int = 2): String {
+        var s = n.toString()
+        var neg = false
+        if (s.startsWith("-")) {
+            s = s.substring(1)
+            neg = true
+        }
+        while (s.length < ideal) s = "0$s"
+        return if (!neg) s else "-$s"
+    }
+
+    /** Sets the time of the calendar on 00:00:00:000 */
     fun Calendar.resetHours(): Calendar {
         set(Calendar.HOUR_OF_DAY, 0)
         set(Calendar.MINUTE, 0)
@@ -37,9 +65,19 @@ object Kit {
         return this
     }
 
+    /** Moves the calendar into a different month. */
+    fun Calendar.moveCalendarInMonths(forward: Boolean) {
+        roll(Calendar.MONTH, forward)
+        if ((forward && this[Calendar.MONTH] == 0) ||
+            (!forward && this[Calendar.MONTH] == getActualMaximum(Calendar.MONTH))
+        ) roll(Calendar.YEAR, forward)
+    }
+
+    /** Compares two Calendar instances and returns their difference in days. */
     fun Calendar.compareByDays(other: Calendar): Int =
         ((other.timeInMillis - timeInMillis) / A_DAY).toInt()
 
+    /** Separates the digits of a number triply; e.g. 6401 -> 6,401. */
     fun Number.decSep(): String {
         val s: String
         var fraction = ""
@@ -57,11 +95,8 @@ object Kit {
         return ss.toString() + fraction
     }
 
+    /** Converts a hexadecimal colour integer into a Float of range 0..1. */
     fun Int.toValue() = toFloat() / 256f
-
-    fun diesNum(i: Int, numType: String?): String = (numType?.let { BaseNumeral.find(it) }
-        ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
-        ?.toString() ?: i.toString()
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
@@ -75,6 +110,7 @@ object Kit {
         abstract fun onDoubleClick()
     }
 
+    /** Subclass of {@link View#OnClickListener} which shows one Toast at a time. */
     class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int) :
         View.OnClickListener {
         private var last = 0L

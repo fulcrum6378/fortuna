@@ -20,7 +20,7 @@ class TodayWidget : AppWidgetProvider() {
             val cal = Kit.calType.newInstance()
             setOnClickPendingIntent(R.id.root, Main.openInDate(c, cal, 1))
             setTextViewText(
-                R.id.dies, Kit.diesNum(cal[Calendar.DAY_OF_MONTH],
+                R.id.dies, Numerals.make(cal[Calendar.DAY_OF_MONTH],
                     c.sp().getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
                         .let { if (it == Main.arNumType) null else it })
             )

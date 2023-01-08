@@ -52,14 +52,15 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
+import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.toValue
+import ir.mahdiparastesh.fortuna.Kit.z
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.Vita.Companion.z
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
@@ -108,8 +109,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.nav.setNavigationItemSelectedListener(this)
         b.toolbar.navigationIcon?.colorFilter =
             pdcf(color(com.google.android.material.R.attr.colorOnPrimary))
-        for (n in BaseNumeral.all.indices) {
-            val nt = BaseNumeral.all[n]
+        for (n in Numerals.all.indices) {
+            val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
                 isChecked = sp.getString(SP_NUMERAL_TYPE, arNumType) ==
@@ -126,7 +127,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             sp.edit {
                 putString(
                     SP_NUMERAL_TYPE,
-                    BaseNumeral.all.find { it.id == mItem.itemId }?.jClass?.canonicalName
+                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.canonicalName
                         ?: arNumType
                 )
             }; updateGrid(); updateOverflow(); shake(); true
@@ -192,7 +193,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         updateGrid()
                     }
                     HANDLE_SEXBOOK_LOADED -> (b.grid.adapter as? Grid)?.apply {
-                        sexbook = mirrorSexbook()
+                        sexbook = cacheSexbook()
                         m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
                     }
                 }
@@ -296,6 +297,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
+    /** Invoked when a file is ready to be exported. */
     private val exportLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -314,6 +316,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             ).show()
         }
 
+    /** Invoked when a file is ready to be imported. */
     private val importLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode != RESULT_OK) return@registerForActivityResult
@@ -346,6 +349,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }.show()
         }
 
+    /** Caches the data and lets it be shared. */
     private fun sendFile(binary: ByteArray, @StringRes fileName: Int) {
         val exported = File(cacheDir, c.getString(fileName))
         CoroutineScope(Dispatchers.IO).launch {
@@ -365,11 +369,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
+    /** Updates year and month inputs of the top panel. */
     private fun updatePanel() {
         b.annus.setText(m.calendar[Calendar.YEAR].toString())
         b.luna.setSelection(m.calendar[Calendar.MONTH])
     }
 
+    /** Refreshes the {@link Grid} and adjusts its size. */
     fun updateGrid() {
         if (b.grid.adapter == null) b.grid.adapter = Grid(this)
         else {
@@ -390,23 +396,21 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
+    /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
             item.isChecked = sp.getString(SP_NUMERAL_TYPE, arNumType) ==
-                    (BaseNumeral.all[i].jClass?.canonicalName ?: arNumType)
+                    (Numerals.all[i].jClass?.canonicalName ?: arNumType)
         }
     }
 
-    private fun rollCalendar(up: Boolean, repeat: Int = 1) {
-        repeat(repeat) {
-            m.calendar.roll(Calendar.MONTH, up)
-            if ((up && m.calendar[Calendar.MONTH] == 0) ||
-                (!up && m.calendar[Calendar.MONTH] == m.calendar.getActualMaximum(Calendar.MONTH))
-            ) m.calendar.roll(Calendar.YEAR, up)
-        }
+    /** Moves the calendar in months for N times. */
+    private fun rollCalendar(forward: Boolean, nTimes: Int = 1) {
+        repeat(nTimes) { m.calendar.moveCalendarInMonths(forward) }
         onCalendarChanged()
     }
 
+    /** Updates everything whenever the calendar changes. */
     private fun onCalendarChanged() {
         m.luna = m.calendar.toKey()
         rollingLunaWithAnnus = true
@@ -416,6 +420,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.blur(c)
     }
 
+    /** Moves the calendar into a different year. */
     @SuppressLint("SetTextI18n")
     private fun rollAnnus(to: Int) {
         rollingAnnusItself = true
@@ -423,6 +428,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.blur(c)
     }
 
+    /** Opens an AlertDialog for statistics. */
     private fun stat() {
         if (m.showingStat && !firstResume) return
         m.showingStat = true
@@ -524,6 +530,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
+    /**
+     * Shows the status of the automatically backed-up file with 3 action buttons:<br />
+     * Backup: manually backs up the data.<br />
+     * Restore: overwrites the backup file on the main file.<br />
+     * Export: exports the backup file.
+     */
     private fun navBackup() {
         if (m.showingBack && !firstResume) return
         m.showingBack = true
@@ -563,10 +575,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
-    private fun BackupBinding.updateStatus() {
-        status.text = getString(R.string.backupTime, lastBackup())
-    }
-
+    /** @return the human-readable modification date of the backup. */
     private fun lastBackup(): String {
         val f = Vita.Backup(c)
         if (!f.exists()) return getString(R.string.never)
@@ -576,6 +585,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
     }
 
+    /** Updates the modification date of the backup file. */
+    private fun BackupBinding.updateStatus() {
+        status.text = getString(R.string.backupTime, lastBackup())
+    }
+
+    /** Shows an AlertDialog containing the guide for this app. */
     private fun help() {
         if (m.showingHelp && !firstResume) return
         m.showingHelp = true
@@ -587,6 +602,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
+    /** Helper class for vibration. */
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
         (if (Build.VERSION.SDK_INT >= 31)
@@ -627,16 +643,20 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val HANDLE_SEXBOOK_LOADED = 1
         var handler: Handler? = null
 
+        /** @return the main shared preferences instance; <code>settings.xml</code>. */
         fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
+        /** @return the colour value of this attribute resource from the theme. */
         @ColorInt
         fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
             theme.resolveAttribute(attr, this, true)
         }.data
 
+        /** @return the colour filter instance of this colour with the given PorterDuff.Mode. */
         fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
             PorterDuffColorFilter(color, mode)
 
+        /** Opens the specified date in the device's default calendar app. */
         fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
             PendingIntent.getActivity(
                 c, req, Intent(c, Main::class.java)
@@ -646,6 +666,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
             ) // A unique request code protects the PendingIntent from being recycled!
 
+        /** Clears focus from an EditText. */
         fun EditText.blur(c: Context) {
             (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
                 ?.hideSoftInputFromWindow(windowToken, 0)
@@ -653,6 +674,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
+    /**
+     * Imports data from the Sexbook application in a separate thread.
+     *
+     * @see <a href="https://github.com/fulcrum1378/sexbook">Sexbook repository</a>
+     * @see <a href="https://mahdiparastesh.ir/?fk=1">Mahdi Parastesh's personal website</a>
+     */
     inner class Sexbook : Thread() {
         override fun run() {
             val places = hashMapOf<Long, String>()
@@ -689,6 +716,24 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
     }
 
+    /**
+     * Data class containing the information about a sex record from Sexbook.
+     *
+     * @param id the unique id (Long)
+     * @param year in this calendar (Short)
+     * @param month in this calendar (Short)
+     * @param day in this calendar (Short)
+     * @param hour (Byte)
+     * @param minute (Byte)
+     * @param second (Byte)
+     * @param key the raw input from the user indicating their crush's name (String)
+     * @param type wet dream, masturbation, oral, anal or vaginal sex (Byte)
+     * @param desc description (String)
+     * @param accurate is this record accurate? (Boolean)
+     * @param place the place where the sex happened (String?)
+     *
+     * @see Grid#showSexbook
+     */
     data class Sex(
         val id: Long, val year: Short, val month: Short, val day: Short, // never compare bytes!
         val hour: Byte, val minute: Byte, val second: Byte,
