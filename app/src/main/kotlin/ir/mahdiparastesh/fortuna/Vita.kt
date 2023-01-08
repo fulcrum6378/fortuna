@@ -2,8 +2,10 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
+import ir.mahdiparastesh.fortuna.Kit.z
 import java.io.*
 
+/** Representation of the VITA file type as {@link HashMap HashMap<String, Luna>} */
 class Vita : HashMap<String, Luna>() {
 
     fun find(key: String): Luna? = getOrElse(key) { null }
@@ -52,6 +54,7 @@ class Vita : HashMap<String, Luna>() {
         }
     }.toString()
 
+    /** Removes the empty entries. */
     fun reform(c: Context) {
         val removal = arrayListOf<String>()
         forEach { key, luna -> if (luna.isEmpty()) removal.add(key) }
@@ -63,6 +66,7 @@ class Vita : HashMap<String, Luna>() {
         const val MAX_RANGE = 3f
         const val MIME_TYPE = "application/octet-stream"
 
+        /** Loads the Vita data from {@link Stored}. */
         fun load(c: Context): Vita {
             val stored = Stored(c)
             return if (stored.exists()) {
@@ -72,6 +76,7 @@ class Vita : HashMap<String, Luna>() {
             } else Vita()
         }
 
+        /** Loads the Vita data from a given string. */
         fun loads(text: String): Vita {
             val vita = Vita()
             val cal = Kit.calType.newInstance()
@@ -119,21 +124,11 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
+        /** Puts the data of {@link Stored} into {@link Backup}. */
         fun backup(c: Context) {
             FileOutputStream(Backup(c)).use { fos ->
                 fos.write(FileInputStream(Stored(c)).use { it.readBytes() })
             }
-        }
-
-        fun z(n: Any?, ideal: Int = 2): String {
-            var s = n.toString()
-            var neg = false
-            if (s.startsWith("-")) {
-                s = s.substring(1)
-                neg = true
-            }
-            while (s.length < ideal) s = "0$s"
-            return if (!neg) s else "-$s"
         }
 
 
@@ -188,11 +183,14 @@ class Vita : HashMap<String, Luna>() {
         }
     }
 
+    /** Default Vita file */
     class Stored(c: Context) : File(c.filesDir, c.getString(R.string.export_file))
 
+    /** A copy of {@link Stored} */
     class Backup(c: Context) : File(c.filesDir, c.getString(R.string.backup_file))
 }
 
+/** Part of {@link Vita} for managing months. */
 class Luna(
     cal: Calendar = Kit.calType.newInstance(),
     var default: Float? = null,

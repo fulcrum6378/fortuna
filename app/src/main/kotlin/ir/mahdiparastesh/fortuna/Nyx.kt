@@ -11,6 +11,7 @@ import android.icu.util.Calendar
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
+/** Awakens every night at 12 AM and perform various actions. */
 class Nyx : BroadcastReceiver() {
     companion object {
         const val REMIND = "remind"
