@@ -7,9 +7,9 @@ month and enter some notes!
 ## Screenshots
 
 <p>
-  <img src="about/Screenshot_20230120-044811_Fortuna.jpg" width="30%" />
-  <img src="about/Screenshot_20230120-044823_Fortuna.jpg" width="30%" />
-  <img src="about/Screenshot_20230120-044843_Fortuna.jpg" width="30%" />
+  <img src="about/Screenshot_20230120-044811_Fortuna.jpg" width="32%" />
+  <img src="about/Screenshot_20230120-044823_Fortuna.jpg" width="32%" />
+  <img src="about/Screenshot_20230120-044843_Fortuna.jpg" width="32%" />
 </p>
 
 ## How it works
@@ -28,12 +28,12 @@ month.
 ## Download & Install
 
 Currently only two calendars are supported, but this app can be adapted to new calendars so easily
-using product flavours.
+by adding new product flavours.
 
 - In Gregorian calendar:
-  [APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-gregorian-release.apk)
+  [Get APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-gregorian-release.apk)
 - In [Humanist Iranian](https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
-  [APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-iranian-release.apk)
+  [Get APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-iranian-release.apk)
 
 ## License
 
