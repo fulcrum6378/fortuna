@@ -1,18 +1,21 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
 android {
+    namespace = "ir.mahdiparastesh.fortuna"
     compileSdk = 33
-    buildToolsVersion = "33.0.1"
+    buildToolsVersion = "34.0.0-rc1"
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "8.0.0"
+        versionName = "8.0.5"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -44,6 +47,5 @@ android {
 dependencies {
     implementation("androidx.activity:activity-ktx:1.6.1")
     implementation("androidx.emoji2:emoji2:1.2.0")
-    implementation("com.google.android.material:material:1.7.0")
+    implementation("com.google.android.material:material:1.8.0")
 }
-// Trying to exclude the unnecessary modules from material seems to be impossible!

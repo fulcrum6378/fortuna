@@ -31,6 +31,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
@@ -205,6 +206,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (m.showingHelp) help()
 
         // Miscellaneous
+        if (Kit.reqPermissions.isNotEmpty())
+            ActivityCompat.requestPermissions(this, Kit.reqPermissions, 0)
         if (try {
                 @Suppress("DEPRECATION")
                 packageManager.getPackageInfo(SEXBOOK, 0)
@@ -296,6 +299,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         return true
     }
+
+    /*override fun onRequestPermissionsResult(code: Int, arr: Array<out String>, res: IntArray) {
+        super.onRequestPermissionsResult(code, arr, res)
+        if (res.isNotEmpty() && res[0] == PackageManager.PERMISSION_GRANTED) DO SOMETHING
+    }*/
 
     /** Invoked when a file is ready to be exported. */
     private val exportLauncher: ActivityResultLauncher<Intent> =
