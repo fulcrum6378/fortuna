@@ -1,7 +1,9 @@
 package ir.mahdiparastesh.fortuna
 
+import android.Manifest
 import android.content.Context
 import android.icu.util.Calendar
+import android.os.Build
 import android.os.SystemClock
 import android.view.View
 import android.widget.Toast
@@ -20,8 +22,8 @@ object Kit {
      * @see android.icu.util.Calendar
      */
     val calType = when (BuildConfig.FLAVOR) {
-        "gregorian" -> android.icu.util.GregorianCalendar::class.java
         "iranian" -> HumanistIranianCalendar::class.java
+        "gregorian" -> android.icu.util.GregorianCalendar::class.java
         else -> throw Exception()
     }
 
@@ -37,6 +39,12 @@ object Kit {
         android.icu.util.HebrewCalendar::class.java,
     ).filter { it != calType }
     val locale: Locale = Locale.UK // never ever use SimpleDateFormat
+
+    /** List of the required permissions */
+    val reqPermissions =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+        else arrayOf()
 
     /**
      * Fills a String with a number and zeroes before it.
