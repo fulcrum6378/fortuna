@@ -588,7 +588,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         val f = Vita.Backup(c)
         if (!f.exists()) return getString(R.string.never)
         val d = calType.newInstance().apply { timeInMillis = f.lastModified() }
-        return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH])}." +
+        return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
                 "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
                 "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
     }
