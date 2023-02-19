@@ -75,7 +75,6 @@ import java.io.FileOutputStream
 import java.util.*
 import kotlin.math.ceil
 
-@SuppressLint("InvalidFragmentVersionForActivityResult")
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
     val c: Context get() = applicationContext
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
