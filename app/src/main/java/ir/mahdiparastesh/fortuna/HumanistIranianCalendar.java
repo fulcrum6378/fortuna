@@ -19,7 +19,7 @@ import java.util.Locale;
  * Humanist Iranian year = 5000 + Islamic Iranian year (e.g. 1401 -> 6401)
  * <p>
  * For more information:
- * https://en.wikipedia.org/wiki/Susa
+ * <a href="https://en.wikipedia.org/wiki/Susa">Susa - Wikipedia</a>
  */
 @SuppressWarnings("unused")
 public class HumanistIranianCalendar extends Calendar {

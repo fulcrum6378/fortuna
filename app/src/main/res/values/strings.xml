@@ -24,7 +24,7 @@
     <string name="difMonths">%s month(s)</string>
     <string name="difDays">%s day(s)</string>
     <string name="difSep">,&#160;</string>
-    <string name="never">Never</string>
+    <string name="never">\"never\"</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="export">Export</string>

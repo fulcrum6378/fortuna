@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -15,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "8.0.5"
+        versionName = "8.0.6"
     }
 
     setFlavorDimensions(listOf("calendar"))
