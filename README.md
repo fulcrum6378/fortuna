@@ -35,8 +35,7 @@ by adding new product flavours.
   https://play.google.com/store/apps/details?id=ir.mahdiparastesh.fortuna.gregorian)
 - In [Humanist Iranian](
   https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
-  [Get APK from GitHub](
-  https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-iranian-release.apk)
+  [Contact Me](mailto:fulcrum1378@gmail.com)
 
 ## Add your own Calendar
 
