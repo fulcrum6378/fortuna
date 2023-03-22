@@ -31,9 +31,19 @@ Currently only two calendars are supported, but this app can be adapted to new c
 by adding new product flavours.
 
 - In Gregorian calendar:
-  [Get APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-gregorian-release.apk)
-- In [Humanist Iranian](https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
-  [Get APK from GitHub](https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-iranian-release.apk)
+  [Install from Google Play](
+  https://play.google.com/store/apps/details?id=ir.mahdiparastesh.fortuna.gregorian)
+- In [Humanist Iranian](
+  https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
+  [Get APK from GitHub](
+  https://github.com/fulcrum1378/fortuna/raw/master/app/iranian/release/app-iranian-release.apk)
+
+## Add your own Calendar
+
+Build flavours represent calendar systems and a new calendar system can be easily added by
+specifying a subclass of [android.icu.util.Calendar](
+https://developer.android.com/reference/android/icu/util/Calendar) in [Kit#calType](
+https://github.com/fulcrum6378/fortuna/blob/master/app/src/main/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L24).
 
 ## License
 
