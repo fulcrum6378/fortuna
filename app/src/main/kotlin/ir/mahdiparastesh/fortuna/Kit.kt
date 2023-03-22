@@ -24,7 +24,7 @@ object Kit {
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
         "gregorian" -> android.icu.util.GregorianCalendar::class.java
-        else -> throw Exception()
+        else -> throw Exception("Unknown calendar type!")
     }
 
     /** Other supported Calendar types */

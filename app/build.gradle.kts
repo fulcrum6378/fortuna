@@ -6,14 +6,14 @@ plugins {
 android {
     namespace = "ir.mahdiparastesh.fortuna"
     compileSdk = 33
-    buildToolsVersion = "34.0.0-rc1"
+    buildToolsVersion = "34.0.0-rc2"
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
-        versionName = "8.0.6"
+        versionName = "8.1.0"
     }
 
     setFlavorDimensions(listOf("calendar"))
