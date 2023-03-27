@@ -12,8 +12,8 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
-        versionName = "8.1.0"
+        versionCode = 2
+        versionName = "8.1.7"
     }
 
     setFlavorDimensions(listOf("calendar"))

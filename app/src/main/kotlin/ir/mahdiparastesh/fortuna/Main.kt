@@ -570,6 +570,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         }.show()
                     }
                     export.setOnClickListener {
+                        if (!Vita.Backup(c).exists()) return@setOnClickListener
                         sendFile(
                             FileInputStream(Vita.Backup(c)).use { it.readBytes() },
                             R.string.backup_file
