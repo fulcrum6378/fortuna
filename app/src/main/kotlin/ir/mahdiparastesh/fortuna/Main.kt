@@ -277,7 +277,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.navToday -> {
+            R.id.navToday -> if (todayLuna != m.calendar.toKey()) {
                 m.calendar = calType.newInstance()
                 onCalendarChanged()
                 closeDrawer()
@@ -325,12 +325,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     /** Invoked when a file is ready to be imported. */
     private val importLauncher: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode != RESULT_OK) return@registerForActivityResult
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
+            if (res.resultCode != RESULT_OK) return@registerForActivityResult
             var data: String? = null
             try {
-                c.contentResolver.openFileDescriptor(it.data!!.data!!, "r")?.use { des ->
-                    data = FileInputStream(des.fileDescriptor).readBytes().toString(Charsets.UTF_8)
+                c.contentResolver.openFileDescriptor(res.data!!.data!!, "r")?.use { des ->
+                    data = FileInputStream(des.fileDescriptor).use { it.readBytes() }
+                        .toString(Charsets.UTF_8)
                 }
                 data!!
             } catch (e: Exception) {
@@ -769,4 +770,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Select multiple day cells in order to score them once
+  * Bring crushes' birthdays from Sexbook
+  * Bring events from calendars to Fortuna?!?!
   */
