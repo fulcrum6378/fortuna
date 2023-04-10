@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 2
-        versionName = "8.1.7"
+        versionName = "8.1.9"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.6.1")
-    implementation("androidx.emoji2:emoji2:1.2.0")
+    implementation("androidx.activity:activity-ktx:1.7.0")
+    implementation("androidx.emoji2:emoji2:1.3.0")
     implementation("com.google.android.material:material:1.8.0")
 }
