@@ -43,6 +43,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
+import ir.mahdiparastesh.fortuna.misc.Numerals
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue

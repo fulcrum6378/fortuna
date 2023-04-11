@@ -1,7 +1,8 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.misc
 
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import ir.mahdiparastesh.fortuna.R
 import kotlin.math.pow
 
 /**
@@ -37,7 +38,7 @@ object Numerals {
      * Find the Numeral type by its Java class name.
      * Putting this in Grid::getView caused a nasty build time error.
      *
-     * @param jc full Java class name
+     * @param jc simple Java class name (e.g. RomanNumeral)
      */
     private fun find(jc: String): Class<*>? = try {
         Class.forName(jc)
@@ -45,8 +46,9 @@ object Numerals {
         null
     }
 
-    /** Turn a number to an ancient numeral! */
-    fun make(i: Int, numType: String?): String = (numType?.let { find(it) }
+    /** Convert a modern number into ancient numerals! */
+    fun make(i: Int, numType: String?): String = (numType
+        ?.let { find(this::class.java.`package`!!.name + "." + it) }
         ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
         ?.toString() ?: i.toString()
 }

@@ -14,6 +14,7 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.misc.TodayWidget
 
 /** Awakens every night at 12 AM and perform various actions. */
 class Nyx : BroadcastReceiver() {

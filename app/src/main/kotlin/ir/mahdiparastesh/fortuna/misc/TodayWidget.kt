@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.misc
 
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -6,7 +6,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.icu.util.Calendar
 import android.widget.RemoteViews
+import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.Main.Companion.sp
+import ir.mahdiparastesh.fortuna.R
 
 class TodayWidget : AppWidgetProvider() {
     override fun onUpdate(c: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
