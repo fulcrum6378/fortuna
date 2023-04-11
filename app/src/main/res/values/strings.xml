@@ -85,7 +85,7 @@
     <string name="ntfReminder">How was your day?</string>
 
     <!-- TodayWidget -->
-    <string name="widTodayDesc">Show the current day with the ability to score it.</string>
+    <string name="widTodayDesc">Shows current date as a calendar app.</string>
 
     <!-- Numerals -->
     <string name="numerals">Numerals</string>
