@@ -40,10 +40,26 @@ android {
     }
     kotlinOptions { jvmTarget = "1.8" }
     buildFeatures { viewBinding = true }
+    packagingOptions { resources.excludes.add("META-INF/DEPENDENCIES") }
 }
 
+@Suppress("SpellCheckingInspection")
 dependencies {
     implementation("androidx.activity:activity-ktx:1.7.0")
     implementation("androidx.emoji2:emoji2:1.3.0")
     implementation("com.google.android.material:material:1.8.0")
+
+    implementation("com.google.android.gms:play-services-auth:20.5.0")
+    implementation("com.google.http-client:google-http-client-gson:1.42.0")
+    implementation(
+        "com.google.api-client:google-api-client-android:1.26.0"
+    ) {
+        exclude("org.apache.httpcomponents")
+    }
+    implementation(
+        "com.google.apis:google-api-services-drive:v3-rev136-1.25.0"
+    ) {
+        exclude("org.apache.httpcomponents")
+    }
+    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 }
