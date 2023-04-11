@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.misc
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.NumberPicker
+import ir.mahdiparastesh.fortuna.R
 
 /** Improved version of NumberPicker with a customised font. */
 class Variabilis(

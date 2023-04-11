@@ -65,6 +65,9 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
+import ir.mahdiparastesh.fortuna.misc.DriveApi
+import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.misc.TodayWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -118,18 +121,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         (nt.jClass?.canonicalName ?: arNumType)
             }
         }
-        // AndroidX Toolbar children:
-        // 0 => title(AppCompatTextView)
-        // 1 => actionButtons(ActionMenuView<ActionMenuPresenter$OverflowMenuButton>)
-        // 2 => drawerButton(AppCompatImageButton)
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
             .tooltipText = getString(R.string.numerals)
         b.toolbar.setOnMenuItemClickListener { mItem ->
             sp.edit {
                 putString(
                     SP_NUMERAL_TYPE,
-                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.canonicalName
-                        ?: arNumType
+                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName ?: arNumType
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -227,13 +225,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         Nyx.alarm(c) // Nyx.test(c)
 
-        b.toolbar.setOnClickListener {
-            driveApi.signIn()
-            /*driveApi.pick.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "text/plain"
-            })*/
-        }
+        b.toolbar.setOnClickListener { driveApi.signIn() }
+        b.toolbar.setOnLongClickListener { driveApi.signOut(); true }
     }
 
     var firstResume = true // a new instance of Main is created on a configuration change.
@@ -286,9 +279,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.navToday -> if (todayLuna != m.calendar.toKey()) {
-                m.calendar = calType.newInstance()
-                onCalendarChanged()
+            R.id.navToday -> {
+                if (todayLuna != m.calendar.toKey()) {
+                    m.calendar = calType.newInstance()
+                    onCalendarChanged(); }
                 closeDrawer()
             }
             R.id.navStat -> stat()
@@ -417,7 +411,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
             item.isChecked = sp.getString(SP_NUMERAL_TYPE, arNumType) ==
-                    (Numerals.all[i].jClass?.canonicalName ?: arNumType)
+                    (Numerals.all[i].jClass?.simpleName ?: arNumType)
         }
     }
 

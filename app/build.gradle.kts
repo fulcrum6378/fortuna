@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 2
-        versionName = "8.1.9"
+        versionName = "8.3.5"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -49,17 +49,18 @@ dependencies {
     implementation("androidx.emoji2:emoji2:1.3.0")
     implementation("com.google.android.material:material:1.8.0")
 
+    // DriveApi
     implementation("com.google.android.gms:play-services-auth:20.5.0")
-    implementation("com.google.http-client:google-http-client-gson:1.42.0")
+    implementation("com.google.http-client:google-http-client-gson:1.42.0") // for GsonFactory
     implementation(
         "com.google.api-client:google-api-client-android:1.26.0"
     ) {
         exclude("org.apache.httpcomponents")
-    }
+    } // for AndroidHttp and GoogleAccountCredential
     implementation(
         "com.google.apis:google-api-services-drive:v3-rev136-1.25.0"
     ) {
         exclude("org.apache.httpcomponents")
-    }
+    } // for Drive and DriveScopes
     implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 }

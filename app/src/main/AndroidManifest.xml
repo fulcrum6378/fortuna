@@ -8,8 +8,8 @@
     <uses-permission android:name="ir.mahdiparastesh.sexbook.READ_DATABASE" />
 
     <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.INTERNET" />-->
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />-->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <queries>
         <package android:name="ir.mahdiparastesh.sexbook" />
@@ -63,7 +63,7 @@
         </receiver>
 
         <receiver
-            android:name=".TodayWidget"
+            android:name=".misc.TodayWidget"
             android:exported="false">
 
             <intent-filter>
