@@ -92,6 +92,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 .build()
         ).apply { fillColor = c.resources.getColorStateList(R.color.variabilis_field, null) }
     }
+    private val driveApi = DriveApi(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -225,6 +226,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             )
         }
         Nyx.alarm(c) // Nyx.test(c)
+
+        b.toolbar.setOnClickListener {
+            driveApi.signIn()
+            /*driveApi.pick.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "text/plain"
+            })*/
+        }
     }
 
     var firstResume = true // a new instance of Main is created on a configuration change.
