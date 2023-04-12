@@ -772,7 +772,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Select multiple day cells in order to score them once
+  * Search in Vita capability
   * Bring crushes' birthdays from Sexbook
   * Bring events from calendars to Fortuna?!?!
+  * Select multiple day cells in order to score them once
   */

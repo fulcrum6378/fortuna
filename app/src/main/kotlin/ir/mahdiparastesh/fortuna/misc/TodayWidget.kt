@@ -12,10 +12,8 @@ import ir.mahdiparastesh.fortuna.Main.Companion.sp
 import ir.mahdiparastesh.fortuna.R
 
 class TodayWidget : AppWidgetProvider() {
-    override fun onUpdate(c: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        appWidgetIds.forEach { appWidgetId ->
-            appWidgetManager.updateAppWidget(appWidgetId, update(c))
-        }
+    override fun onUpdate(c: Context, manager: AppWidgetManager, ids: IntArray) {
+        ids.forEach { id -> manager.updateAppWidget(id, update(c)) }
     }
 
     companion object {
