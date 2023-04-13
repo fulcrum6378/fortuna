@@ -3,30 +3,21 @@ package ir.mahdiparastesh.fortuna
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
-import android.net.Uri
 import android.os.*
 import android.util.SparseArray
-import android.util.TypedValue
-import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
@@ -52,9 +43,13 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.Kit.blur
 import ir.mahdiparastesh.fortuna.Kit.calType
+import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
+import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
+import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Kit.z
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
@@ -67,6 +62,7 @@ import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.misc.DriveApi
 import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.misc.Sexbook
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -75,7 +71,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
 import kotlin.math.ceil
 
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -97,6 +92,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
     private val driveApi = DriveApi(this)
 
+    companion object {
+        const val EXTRA_LUNA = "luna"
+        const val EXTRA_DIES = "dies"
+        const val HANDLE_NEW_DAY = 0
+        const val HANDLE_SEXBOOK_LOADED = 1
+        var handler: Handler? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(b.root)
@@ -117,8 +120,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = sp.getString(SP_NUMERAL_TYPE, arNumType) ==
-                        (nt.jClass?.canonicalName ?: arNumType)
+                isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
+                        (nt.jClass?.canonicalName ?: Kit.arNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -126,8 +129,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.toolbar.setOnMenuItemClickListener { mItem ->
             sp.edit {
                 putString(
-                    SP_NUMERAL_TYPE,
-                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName ?: arNumType
+                    Kit.SP_NUMERAL_TYPE,
+                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName ?: Kit.arNumType
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -184,6 +187,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         // Handler
         handler = object : Handler(Looper.getMainLooper()) {
+            @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
@@ -191,9 +195,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
-                    HANDLE_SEXBOOK_LOADED -> (b.grid.adapter as? Grid)?.apply {
-                        sexbook = cacheSexbook()
-                        m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
+                    HANDLE_SEXBOOK_LOADED -> {
+                        m.sexbook = msg.obj as List<Sexbook.Report>
+                        (b.grid.adapter as? Grid)?.apply {
+                            sexbook = cacheSexbook()
+                            m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
+                        }
                     }
                 }
             }
@@ -213,7 +220,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             } catch (e: PackageManager.NameNotFoundException) {
                 false
             } && m.sexbook == null
-        ) Sexbook().start()
+        ) Sexbook(this).start()
         (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Nyx.CHANNEL)
             createNotificationChannel(
@@ -410,8 +417,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = sp.getString(SP_NUMERAL_TYPE, arNumType) ==
-                    (Numerals.all[i].jClass?.simpleName ?: arNumType)
+            item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
+                    (Numerals.all[i].jClass?.simpleName ?: Kit.arNumType)
         }
     }
 
@@ -646,117 +653,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         super.onDestroy()
     }
 
-    companion object {
-        const val EXTRA_LUNA = "luna"
-        const val EXTRA_DIES = "dies"
-        const val SP_NUMERAL_TYPE = "numeral_type"
-        const val arNumType = "0"
-        const val HANDLE_NEW_DAY = 0
-        const val HANDLE_SEXBOOK_LOADED = 1
-        var handler: Handler? = null
-
-        /** @return the main shared preferences instance; <code>settings.xml</code>. */
-        fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
-
-        /** @return the colour value of this attribute resource from the theme. */
-        @ColorInt
-        fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
-            theme.resolveAttribute(attr, this, true)
-        }.data
-
-        /** @return the colour filter instance of this colour with the given PorterDuff.Mode. */
-        fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
-            PorterDuffColorFilter(color, mode)
-
-        /** Opens the specified date in the device's default calendar app. */
-        fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
-            PendingIntent.getActivity(
-                c, req, Intent(c, Main::class.java)
-                    .putExtra(EXTRA_LUNA, cal.toKey())
-                    .putExtra(EXTRA_DIES, cal[Calendar.DAY_OF_MONTH]),
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                    PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-            ) // A unique request code protects the PendingIntent from being recycled!
-
-        /** Clears focus from an EditText. */
-        fun EditText.blur(c: Context) {
-            (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
-                ?.hideSoftInputFromWindow(windowToken, 0)
-            clearFocus()
-        }
-    }
-
-    /**
-     * Imports data from the Sexbook application in a separate thread.
-     *
-     * @see <a href="https://github.com/fulcrum1378/sexbook">Sexbook repository</a>
-     * @see <a href="https://mahdiparastesh.ir/?fk=1">Mahdi Parastesh's personal website</a>
-     */
-    inner class Sexbook : Thread() {
-        override fun run() {
-            val places = hashMapOf<Long, String>()
-            contentResolver.query(
-                Uri.parse("content://$SEXBOOK/place"),
-                null, null, null, null
-            )?.use { cur ->
-                while (cur.moveToNext())
-                    places[cur.getLong(0)] = cur.getString(1)
-            }
-            val cur = contentResolver.query(
-                Uri.parse("content://$SEXBOOK/report"),
-                null, null, null, "time ASC" // DESC
-            ) ?: return
-            val sexbook = arrayListOf<Sex>()
-            while (cur.moveToNext()) {
-                val cal = calType.newInstance()
-                cal.timeInMillis = cur.getLong(1)
-                sexbook.add(
-                    Sex(
-                        cur.getLong(0),
-                        cal[Calendar.YEAR].toShort(), (cal[Calendar.MONTH] + 1).toShort(),
-                        cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR_OF_DAY].toByte(),
-                        cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
-                        cur.getString(2), cur.getShort(3).toByte(),
-                        cur.getString(4), cur.getInt(5) == 1,
-                        places[cur.getLong(6)]
-                    )
-                )
-            }
-            cur.close()
-            m.sexbook = sexbook.toList()
-            handler?.obtainMessage(HANDLE_SEXBOOK_LOADED)?.sendToTarget()
-        }
-    }
-
-    /**
-     * Data class containing the information about a sex record from Sexbook.
-     *
-     * @param id the unique id (Long)
-     * @param year in this calendar (Short)
-     * @param month in this calendar (Short)
-     * @param day in this calendar (Short)
-     * @param hour (Byte)
-     * @param minute (Byte)
-     * @param second (Byte)
-     * @param key the raw input from the user indicating their crush's name (String)
-     * @param type wet dream, masturbation, oral, anal or vaginal sex (Byte)
-     * @param desc description (String)
-     * @param accurate is this record accurate? (Boolean)
-     * @param place the place where the sex happened (String?)
-     *
-     * @see Grid#showSexbook
-     */
-    data class Sex(
-        val id: Long, val year: Short, val month: Short, val day: Short, // never compare bytes!
-        val hour: Byte, val minute: Byte, val second: Byte,
-        val key: String, val type: Byte, val desc: String, val accurate: Boolean, val place: String?
-    )
-
     class Model : ViewModel() {
         var vita: Vita? = null
         var luna: String? = null
         lateinit var calendar: Calendar
-        var sexbook: List<Sex>? = null
+        var sexbook: List<Sexbook.Report>? = null
         var changingVar: Int? = null
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
@@ -774,6 +675,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 /* TODO:
   * Search in Vita capability
   * Bring crushes' birthdays from Sexbook
-  * Bring events from calendars to Fortuna?!?!
   * Select multiple day cells in order to score them once
   */
