@@ -1,17 +1,31 @@
 package ir.mahdiparastesh.fortuna
 
 import android.Manifest
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.SystemClock
+import android.util.TypedValue
+import android.view.ContextThemeWrapper
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
+import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import java.util.*
 
 object Kit {
     const val A_DAY = 86400000L
+    const val SP_NUMERAL_TYPE = "numeral_type"
+    const val arNumType = "0"
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
     /**
@@ -45,6 +59,20 @@ object Kit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
+
+
+    /** @return the main shared preferences instance; <code>settings.xml</code>. */
+    fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+    /** @return the colour value of this attribute resource from the theme. */
+    @ColorInt
+    fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
+        theme.resolveAttribute(attr, this, true)
+    }.data
+
+    /** @return the colour filter instance of this colour with the given PorterDuff.Mode. */
+    fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
+        PorterDuffColorFilter(color, mode)
 
     /**
      * Fills a String with a number and zeroes before it.
@@ -105,6 +133,23 @@ object Kit {
 
     /** Converts a hexadecimal colour integer into a Float of range 0..1. */
     fun Int.toValue() = toFloat() / 256f
+
+    /** Opens the specified date in the device's default calendar app. */
+    fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
+        PendingIntent.getActivity(
+            c, req, Intent(c, Main::class.java)
+                .putExtra(Main.EXTRA_LUNA, cal.toKey())
+                .putExtra(Main.EXTRA_DIES, cal[Calendar.DAY_OF_MONTH]),
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+        ) // A unique request code protects the PendingIntent from being recycled!
+
+    /** Clears focus from an EditText. */
+    fun EditText.blur(c: Context) {
+        (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
+            ?.hideSoftInputFromWindow(windowToken, 0)
+        clearFocus()
+    }
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {

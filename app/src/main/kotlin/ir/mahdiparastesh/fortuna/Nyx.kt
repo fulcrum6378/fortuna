@@ -55,7 +55,7 @@ class Nyx : BroadcastReceiver() {
             CHANNEL, Notification.Builder(c, REMIND)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(c.getString(R.string.ntfReminder))
-                .setContentIntent(Main.openInDate(c, cal, 0))
+                .setContentIntent(Kit.openInDate(c, cal, 0))
                 .setAutoCancel(true)
                 .setShowWhen(false)
                 .build()

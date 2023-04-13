@@ -30,13 +30,13 @@ import androidx.emoji2.text.EmojiCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
+import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.Kit.decSep
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Kit.z
-import ir.mahdiparastesh.fortuna.Main.Companion.color
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
@@ -44,6 +44,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.misc.Sexbook
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
@@ -54,7 +55,7 @@ import kotlin.math.absoluteValue
  */
 class Grid(private val c: Main) : ListAdapter {
     var luna = c.m.thisLuna()
-    var sexbook: List<Main.Sex>? = cacheSexbook()
+    var sexbook: List<Sexbook.Report>? = cacheSexbook()
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -86,8 +87,8 @@ class Grid(private val c: Main) : ListAdapter {
         ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? = luna[i] ?: luna.default
             val isEstimated = luna[i] == null && luna.default != null
-            val numType = c.sp.getString(Main.SP_NUMERAL_TYPE, Main.arNumType)
-                .let { if (it == Main.arNumType) null else it }
+            val numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
+                .let { if (it == Kit.arNumType) null else it }
 
             dies.text = Numerals.make(i + 1, numType)
             val enlarge =
