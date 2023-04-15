@@ -27,6 +27,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.graphics.blue
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.util.containsKey
@@ -673,6 +674,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
+  * Add obfuscation after finishing DriveApi
   * Search in Vita capability
   * Bring crushes' birthdays from Sexbook
   * Select multiple day cells in order to score them once
