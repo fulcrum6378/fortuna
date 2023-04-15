@@ -4,19 +4,25 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/today_widget"
-    android:theme="@style/Theme.Fortuna"
     android:orientation="horizontal"
+    android:theme="@style/Theme.Fortuna"
     android:weightSum="2"
     tools:ignore="ContentDescription"
     tools:viewBindingIgnore="true">
 
+    <ImageView
+        android:id="@+id/bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="@drawable/today_widget"
+        android:scaleType="fitXY" />
+
     <TextView
         android:id="@+id/dies"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_weight="1"
         android:textAlignment="center"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="19sp"
@@ -24,12 +30,12 @@
 
     <TextView
         android:id="@+id/luna"
-        android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
         android:lineSpacingExtra="7sp"
         android:textAlignment="center"
-        android:layout_gravity="center"
         android:textColor="?attr/colorOnPrimary"
         android:textSize="11sp" />
 </LinearLayout>

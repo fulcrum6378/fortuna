@@ -27,7 +27,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.graphics.blue
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.green
 import androidx.core.graphics.red
 import androidx.core.util.containsKey
@@ -89,7 +88,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             ShapeAppearanceModel.Builder()
                 .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
                 .build()
-        ).apply { fillColor = c.resources.getColorStateList(R.color.variabilis_field, null) }
+        ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
     }
     private val driveApi = DriveApi(this)
 

@@ -4,7 +4,6 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/today_widget"
     android:theme="@style/Theme.Fortuna"
     tools:ignore="ContentDescription"
     tools:viewBindingIgnore="true">
@@ -12,6 +11,13 @@
     1. Any non-default view which starts with a package name,
     2. MaterialShapeDrawable,
     3. Font resources or a custom TypefaceSpan, -->
+
+    <ImageView
+        android:id="@+id/bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="@drawable/today_widget"
+        android:scaleType="fitXY" />
 
     <TextView
         android:id="@+id/dies"
