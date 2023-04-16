@@ -12,7 +12,6 @@ import com.google.android.gms.common.api.Scope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.AbstractInputStreamContent
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
@@ -23,12 +22,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayInputStream
-import java.io.InputStream
 
 class DriveApi(private val c: Main) {
     private var acc: GoogleSignInAccount? = null
     private var drive: Drive? = null
+    private val scopes = setOf(DriveScopes.DRIVE_READONLY, DriveScopes.DRIVE_FILE)
 
     private val signIn =
         c.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { res ->
@@ -46,11 +44,12 @@ class DriveApi(private val c: Main) {
             initDrive()
             return; }
         acc = GoogleSignIn.getLastSignedInAccount(c)
+        val mScopes = scopes.map { Scope(it) }
         if (acc == null) signIn.launch(
             GoogleSignIn.getClient(
                 c, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestEmail()
-                    .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                    .requestScopes(mScopes[0], *mScopes.subList(1, mScopes.size).toTypedArray())
                     .build()
             ).signInIntent
         ) else initDrive()
@@ -58,47 +57,34 @@ class DriveApi(private val c: Main) {
 
     private fun initDrive() {
         if (acc == null || drive != null) {
-            createTestFile(); return; }
+            query(); return; }
         drive = Drive.Builder(
             AndroidHttp.newCompatibleTransport(), GsonFactory(),
-            GoogleAccountCredential.usingOAuth2(c, setOf(DriveScopes.DRIVE_FILE))
-                .apply { selectedAccount = acc!!.account }
+            GoogleAccountCredential.usingOAuth2(c, scopes).apply { selectedAccount = acc!!.account }
         ).setApplicationName(c.getString(R.string.app_name)).build()
-        createTestFile()
+        query()
     }
 
     @RequiresPermission(Manifest.permission.INTERNET)
     private fun query() {
         if (drive == null) return
         CoroutineScope(Dispatchers.IO).launch {
+            val rootId = drive!!.files().get("root").setFields("id").execute().id
             val list = drive!!.files().list()
-                .setPageSize(10)
-                .setFields("nextPageToken, files(id, name)")
+                .setOrderBy("name")
+                .setFields("files(id, name)")
+                .setQ(
+                    "\'$rootId\' in parents and trashed=false and " +
+                            "mimeType=\'application/vnd.google-apps.folder\'"
+                )
+                .setSpaces("drive")
                 .execute()
             val sb = StringBuilder()
-            for (f: File in list.files) sb.append("${f.id} : ${f.name}\n")
+            for (f: File in list.files) sb.append("${f.name}\n")//${f.id} :
             if (list.files.isNullOrEmpty())
                 sb.append("No files found; kind=${list.kind} incompleteSearch:${list.incompleteSearch}")
             withContext(Dispatchers.Main) {
                 MaterialAlertDialogBuilder(c).setTitle("Test").setMessage(sb.toString()).show()
-            }
-        }
-    }
-
-    // Does NOT replace
-    private fun createTestFile() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val file = drive!!.files().create(
-                File().apply { name = "Test.vita" },
-                object : AbstractInputStreamContent("text/plain") {
-                    val data = "@6402.01\n22:1\n".encodeToByteArray()
-                    override fun getInputStream(): InputStream = ByteArrayInputStream(data)
-                    override fun getLength(): Long = data.size.toLong()
-                    override fun retrySupported(): Boolean = true
-                }
-            ).setFields("id").execute()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(c, file.id, Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -54,6 +54,7 @@
     <string name="backupDesc">
         Your data is automatically backed up in a separate file every night.
     </string>
+    <string name="syncGoogleDrive">Sync with Google Drive</string>
     <string name="backupTime">Last time at %s</string>
     <string name="backupRestoreSure">
         Are you sure you want to replace the current data with the earlier backed-up one at %s ?

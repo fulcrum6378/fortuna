@@ -5,7 +5,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.RippleDrawable
 import android.icu.util.Calendar
 import android.os.*
 import android.util.SparseArray
@@ -86,9 +88,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
-                .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
+                .setAllCorners(CornerFamily.CUT, resources.getDimension(R.dimen.smallCornerSize))
                 .build()
-        ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
+        ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
     }
     private val driveApi = DriveApi(this)
 
@@ -195,6 +197,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
+
                     HANDLE_SEXBOOK_LOADED -> {
                         m.sexbook = msg.obj as List<Sexbook.Report>
                         (b.grid.adapter as? Grid)?.apply {
@@ -231,9 +234,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             )
         }
         Nyx.alarm(c) // Nyx.test(c)
-
-        b.toolbar.setOnClickListener { driveApi.signIn() }
-        b.toolbar.setOnLongClickListener { driveApi.signOut(); true }
     }
 
     var firstResume = true // a new instance of Main is created on a configuration change.
@@ -292,16 +292,19 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     onCalendarChanged(); }
                 closeDrawer()
             }
+
             R.id.navStat -> stat()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
                 putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
             })
+
             R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
             })
+
             R.id.navSend -> m.vita?.export(c)?.also { sendFile(it, R.string.export_file) }
             R.id.navBackup -> navBackup()
             R.id.navHelp -> help()
@@ -501,10 +504,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                     cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
                                     score / Vita.MAX_RANGE
                                 ).toArgb()
+
                                 score != null && score < 0f -> Color.valueOf(
                                     cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
                                     -score / Vita.MAX_RANGE
                                 ).toArgb()
+
                                 score != null -> Color.TRANSPARENT
                                 else -> nullCellColour
                             }
@@ -563,6 +568,24 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setView(
                 BackupBinding.inflate(layoutInflater).apply {
                     updateStatus()
+
+                    googleDrive.setOnClickListener { driveApi.signIn() }
+                    googleDrive.setOnLongClickListener { driveApi.signOut(); true }
+
+                    for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
+                        ColorStateList.valueOf(
+                            color(com.google.android.material.R.attr.colorPrimaryVariant)
+                        ), null, MaterialShapeDrawable(
+                            ShapeAppearanceModel.Builder().apply {
+                                val dim = resources.getDimension(R.dimen.mediumCornerSize)
+                                var premise = butt == backup
+                                if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                                    premise = !premise
+                                if (premise) setBottomLeftCorner(CornerFamily.CUT, dim)
+                                else setBottomRightCorner(CornerFamily.CUT, dim)
+                            }.build()
+                        )
+                    )
                     backup.setOnClickListener { Vita.backup(c); updateStatus() }
                     restore.setOnClickListener {
                         MaterialAlertDialogBuilder(this@Main).apply {
@@ -673,6 +696,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
+  * Statistics grid items have bad colours in night mode
   * Add obfuscation after finishing DriveApi
   * Search in Vita capability
   * Bring crushes' birthdays from Sexbook
