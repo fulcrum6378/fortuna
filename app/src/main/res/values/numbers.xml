@@ -11,6 +11,7 @@
     <dimen name="emojiOutputTextSize">15dp</dimen>
     <dimen name="statGridMaxHeight">400dp</dimen>
     <dimen name="statCellHeight">20dp</dimen>
+    <dimen name="backupTextsPadH">25dp</dimen>
 
     <!-- IDs -->
     <item name="numArabic" type="id" />
