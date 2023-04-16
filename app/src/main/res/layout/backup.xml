@@ -15,7 +15,7 @@
         android:paddingHorizontal="@dimen/backupTextsPadH"
         android:paddingVertical="8sp"
         android:text="@string/syncGoogleDrive"
-        android:textSize="16sp"
+        android:textSize="17sp"
         app:drawableStartCompat="@drawable/google_drive" />
 
     <TextView
