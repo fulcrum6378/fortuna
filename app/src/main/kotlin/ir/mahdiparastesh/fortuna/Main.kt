@@ -697,7 +697,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Statistics grid items have bad colours in night mode
-  * Add obfuscation after finishing DriveApi
   * Search in Vita capability
   * Bring crushes' birthdays from Sexbook
   * Select multiple day cells in order to score them once

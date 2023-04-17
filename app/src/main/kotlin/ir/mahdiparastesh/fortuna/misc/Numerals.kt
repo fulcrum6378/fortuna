@@ -99,10 +99,13 @@ abstract class AtticBasedNumeral(num: Int) : BaseNumeral(num) {
             when {
                 i in 0..3 || (subtract4th && i == 4) ->
                     s.append(base.repeat(i))
+
                 !subtract4th && i == 4 ->
                     s.append(base + half)
+
                 i in 5..8 || (subtract4th && i == 9) ->
                     s.append(half + (base.repeat(i - 5)))
+
                 !subtract4th && i == 9 ->
                     s.append(base + chars[(((ln - ii) - 1) * 2) + 2])
             }
