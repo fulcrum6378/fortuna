@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 2
-        versionName = "8.6.5"
+        versionName = "8.7.0"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -39,6 +39,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            )
+        }
+    }
     buildFeatures { viewBinding = true }
     packaging { resources.excludes.add("META-INF/DEPENDENCIES") }
 }
@@ -54,13 +65,13 @@ dependencies {
     implementation("com.google.http-client:google-http-client-gson:1.42.0") // for GsonFactory
     implementation(
         "com.google.api-client:google-api-client-android:1.26.0"
-    ) {
+    ) /*{
         exclude("org.apache.httpcomponents")
-    } // for AndroidHttp and GoogleAccountCredential
+    } */// for AndroidHttp and GoogleAccountCredential
     implementation(
         "com.google.apis:google-api-services-drive:v3-rev136-1.25.0"
-    ) {
+    )/* {
         exclude("org.apache.httpcomponents")
-    } // for Drive and DriveScopes
+    }*/ // for Drive and DriveScopes
     implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
 }

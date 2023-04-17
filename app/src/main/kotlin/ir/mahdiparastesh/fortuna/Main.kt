@@ -123,7 +123,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
                 isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
-                        (nt.jClass?.canonicalName ?: Kit.arNumType)
+                        (nt.jClass?.simpleName ?: Kit.arNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -569,7 +569,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 BackupBinding.inflate(layoutInflater).apply {
                     updateStatus()
 
-                    googleDrive.setOnClickListener { driveApi.signIn() }
+                    googleDrive.setOnClickListener { driveApi.signIn() } // TODO
                     googleDrive.setOnLongClickListener { driveApi.signOut(); true }
 
                     for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
