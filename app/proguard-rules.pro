@@ -1,0 +1,1 @@
+-keep class * extends ir.mahdiparastesh.fortuna.misc.BaseNumeral
