@@ -189,7 +189,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
         // Handler
         handler = object : Handler(Looper.getMainLooper()) {
-            @Suppress("UNCHECKED_CAST")
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
@@ -199,10 +198,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     }
 
                     HANDLE_SEXBOOK_LOADED -> {
-                        m.sexbook = msg.obj as List<Sexbook.Report>
+                        m.sexbook = msg.obj as Sexbook.Data
                         (b.grid.adapter as? Grid)?.apply {
                             sexbook = cacheSexbook()
-                            m.changingVar?.also { i -> cvTvSexbook?.showSexbook(i) }
+                            m.changingVar?.also { i ->
+                                cvTvSexbook?.appendCrushBirthdays(i)
+                                cvTvSexbook?.appendSexReports(i)
+                            }
                         }
                     }
                 }
@@ -680,7 +682,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var vita: Vita? = null
         var luna: String? = null
         lateinit var calendar: Calendar
-        var sexbook: List<Sexbook.Report>? = null
+        var sexbook: Sexbook.Data? = null
         var changingVar: Int? = null
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
@@ -698,6 +700,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 /* TODO:
   * Statistics grid items have bad colours in night mode
   * Search in Vita capability
-  * Bring crushes' birthdays from Sexbook
   * Select multiple day cells in order to score them once
   */

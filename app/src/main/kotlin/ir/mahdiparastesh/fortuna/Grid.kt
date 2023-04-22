@@ -53,9 +53,12 @@ import kotlin.math.absoluteValue
  * Main table of our calendar
  * Subclass of ListAdapter, customised to be used in a GridView, and list the days.
  */
+@SuppressLint("SetTextI18n")
 class Grid(private val c: Main) : ListAdapter {
     var luna = c.m.thisLuna()
-    var sexbook: List<Sexbook.Report>? = cacheSexbook()
+    var sexbook: Sexbook.Data? = cacheSexbook()
+
+    /** TextView inside the changeVar()'s dialogue. */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -117,6 +120,7 @@ class Grid(private val c: Main) : ListAdapter {
                             score / Vita.MAX_RANGE
                         ).toArgb()
                     }
+
                     score != null && score < 0f -> {
                         dies.setTextColor(cso)
                         variabilis.setTextColor(cso)
@@ -126,6 +130,7 @@ class Grid(private val c: Main) : ListAdapter {
                             -score / Vita.MAX_RANGE
                         ).toArgb()
                     }
+
                     else -> {
                         dies.setTextColor(tc)
                         variabilis.setTextColor(tc)
@@ -152,14 +157,17 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     /**
-     * Return a copy of the main Sexbook records (<code>m.sexbook</code>)
+     * Return a copy of the main Sexbook data (<code>m.sexbook</code>)
      * in order to cache it in this class.
      */
     fun cacheSexbook() = c.m.sexbook?.let {
         val spl = c.m.luna!!.split(".")
         val yr = spl[0].toShort()
         val mo = spl[1].toShort()
-        it.filter { x -> x.year == yr && x.month == mo }
+        Sexbook.Data(
+            it.reports.filter { x -> x.year == yr && x.month == mo },
+            it.crushes.filter { x -> x.birthYear <= yr && x.birthMonth == mo }
+        )
     }
 
     /**
@@ -210,6 +218,7 @@ class Grid(private val c: Main) : ListAdapter {
                     source == null -> null
                     EmojiCompat.get().getEmojiMatch(source, 16) in 1..2
                             && !hasNonEmojiNumber(source) -> null
+
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!
             })
@@ -236,7 +245,8 @@ class Grid(private val c: Main) : ListAdapter {
             }
         }
         cvTvSexbook = bv.sexbook
-        bv.sexbook.showSexbook(i)
+        bv.sexbook.appendCrushBirthdays(i)
+        bv.sexbook.appendSexReports(i)
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 c.getString(
@@ -314,17 +324,37 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     /**
-     * Explains the sex records imported from the Sexbook app and put them inside the TextView,
-     * and make the TextView visible and clickable.
+     * Explains the birthdays of the crushes imported from the Sexbook app and puts them
+     * inside the TextView, and makes the TextView visible.
      *
      * @param i day
      */
-    fun TextView.showSexbook(i: Int) {
+    fun TextView.appendCrushBirthdays(i: Int) {
         if (i == -1) return
-        val sex = sexbook?.filter { it.day == (i + 1).toShort() }
+        val birth = sexbook?.crushes?.filter { it.birthDay == (i + 1).toShort() }
+        if (birth.isNullOrEmpty()) return
+
+        val sb = StringBuilder()
+        for (b in birth)
+            sb.append("Happy ${b.theirs()} birthday!\n")
+        sb.deleteCharAt(sb.length - 1)
+        text = text.toString() + sb.toString()
+        isVisible = true
+    }
+
+    /**
+     * Explains the sex records imported from the Sexbook app and puts them inside the TextView,
+     * and makes the TextView visible and clickable.
+     *
+     * @param i day
+     */
+    fun TextView.appendSexReports(i: Int) {
+        if (i == -1) return
+        val sex = sexbook?.reports?.filter { it.day == (i + 1).toShort() }
         if (sex.isNullOrEmpty()) return
 
         val sb = StringBuilder()
+        if (text.isNotEmpty()) sb.append("\n")
         for (x in sex) {
             sb.append(
                 when (x.type) {
@@ -344,7 +374,7 @@ class Grid(private val c: Main) : ListAdapter {
             else sb.append(": ${x.desc}\n")
         }
         sb.deleteCharAt(sb.length - 1)
-        text = sb.toString()
+        text = text.toString() + sb.toString()
         isVisible = true
         setOnLongClickListener {
             try {

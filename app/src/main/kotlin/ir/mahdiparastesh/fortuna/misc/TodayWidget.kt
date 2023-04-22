@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
-import android.content.res.Configuration
 import android.icu.util.Calendar
 import android.os.Bundle
 import android.widget.RemoteViews
@@ -13,6 +12,7 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.Kit.isLandscape
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.R
 
@@ -38,10 +38,8 @@ class TodayWidget : AppWidgetProvider() {
                     ShapeAppearanceModel.Builder().setAllCorners(CornerFamily.CUT, den * 4f).build()
                 ).let {
                     it.fillColor = c.resources.getColorStateList(R.color.todayWidget, null)
-                    c.resources.configuration.orientation
                     val size = arrayOf(30, 50)
-                    if (c.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                        size.reverse()
+                    if (c.isLandscape()) size.reverse()
                     it.toBitmap((den * size[0]).toInt(), (den * size[1]).toInt())
                 })
             setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
@@ -50,10 +48,12 @@ class TodayWidget : AppWidgetProvider() {
                     c.sp().getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
                         .let { if (it == Kit.arNumType) null else it })
             )
-            setTextViewText(
-                R.id.luna, c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]] +
-                        "\n${cal[Calendar.YEAR]}"
-            )
+            val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]
+            if (c.isLandscape()) setTextViewText(R.id.luna, "$month\n${cal[Calendar.YEAR]}")
+            else {
+                setTextViewText(R.id.luna, month)
+                setTextViewText(R.id.year, "${cal[Calendar.YEAR]}")
+            }
         } // RemoteViews has no getters.
 
         fun externalUpdate(c: Context) {

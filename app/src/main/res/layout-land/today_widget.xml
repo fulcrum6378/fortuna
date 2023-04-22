@@ -40,6 +40,6 @@
             android:lineSpacingExtra="7sp"
             android:textAlignment="center"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="11sp" />
+            android:textSize="11.5sp" />
     </LinearLayout>
 </RelativeLayout>

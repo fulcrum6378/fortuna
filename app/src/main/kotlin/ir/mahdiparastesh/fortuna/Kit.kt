@@ -5,6 +5,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
+import android.database.Cursor
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.icu.util.Calendar
@@ -35,6 +37,7 @@ object Kit {
      *
      * @see android.icu.util.Calendar
      */
+    @Suppress("KotlinConstantConditions")
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
         "gregorian" -> android.icu.util.GregorianCalendar::class.java
@@ -149,6 +152,13 @@ object Kit {
         (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
             ?.hideSoftInputFromWindow(windowToken, 0)
         clearFocus()
+    }
+
+    fun Context.isLandscape() =
+        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    fun Cursor?.iterate(action: Cursor.() -> Unit) {
+        this?.use { cur -> while (cur.moveToNext()) cur.action() }
     }
 
 
