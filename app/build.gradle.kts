@@ -42,8 +42,6 @@ android {
 
     buildTypes {
         release {
-            isDebuggable = true
-            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
