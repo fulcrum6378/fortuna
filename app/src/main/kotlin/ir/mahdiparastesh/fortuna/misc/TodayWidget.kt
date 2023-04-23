@@ -16,6 +16,12 @@ import ir.mahdiparastesh.fortuna.Kit.isLandscape
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.R
 
+/**
+ * An app widget for notifying the user of the current date in the current calendar with the chosen
+ * type of numerals.
+ *
+ * AppWidgetProvider sucks when using ADB; it doesn't update properly!
+ */
 class TodayWidget : AppWidgetProvider() {
     override fun onUpdate(c: Context, manager: AppWidgetManager, ids: IntArray) {
         super.onUpdate(c, manager, ids)

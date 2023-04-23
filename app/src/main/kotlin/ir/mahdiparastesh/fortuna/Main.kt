@@ -483,8 +483,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 meanMap[y][m] = mean
             }
             val bw = WholeBinding.inflate(layoutInflater)
-            val cp = color(com.google.android.material.R.attr.colorPrimary)
-            val cs = color(com.google.android.material.R.attr.colorSecondary)
+
+            val cp = getColor(R.color.CP)
+            val cs = getColor(R.color.CS)
             val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
             val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
             val monthNames = resources.getStringArray(R.array.luna)
@@ -571,8 +572,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 BackupBinding.inflate(layoutInflater).apply {
                     updateStatus()
 
-                    googleDrive.setOnClickListener { driveApi.signIn() } // TODO
-                    googleDrive.setOnLongClickListener { driveApi.signOut(); true }
+                    if (BuildConfig.DEBUG) {
+                        googleDrive.isVisible = true
+                        googleDrive.setOnClickListener { driveApi.signIn() }
+                        googleDrive.setOnLongClickListener { driveApi.signOut(); true }
+                    }
 
                     for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
                         ColorStateList.valueOf(
@@ -698,7 +702,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Statistics grid items have bad colours in night mode
+  * Finish DriveApi
   * Search in Vita capability
   * Select multiple day cells in order to score them once
   */

@@ -12,8 +12,8 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 33
-        versionCode = 2
-        versionName = "8.7.5"
+        versionCode = 3
+        versionName = "8.9.3"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -57,7 +57,7 @@ android {
 
 @Suppress("SpellCheckingInspection")
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.7.0")
+    implementation("androidx.activity:activity-ktx:1.7.1")
     implementation("androidx.emoji2:emoji2:1.3.0")
     implementation("com.google.android.material:material:1.8.0")
 
