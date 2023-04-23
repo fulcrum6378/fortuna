@@ -16,6 +16,7 @@
         android:paddingVertical="8sp"
         android:text="@string/syncGoogleDrive"
         android:textSize="17sp"
+        android:visibility="gone"
         app:drawableStartCompat="@drawable/google_drive" />
 
     <TextView
