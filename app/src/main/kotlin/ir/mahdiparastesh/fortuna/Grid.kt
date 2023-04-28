@@ -190,7 +190,7 @@ class Grid(private val c: Main) : ListAdapter {
             minValue = 0
             value = c.m.changingVarScore
                 ?: (if (i != -1) luna[i]?.toVariabilis() else null)
-                        ?: luna.default?.toVariabilis() ?: 6
+                    ?: luna.default?.toVariabilis() ?: 6
             wrapSelectorWheel = false
             setFormatter { it.toScore().showScore() }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -217,8 +217,7 @@ class Grid(private val c: Main) : ListAdapter {
                     this@apply.text.isNotEmpty() -> ""
                     source == null -> null
                     EmojiCompat.get().getEmojiMatch(source, 16) in 1..2
-                            && !hasNonEmojiNumber(source) -> null
-
+                        && !hasNonEmojiNumber(source) -> null
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!
             })
