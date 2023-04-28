@@ -235,6 +235,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 ).apply { description = getString(R.string.ntfReminderDesc) }
             )
         }
+        addOnNewIntentListener { it.resolveIntent() }
         Nyx.alarm(c) // Nyx.test(c)
     }
 
@@ -258,11 +259,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, m.calendar) }
         }
         firstResume = false
-    }
-
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        intent.resolveIntent()
     }
 
     var resolvingIntent = false
@@ -663,7 +659,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.root.closeDrawer(GravityCompat.START, true)
     }
 
-    @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         if (b.root.isDrawerOpen(GravityCompat.START)) {
             closeDrawer()
