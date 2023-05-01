@@ -123,7 +123,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
                 isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
-                        (nt.jClass?.simpleName ?: Kit.arNumType)
+                    (nt.jClass?.simpleName ?: Kit.arNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -410,8 +410,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         b.grid.layoutParams.apply {
             height = ((resources.getDimension(R.dimen.gridItemHeight) *
-                    ceil(m.calendar.lunaMaxima().toFloat() / 5f)) +
-                    resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
+                ceil(m.calendar.lunaMaxima().toFloat() / 5f)) +
+                resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
         }
     }
 
@@ -419,7 +419,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
             item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
-                    (Numerals.all[i].jClass?.simpleName ?: Kit.arNumType)
+                (Numerals.all[i].jClass?.simpleName ?: Kit.arNumType)
         }
     }
 
@@ -447,7 +447,13 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.blur(c)
     }
 
-    /** Opens an AlertDialog for statistics. */
+    /**
+     * Opens an AlertDialog for statistics.
+     *
+     * Making statistics in a way that it'll show every year since the minimum scored days till the
+     * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
+     * someone accidentally or deliberately score a day in year 25 or 8000.
+     */
     private fun stat() {
         if (m.showingStat && !firstResume) return
         m.showingStat = true
@@ -625,8 +631,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (!f.exists()) return getString(R.string.never)
         val d = calType.newInstance().apply { timeInMillis = f.lastModified() }
         return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
-                "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
-                "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
+            "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
+            "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
     }
 
     /** Updates the modification date of the backup file. */
@@ -702,4 +708,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
   * Finish DriveApi
   * Search in Vita capability
   * Select multiple day cells in order to score them once
+  * Calculate a day's distance from another specific day
   */
