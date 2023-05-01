@@ -49,7 +49,6 @@
             android:id="@+id/luna"
             android:layout_width="match_parent"
             android:layout_height="20sp"
-            android:layout_marginBottom="4sp"
             android:autoSizeMaxTextSize="13sp"
             android:autoSizeMinTextSize="10sp"
             android:autoSizeTextType="uniform"
