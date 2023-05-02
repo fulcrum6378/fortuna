@@ -14,6 +14,7 @@
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Fortuna.Dialogue</item>
         <item name="navigationViewStyle">@style/Widget.Fortuna.NavigationView</item>
+        <!--<item name="tooltipStyle">@style/Widget.Fortuna.Tooltip</item>-->
     </style>
 
     <style name="Theme.Fortuna" parent="Theme.Fortuna.Base">
@@ -64,6 +65,7 @@
         <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Fortuna.Small</item>
     </style>
 
+
     <style name="ShapeAppearance_Fortuna_Nav">
         <item name="cornerFamilyBottomRight">cut</item>
         <item name="cornerFamilyTopRight">cut</item>
@@ -81,6 +83,7 @@
         <item name="cornerSize">@dimen/smallCornerSize</item>
     </style>
 
+
     <style name="Theme.Fortuna.Picker" parent="Theme.Fortuna">
         <item name="android:colorControlNormal">@android:color/transparent</item><!--divider-->
     </style>
@@ -88,4 +91,6 @@
     <style name="Widget.Fortuna.OverflowButton" parent="@android:style/Widget.Material.ActionButton.Overflow">
         <item name="android:src">@drawable/arabic_numerals</item>
     </style>
+
+    <!--<style name="Widget.Fortuna.Tooltip" parent="Widget.Material3.Tooltip"></style>-->
 </resources>
