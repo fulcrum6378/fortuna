@@ -3,7 +3,11 @@ package ir.mahdiparastesh.fortuna
 import android.content.Context
 import android.icu.util.Calendar
 import ir.mahdiparastesh.fortuna.Kit.z
-import java.io.*
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.StringReader
 
 /** Representation of the VITA file type as {@link HashMap HashMap<String, Luna>} */
 class Vita : HashMap<String, Luna>() {

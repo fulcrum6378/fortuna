@@ -49,8 +49,8 @@ class Nyx : BroadcastReceiver() {
         val score = Vita.load(c).getOrDefault(cal.toKey(), null)
             ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                    ActivityCompat.checkSelfPermission(c, Manifest.permission.POST_NOTIFICATIONS)
-                    == PackageManager.PERMISSION_GRANTED)
+                ActivityCompat.checkSelfPermission(c, Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED)
         ) (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(
             CHANNEL, Notification.Builder(c, REMIND)
                 .setSmallIcon(R.drawable.notification)
