@@ -12,7 +12,7 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 33
-        versionCode = 3
+        versionCode = 4
         versionName = "9.0.0"
     }
     sourceSets.getByName("main") { kotlin.srcDirs("src/main/kotlin") }
