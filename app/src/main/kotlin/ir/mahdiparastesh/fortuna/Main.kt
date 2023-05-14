@@ -62,7 +62,6 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
-import ir.mahdiparastesh.fortuna.misc.DriveApi
 import ir.mahdiparastesh.fortuna.misc.Numerals
 import ir.mahdiparastesh.fortuna.misc.Sexbook
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
@@ -92,7 +91,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 .build()
         ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
     }
-    private val driveApi = DriveApi(this)
 
     companion object {
         const val EXTRA_LUNA = "luna"
@@ -573,13 +571,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setView(
                 BackupBinding.inflate(layoutInflater).apply {
                     updateStatus()
-
-                    if (BuildConfig.DEBUG) {
-                        googleDrive.isVisible = true
-                        googleDrive.setOnClickListener { driveApi.signIn() }
-                        googleDrive.setOnLongClickListener { driveApi.signOut(); true }
-                    }
-
                     for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
                         ColorStateList.valueOf(
                             color(com.google.android.material.R.attr.colorPrimaryVariant)
@@ -705,8 +696,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Finish DriveApi
-  * Search in Vita capability
+  * Search in Vita
   * Select multiple day cells in order to score them once
   * Calculate a day's distance from another specific day
   */
