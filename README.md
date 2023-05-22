@@ -42,7 +42,7 @@ by adding new product flavours.
 Build flavours represent calendar systems and a new calendar system can be easily added by
 specifying a subclass of [android.icu.util.Calendar](
 https://developer.android.com/reference/android/icu/util/Calendar) in [Kit#calType](
-https://github.com/fulcrum6378/fortuna/blob/master/app/src/main/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L24).
+app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L42).
 
 ## License
 

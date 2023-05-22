@@ -77,7 +77,7 @@ import kotlin.math.ceil
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
     val c: Context get() = applicationContext
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
-    val m: Model by viewModels() // belongs to ComponentActivity
+    val m: Model by viewModels()
     val sp: SharedPreferences by lazy { sp() }
     var todayCalendar: Calendar = calType.newInstance().resetHours()
     var todayLuna: String = todayCalendar.toKey()

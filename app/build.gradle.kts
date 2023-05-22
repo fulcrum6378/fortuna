@@ -13,17 +13,13 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 4
-        versionName = "9.0.0"
+        versionName = "9.0.5"
     }
-    sourceSets.getByName("main") { kotlin.srcDirs("src/main/kotlin") }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+    sourceSets.getByName("main") {
+        manifest.srcFile("src/AndroidManifest.xml")
+        kotlin.srcDirs("src/kotlin")
     }
-    kotlinOptions { jvmTarget = "17" }
-    buildFeatures { viewBinding = true }
-
     setFlavorDimensions(listOf("calendar"))
     productFlavors {
         all { dimension = "calendar" }
@@ -31,11 +27,18 @@ android {
         create("gregorian") { applicationIdSuffix = ".gregorian" }
     }
     sourceSets.getByName("iranian") {
-        res.setSrcDirs(listOf("src/main/res", "src/main/res_iranian"))
+        res.setSrcDirs(listOf("src/res", "src/res_iranian"))
     }
     sourceSets.getByName("gregorian") {
-        res.setSrcDirs(listOf("src/main/res", "src/main/res_gregorian"))
+        res.setSrcDirs(listOf("src/res", "src/res_gregorian"))
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+    buildFeatures { viewBinding = true }
 
     signingConfigs {
         create("release") {
