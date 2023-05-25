@@ -35,16 +35,16 @@ class Sexbook(private val c: Context) : Thread() {
             null, null, null, "time ASC" // DESC
         ).iterate {
             val cal = Kit.calType.newInstance()
-            cal.timeInMillis = getLong(1)
+            cal.timeInMillis = getLong(0)
             reports.add(
                 Report(
-                    getLong(0),
+                    getLong(6),
                     cal[Calendar.YEAR].toShort(), (cal[Calendar.MONTH] + 1).toShort(),
                     cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR_OF_DAY].toByte(),
                     cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
-                    getString(2), getShort(3).toByte(),
-                    getString(4), getInt(5) == 1,
-                    places[getLong(6)]
+                    getString(1), getShort(2).toByte(),
+                    getString(3), getInt(4) == 1,
+                    places[getLong(5)]
                 )
             )
         }
