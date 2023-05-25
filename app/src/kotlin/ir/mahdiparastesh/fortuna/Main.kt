@@ -194,7 +194,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
-
                     HANDLE_SEXBOOK_LOADED -> {
                         m.sexbook = msg.obj as Sexbook.Data
                         (b.grid.adapter as? Grid)?.apply {
@@ -643,7 +642,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }.show()
     }
 
-    /** Helper class for vibration. */
+    /** Proper implementation of Vibration in across different supported APIs. */
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
         (if (Build.VERSION.SDK_INT >= 31)

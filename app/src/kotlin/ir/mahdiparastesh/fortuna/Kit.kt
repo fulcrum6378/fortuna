@@ -25,6 +25,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.misc.HumanistIranianCalendar
 import java.util.*
 
+/** Static functions and utilities used everywhere. */
 object Kit {
     const val A_DAY = 86400000L
     const val SP_NUMERAL_TYPE = "numeral_type"
