@@ -1,8 +1,8 @@
 # Fortuna
 
-An open-source neuroscientific Android app based on the Hedonist philosophy, using which you will
-score your mood every day in your desired calendar system. You can also set an emoji for a day or a
-month and enter some notes!
+An open-source neuroscientific Android app based on the [Hedonist philosophy](https://en.wikipedia.org/wiki/Hedonism),
+using which you will score your mood every day in your desired calendar system. You can also set an emoji for a day
+or a month and enter some notes!
 
 ## Screenshots
 
@@ -14,7 +14,7 @@ month and enter some notes!
 
 ## How it works
 
-This app is designed based on the [Hedonist](https://en.wikipedia.org/wiki/Hedonism) philosophy!
+This app is designed based on the Hedonist philosophy!
 It's used to calculate the amount of pleasure and pain one senses in their life.
 
 You can enter the quality of your life in a scale between -3 to +3 for each day.
@@ -42,7 +42,58 @@ by adding new product flavours.
 Build flavours represent calendar systems and a new calendar system can be easily added by
 specifying a subclass of [android.icu.util.Calendar](
 https://developer.android.com/reference/android/icu/util/Calendar) in [Kit#calType](
-app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L42).
+app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L43).
+
+## VITA Markup Language
+
+Fortuna reads and writes its data in *.vita* text file format.
+It defines data separated by months and every month is separated using a line break;\
+At the beginning of each month, there is a "**@**" symbol and then year and month number; for example: **@2022.03**\
+You can optionally enter a "**~**" symbol and define an estimated score for the whole month
+which will apply only on days with no specific score; for example **@2022.03~3**\
+After a line break, there come scores for each date.
+By default, first line indicates day 1 in that month and line 2 indicates day 2; for example: **0**\
+Except if you want to skip some days and jump to another day,
+then you'll have to explicitly specify the number of that day; for example: **5:0**\
+Note that entering each day is optional, and you can even define a month with no days.\
+After each day and even the month itself you can optionally enter two more values:
+
+1. An **emoji** for that day or month after a "**;**" symbol.
+2. Some **descriptions** for that day or month after ANOTHER "**;**" symbol.
+
+Here is a complete example:
+
+```
+@2021.09~-0.5;⛓;Spent the whole month in the military...
+8:-0.5;;The idea of a developing such an app came to my mind and I named it "Hedonometer" which I later called it "Fortuna".
+
+@2022.03~0
+24:1.5;🧠;Started Fortuna Android project at 10:32:21!
+2
+2
+2
+1.5
+2
+2.5
+2;🧠;FORTUNA IS READY!!! (it used JSON to store its data)
+
+@2022.08
+3:1;;Invented VITA file format and then migrated Fortuna to it.
+
+```
+
+## Structure of the Source Code
+
+- [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) : controls the calendar table
+  and the dialogues that might pop up while interacting with it.
+- [**Kit.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Kit.kt) : a set of miscellaneous static functions and utilities.
+- [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) : the main and only Activity instance in this app.
+- [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) : a BroadcastReceiver that takes some necessary
+  or optional actions at 12 AM, including a Vita backup, reminding users to score their day and updating views
+  according to the current new date.
+- [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) : reads and writes Vita files and all related
+  utilities.
+- [**misc**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) subpackage : miscellaneous add-ons and utilities.
 
 ## License
 
