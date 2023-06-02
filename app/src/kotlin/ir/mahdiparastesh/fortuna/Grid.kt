@@ -120,7 +120,6 @@ class Grid(private val c: Main) : ListAdapter {
                             score / Vita.MAX_RANGE
                         ).toArgb()
                     }
-
                     score != null && score < 0f -> {
                         dies.setTextColor(cso)
                         variabilis.setTextColor(cso)
@@ -130,7 +129,6 @@ class Grid(private val c: Main) : ListAdapter {
                             -score / Vita.MAX_RANGE
                         ).toArgb()
                     }
-
                     else -> {
                         dies.setTextColor(tc)
                         variabilis.setTextColor(tc)

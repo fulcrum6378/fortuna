@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.fortuna
 
 import android.Manifest
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -161,6 +162,16 @@ object Kit {
 
     fun Cursor?.iterate(action: Cursor.() -> Unit) {
         this?.use { cur -> while (cur.moveToNext()) cur.action() }
+    }
+
+    @Suppress("DEPRECATION")
+    fun Activity.setLanguage(languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+        resources.configuration.apply {
+            setLocale(locale)
+            resources.updateConfiguration(this, resources.displayMetrics)
+        }
     }
 
 

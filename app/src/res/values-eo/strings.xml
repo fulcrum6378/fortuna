@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- GLOBAL -->
+    <string name="yes">Jes</string>
+    <string name="no">Ne</string>
+    <string name="ok">Bone</string>
+    <string name="save">Savu</string>
+    <string name="cancel">Nuligi</string>
+    <string name="clear">Purigu</string>
+    <string name="copy">Kopiu</string>
+    <string name="done">Farita!</string>
+    <string name="failed">Malsukcesis!!</string>
+    <string name="year">Jaro</string>
+    <string name="today">Hodiaŭ</string>
+    <string name="yesterday">Hieraŭ</string>
+    <string name="tomorrow">Morgaŭ</string>
+    <string name="difAgo">antaŭ %s tago(j)</string>
+    <string name="difLater">post %s tago(j)</string>
+    <string name="difYears">%s yaro(j)</string>
+    <string name="difMonths">%s monato(j)</string>
+    <string name="difDays">%s tago(j)</string>
+    <string name="never">\"neniam\"</string>
+    <string name="backup">Rezervo</string>
+    <string name="restore">Restaŭri</string>
+    <string name="export">Eksporto</string>
+
+    <!-- Main -->
+    <string name="variabilis">Variablo: %s</string>
+    <string name="defValue">DEFORTA</string>
+    <string name="viewInCalendar">Kalendaro</string>
+    <string name="holdLonger">Tenu iom pli&#8230;</string>
+    <string name="scoreFuture">Vi ne konas vian estontecon!!!</string>
+
+    <!-- Drawer -->
+    <string name="navOpen">Malfermu</string>
+    <string name="navClose">Fermu</string>
+    <string name="navStat">Statistiko</string>
+    <string name="fortunaStat">Fortuna Statistiko</string>
+    <string name="statText">Mezumo de Totalo: %1$s\nSumo: %2$s\nKovrante %3$s tagojn.\n</string>
+    <string name="navLang">Lingvo</string>
+    <string name="navExport">Eksporti datumojn</string>
+    <string name="navImport">Importi datumojn</string>
+    <string name="importOpenError">Bedaŭrinde eraro okazis dum malfermo de la dosiero!</string>
+    <string name="importReadError">Bedaŭrinde eraro okazis dum legado de la dosiero!</string>
+    <string name="askImport">Ĉu vi certas, ke vi volas anstataŭigi ĉiujn ĉi tiujn registrojn?</string>
+    <string name="navSend">Sendu datumojn al</string>
+    <string name="backupDesc">
+        Viaj datumoj estas aŭtomate konservitaj en aparta dosiero ĉiunokte.
+    </string>
+    <string name="backupTime">Lastan fojon je %s</string>
+    <string name="backupRestoreSure">
+        Ĉu vi certas, ke vi volas anstataŭigi la nunajn datumojn per la pli frue konservita ĉe %s ?
+    </string>
+    <string name="navHelp">Helpu</string>
+    <string name="help">
+        Ĉi tiu programo estas desegnita surbaze de la filozofio \"Hedonist\"!
+        Ĝi estas uzata por kalkuli la kvanton da plezuro kaj doloro, kiun oni sentas en sia vivo.
+        \n
+        \nVi povas enigi la kvaliton de via vivo en skalo inter -3 ĝis +3 por ĉiu tago.
+        \n
+        \nAlternative vi povas taksi la nombron de tuta monato uzante la kampon rekte al la
+        jarkampo ĉe la supro de la paĝo.
+        \n
+        \nTiam vi povas vidi kiom da plezuro kaj doloro vi entute sentis en via vivo aŭ en
+        aparta monato.
+        \n
+        \n>> Kiel labori kun ĝi:
+        \n* Tenu vian fingron en tago por vidi tiun tagon en pluraj kalendaraj sistemoj kaj ene de la
+        kalendara aplikaĵo de via aparato.
+        \n* Premu la maldekstrajn kaj dekstrajn sagojn por navigi en monato kaj premu pli longe por salti al 6
+        monatojn antaŭe aŭ poste.
+        \n* Premu la supren kaj malsupren sagojn proksime de la kampo \"jaro\" por navigi en jaroj kaj premu
+        pli longe por salti al 5 jaroj poste aŭ pli frue.
+        \n* La sekcio \"Statistiko\" priskribas la staton de via tuta vivo, plus tabelon de
+        etaj ĉeloj, ĉiu priskribanta monaton de via vivo;
+        longe klaku sur la ĉeloj por vidi mallongajn detalojn, duoble alklaku ilin por salti al tiu monato.
+        \n
+        \nNoto: ĉi tiu programo ne kredas je semajnoj!!
+    </string>
+
+    <!-- Nyx -->
+    <string name="ntfReminderTitle">Ĉiutaga Rememorigilo</string>
+    <string name="ntfReminderDesc">Sciigas vin kiam vi ĉiutage registri vian bonfartan staton.</string>
+    <string name="ntfReminder">Kiel estis via tago?</string>
+
+    <!-- TodayWidget -->
+    <string name="widTodayDesc">Montras aktualan daton kiel kalendara aplikaĵo.</string>
+
+    <!-- Numerals -->
+    <string name="numerals">Ciferoj</string>
+    <string name="numArabic">Arabaj</string>
+    <string name="numRoman">Romiaj</string>
+    <string name="numEtruscan">Etruskaj</string>
+    <string name="numAttic">Atikaj</string>
+    <string name="numOldPersian">Malnovaj Persaj</string>
+    <string name="numBrahmi">Brahmi</string>
+    <string name="numHieroglyph">Hieroglifaj</string>
+</resources>

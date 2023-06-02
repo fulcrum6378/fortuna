@@ -9,6 +9,10 @@
         android:icon="@drawable/calculate"
         android:title="@string/navStat" />
     <item
+        android:id="@+id/navLang"
+        android:icon="@drawable/language"
+        android:title="@string/navLang" />
+    <item
         android:id="@+id/navExport"
         android:icon="@drawable/data_export"
         android:title="@string/navExport" />
