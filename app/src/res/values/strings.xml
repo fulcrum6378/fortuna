@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Fortuna</string>
+    <string name="app_name" translatable="false">Fortuna</string>
     <string name="export_file" translatable="false">fortuna.vita</string>
     <string name="backup_file" translatable="false">fortuna_backup.vita</string>
     <string name="shared_prefs" translatable="false">settings.xml</string>
@@ -14,6 +14,7 @@
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
     <string name="done">Done!</string>
+    <string name="failed">Failed!</string>
     <string name="year">Year</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
@@ -23,15 +24,15 @@
     <string name="difYears">%s year(s)</string>
     <string name="difMonths">%s month(s)</string>
     <string name="difDays">%s day(s)</string>
-    <string name="difSep">,&#160;</string>
+    <string name="difSep" translatable="false">,&#160;</string>
     <string name="never">\"never\"</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="export">Export</string>
 
     <!-- Main -->
-    <string name="variabilis">Variabilis: %s</string>
-    <string name="emojiHint">😃</string>
+    <string name="variabilis">Variable: %s</string>
+    <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
     <string name="viewInCalendar">Calendar</string>
@@ -44,9 +45,9 @@
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.\n</string>
+    <string name="navLang">Language</string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
-    <string name="exportUndone">Failed!</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
@@ -54,7 +55,6 @@
     <string name="backupDesc">
         Your data is automatically backed up in a separate file every night.
     </string>
-    <string name="syncGoogleDrive">Sync with Google Drive</string>
     <string name="backupTime">Last time at %s</string>
     <string name="backupRestoreSure">
         Are you sure you want to replace the current data with the earlier backed-up one at %s ?
@@ -66,16 +66,22 @@
         \n
         \nYou can enter the quality of your life in a scale between -3 to +3 for each day.
         \n
-        \nAlternatively you can estimate the number of a whole month using the field right to the year field at the top of the page.
+        \nAlternatively you can estimate the number of a whole month using the field right to the
+        year field at the top of the page.
         \n
-        \nThen you can see how much pleasure and pain you\'ve sensed overall in your life or in a particular month.
+        \nThen you can see how much pleasure and pain you\'ve sensed overall in your life or in a
+        particular month.
         \n
         \n>> How to work with it:
-        \n* Hold your finger on a day to view that day in multiple calendar systems and inside the calendar application of your device.
-        \n* Press the left and right arrows to navigate in month and press longer to jump to 6 months earlier or later.
-        \n* Press the up and down arrows near the \"year\" field to navigate in years and press longer to jump to 5 year later or earlier.
-        \n* The \"Statistics\" section describes the status of your entire life, plus a table of tiny cells, each describing a month of your life;
-          long click on the cells to see brief details, double click on them to jump to that month.
+        \n* Hold your finger on a day to view that day in multiple calendar systems and inside the
+        calendar application of your device.
+        \n* Press the left and right arrows to navigate in month and press longer to jump to 6
+        months earlier or later.
+        \n* Press the up and down arrows near the \"year\" field to navigate in years and press
+        longer to jump to 5 year later or earlier.
+        \n* The \"Statistics\" section describes the status of your entire life, plus a table of
+        tiny cells, each describing a month of your life;
+        long click on the cells to see brief details, double click on them to jump to that month.
         \n
         \nNote: this app does not believe in weeks!!
     </string>
@@ -86,7 +92,7 @@
     <string name="ntfReminder">How was your day?</string>
 
     <!-- TodayWidget -->
-    <string name="widTodayDesc">Shows current date as a calendar app.</string>
+    <string name="widTodayDesc">Shows current date like a calendar app.</string>
 
     <!-- Numerals -->
     <string name="numerals">Numerals</string>

@@ -51,6 +51,7 @@ import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
+import ir.mahdiparastesh.fortuna.Kit.setLanguage
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Kit.z
@@ -72,6 +73,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.Locale
 import kotlin.math.ceil
 
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -102,6 +104,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val l = "eo"
+        if (l != Locale.getDefault().language) setLanguage(l)
         setContentView(b.root)
         m.vita = Vita.load(c)
 
@@ -287,19 +291,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     onCalendarChanged(); }
                 closeDrawer()
             }
-
             R.id.navStat -> stat()
+            R.id.navLang -> TODO()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
                 putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
             })
-
             R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
             })
-
             R.id.navSend -> m.vita?.export(c)?.also { sendFile(it, R.string.export_file) }
             R.id.navBackup -> navBackup()
             R.id.navHelp -> help()
@@ -327,7 +329,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 false
             }
             Toast.makeText(
-                c, if (bExp) R.string.done else R.string.exportUndone, Toast.LENGTH_LONG
+                c, if (bExp) R.string.done else R.string.failed, Toast.LENGTH_LONG
             ).show()
         }
 
@@ -506,12 +508,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                     cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
                                     score / Vita.MAX_RANGE
                                 ).toArgb()
-
                                 score != null && score < 0f -> Color.valueOf(
                                     cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
                                     -score / Vita.MAX_RANGE
                                 ).toArgb()
-
                                 score != null -> Color.TRANSPARENT
                                 else -> nullCellColour
                             }
