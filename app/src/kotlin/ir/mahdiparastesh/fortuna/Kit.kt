@@ -30,6 +30,7 @@ import java.util.*
 object Kit {
     const val A_DAY = 86400000L
     const val SP_NUMERAL_TYPE = "numeral_type"
+    const val SP_LANGUAGE = "language"
     const val arNumType = "0"
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
@@ -65,6 +66,9 @@ object Kit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
+
+    /** List of supported languages in ISO. */
+    val languages = arrayOf("en", "eo")
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
