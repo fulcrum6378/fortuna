@@ -213,6 +213,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Restore saved states
+        if (m.showingLang) lang()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
@@ -292,7 +293,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 closeDrawer()
             }
             R.id.navStat -> stat()
-            R.id.navLang -> TODO()
+            R.id.navLang -> lang()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
@@ -444,6 +445,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
+    }
+
+    private fun lang() {
+        if (m.showingLang && !firstResume) return
+        m.showingLang = true
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(R.string.navLang)
+            setSingleChoiceItems(arrayOf("en", "eo"), 0) { d, which ->
+            }
+        }.show()
+        m.showingLang = false
     }
 
     /**
@@ -684,6 +696,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
+        var showingLang = false
         var showingStat = false
         var showingBack = false
         var showingHelp = false
