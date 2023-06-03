@@ -104,7 +104,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val l = "eo"
+        val l = sp.getString(Kit.SP_LANGUAGE, Kit.languages[0])!!
         if (l != Locale.getDefault().language) setLanguage(l)
         setContentView(b.root)
         m.vita = Vita.load(c)
@@ -447,15 +447,26 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.blur(c)
     }
 
+    /** Asks the user to select a language. */
     private fun lang() {
         if (m.showingLang && !firstResume) return
         m.showingLang = true
         MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navLang)
-            setSingleChoiceItems(arrayOf("en", "eo"), 0) { d, which ->
+            val selected = sp.getString(Kit.SP_LANGUAGE, null).let { s ->
+                val ind = Kit.languages.indexOf(s)
+                (if (s == null) 0 else if (ind == -1) 0 else ind)
             }
+            // checkedItem in setSingleChoiceItems doesn't work (probably sometimes) and
+            // this is a bug in Android!
+            val arr = resources.getStringArray(R.array.lang)
+            arr[selected] += " (${resources.getString(R.string.selected)})"
+            setSingleChoiceItems(arr, selected) { _, which ->
+                sp.edit { putString(Kit.SP_LANGUAGE, Kit.languages[which]) }
+                recreate()
+            }
+            setOnDismissListener { m.showingLang = false }
         }.show()
-        m.showingLang = false
     }
 
     /**

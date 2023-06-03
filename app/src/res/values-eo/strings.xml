@@ -39,6 +39,11 @@
     <string name="fortunaStat">Fortuna Statistiko</string>
     <string name="statText">Mezumo de Totalo: %1$s\nSumo: %2$s\nKovrante %3$s tagojn.\n</string>
     <string name="navLang">Lingvo</string>
+    <array name="lang">
+        <item>Angla</item>
+        <item>Esperanto</item>
+    </array>
+    <string name="selected">elektita</string>
     <string name="navExport">Eksporti datumojn</string>
     <string name="navImport">Importi datumojn</string>
     <string name="importOpenError">Bedaŭrinde eraro okazis dum malfermo de la dosiero!</string>

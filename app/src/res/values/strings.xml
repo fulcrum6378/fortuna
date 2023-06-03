@@ -46,6 +46,11 @@
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.\n</string>
     <string name="navLang">Language</string>
+    <array name="lang">
+        <item>English</item>
+        <item>Esperanto</item>
+    </array>
+    <string name="selected">selected</string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
