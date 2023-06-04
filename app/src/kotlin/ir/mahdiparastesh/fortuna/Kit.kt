@@ -67,8 +67,8 @@ object Kit {
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
 
-    /** List of supported languages in ISO. */
-    val languages = arrayOf("en", "eo")
+    /** List of supported languages in ISO 639-1. */
+    val languages = arrayOf("en", "eo", "de", "el", "sa")
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
