@@ -51,7 +51,6 @@ import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
-import ir.mahdiparastesh.fortuna.Kit.setLanguage
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Kit.z
@@ -73,7 +72,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.Locale
 import kotlin.math.ceil
 
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -104,8 +102,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val l = sp.getString(Kit.SP_LANGUAGE, Kit.languages[0])!!
-        if (l != Locale.getDefault().language) setLanguage(l)
+        /*sp.getString(Kit.SP_LANGUAGE, Kit.languages[0])!!
+            .also { l -> if (l != Locale.getDefault().language) setLanguage(l) }*/
         setContentView(b.root)
         m.vita = Vita.load(c)
 
@@ -213,7 +211,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Restore saved states
-        if (m.showingLang) lang()
+        //if (m.showingLang) lang()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
@@ -293,7 +291,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 closeDrawer()
             }
             R.id.navStat -> stat()
-            R.id.navLang -> lang()
+            //R.id.navLang -> lang()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
@@ -448,7 +446,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     /** Asks the user to select a language. */
-    private fun lang() {
+    /*private fun lang() {
         if (m.showingLang && !firstResume) return
         m.showingLang = true
         MaterialAlertDialogBuilder(this).apply {
@@ -467,7 +465,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
             setOnDismissListener { m.showingLang = false }
         }.show()
-    }
+    }*/
 
     /**
      * Opens an AlertDialog for statistics.
@@ -707,7 +705,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
-        var showingLang = false
+
+        //var showingLang = false
         var showingStat = false
         var showingBack = false
         var showingHelp = false

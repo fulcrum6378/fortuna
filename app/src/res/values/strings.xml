@@ -45,7 +45,7 @@
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.\n</string>
-    <string name="navLang">Language</string>
+    <!--<string name="navLang">Language</string>
     <array name="lang" translatable="false">
         <item>English</item>
         <item>Esperanto</item>
@@ -53,7 +53,7 @@
         <item>Greek</item>
         <item>Sanskrit</item>
     </array>
-    <string name="selected">selected</string>
+    <string name="selected">selected</string>-->
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>

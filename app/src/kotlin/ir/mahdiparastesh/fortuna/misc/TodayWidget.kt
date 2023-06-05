@@ -15,6 +15,7 @@ import ir.mahdiparastesh.fortuna.Kit
 import ir.mahdiparastesh.fortuna.Kit.isLandscape
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.misc.Numerals.write
 
 /**
  * An app widget for notifying the user of the current date in the current calendar with the chosen
@@ -50,9 +51,9 @@ class TodayWidget : AppWidgetProvider() {
                 })
             setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
             setTextViewText(
-                R.id.dies, Numerals.make(cal[Calendar.DAY_OF_MONTH],
-                    c.sp().getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
-                        .let { if (it == Kit.arNumType) null else it })
+                R.id.dies, Numerals.build(c.sp().getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
+                    .let { if (it == Kit.arNumType) null else it })
+                    .write(cal[Calendar.DAY_OF_MONTH])
             )
             val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]
             if (c.isLandscape()) setTextViewText(R.id.luna, "$month\n${cal[Calendar.YEAR]}")

@@ -1,9 +1,8 @@
-//@file:Suppress("unused")
-
 package ir.mahdiparastesh.fortuna.misc
 
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import ir.mahdiparastesh.fortuna.Kit
 import ir.mahdiparastesh.fortuna.R
 import kotlin.math.pow
 
@@ -25,9 +24,9 @@ object Numerals {
         NumeralType(
             OldPersianNumeral::class.java, R.string.numOldPersian, R.id.numOldPersian
         ), // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
-        /*NumeralType(
+        NumeralType(
             EtruscanNumeral::class.java, R.string.numEtruscan, R.id.numEtruscan
-        ),*/ // -700..+50 inspired and was replaced by Roman numerals.
+        ), // -700..+50 inspired and was replaced by Roman numerals.
         NumeralType(
             AtticNumeral::class.java, R.string.numAttic, R.id.numAttic
         ), // -700..-300 preceded Greek numerals.
@@ -36,23 +35,12 @@ object Numerals {
         ), // -3200..+400 preceded Coptic script.
     )
 
-    /**
-     * Find the Numeral type by its Java class name.
-     * Putting this in Grid::getView caused a nasty build time error.
-     *
-     * @param jc simple Java class name (e.g. RomanNumeral)
-     */
-    private fun find(jc: String): Class<*>? = try {
-        Class.forName(jc)
-    } catch (e: ClassNotFoundException) {
-        null
-    }
-
     /** Convert a modern number into ancient numerals! */
-    fun make(i: Int, numType: String?): String = (numType
-        ?.let { find(this::class.java.`package`!!.name + "." + it) }
-        ?.constructors?.getOrNull(0)?.newInstance(i) as BaseNumeral?)
-        ?.toString() ?: i.toString()
+    fun build(numType: String?): Numeral? = numType
+        ?.let { Kit.findClass(this::class.java.`package`!!.name + "." + it) }
+        ?.constructors?.firstOrNull()?.newInstance() as Numeral?
+
+    fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
 }
 
 /**
@@ -69,27 +57,27 @@ data class NumeralType(
 )
 
 /** Base class for the ancient numeral systems */
-abstract class BaseNumeral(
+abstract class Numeral(
     private val zero: String? = null, private val minus: String? = null
 ) {
     abstract val chars: Array<String>
     open val defaultStr: String = "NaN"
-    abstract fun parse(num: Int): String
+    protected abstract fun convert(num: Int): String
 
-    override fun toString(): String =
+    fun output(num: Int): String =
         if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
-            parse()
+            convert(num)
         } catch (e: Exception) {
             defaultStr
         } else defaultStr
 }
 
 /** Base class for systems which resemble the Attic system, like Roman and Etruscan. */
-abstract class AtticBasedNumeral : BaseNumeral() {
+abstract class AtticBasedNumeral : Numeral() {
     abstract val subtract4th: Boolean
     open val rtl: Boolean = false
 
-    override fun parse(num: Int): String {
+    override fun convert(num: Int): String {
         val n: String = num.toString()
         val ln = n.length
         val s = StringBuilder()
@@ -152,8 +140,8 @@ class RomanNumeral : AtticBasedNumeral() {
  * Base class for systems which resemble Gematria.
  * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria, Wikipedia</a>
  */
-abstract class GematriaLikeNumeral : BaseNumeral() {
-    override fun parse(num: Int): String {
+abstract class GematriaLikeNumeral : Numeral() {
+    override fun convert(num: Int): String {
         val n: String = num.toString()
         val ln = n.length
         val s = StringBuilder()
@@ -216,7 +204,7 @@ class BrahmiNumeral : GematriaLikeNumeral() {
  * @see <a href="https://en.wikipedia.org/wiki/Old_Persian_cuneiform#Signs">Wikipedia</a>
  * @see <a href="https://unicode-table.com/en/blocks/old-persian/">Unicode-Table.com</a>
  */
-class OldPersianNumeral : BaseNumeral() {
+class OldPersianNumeral : Numeral() {
     override val chars = arrayOf(
         "\uD800\uDFD1", "\uD800\uDFD2", // 1, 2
         "\uD800\uDFD3", "\uD800\uDFD4", // 10, 20
@@ -230,7 +218,7 @@ class OldPersianNumeral : BaseNumeral() {
         return 10.0.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
     }
 
-    override fun parse(num: Int): String {
+    override fun convert(num: Int): String {
         val s = StringBuilder()
         var n = num
         while (n > 0) {
@@ -248,29 +236,3 @@ class OldPersianNumeral : BaseNumeral() {
         return s.toString()
     }
 }
-
-
-abstract class Literal(zero: String? = null, minus: String? = null) :
-    BaseNumeral(zero, minus) {
-    /** Less than 10 will be placed in "chars" and greater than it will be placed in "tens". */
-    abstract val tens: Array<String>
-
-    override fun parse(num: Int): String {
-        TODO("Not yet implemented")
-    }
-}
-
-class ChineseNumeral : Literal("〇", "負") {
-    override val chars: Array<String> =
-        arrayOf("一", "二", "三", "四", "五", "六", "七", "八", "九")
-    override val tens: Array<String> = arrayOf("十", "百", "千", "万", "亿")
-}
-
-/*class PhoenicianNumeral(num: Int) : Literal(num) {
-    override val chars: Array<String>
-        get() = TODO("Not yet implemented")
-
-    override fun parse(): String {
-        TODO("Not yet implemented")
-    }
-}*/

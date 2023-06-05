@@ -43,7 +43,9 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
+import ir.mahdiparastesh.fortuna.misc.Numeral
 import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.misc.Numerals.write
 import ir.mahdiparastesh.fortuna.misc.Sexbook
 import java.util.*
 import kotlin.math.abs
@@ -55,10 +57,16 @@ import kotlin.math.absoluteValue
  */
 @SuppressLint("SetTextI18n")
 class Grid(private val c: Main) : ListAdapter {
-    var luna = c.m.thisLuna()
-    var sexbook: Sexbook.Data? = cacheSexbook()
+    lateinit var luna: Luna
+    var sexbook: Sexbook.Data? = null
+    private var numType: String? = null
+    private var numeral: Numeral? = null
 
-    /** TextView inside the changeVar()'s dialogue. */
+    init {
+        onRefresh()
+    }
+
+    /** The TextView inside the changeVar()'s dialogue. */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -90,10 +98,8 @@ class Grid(private val c: Main) : ListAdapter {
         ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? = luna[i] ?: luna.default
             val isEstimated = luna[i] == null && luna.default != null
-            val numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
-                .let { if (it == Kit.arNumType) null else it }
 
-            dies.text = Numerals.make(i + 1, numType)
+            dies.text = numeral.write(i + 1)
             val enlarge =
                 Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge ?: false
             if (enlarge) dies.textSize =
@@ -152,6 +158,9 @@ class Grid(private val c: Main) : ListAdapter {
     fun onRefresh() {
         luna = c.m.thisLuna()
         sexbook = cacheSexbook()
+        numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
+            .let { if (it == Kit.arNumType) null else it }
+        numeral = Numerals.build(numType)
     }
 
     /**
