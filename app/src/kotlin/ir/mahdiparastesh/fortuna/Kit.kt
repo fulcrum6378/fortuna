@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
 import android.Manifest
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -30,15 +29,14 @@ import java.util.*
 object Kit {
     const val A_DAY = 86400000L
     const val SP_NUMERAL_TYPE = "numeral_type"
-    const val SP_LANGUAGE = "language"
     const val arNumType = "0"
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
+    //const val SP_LANGUAGE = "language"
 
     /**
      * Default Calendar Type
      * This is a very important constant containing the class type of our calendar, which must be
      * a subclass of android.icu.util.Calendar.
-     *
      * @see android.icu.util.Calendar
      */
     @Suppress("KotlinConstantConditions")
@@ -68,7 +66,7 @@ object Kit {
         else arrayOf()
 
     /** List of supported languages in ISO 639-1. */
-    val languages = arrayOf("en", "eo", "de", "el", "sa")
+    //val languages = arrayOf("en", "eo", "de", "el", "sa")
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
@@ -85,8 +83,7 @@ object Kit {
         PorterDuffColorFilter(color, mode)
 
     /**
-     * Fills a String with a number and zeroes before it.
-     * E.g. 2 -> "02"
+     * Fills a String with a number and zeroes before it. (e.g. 2 -> "02")
      *
      * @param n number
      * @param ideal the desired length of the returned string
@@ -168,7 +165,21 @@ object Kit {
         this?.use { cur -> while (cur.moveToNext()) cur.action() }
     }
 
-    @Suppress("DEPRECATION")
+    /**
+     * Finds a Java class name in a safer way.
+     * @param jc simple Java class name (e.g. RomanNumeral)
+     */
+    fun findClass(jc: String): Class<*>? = try {
+        Class.forName(jc)
+    } catch (e: ClassNotFoundException) {
+        null
+    }
+
+    /**
+     * Changes the language of the app to one that phones do not regularly support,
+     * like ancient or new constructed languages.
+     */
+    /*@Suppress("DEPRECATION")
     fun Activity.setLanguage(languageCode: String) {
         val locale = Locale(languageCode)
         Locale.setDefault(locale)
@@ -176,7 +187,7 @@ object Kit {
             setLocale(locale)
             resources.updateConfiguration(this, resources.displayMetrics)
         }
-    }
+    }*/
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
