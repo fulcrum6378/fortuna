@@ -42,10 +42,10 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("D:\\Experimental\\mahdiparastesh.jks")
-            storePassword = System.getenv("JERK")
+            storeFile = file(System.getenv("JKS_PATH"))
+            storePassword = System.getenv("JKS_PASS")
             keyAlias = "fortuna"
-            keyPassword = System.getenv("JERK")
+            keyPassword = System.getenv("JKS_PASS")
         }
     }
     buildTypes {
