@@ -42,6 +42,7 @@ object Kit {
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
         "gregorian" -> android.icu.util.GregorianCalendar::class.java
+        "hebrew" -> android.icu.util.HebrewCalendar::class.java
         else -> throw Exception("Unknown calendar type!")
     }
 
@@ -107,7 +108,7 @@ object Kit {
     /** Moves the calendar into a different month. */
     fun Calendar.moveCalendarInMonths(forward: Boolean) {
         roll(Calendar.MONTH, forward)
-        if ((forward && this[Calendar.MONTH] == 0) ||
+        if ((forward && this[Calendar.MONTH] == getActualMinimum(Calendar.MONTH)) ||
             (!forward && this[Calendar.MONTH] == getActualMaximum(Calendar.MONTH))
         ) roll(Calendar.YEAR, forward)
     }
