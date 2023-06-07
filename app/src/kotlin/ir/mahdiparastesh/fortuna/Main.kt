@@ -102,8 +102,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*sp.getString(Kit.SP_LANGUAGE, Kit.languages[0])!!
-            .also { l -> if (l != Locale.getDefault().language) setLanguage(l) }*/
         setContentView(b.root)
         m.vita = Vita.load(c)
 
@@ -211,7 +209,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Restore saved states
-        //if (m.showingLang) lang()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
@@ -291,7 +288,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 closeDrawer()
             }
             R.id.navStat -> stat()
-            //R.id.navLang -> lang()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
@@ -444,28 +440,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
     }
-
-    /** Asks the user to select a language. */
-    /*private fun lang() {
-        if (m.showingLang && !firstResume) return
-        m.showingLang = true
-        MaterialAlertDialogBuilder(this).apply {
-            setTitle(R.string.navLang)
-            val selected = sp.getString(Kit.SP_LANGUAGE, null).let { s ->
-                val ind = Kit.languages.indexOf(s)
-                (if (s == null) 0 else if (ind == -1) 0 else ind)
-            }
-            // checkedItem in setSingleChoiceItems doesn't work (probably sometimes) and
-            // this is a bug in Android!
-            val arr = resources.getStringArray(R.array.lang)
-            arr[selected] += " (${resources.getString(R.string.selected)})"
-            setSingleChoiceItems(arr, selected) { _, which ->
-                sp.edit { putString(Kit.SP_LANGUAGE, Kit.languages[which]) }
-                recreate()
-            }
-            setOnDismissListener { m.showingLang = false }
-        }.show()
-    }*/
 
     /**
      * Opens an AlertDialog for statistics.
@@ -705,8 +679,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
-
-        //var showingLang = false
         var showingStat = false
         var showingBack = false
         var showingHelp = false
@@ -719,6 +691,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
 /* TODO:
   * Search in Vita
-  * Select multiple day cells in order to score them once
-  * Calculate a day's distance from another specific day
+  * Select multiple day cells in order to score them once; needs custom selection
+  * Calculate a day's distance from another specific day; needs MC-DTP
   */

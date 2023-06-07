@@ -31,7 +31,6 @@ object Kit {
     const val SP_NUMERAL_TYPE = "numeral_type"
     const val arNumType = "0"
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
-    //const val SP_LANGUAGE = "language"
 
     /**
      * Default Calendar Type
@@ -64,9 +63,6 @@ object Kit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
-
-    /** List of supported languages in ISO 639-1. */
-    //val languages = arrayOf("en", "eo", "de", "el", "sa")
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
@@ -174,20 +170,6 @@ object Kit {
     } catch (e: ClassNotFoundException) {
         null
     }
-
-    /**
-     * Changes the language of the app to one that phones do not regularly support,
-     * like ancient or new constructed languages.
-     */
-    /*@Suppress("DEPRECATION")
-    fun Activity.setLanguage(languageCode: String) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        resources.configuration.apply {
-            setLocale(locale)
-            resources.updateConfiguration(this, resources.displayMetrics)
-        }
-    }*/
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
