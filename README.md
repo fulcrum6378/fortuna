@@ -35,7 +35,9 @@ by adding new product flavours.
   https://play.google.com/store/apps/details?id=ir.mahdiparastesh.fortuna.gregorian)
 - In [Humanist Iranian](
   https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
-  [Contact Me](mailto:fulcrum1378@gmail.com)
+  [Contact me](mailto:fulcrum1378@gmail.com)
+- In any other calendar:
+  Either [add it yourself](#add-your-own-calendar) or [contact me](mailto:fulcrum1378@gmail.com).
 
 ## Add your own Calendar
 
