@@ -491,7 +491,7 @@ class Grid(private val c: Main) : ListAdapter {
                 arr[2] += prev.getActualMaximum(Calendar.DAY_OF_MONTH)
                 arr[1]--
             }
-            if (arr[1] < 0) { // Can this part make mistakes in the Hebrew calendar?
+            if (arr[1] < 0) {
                 arr[1] += prev.getActualMaximum(Calendar.MONTH) + 1
                 arr[0]--
             }

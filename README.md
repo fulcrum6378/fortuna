@@ -101,7 +101,7 @@ In Fortuna, [build flavours](https://developer.android.com/build/build-variants)
 so all you need to do is to:
 
 1. Add a new build flavour for Gradle
-2. Create "app/src/res_CALENDAR" (e.g. res_hebrew) and inside it:
+2. Create "app/src/res_CALENDAR" (e.g. res_indian) and inside it:
     - *drawable/today_widget_preview.png* : a preview
       for [TodayWidget](app/src/kotlin/ir/mahdiparastesh/fortuna/misc/TodayWidget.kt)
     - *values/strings.xml* : month names as *<string-array name="luna"/>*
@@ -114,48 +114,50 @@ android {
     ...
     productFlavors {
         ...
-        create("hebrew") { applicationIdSuffix = ".hebrew" }
+        create("indian") { applicationIdSuffix = ".indian" }
     }
     ...
-    sourceSets.getByName("hebrew") {
-        res.setSrcDirs(listOf("src/res", "src/res_hebrew"))
+    sourceSets.getByName("indian") {
+        res.setSrcDirs(listOf("src/res", "src/res_indian"))
     }
     ...
 }
 ```
 
-#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L43)**
+#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L46)**
 
 ```kotlin
 val calType = when (BuildConfig.FLAVOR) {
     ...
-    "hebrew" -> android.icu.util.HebrewCalendar::class.java
+    "indian" -> android.icu.util.IndianCalendar::class.java
     ...
 }
 ```
 
-#### res_hebrew/values/string.xml
+#### res_indian/values/string.xml
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="luna">
-        <item>Nisan</item>
-        <item>Iyyar</item>
-        <item>Sivan</item>
-        <item>Tamuz</item>
-        <item>Av</item>
-        <item>Elul</item>
-        <item>Tishrei</item>
-        <item>Cheshvan</item>
-        <item>Kislev</item>
-        <item>Tevet</item>
-        <item>Sh\'vat</item>
-        <item>Adar</item>
-        <item>Adar II</item>
+        <item>Chaitra</item>
+        <item>Vaisakha</item>
+        <item>Jyeshtha</item>
+        <item>Ashadha</item>
+        <item>Shravana</item>
+        <item>Bhadra</item>
+        <item>Ashvin</item>
+        <item>Kartika</item>
+        <item>Agrahayana</item>
+        <item>Pausha</item>
+        <item>Magha</item>
+        <item>Phalguna</item>
     </string-array>
 </resources>
 ```
+
+> :warning: **Do NOT implement [Lunisolar](https://en.wikipedia.org/wiki/Lunisolar_calendar) calendars**;
+> their structure is so irregular in *android.icu.util* and they also get problematic with *Vita* structure!
 
 ## License
 

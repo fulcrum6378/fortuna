@@ -34,15 +34,19 @@ object Kit {
 
     /**
      * Default Calendar Type
-     * This is a very important constant containing the class type of our calendar, which must be
-     * a subclass of android.icu.util.Calendar.
+     * This is a very important constant containing the class type of our default calendar,
+     * which must be a subclass of android.icu.util.Calendar.
+     *
+     * Do NOT use Lunisolar calendars here!
+     *
      * @see android.icu.util.Calendar
+     * @see <a href="https://en.wikipedia.org/wiki/Lunisolar_calendar">Lunisolar calendar - Wikipedia</a>
      */
     @Suppress("KotlinConstantConditions")
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
         "gregorian" -> android.icu.util.GregorianCalendar::class.java
-        "hebrew" -> android.icu.util.HebrewCalendar::class.java
+        "indian" -> android.icu.util.IndianCalendar::class.java
         else -> throw Exception("Unknown calendar type!")
     }
 
