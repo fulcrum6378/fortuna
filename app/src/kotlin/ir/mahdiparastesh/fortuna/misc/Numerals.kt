@@ -131,7 +131,7 @@ class RomanNumeral : AtticBasedNumeral() {
     override val chars = arrayOf(
         "I", "V", "X", "L", "C", "D", "M",
         "I\u0305", "V\u0305", "X\u0305", "L\u0305", "C\u0305", "D\u0305", "M\u0305"
-        // An overline on a Roman numeral means you are multiplying that Roman numeral by 1,000.
+        // An over line on a Roman numeral means you are multiplying that Roman numeral by 1,000.
     )
 }
 
@@ -199,7 +199,7 @@ class BrahmiNumeral : GematriaLikeNumeral() {
 /**
  * Old Persian numbers written in cuneiform
  *
- * Babylonian cuneiforms weren't available in unicode!
+ * Babylonian cuneiform symbols weren't available in unicode!
  *
  * @see <a href="https://en.wikipedia.org/wiki/Old_Persian_cuneiform#Signs">Wikipedia</a>
  * @see <a href="https://unicode-table.com/en/blocks/old-persian/">Unicode-Table.com</a>

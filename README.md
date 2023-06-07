@@ -124,7 +124,7 @@ android {
 }
 ```
 
-#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L46)**
+#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#:~:text=val%20calType)**
 
 ```kotlin
 val calType = when (BuildConfig.FLAVOR) {
