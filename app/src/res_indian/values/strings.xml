@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="luna">
+        <item>Chaitra</item>
+        <item>Vaisakha</item>
+        <item>Jyeshtha</item>
+        <item>Ashadha</item>
+        <item>Shravana</item>
+        <item>Bhadra</item>
+        <item>Ashvin</item>
+        <item>Kartika</item>
+        <item>Agrahayana</item>
+        <item>Pausha</item>
+        <item>Magha</item>
+        <item>Phalguna</item>
+    </string-array>
+</resources>

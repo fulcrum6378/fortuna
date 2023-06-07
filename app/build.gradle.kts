@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 33
         versionCode = 4
-        versionName = "9.3.4"
+        versionName = "9.3.5"
     }
 
     sourceSets.getByName("main") {
@@ -25,7 +25,7 @@ android {
         all { dimension = "calendar" }
         create("iranian")
         create("gregorian") { applicationIdSuffix = ".gregorian" }
-        create("hebrew") { applicationIdSuffix = ".hebrew" }
+        create("indian") { applicationIdSuffix = ".indian" }
     }
     sourceSets.getByName("iranian") {
         res.setSrcDirs(listOf("src/res", "src/res_iranian"))
@@ -33,8 +33,8 @@ android {
     sourceSets.getByName("gregorian") {
         res.setSrcDirs(listOf("src/res", "src/res_gregorian"))
     }
-    sourceSets.getByName("hebrew") {
-        res.setSrcDirs(listOf("src/res", "src/res_hebrew"))
+    sourceSets.getByName("indian") {
+        res.setSrcDirs(listOf("src/res", "src/res_indian"))
     }
 
     compileOptions {
