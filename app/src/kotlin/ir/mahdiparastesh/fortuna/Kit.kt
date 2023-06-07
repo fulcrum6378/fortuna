@@ -45,8 +45,7 @@ object Kit {
     @Suppress("KotlinConstantConditions")
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
-        "gregorian" -> android.icu.util.GregorianCalendar::class.java
-        "indian" -> android.icu.util.IndianCalendar::class.java
+        "gregorian" -> android.icu.util.GregorianCalendar::class.
         else -> throw Exception("Unknown calendar type!")
     }
 
@@ -55,11 +54,11 @@ object Kit {
         HumanistIranianCalendar::class.java,
         // GregorianCalendar does not show a negative number in BCE, which is correct!
         android.icu.util.GregorianCalendar::class.java,
-        android.icu.util.IslamicCalendar::class.java,
-        android.icu.util.ChineseCalendar::class.java,
         android.icu.util.IndianCalendar::class.java,
-        android.icu.util.CopticCalendar::class.java,
+        android.icu.util.ChineseCalendar::class.java,
+        android.icu.util.IslamicCalendar::class.java,
         android.icu.util.HebrewCalendar::class.java,
+        android.icu.util.CopticCalendar::class.java,
     ).filter { it != calType }
     val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
