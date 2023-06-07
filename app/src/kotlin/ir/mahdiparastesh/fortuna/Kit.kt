@@ -45,7 +45,7 @@ object Kit {
     @Suppress("KotlinConstantConditions")
     val calType = when (BuildConfig.FLAVOR) {
         "iranian" -> HumanistIranianCalendar::class.java
-        "gregorian" -> android.icu.util.GregorianCalendar::class.
+        "gregorian" -> android.icu.util.GregorianCalendar::class.java
         else -> throw Exception("Unknown calendar type!")
     }
 
