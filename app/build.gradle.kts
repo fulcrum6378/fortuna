@@ -25,12 +25,16 @@ android {
         all { dimension = "calendar" }
         create("iranian")
         create("gregorian") { applicationIdSuffix = ".gregorian" }
+        create("hebrew") { applicationIdSuffix = ".hebrew" }
     }
     sourceSets.getByName("iranian") {
         res.setSrcDirs(listOf("src/res", "src/res_iranian"))
     }
     sourceSets.getByName("gregorian") {
         res.setSrcDirs(listOf("src/res", "src/res_gregorian"))
+    }
+    sourceSets.getByName("hebrew") {
+        res.setSrcDirs(listOf("src/res", "src/res_hebrew"))
     }
 
     compileOptions {

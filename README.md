@@ -4,8 +4,6 @@ An open-source neuroscientific Android app based on the [Hedonist philosophy](ht
 using which you will score your mood every day in your desired calendar system. You can also set an emoji for a day
 or a month and enter some notes!
 
-## Screenshots
-
 <p>
   <img src="about/Screenshot_20230120-044811_Fortuna.jpg" width="32%" />
   <img src="about/Screenshot_20230120-044823_Fortuna.jpg" width="32%" />
@@ -39,16 +37,9 @@ by adding new product flavours.
 - In any other calendar:
   Either [add it yourself](#add-your-own-calendar) or [contact me](mailto:fulcrum1378@gmail.com).
 
-## Add your own Calendar
-
-Build flavours represent calendar systems and a new calendar system can be easily added by
-specifying a subclass of [android.icu.util.Calendar](
-https://developer.android.com/reference/android/icu/util/Calendar) in [Kit#calType](
-app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt).
-
 ## VITA Markup Language
 
-Fortuna reads and writes its data in *.vita* text file format.
+Vita means *life* in Latin. Fortuna reads and writes its data in **\*.vita** plain text file format.
 It defines data separated by months and every month is separated using a line break;\
 At the beginning of each month, there is a "**@**" symbol and then year and month number; for example: **@2022.03**\
 You can optionally enter a "**~**" symbol and define an estimated score for the whole month
@@ -96,6 +87,75 @@ Here is a complete example:
 - [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) : reads and writes Vita files and all related
   utilities.
 - [**misc**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) subpackage : miscellaneous add-ons and utilities.
+
+### Add your own Calendar
+
+If you don't use the Gregorian calendar, you can use Fortuna in your regional calendar system.
+Fortuna needs a subclass of [android.icu.util.Calendar](
+https://developer.android.com/reference/android/icu/util/Calendar) to work based on it.
+Google has already developed implementations of some different calendars,
+if you don't find your calendar in the [**android.icu.util**](
+https://android.googlesource.com/platform/external/icu/+/refs/heads/master/android_icu4j/src/main/java/android/icu/util/)
+package, you should develop it yourself.
+In Fortuna, [build flavours](https://developer.android.com/build/build-variants) represent calendar systems,
+so all you need to do is to:
+
+1. Add a new build flavour for Gradle
+2. Create "app/src/res_CALENDAR" (e.g. res_hebrew) and inside it:
+    - *drawable/today_widget_preview.png* : a preview
+      for [TodayWidget](app/src/kotlin/ir/mahdiparastesh/fortuna/misc/TodayWidget.kt)
+    - *values/strings.xml* : month names as *<string-array name="luna"/>*
+3. Attribute that build flavour to your Calendar class in Kit.kt.
+
+#### **[build.gradle.kts](app/build.gradle.kts)**
+
+```kotlin
+android {
+    ...
+    productFlavors {
+        ...
+        create("hebrew") { applicationIdSuffix = ".hebrew" }
+    }
+    ...
+    sourceSets.getByName("hebrew") {
+        res.setSrcDirs(listOf("src/res", "src/res_hebrew"))
+    }
+    ...
+}
+```
+
+#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#L43)**
+
+```kotlin
+val calType = when (BuildConfig.FLAVOR) {
+    ...
+    "hebrew" -> android.icu.util.HebrewCalendar::class.java
+    ...
+}
+```
+
+#### res_hebrew/values/string.xml
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="luna">
+        <item>Nisan</item>
+        <item>Iyyar</item>
+        <item>Sivan</item>
+        <item>Tamuz</item>
+        <item>Av</item>
+        <item>Elul</item>
+        <item>Tishrei</item>
+        <item>Cheshvan</item>
+        <item>Kislev</item>
+        <item>Tevet</item>
+        <item>Sh\'vat</item>
+        <item>Adar</item>
+        <item>Adar II</item>
+    </string-array>
+</resources>
+```
 
 ## License
 

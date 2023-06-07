@@ -159,7 +159,7 @@ class HumanistIranianCalendar : Calendar {
         var dayOfYear: Int
         val daysSinceEpoch = (julianDay - EPOCH).toLong()
         year = 1 + floorDivide(33 * daysSinceEpoch + 3, 12053).toInt()
-        val farvardin1 = 365L * (year - 1) + floorDivide(8 * year + 21, 33)
+        val farvardin1 = 365L * (year - 1L) + floorDivide(8L * year + 21, 33L)
         dayOfYear = (daysSinceEpoch - farvardin1).toInt() // 0-based
         month = if (dayOfYear < 216) // compute 0-based month
             dayOfYear / 31 else (dayOfYear - 6) / 30

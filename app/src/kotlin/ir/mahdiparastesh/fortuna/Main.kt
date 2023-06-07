@@ -9,6 +9,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.RippleDrawable
 import android.icu.util.Calendar
+import android.icu.util.HebrewCalendar
 import android.os.*
 import android.util.SparseArray
 import android.view.Gravity
@@ -136,6 +137,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Panel
+        StringBuilder().apply {
+            for (fuck in 0..10) {
+                val theCal = HebrewCalendar(5775 + fuck, 7, 1)
+                append("Year ${theCal[Calendar.YEAR]}: ")
+                append(theCal.getActualMaximum(Calendar.MONTH))
+                append(", ")
+                append(theCal[Calendar.IS_LEAP_MONTH])
+                append(" - ")
+            }
+            Toast.makeText(this@Main, toString(), Toast.LENGTH_LONG).show()
+        }
         b.luna.adapter = ArrayAdapter(
             this, R.layout.spinner, resources.getStringArray(R.array.luna)
         ).apply { setDropDownViewResource(R.layout.spinner_dd) }

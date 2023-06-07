@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="luna">
+        <item>Tishrei</item>
+        <item>Cheshvan</item>
+        <item>Kislev</item>
+        <item>Tevet</item>
+        <item>Sh\'vat</item>
+        <item>Adar I</item>
+        <item>Adar</item>
+        <item>Nisan</item>
+        <item>Iyyar</item>
+        <item>Sivan</item>
+        <item>Tamuz</item>
+        <item>Av</item>
+        <item>Elul</item>
+    </string-array>
+</resources>
