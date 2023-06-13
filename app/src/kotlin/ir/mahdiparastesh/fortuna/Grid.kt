@@ -32,6 +32,7 @@ import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.compareByDays
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.decSep
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.resetHours
@@ -143,7 +144,7 @@ class Grid(private val c: Main) : ListAdapter {
                     }
                 }
             )
-            val cal = calType.newInstance().apply {
+            val cal = calType.create().apply {
                 timeInMillis = c.m.calendar.timeInMillis
                 set(Calendar.DAY_OF_MONTH, i + 1)
                 resetHours()
@@ -413,7 +414,7 @@ class Grid(private val c: Main) : ListAdapter {
             )
             val sb = StringBuilder()
             for (oc in Kit.otherCalendars) {
-                val d = oc.newInstance()
+                val d = oc.create()
                 d.timeInMillis = cal.timeInMillis
                 sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
                 sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
@@ -483,7 +484,7 @@ class Grid(private val c: Main) : ListAdapter {
             /* the first part of the month always starts with 1,
              * but the second part of the month ends with changeable numbers;
              * therefore we need to use the previous month's maximum when explaining the future! */
-            val prev = calType.newInstance().apply {
+            val prev = calType.create().apply {
                 timeInMillis = other.timeInMillis
                 moveCalendarInMonths(false)
             }
