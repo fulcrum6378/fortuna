@@ -175,6 +175,8 @@ object Kit {
         null
     }
 
+    fun <T> Class<T>.create(): T = getDeclaredConstructor().newInstance()
+
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {
         private var times: Long = 0

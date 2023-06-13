@@ -2,6 +2,7 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.z
 import java.io.File
 import java.io.FileInputStream
@@ -83,7 +84,7 @@ class Vita : HashMap<String, Luna>() {
         /** Loads the Vita data from a given string. */
         fun loads(text: String): Vita {
             val vita = Vita()
-            val cal = Kit.calType.newInstance()
+            val cal = Kit.calType.create()
             var key: String? = null
             var dies = 0
             for (ln in StringReader(text).readLines()) try {
@@ -143,7 +144,7 @@ class Vita : HashMap<String, Luna>() {
 
         fun <CAL> String.toCalendar(klass: Class<CAL>): CAL where CAL : Calendar {
             val spl = split(".")
-            return klass.newInstance().apply {
+            return klass.create().apply {
                 this[Calendar.YEAR] = spl[0].toInt()
                 this[Calendar.MONTH] = spl[1].toInt() - 1
                 this[Calendar.DAY_OF_MONTH] = 1
@@ -196,7 +197,7 @@ class Vita : HashMap<String, Luna>() {
 
 /** Part of {@link Vita} for managing months. */
 class Luna(
-    cal: Calendar = Kit.calType.newInstance(),
+    cal: Calendar = Kit.calType.create(),
     var default: Float? = null,
     var emoji: String? = null,
     var verbum: String? = null,

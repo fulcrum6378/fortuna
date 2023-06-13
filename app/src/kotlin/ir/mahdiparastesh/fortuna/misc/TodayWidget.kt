@@ -12,6 +12,7 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.isLandscape
 import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.R
@@ -38,7 +39,7 @@ class TodayWidget : AppWidgetProvider() {
 
     companion object {
         fun update(c: Context) = RemoteViews(c.packageName, R.layout.today_widget).apply {
-            val cal = Kit.calType.newInstance()
+            val cal = Kit.calType.create()
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(

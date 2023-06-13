@@ -48,6 +48,7 @@ import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.blur
 import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.color
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
@@ -79,7 +80,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
     val sp: SharedPreferences by lazy { sp() }
-    var todayCalendar: Calendar = calType.newInstance().resetHours()
+    var todayCalendar: Calendar = calType.create().resetHours()
     var todayLuna: String = todayCalendar.toKey()
     private var rollingLuna = true // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
@@ -190,7 +191,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
-                        todayCalendar = calType.newInstance().resetHours()
+                        todayCalendar = calType.create().resetHours()
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
@@ -216,7 +217,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (Kit.reqPermissions.isNotEmpty())
             ActivityCompat.requestPermissions(this, Kit.reqPermissions, 0)
         if (try {
-                @Suppress("DEPRECATION")
                 packageManager.getPackageInfo(SEXBOOK, 0)
                 true
             } catch (e: PackageManager.NameNotFoundException) {
@@ -267,7 +267,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             m.luna = extraLuna
             m.calendar = extraLuna.toCalendar(calType)
         } else {
-            m.calendar = calType.newInstance()
+            m.calendar = calType.create()
             m.luna = m.calendar.toKey()
         }
         updatePanel()
@@ -283,7 +283,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         when (item.itemId) {
             R.id.navToday -> {
                 if (todayLuna != m.calendar.toKey()) {
-                    m.calendar = calType.newInstance()
+                    m.calendar = calType.create()
                     onCalendarChanged(); }
                 closeDrawer()
             }
@@ -340,15 +340,17 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 }
                 data!!
             } catch (e: Exception) {
-                Toast.makeText(c, R.string.importOpenError, Toast.LENGTH_LONG).show()
-                return@registerForActivityResult
+                Toast.makeText(
+                    c, R.string.importOpenError, Toast.LENGTH_LONG
+                ).show(); return@registerForActivityResult
             }
             val imported: Vita
             try {
                 imported = Vita.loads(data!!)
             } catch (e: Exception) {
-                Toast.makeText(c, R.string.importReadError, Toast.LENGTH_LONG).show()
-                return@registerForActivityResult
+                Toast.makeText(
+                    c, R.string.importReadError, Toast.LENGTH_LONG
+                ).show(); return@registerForActivityResult
             }
             MaterialAlertDialogBuilder(this@Main).apply {
                 setTitle(c.resources.getString(R.string.navImport))
@@ -469,7 +471,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 sum.toString(), scores.size.toString()
             )
 
-            val maxMonths = calType.newInstance().getMaximum(Calendar.MONTH) + 1
+            val maxMonths = calType.create().getMaximum(Calendar.MONTH) + 1
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
                 val spl = key.split(".")
@@ -514,7 +516,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         tooltipText = "${monthNames[month]} $year${score?.let { "\n$it" } ?: ""}"
                         setOnClickListener(object : Kit.DoubleClickListener() {
                             override fun onDoubleClick() {
-                                m.calendar = calType.newInstance().apply {
+                                m.calendar = calType.create().apply {
                                     set(Calendar.YEAR, year)
                                     set(Calendar.MONTH, month)
                                     set(Calendar.DAY_OF_MONTH, 1)
@@ -614,7 +616,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun lastBackup(): String {
         val f = Vita.Backup(c)
         if (!f.exists()) return getString(R.string.never)
-        val d = calType.newInstance().apply { timeInMillis = f.lastModified() }
+        val d = calType.create().apply { timeInMillis = f.lastModified() }
         return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
             "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
             "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"

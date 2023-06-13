@@ -3,6 +3,7 @@ package ir.mahdiparastesh.fortuna.misc
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.R
 import kotlin.math.pow
 
@@ -38,7 +39,7 @@ object Numerals {
     /** Convert a modern number into ancient numerals! */
     fun build(numType: String?): Numeral? = numType
         ?.let { Kit.findClass(this::class.java.`package`!!.name + "." + it) }
-        ?.constructors?.firstOrNull()?.newInstance() as Numeral?
+        ?.create() as Numeral?
 
     fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
 }

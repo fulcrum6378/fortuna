@@ -7,6 +7,7 @@ import android.icu.util.GregorianCalendar
 import android.net.Uri
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.iterate
 import ir.mahdiparastesh.fortuna.Main
 
@@ -34,7 +35,7 @@ class Sexbook(private val c: Context) : Thread() {
             Uri.parse("content://${Kit.SEXBOOK}/report"),
             null, null, null, "time ASC" // DESC
         ).iterate {
-            val cal = Kit.calType.newInstance()
+            val cal = Kit.calType.create()
             cal.timeInMillis = getLong(0)
             reports.add(
                 Report(
@@ -58,7 +59,7 @@ class Sexbook(private val c: Context) : Thread() {
             var m = getInt(7)
             var d = getInt(8)
             if (Kit.calType != GregorianCalendar::class.java) {
-                val cal = Kit.calType.newInstance()
+                val cal = Kit.calType.create()
                 cal.timeInMillis = GregorianCalendar(y, m, d).timeInMillis
                 y = cal[Calendar.YEAR]
                 m = cal[Calendar.MONTH]

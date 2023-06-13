@@ -5,15 +5,15 @@ plugins {
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
-    compileSdk = 33
-    buildToolsVersion = "34.0.0 rc4"
+    compileSdk = 34
+    buildToolsVersion = "34.0.0"
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 4
-        versionName = "9.3.5"
+        versionName = "9.4.0"
     }
 
     sourceSets.getByName("main") {

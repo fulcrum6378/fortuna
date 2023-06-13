@@ -12,6 +12,7 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.ActivityCompat
+import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
@@ -45,7 +46,7 @@ class Nyx : BroadcastReceiver() {
             alarm(c); return; }
 
         // Remind the user to score the recent day if already has not
-        val cal = Kit.calType.newInstance().apply { timeInMillis -= Kit.A_DAY }
+        val cal = Kit.calType.create().apply { timeInMillis -= Kit.A_DAY }
         val score = Vita.load(c).getOrDefault(cal.toKey(), null)
             ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
