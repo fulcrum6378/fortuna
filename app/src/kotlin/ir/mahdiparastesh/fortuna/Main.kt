@@ -463,6 +463,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         (list.adapter as SearchAdapter).search(q)
                 })
             }.root)
+            setCancelable(false)
             setOnDismissListener { m.showingSrch = false }
         }.show()
     }
