@@ -62,8 +62,10 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.misc.SearchAdapter
 import ir.mahdiparastesh.fortuna.misc.Sexbook
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
 import kotlinx.coroutines.CoroutineScope
@@ -210,6 +212,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Restore saved states
+        if (m.showingSrch) srch()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
@@ -287,6 +290,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     onCalendarChanged(); }
                 closeDrawer()
             }
+            R.id.navSearch -> srch()
             R.id.navStat -> stat()
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
@@ -441,6 +445,26 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
+    }
+
+    /**
+     * Opens an AlertDialog for searching in VITA.
+     */
+    private fun srch() {
+        if (m.showingSrch && !firstResume) return
+        m.showingSrch = true
+        MaterialAlertDialogBuilder(this).apply {
+            setTitle(R.string.navSearch)
+            setView(SearchBinding.inflate(layoutInflater).apply {
+                list.adapter = SearchAdapter(this@Main)
+                field.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                    override fun onQueryTextChange(q: String?): Boolean = false
+                    override fun onQueryTextSubmit(q: String?): Boolean =
+                        (list.adapter as SearchAdapter).search(q)
+                })
+            }.root)
+            setOnDismissListener { m.showingSrch = false }
+        }.show()
     }
 
     /**
@@ -681,6 +705,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
+        var showingSrch = false
         var showingStat = false
         var showingBack = false
         var showingHelp = false
@@ -692,7 +717,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Search in Vita
   * Select multiple day cells in order to score them once; needs custom selection
   * Calculate a day's distance from another specific day; needs MC-DTP
+  * Month size in bytes
   */
