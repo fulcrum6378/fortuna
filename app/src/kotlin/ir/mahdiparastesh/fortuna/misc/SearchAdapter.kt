@@ -1,12 +1,8 @@
 package ir.mahdiparastesh.fortuna.misc
 
 import android.annotation.SuppressLint
-import android.text.Spanned
-import android.text.style.MetricAffectingSpan
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.text.getSpans
-import androidx.core.text.toSpanned
 import androidx.emoji2.text.EmojiCompat
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Kit
@@ -19,21 +15,32 @@ class SearchAdapter(private val c: Main) :
     private var lastQ: String? = null
 
     @SuppressLint("NotifyDataSetChanged")
-    fun search(q: String?): Boolean {
-        if (q == lastQ) return false
-        lastQ = q
+    fun search(q: CharSequence?) {
+        if (q == lastQ) return
+        lastQ = q.toString()
         results.clear()
         if (q == null) {
-            notifyDataSetChanged(); return true; }
+            notifyDataSetChanged(); return; }
 
+        // Collect emojis from the text
+        val emojis = arrayListOf<CharSequence>()
+        val ec = EmojiCompat.get()
+        var x = 0
+        while (x < q.length) {
+            val start = ec.getEmojiStart(q, x)
+            if (start != -1) {
+                val end = ec.getEmojiEnd(q, x)
+                emojis.add(q.subSequence(x, end))
+                x = end
+                continue; }
+            x++
+        }
 
-        /*val spanned = EmojiCompat.get().process(q.toSpanned()) as? Spanned
-        val emojis = spanned?.getSpans<MetricAffectingSpan>(0, spanned.length)
-        Toast.makeText(c, emojis?.size.toString(), Toast.LENGTH_SHORT).show()*/
-        Toast.makeText(c, EmojiCompat.get().getEmojiStart(q, 0).toString(), Toast.LENGTH_SHORT).show()
+        // Search for emojis
+
+        // Search for other texts
 
         notifyDataSetChanged()
-        return true
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
