@@ -212,7 +212,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
         // Restore saved states
-        if (m.showingSrch) srch()
+        if (m.searching != null) srch()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
@@ -451,20 +451,21 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
      * Opens an AlertDialog for searching in VITA.
      */
     private fun srch() {
-        if (m.showingSrch && !firstResume) return
-        m.showingSrch = true
+        if (m.searching != null && !firstResume) return
+        m.searching = ""
         MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navSearch)
             setView(SearchBinding.inflate(layoutInflater).apply {
                 list.adapter = SearchAdapter(this@Main)
-                field.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                    override fun onQueryTextChange(q: String?): Boolean = false
-                    override fun onQueryTextSubmit(q: String?): Boolean =
-                        (list.adapter as SearchAdapter).search(q)
-                })
+                field.addTextChangedListener { m.searching = it.toString() }
+                field.setOnEditorActionListener { v, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_GO)
+                        (list.adapter as SearchAdapter).search(v.text)
+                    return@setOnEditorActionListener true
+                }
             }.root)
             setCancelable(false)
-            setOnDismissListener { m.showingSrch = false }
+            setOnDismissListener { m.searching = null }
         }.show()
     }
 
@@ -706,7 +707,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
-        var showingSrch = false
+        var searching: String? = null
         var showingStat = false
         var showingBack = false
         var showingHelp = false

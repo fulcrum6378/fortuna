@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="5dp">
 
-    <SearchView
+    <EditText
         android:id="@+id/field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
+        android:background="@null"
+        android:focusedByDefault="true"
+        android:hint="@string/notesHint"
+        android:imeOptions="actionGo"
+        android:importantForAutofill="no"
+        android:inputType="text"
         android:paddingHorizontal="5dp"
-        android:paddingVertical="8dp" />
+        android:paddingVertical="8dp"
+        android:textColor="?android:textColor"
+        android:textSize="17sp"
+        tools:ignore="LabelFor" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
