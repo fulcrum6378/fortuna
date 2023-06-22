@@ -719,6 +719,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
+  * Implement thousand separators for numbers in Statistics
   * Select multiple day cells in order to score them once; needs custom selection
   * Calculate a day's distance from another specific day; needs MC-DTP
   * Month size in bytes

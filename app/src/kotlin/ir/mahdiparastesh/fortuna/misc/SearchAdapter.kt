@@ -36,6 +36,10 @@ class SearchAdapter(private val c: Main) :
             x++
         }
 
+        // TODO: YOU NEED REGULAR EXPRESSIONS FOR DETECTING ALPHABET CHARACTERS.
+        // Or you can exclude emojis, then numbers and symbols,
+        // the rest would be characters of any language, right?
+
         // Search for emojis
 
         // Search for other texts
