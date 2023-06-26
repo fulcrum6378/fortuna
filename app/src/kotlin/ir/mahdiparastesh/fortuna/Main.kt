@@ -382,6 +382,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                             Intent.EXTRA_STREAM,
                             FileProvider.getUriForFile(c, packageName, exported)
                         )
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     }.also { startActivity(it) }
                 }
             }

@@ -5,7 +5,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.icu.util.Calendar
-import android.os.Bundle
 import android.widget.RemoteViews
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.shape.CornerFamily
@@ -28,13 +27,6 @@ class TodayWidget : AppWidgetProvider() {
     override fun onUpdate(c: Context, manager: AppWidgetManager, ids: IntArray) {
         super.onUpdate(c, manager, ids)
         ids.forEach { id -> manager.updateAppWidget(id, update(c)) }
-    }
-
-    override fun onAppWidgetOptionsChanged(
-        c: Context, manager: AppWidgetManager, id: Int, newOptions: Bundle
-    ) {
-        super.onAppWidgetOptionsChanged(c, manager, id, newOptions)
-        manager.updateAppWidget(id, update(c))
     }
 
     companion object {

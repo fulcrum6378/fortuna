@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 4
-        versionName = "9.4.8"
+        versionName = "9.5.3"
     }
 
     sourceSets.getByName("main") {
@@ -36,7 +36,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
+    } // Gradle 8.2 will have full Java 20 support.
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { viewBinding = true }
 
