@@ -41,7 +41,6 @@ class SearchAdapter(private val c: Main) :
         // the rest would be characters of any language, right?
 
         // Search for emojis
-
         // Search for other texts
 
         notifyDataSetChanged()
