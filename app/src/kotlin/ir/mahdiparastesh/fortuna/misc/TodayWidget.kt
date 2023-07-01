@@ -35,11 +35,10 @@ class TodayWidget : AppWidgetProvider() {
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(
-                    ShapeAppearanceModel.Builder().setAllCorners(CornerFamily.CUT, den * 4f).build()
+                    ShapeAppearanceModel.Builder().setAllCorners(CornerFamily.CUT, den * 8f).build()
                 ).let {
                     it.fillColor = c.resources.getColorStateList(R.color.todayWidget, null)
-                    val size = arrayOf(30, 50)
-                    if (c.isLandscape()) size.reverse()
+                    val size = if (!c.isLandscape()) arrayOf(70, 100) else arrayOf(140, 50)
                     it.toBitmap((den * size[0]).toInt(), (den * size[1]).toInt())
                 })
             setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
@@ -49,8 +48,10 @@ class TodayWidget : AppWidgetProvider() {
                     .write(cal[Calendar.DAY_OF_MONTH])
             )
             val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]
-            if (c.isLandscape()) setTextViewText(R.id.luna, "$month\n${cal[Calendar.YEAR]}")
-            else {
+            if (c.isLandscape()) {
+                setTextViewText(R.id.luna, "$month\n${cal[Calendar.YEAR]}")
+                setTextViewText(R.id.year, "")
+            } else {
                 setTextViewText(R.id.luna, month)
                 setTextViewText(R.id.year, "${cal[Calendar.YEAR]}")
             }
