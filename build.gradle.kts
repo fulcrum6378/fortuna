@@ -3,4 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android") version("1.8.20") apply(false)
 }
 
-tasks.register("clean", Delete::class) { delete(rootProject.buildDir) }
+task clean(type: Delete) {
+    delete rootProject.buildDir
+    delete "${rootDir}/app/build/"
+}
