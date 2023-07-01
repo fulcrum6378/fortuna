@@ -1,7 +1,4 @@
-plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-}
+plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
@@ -13,7 +10,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 4
-        versionName = "9.5.3"
+        versionName = "9.5.9"
     }
 
     sourceSets.getByName("main") {
@@ -26,17 +23,12 @@ android {
         create("iranian")
         create("gregorian") { applicationIdSuffix = ".gregorian" }
     }
-    sourceSets.getByName("iranian") {
-        res.setSrcDirs(listOf("src/res", "src/res_iranian"))
-    }
-    sourceSets.getByName("gregorian") {
-        res.setSrcDirs(listOf("src/res", "src/res_gregorian"))
-    }
+    sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
+    sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    } // Gradle 8.2 will have full Java 20 support.
+        sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17
+    }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { viewBinding = true }
 
