@@ -10,7 +10,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 4
-        versionName = "9.5.9"
+        versionName = "9.6.0"
     }
 
     sourceSets.getByName("main") {
@@ -26,10 +26,8 @@ android {
     sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions { jvmTarget = "17" }
+    compileOptions { val jv = JavaVersion.VERSION_19; sourceCompatibility = jv; targetCompatibility = jv }
+    kotlinOptions { jvmTarget = "19" }
     buildFeatures { viewBinding = true }
 
     signingConfigs {
