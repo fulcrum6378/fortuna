@@ -224,7 +224,7 @@ class Grid(private val c: Main) : ListAdapter {
                 ): CharSequence? = when {
                     this@apply.text.isNotEmpty() -> ""
                     source == null -> null
-                    EmojiCompat.get().getEmojiMatch(source, 16) in 1..2
+                    EmojiCompat.get().getEmojiMatch(source, Main.EMOJI_METADATA_VERSION) in 1..2
                         && !hasNonEmojiNumber(source) -> null
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!

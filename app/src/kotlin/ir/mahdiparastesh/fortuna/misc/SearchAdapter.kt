@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.min
 
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(private val c: Main) :
@@ -23,6 +24,7 @@ class SearchAdapter(private val c: Main) :
     companion object {
         const val sampleRadius = 50
         const val sampleMore = "..."
+        const val maxEmojiChars = 6
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -66,7 +68,7 @@ class SearchAdapter(private val c: Main) :
                 var end: Int
                 var x = 0
                 while (x < q.length) {
-                    if (ec.getEmojiStart(q, x) != -1) { // it is an emoji
+                    if (ec.getEmojiStart(q, x) != -1) {
                         end = ec.getEmojiEnd(q, x)
                         qEmojis.add(q.subSequence(x, end).toString())
                     } else if (q[x].isLetter()) {
@@ -79,9 +81,12 @@ class SearchAdapter(private val c: Main) :
                         qWords.add(q.subSequence(x, end).toString())
                     } else if (q[x].isWhitespace()) {
                         x++; continue
-                    } else {
+                    } else if (getEmojiEnd(q.subSequence(x, q.length)).also { end = x + it } != -1)
+                        qEmojis.add(q.subSequence(x, end).toString())
+                    else {
                         end = x + 1
                         while (end < q.length && ec.getEmojiStart(q, end) == -1
+                            && getEmojiEnd(q.subSequence(end, q.length)) == -1
                             && !q[end].isLetter() && !q[end].isDigit() && !q[end].isWhitespace()
                         ) end++
                         qWords.add(q.subSequence(x, end).toString())
@@ -125,6 +130,16 @@ class SearchAdapter(private val c: Main) :
                 }
             }
             if (found) c.m.searchResults.add(Result(luna, d, sample.replace("\n", " ")))
+        }
+
+        private fun getEmojiEnd(text: CharSequence): Int {
+            var i = 1
+            while (i <= min(maxEmojiChars, text.length)) {
+                (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
+                    == EmojiCompat.EMOJI_SUPPORTED).let { if (it) return@getEmojiEnd i }
+                i++
+            }
+            return -1
         }
     }
 
