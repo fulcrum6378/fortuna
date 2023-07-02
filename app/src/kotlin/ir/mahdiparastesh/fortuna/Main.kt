@@ -467,7 +467,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }.root)
             setNegativeButton(R.string.cancel, null)
             setCancelable(false)
-            setOnDismissListener { m.searching = null }
+            setOnDismissListener {
+                m.searching = null
+                m.searchResults.clear()
+            }
         }.show()
     }
 
