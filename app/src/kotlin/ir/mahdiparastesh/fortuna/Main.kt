@@ -100,6 +100,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_SEXBOOK_LOADED = 1
+        const val EMOJI_METADATA_VERSION = 16
         var handler: Handler? = null
     }
 
