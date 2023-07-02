@@ -1,6 +1,10 @@
 package ir.mahdiparastesh.fortuna.misc
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -113,23 +117,31 @@ class SearchAdapter(private val c: Main) :
 
         private fun onEachDay(luna: String, d: Byte, emoji: String?, verbum: String?) {
             var found = qEmojis.any { it == emoji }
-            var sample = ""
+            var sample: CharSequence = ""
             if (found) sample = emoji!! + " " + (verbum?.let {
                 if (it.length > sampleRadius) it.substring(0, sampleRadius) + sampleMore else it
             } ?: "")
-            else for (word in qWords) {
-                val foundIn = verbum
-                    ?.indexOf(word, 0, true)
+            else for (q in qWords.plus(qEmojis)) { // TODO FOREACH WTF?
+                var foundIn = verbum?.indexOf(q, 0, true)
                 if (foundIn != -1 && foundIn != null) {
                     found = true
-                    sample = verbum
-                    if ((sample.length - foundIn) > sampleRadius) sample = sample
-                        .substring(0, foundIn + sampleRadius) + sampleMore
+                    sample = verbum!!.replace("\n", " ")
+                    if ((sample.length - (foundIn + q.length)) > sampleRadius) sample =
+                        sample.substring(0, (foundIn + q.length) + sampleRadius) + sampleMore
                     if (foundIn > sampleRadius) sample = sampleMore + sample
                         .substring(foundIn - sampleRadius until sample.length)
+                    sample = SpannableStringBuilder(sample).apply {
+                        foundIn = sample.indexOf(q, 0, true)
+                        setSpan(
+                            StyleSpan(Typeface.BOLD), foundIn!!, foundIn!! + q.length,
+                            Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                        )
+                    }
+                    break
                 }
             }
-            if (found) c.m.searchResults.add(Result(luna, d, sample.replace("\n", " ")))
+            if (found) c.m.searchResults.add(Result(luna, d, sample))
+            // don't convert sample toString!
         }
 
         private fun getEmojiEnd(text: CharSequence): Int {
@@ -143,5 +155,5 @@ class SearchAdapter(private val c: Main) :
         }
     }
 
-    data class Result(val luna: String, val dies: Byte, val sample: String)
+    data class Result(val luna: String, val dies: Byte, val sample: CharSequence)
 }
