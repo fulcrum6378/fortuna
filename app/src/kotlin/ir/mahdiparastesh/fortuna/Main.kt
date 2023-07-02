@@ -451,11 +451,12 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     /** Opens an AlertDialog for searching in VITA. */
     private fun srch() {
         if (m.searching != null && !firstResume) return
-        m.searching = ""
+        if (m.searching == null) m.searching = ""
         MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navSearch)
             setView(SearchBinding.inflate(layoutInflater).apply {
                 list.adapter = SearchAdapter(this@Main)
+                field.setText(m.searching)
                 field.addTextChangedListener { m.searching = it.toString() }
                 field.setOnEditorActionListener { v, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_GO)
@@ -708,6 +709,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
         var searching: String? = null
+        var lastSearchQuery: String? = null
+        var searchResults = ArrayList<SearchAdapter.Result>()
         var showingStat = false
         var showingBack = false
         var showingHelp = false
