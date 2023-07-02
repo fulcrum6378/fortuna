@@ -448,9 +448,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         b.annus.blur(c)
     }
 
-    /**
-     * Opens an AlertDialog for searching in VITA.
-     */
+    /** Opens an AlertDialog for searching in VITA. */
     private fun srch() {
         if (m.searching != null && !firstResume) return
         m.searching = ""
@@ -465,6 +463,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     return@setOnEditorActionListener true
                 }
             }.root)
+            setNegativeButton(R.string.cancel, null)
             setCancelable(false)
             setOnDismissListener { m.searching = null }
         }.show()
