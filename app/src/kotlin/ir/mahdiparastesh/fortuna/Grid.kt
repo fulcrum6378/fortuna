@@ -217,8 +217,7 @@ class Grid(private val c: Main) : ListAdapter {
                 ): CharSequence? = when {
                     this@apply.text.isNotEmpty() -> ""
                     source == null -> null
-                    c.m.emojis == null -> ""
-                    c.m.emojis!!.any { it == source } -> null
+                    c.m.emojis.any { it == source } -> null
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!
             })

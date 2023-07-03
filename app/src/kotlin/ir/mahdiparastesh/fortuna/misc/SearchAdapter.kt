@@ -6,7 +6,6 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Kit
@@ -18,6 +17,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.collections.ArrayList
+import kotlin.collections.any
+import kotlin.collections.arrayListOf
+import kotlin.collections.forEach
+import kotlin.collections.hashMapOf
+import kotlin.collections.indices
+import kotlin.collections.mutableSetOf
+import kotlin.collections.plus
+import kotlin.collections.set
+import kotlin.collections.toSortedMap
+import kotlin.math.max
 import kotlin.math.min
 
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
@@ -27,7 +37,6 @@ class SearchAdapter(private val c: Main) :
     companion object {
         const val sampleRadius = 50
         const val sampleMore = "..."
-        const val maxEmojiChars = 6
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -61,8 +70,9 @@ class SearchAdapter(private val c: Main) :
 
     inner class Search(q: CharSequence, clonedVita: Vita, onFinish: CoroutineScope.() -> Unit) {
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
-        private val qEmojis = arrayListOf<String>()
-        private val qWords = arrayListOf<String>()
+        private val qEmojis = mutableSetOf<String>()
+        private val qWords = mutableSetOf<String>()
+        private val exclusive = !c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
 
         init {
             CoroutineScope(Dispatchers.IO).launch {
@@ -70,11 +80,7 @@ class SearchAdapter(private val c: Main) :
                 var end: Int
                 var x = 0
                 while (x < q.length) {
-                    /*if (ec.getEmojiStart(q, x) != -1) {
-                        end = ec.getEmojiEnd(q, x)
-                        qEmojis.add(q.subSequence(x, end).toString())
-                        // together with the next case, they completely support emojis
-                    } else */if (q[x].isLetter()) {
+                    if (q[x].isLetter()) {
                         end = x + 1
                         while (end < q.length && q[end].isLetter()) end++
                         qWords.add(q.subSequence(x, end).toString())
@@ -84,12 +90,14 @@ class SearchAdapter(private val c: Main) :
                         qWords.add(q.subSequence(x, end).toString())
                     } else if (q[x].isWhitespace()) {
                         x++; continue
-                    } else if (getEmojiEnd(q.subSequence(x, q.length)).also { end = x + it } != -1)
+                    } else if (getEmojiEndIfStartsWithIt(q.subSequence(x, q.length)).also {
+                            end = x + it
+                        } != -1) {
                         qEmojis.add(q.subSequence(x, end).toString())
-                    else { // symbols
+                    } else { // then it should be a symbol...
                         end = x + 1
                         while (end < q.length //&& ec.getEmojiStart(q, end) == -1
-                            && getEmojiEnd(q.subSequence(end, q.length)) == -1
+                            && getEmojiEndIfStartsWithIt(q.subSequence(end, q.length)) == -1
                             && !q[end].isLetter() && !q[end].isDigit() && !q[end].isWhitespace()
                         ) end++
                         qWords.add(q.subSequence(x, end).toString())
@@ -105,53 +113,73 @@ class SearchAdapter(private val c: Main) :
                 }
 
                 withContext(Dispatchers.Main, onFinish)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        c, qEmojis.joinToString(", ") + " -- " +
-                            qWords.joinToString(", "), Toast.LENGTH_SHORT
-                    ).show()
-                }
             }
         }
 
         private fun onEachDay(luna: String, d: Byte, emoji: String?, verbum: String?) {
-            var found = qEmojis.any { it == emoji }
-            var sample: CharSequence = ""
-            if (found) sample = emoji!! + " " + (verbum?.let {
-                if (it.length > sampleRadius) it.substring(0, sampleRadius) + sampleMore else it
-            } ?: "")
-            else for (q in qWords.plus(qEmojis)) { // TODO FOREACH WTF?
-                var foundIn = verbum?.indexOf(q, 0, true)
-                if (foundIn != -1 && foundIn != null) {
-                    found = true
-                    sample = verbum!!.replace("\n", " ")
-                    if ((sample.length - (foundIn + q.length)) > sampleRadius) sample =
-                        sample.substring(0, (foundIn + q.length) + sampleRadius) + sampleMore
-                    if (foundIn > sampleRadius) sample = sampleMore + sample
-                        .substring(foundIn - sampleRadius until sample.length)
-                    sample = SpannableStringBuilder(sample).apply {
-                        foundIn = sample.indexOf(q, 0, true)
-                        setSpan(
-                            StyleSpan(Typeface.BOLD), foundIn!!, foundIn!! + q.length,
+            val matches = hashMapOf<String, ArrayList<Pair<Int, Int>>>()
+            for (q in qWords.plus(qEmojis)) matches[q] = arrayListOf()
+
+            // check if emoji of luna is queried
+            if (emoji != null) for (e in qEmojis)
+                if (e == emoji) matches[e]!!.add(Pair(-1, -1))
+
+            // check the daily notes (verbum)
+            if (verbum != null) for (q in matches.keys) {
+                val index = verbum.indexOf(q, 0, true)
+                if (index != -1) matches[q]!!.add(Pair(index, index + q.length))
+            }
+
+            // determine if the search was successful
+            var allGood = true
+            var anyGood = false
+            for (subMatch in matches.values)
+                if (subMatch.isEmpty()) allGood = false
+                else anyGood = true
+            if (!anyGood) return
+            if (exclusive && !allGood) return
+
+            // now render the sample
+            val sample: CharSequence
+            val includeTheEmoji =
+                matches.values.any { pairs -> pairs.any { pair -> pair.first == -1 } }
+            if (verbum != null) {
+                var preSample = SpannableStringBuilder(verbum)
+                var leastMin = verbum.length
+                var greatestMax = 0
+                if (includeTheEmoji) leastMin = 0
+
+                for (pairs in matches.values)
+                    pairs.forEach { pair ->
+                        if (pair.first == -1) return@forEach
+                        preSample.setSpan(
+                            StyleSpan(Typeface.BOLD), pair.first, pair.second,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                         )
+                        leastMin = min(leastMin, pair.first)
+                        greatestMax = max(greatestMax, pair.second)
                     }
-                    break
-                }
-            }
-            if (found) c.m.searchResults.add(Result(luna, d, sample))
-            // don't convert sample toString!
+                leastMin -= sampleRadius
+                greatestMax += sampleRadius
+                if (leastMin < 0) leastMin = 0
+                if (greatestMax > verbum.length) greatestMax = verbum.length
+                preSample = preSample.subSequence(leastMin, greatestMax) as SpannableStringBuilder
+                if (leastMin != 0) preSample.insert(0, sampleMore)
+                if (greatestMax != verbum.length) preSample.append(sampleMore)
+
+                //preSample = preSample.replace(Regex("\\n"), " ")
+                for (ch in preSample.indices)
+                    if (preSample[ch] == '\n') preSample.replace(ch, ch + 1, " ")
+                if (includeTheEmoji) preSample.insert(0, "${emoji!!} ")
+                sample = preSample
+            } else sample = emoji!!
+
+            c.m.searchResults.add(Result(luna, d, sample))
+            // never convert a SpannableStringBuilder to String!
         }
 
-        /** Helper function for better supporting emojis. */
-        private fun getEmojiEnd(text: CharSequence): Int {
-            // FIXME this iteration makes many mistakes
-            /*var i = 1
-            while (i <= min(maxEmojiChars, text.length)) {
-                (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
-                    in 1..2).let { if (it) return@getEmojiEnd i }
-                i++
-            }*/
+        private fun getEmojiEndIfStartsWithIt(text: CharSequence): Int {
+            for (e in c.m.emojis) if (text.indexOf(e) == 0) return e.length
             return -1
         }
     }
