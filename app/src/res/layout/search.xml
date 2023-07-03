@@ -11,25 +11,34 @@
         android:id="@+id/field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="15dp"
-        android:layout_marginTop="4dp"
         android:background="@null"
         android:focusedByDefault="true"
         android:hint="@string/notesHint"
         android:imeOptions="actionGo"
         android:importantForAutofill="no"
         android:inputType="text"
-        android:paddingHorizontal="5dp"
-        android:paddingVertical="8dp"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp"
         android:textColor="?android:textColor"
         android:textSize="17sp"
         tools:ignore="LabelFor" />
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/inclusivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:checked="false"
+        android:paddingTop="2dp"
+        android:text="@string/searchInclusive"
+        android:textColor="?android:attr/textColor" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="9dp"
+        android:layout_marginTop="7dp"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>

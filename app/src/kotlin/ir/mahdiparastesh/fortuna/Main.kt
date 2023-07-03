@@ -1,11 +1,13 @@
 package ir.mahdiparastesh.fortuna
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.RippleDrawable
 import android.icu.util.Calendar
@@ -93,6 +95,14 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 .setAllCorners(CornerFamily.CUT, resources.getDimension(R.dimen.smallCornerSize))
                 .build()
         ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
+    }
+
+    /** The Application subclass */
+    class Fortuna : Application() {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            super.onConfigurationChanged(newConfig)
+            TodayWidget.externalUpdate(applicationContext)
+        }
     }
 
     companion object {
@@ -309,11 +319,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
-    /*override fun onRequestPermissionsResult(code: Int, arr: Array<out String>, res: IntArray) {
-        super.onRequestPermissionsResult(code, arr, res)
-        if (res.isNotEmpty() && res[0] == PackageManager.PERMISSION_GRANTED) DO SOMETHING
-    }*/
-
     /** Invoked when a file is ready to be exported. */
     private val exportLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -450,23 +455,32 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     /** Opens an AlertDialog for searching in VITA. */
+    @Suppress("KotlinConstantConditions")
     private fun srch() {
         if (m.searching != null && !firstResume) return
         if (m.searching == null) m.searching = ""
-        MaterialAlertDialogBuilder(this).apply {
+        var dialogue: AlertDialog? = null
+        dialogue = MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navSearch)
             setView(SearchBinding.inflate(layoutInflater).apply {
-                list.adapter = SearchAdapter(this@Main)
                 field.setText(m.searching)
-                field.addTextChangedListener { m.searching = it.toString() }
+                field.addTextChangedListener {
+                    m.searching = it.toString()
+                    dialogue?.setCancelable(it.isNullOrEmpty())
+                }
                 field.setOnEditorActionListener { v, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_GO)
                         (list.adapter as SearchAdapter).search(v.text)
                     return@setOnEditorActionListener true
                 }
+                inclusivity.setOnCheckedChangeListener { _, bb ->
+                    sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
+                    (list.adapter as SearchAdapter).search(field.text, true)
+                }
+                list.adapter = SearchAdapter(this@Main)
             }.root)
             setNegativeButton(R.string.cancel, null)
-            setCancelable(false)
+            setCancelable(m.searching.isNullOrEmpty())
             setOnDismissListener {
                 m.searching = null
                 m.searchResults.clear()
@@ -728,6 +742,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 /* TODO:
   * Implement thousand separators for numbers in Statistics
   * Select multiple day cells in order to score them once; needs custom selection
-  * Calculate a day's distance from another specific day; needs MC-DTP
+  * Calculate a day's distance from another specific day, put some EditTexts in Grid::detailDate
   * Month size in bytes
   */

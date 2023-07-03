@@ -31,6 +31,7 @@ import java.util.*
 object Kit {
     const val A_DAY = 86400000L
     const val SP_NUMERAL_TYPE = "numeral_type"
+    const val SP_SEARCH_INCLUSIVE = "search_inclusive"
     const val arNumType = "0"
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
@@ -205,9 +206,4 @@ object Kit {
 
     /** Helper class for implementing RecyclerView.ViewHolder. */
     open class AnyViewHolder<B>(val b: B) : RecyclerView.ViewHolder(b.root) where B : ViewBinding
-
-    /** An interface to be implemented on some custom listeners of RecyclerView items. */
-    interface RecyclerViewItemEvent {
-        var i: Int?
-    }
 }

@@ -32,8 +32,8 @@ class SearchAdapter(private val c: Main) :
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun search(q: CharSequence?) {
-        if (q == c.m.lastSearchQuery) return
+    fun search(q: CharSequence?, inclusivityChanged: Boolean = false) {
+        if (q == c.m.lastSearchQuery && !inclusivityChanged) return
         c.m.lastSearchQuery = q.toString()
         c.m.searchResults.clear()
         if (q != null && c.m.vita != null)
@@ -72,10 +72,11 @@ class SearchAdapter(private val c: Main) :
                 var end: Int
                 var x = 0
                 while (x < q.length) {
-                    if (ec.getEmojiStart(q, x) != -1) {
+                    /*if (ec.getEmojiStart(q, x) != -1) {
                         end = ec.getEmojiEnd(q, x)
                         qEmojis.add(q.subSequence(x, end).toString())
-                    } else if (q[x].isLetter()) {
+                        // together with the next case, they completely support emojis
+                    } else */if (q[x].isLetter()) {
                         end = x + 1
                         while (end < q.length && q[end].isLetter()) end++
                         qWords.add(q.subSequence(x, end).toString())
@@ -87,7 +88,7 @@ class SearchAdapter(private val c: Main) :
                         x++; continue
                     } else if (getEmojiEnd(q.subSequence(x, q.length)).also { end = x + it } != -1)
                         qEmojis.add(q.subSequence(x, end).toString())
-                    else {
+                    else { // symbols
                         end = x + 1
                         while (end < q.length && ec.getEmojiStart(q, end) == -1
                             && getEmojiEnd(q.subSequence(end, q.length)) == -1
@@ -99,7 +100,7 @@ class SearchAdapter(private val c: Main) :
                 }
 
                 // then search the Vita
-                for (luna in vita.entries) { // FIXME THIS IS AN any ALGORITHM NOT all!!
+                for (luna in vita.entries) {
                     onEachDay(luna.key, (-1).toByte(), luna.value.emoji, luna.value.verbum)
                     for (d in luna.value.verba.indices.reversed())
                         onEachDay(luna.key, d.toByte(), luna.value.emojis[d], luna.value.verba[d])
@@ -144,12 +145,16 @@ class SearchAdapter(private val c: Main) :
             // don't convert sample toString!
         }
 
+        /** Helper function for better supporting emojis. */
         private fun getEmojiEnd(text: CharSequence): Int {
-            var i = 1
-            while (i <= min(maxEmojiChars, text.length)) {
-                (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
-                    == EmojiCompat.EMOJI_SUPPORTED).let { if (it) return@getEmojiEnd i }
-                i++
+            // FIXME this iteration makes many mistakes
+            if (c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)) {
+                var i = 1
+                while (i <= min(maxEmojiChars, text.length)) {
+                    (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
+                        in 1..2).let { if (it) return@getEmojiEnd i }
+                    i++
+                }
             }
             return -1
         }

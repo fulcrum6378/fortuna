@@ -77,7 +77,6 @@ Here is a complete example:
 
 ## Structure of the Source Code
 
-- [**Fortuna.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Fortuna.kt) : the Application subclass.
 - [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) : controls the calendar table
   and the dialogues that might pop up while interacting with it.
 - [**Kit.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Kit.kt) : a set of miscellaneous static functions and utilities.
