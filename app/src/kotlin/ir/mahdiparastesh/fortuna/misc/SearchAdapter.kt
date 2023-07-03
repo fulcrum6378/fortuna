@@ -8,7 +8,6 @@ import android.text.style.StyleSpan
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.emoji2.text.EmojiCompat
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Kit
 import ir.mahdiparastesh.fortuna.Main
@@ -64,7 +63,6 @@ class SearchAdapter(private val c: Main) :
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
         private val qEmojis = arrayListOf<String>()
         private val qWords = arrayListOf<String>()
-        private val ec = EmojiCompat.get()
 
         init {
             CoroutineScope(Dispatchers.IO).launch {
@@ -90,7 +88,7 @@ class SearchAdapter(private val c: Main) :
                         qEmojis.add(q.subSequence(x, end).toString())
                     else { // symbols
                         end = x + 1
-                        while (end < q.length && ec.getEmojiStart(q, end) == -1
+                        while (end < q.length //&& ec.getEmojiStart(q, end) == -1
                             && getEmojiEnd(q.subSequence(end, q.length)) == -1
                             && !q[end].isLetter() && !q[end].isDigit() && !q[end].isWhitespace()
                         ) end++
@@ -148,14 +146,12 @@ class SearchAdapter(private val c: Main) :
         /** Helper function for better supporting emojis. */
         private fun getEmojiEnd(text: CharSequence): Int {
             // FIXME this iteration makes many mistakes
-            if (c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)) {
-                var i = 1
-                while (i <= min(maxEmojiChars, text.length)) {
-                    (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
-                        in 1..2).let { if (it) return@getEmojiEnd i }
-                    i++
-                }
-            }
+            /*var i = 1
+            while (i <= min(maxEmojiChars, text.length)) {
+                (ec.getEmojiMatch(text.subSequence(0, i), Main.EMOJI_METADATA_VERSION)
+                    in 1..2).let { if (it) return@getEmojiEnd i }
+                i++
+            }*/
             return -1
         }
     }
