@@ -26,7 +26,6 @@ import androidx.core.graphics.red
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
-import androidx.emoji2.text.EmojiCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
@@ -75,12 +74,6 @@ class Grid(private val c: Main) : ListAdapter {
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
-    private val telEmojis = arrayOf(
-        Pair("1", "1️⃣"), Pair("2", "2️⃣"), Pair("3", "3️⃣"),
-        Pair("4", "4️⃣"), Pair("5", "5️⃣"), Pair("6", "6️⃣"),
-        Pair("7", "7️⃣"), Pair("8", "8️⃣"), Pair("9", "9️⃣"),
-        Pair("*", "*️⃣"), Pair("0", "0️⃣"), Pair("#", "#️⃣"),
-    )
 
     override fun getCount(): Int = c.m.calendar.lunaMaxima()
     override fun isEmpty(): Boolean = false
@@ -224,8 +217,8 @@ class Grid(private val c: Main) : ListAdapter {
                 ): CharSequence? = when {
                     this@apply.text.isNotEmpty() -> ""
                     source == null -> null
-                    EmojiCompat.get().getEmojiMatch(source, Main.EMOJI_METADATA_VERSION) in 1..2
-                        && !hasNonEmojiNumber(source) -> null
+                    c.m.emojis == null -> ""
+                    c.m.emojis!!.any { it == source } -> null
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!
             })
@@ -321,14 +314,6 @@ class Grid(private val c: Main) : ListAdapter {
 
     /** Converts a Fortuna score into a NumberPicker integer. */
     private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
-
-    /** Checks if "<code>source</code>" has no emoji indicating a telephone character. */
-    private fun hasNonEmojiNumber(source: CharSequence): Boolean {
-        for (te in telEmojis)
-            if (te.first in source && te.second !in source)
-                return true
-        return false
-    }
 
     /**
      * Explains the birthdays of the crushes imported from the Sexbook app and puts them

@@ -77,6 +77,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import kotlin.math.ceil
 
 class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -226,6 +227,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (m.searching != null) srch()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
+
+        // Emojis list
+        m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
+            .use { it.readText().split(' ') }
 
         // Miscellaneous
         if (Kit.reqPermissions.isNotEmpty())
@@ -722,6 +727,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var luna: String? = null
         lateinit var calendar: Calendar
         var sexbook: Sexbook.Data? = null
+        var emojis: List<CharSequence>? = null
         var changingVar: Int? = null
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null

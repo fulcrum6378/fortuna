@@ -10,7 +10,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 4
-        versionName = "9.8.8"
+        versionName = "9.9.4"
     }
 
     sourceSets.getByName("main") {
@@ -52,6 +52,5 @@ android {
 
 dependencies {
     implementation("androidx.activity:activity-ktx:1.7.2")
-    implementation("androidx.emoji2:emoji2:1.3.0")
     implementation("com.google.android.material:material:1.9.0")
 }
