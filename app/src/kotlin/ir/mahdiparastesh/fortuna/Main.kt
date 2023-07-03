@@ -111,7 +111,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_SEXBOOK_LOADED = 1
-        const val EMOJI_METADATA_VERSION = 16
         var handler: Handler? = null
     }
 
@@ -478,6 +477,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         (list.adapter as SearchAdapter).search(v.text)
                     return@setOnEditorActionListener true
                 }
+                inclusivity.isChecked = sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
                 inclusivity.setOnCheckedChangeListener { _, bb ->
                     sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
                     (list.adapter as SearchAdapter).search(field.text, true)
@@ -727,7 +727,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var luna: String? = null
         lateinit var calendar: Calendar
         var sexbook: Sexbook.Data? = null
-        var emojis: List<CharSequence>? = null
+        var emojis = listOf<String>()
         var changingVar: Int? = null
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
