@@ -509,24 +509,25 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     private fun stat() {
         if (m.showingStat && !firstResume) return
         m.showingStat = true
+
+        val scores = arrayListOf<Float>()
+        val keyMeanMap = hashMapOf<String, Float>()
+        m.vita?.forEach { key, luna ->
+            val lunaScores = arrayListOf<Float>()
+            for (v in 0 until key.toCalendar(calType).lunaMaxima())
+                (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
+            scores.addAll(lunaScores)
+            keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()
+        } // don't use Luna.mean() for efficiency.
+        val sum = scores.sum()
+        val text = getString(
+            R.string.statText,
+            (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
+            sum.groupDigits(), scores.size.groupDigits()
+        )
+
         var dialogue: AlertDialog? = null
         dialogue = MaterialAlertDialogBuilder(this).apply {
-            val scores = arrayListOf<Float>()
-            val keyMeanMap = hashMapOf<String, Float>()
-            m.vita?.forEach { key, luna ->
-                val lunaScores = arrayListOf<Float>()
-                for (v in 0 until key.toCalendar(calType).lunaMaxima())
-                    (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
-                scores.addAll(lunaScores)
-                keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()
-            } // don't use Luna.mean() for efficiency.
-            val sum = scores.sum()
-            val text = getString(
-                R.string.statText,
-                (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
-                sum.groupDigits(), scores.size.groupDigits()
-            )
-
             val maxMonths = calType.create().getMaximum(Calendar.MONTH) + 1
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
@@ -601,18 +602,19 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setMessage(text)
             setView(bw.root)
             setPositiveButton(R.string.ok, null)
-            setNeutralButton(R.string.copy) { _, _ ->
-                Kit.copyToClipboard(c, text, getString(R.string.fortunaStat))
-            }
+            setNeutralButton(R.string.copy, null)
             setOnDismissListener { m.showingStat = false }
         }.show()
+        dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+            Kit.copyToClipboard(c, text, getString(R.string.fortunaStat))
+        }
     }
 
     /**
      * Shows the status of the automatically backed-up file with 3 action buttons:<br />
-     * Backup: manually backs up the data.<br />
-     * Restore: overwrites the backup file on the main file.<br />
-     * Export: exports the backup file.
+     * - Backup: manually backs up the data.<br />
+     * - Restore: overwrites the backup file on the main file.<br />
+     * - Export: exports the backup file.
      */
     private fun navBackup() {
         if (m.showingBack && !firstResume) return
