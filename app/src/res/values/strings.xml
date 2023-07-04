@@ -36,6 +36,8 @@
         <item>%d GB</item>
         <item>%d TB</item>
     </string-array>
+    <string name="dateSeparator">/</string>
+    <string name="copied">Copied to clipboard.</string>
 
     <!-- Main -->
     <string name="variabilis">Variable: %s</string>

@@ -10,8 +10,10 @@ import android.icu.text.DateFormatSymbols
 import android.icu.util.Calendar
 import android.os.Build
 import android.provider.CalendarContract
+import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
+import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +43,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.misc.Numeral
@@ -396,36 +399,51 @@ class Grid(private val c: Main) : ListAdapter {
                 "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Kit.locale)
                     .weekdays[cal[Calendar.DAY_OF_WEEK]]
             )
-            val sb = StringBuilder()
-            for (oc in Kit.otherCalendars) {
-                val d = oc.create()
-                d.timeInMillis = cal.timeInMillis
-                sb.append("${oc.simpleName.substringBefore("Calendar")}: ")
-                sb.append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
-            }
-            val dif = c.todayCalendar.compareByDays(cal)
-            sb.append(" => ").append(
-                when {
-                    dif == -1 -> c.getString(R.string.yesterday)
-                    dif == 1 -> c.getString(R.string.tomorrow)
-                    dif < 0 -> enumerate(R.string.difAgo, dif.absoluteValue)
-                    dif > 0 -> enumerate(R.string.difLater, dif)
-                    else -> c.getString(R.string.today)
+            setMessage(StringBuilder().apply {
+                for (oc in Kit.otherCalendars) {
+                    val d = oc.create()
+                    d.timeInMillis = cal.timeInMillis
+                    append("${oc.simpleName.substringBefore("Calendar")}: ")
+                    append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
                 }
-            )
-            if (abs(dif) > c.todayCalendar.getLeastMaximum(Calendar.DAY_OF_MONTH)) {
-                val expDif = explainDatesDif(c.todayCalendar, cal, dif > 0)
-                if (expDif[0] != 0 || expDif[1] != 0) {
-                    sb.append(" (")
-                    val sep = c.getString(R.string.difSep)
-                    if (expDif[0] != 0) sb.append(enumerate(R.string.difYears, expDif[0]) + sep)
-                    if (expDif[1] != 0) sb.append(enumerate(R.string.difMonths, expDif[1]) + sep)
-                    if (expDif[2] != 0) sb.append(enumerate(R.string.difDays, expDif[2]) + sep)
-                    sb.deleteRange(sb.length - sep.length, sb.length)
-                    sb.append(")")
+            }.toString())
+            setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
+                dat.background = c.varFieldBg
+                val watcher = object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                    override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                    override fun afterTextChanged(s: Editable?) {
+                        result.text = try {
+                            result.isVisible = true
+                            dateComparison(cal, calType.create().resetHours().apply {
+                                this[Calendar.YEAR] = y.text.toString().toInt()
+                                this[Calendar.MONTH] = (m.text.toString().toInt() - 1).also {
+                                    if (it > getActualMaximum(Calendar.MONTH) || it <= 0)
+                                        throw IllegalArgumentException()
+                                }
+                                this[Calendar.DAY_OF_MONTH] = d.text.toString().toInt().also {
+                                    if (it > getActualMaximum(Calendar.DAY_OF_MONTH) || it <= 0)
+                                        throw IllegalArgumentException()
+                                }
+                            })
+                        } catch (_: Exception) {
+                            result.isVisible = false
+                            ""
+                        }
+                    }
                 }
-            }
-            setMessage(sb.toString())
+                y.setText(z(c.todayCalendar[Calendar.YEAR]))
+                m.setText(z(c.todayCalendar[Calendar.MONTH] + 1))
+                y.addTextChangedListener(watcher)
+                m.addTextChangedListener(watcher)
+                d.addTextChangedListener(watcher)
+                d.setText(z(c.todayCalendar[Calendar.DAY_OF_MONTH]))
+
+                result.setOnLongClickListener {
+                    Kit.copyToClipboard(c.c, result.text, null)
+                    true
+                }
+            }.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.viewInCalendar) { _, _ ->
                 c.startActivity(
@@ -438,6 +456,33 @@ class Grid(private val c: Main) : ListAdapter {
             }
             setOnDismissListener { c.m.showingDate = null }
         }.show()
+    }
+
+    private fun dateComparison(dit: Calendar, dat: Calendar): String {
+        val dif = dat.compareByDays(dit)
+        val sb = StringBuilder()
+        sb.append(" => ").append(
+            when {
+                dif == -1 -> c.getString(R.string.yesterday)
+                dif == 1 -> c.getString(R.string.tomorrow)
+                dif < 0 -> enumerate(R.string.difAgo, dif.absoluteValue)
+                dif > 0 -> enumerate(R.string.difLater, dif)
+                else -> c.getString(R.string.today)
+            }
+        )
+        if (abs(dif) > dat.getLeastMaximum(Calendar.DAY_OF_MONTH)) {
+            val expDif = explainDatesDif(dat, dit, dif > 0)
+            if (expDif[0] != 0 || expDif[1] != 0) {
+                sb.append(" (")
+                val sep = c.getString(R.string.difSep)
+                if (expDif[0] != 0) sb.append(enumerate(R.string.difYears, expDif[0]) + sep)
+                if (expDif[1] != 0) sb.append(enumerate(R.string.difMonths, expDif[1]) + sep)
+                if (expDif[2] != 0) sb.append(enumerate(R.string.difDays, expDif[2]) + sep)
+                sb.deleteRange(sb.length - sep.length, sb.length)
+                sb.append(")")
+            }
+        }
+        return sb.toString()
     }
 
     /**
