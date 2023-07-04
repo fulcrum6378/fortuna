@@ -26,7 +26,6 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
@@ -51,6 +50,7 @@ import ir.mahdiparastesh.fortuna.Kit.blur
 import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.create
+import ir.mahdiparastesh.fortuna.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
@@ -221,18 +221,19 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             }
         }
 
+        // Nyx
+        if (Kit.reqPermissions.isNotEmpty()) reqPermLauncher.launch(Kit.reqPermissions.first())
+        Nyx.alarm(c) // Nyx.test(c)
+
         // Restore saved states
         if (m.searching != null) srch()
         if (m.showingStat) stat()
         if (m.showingHelp) help()
 
-        // Emojis list
+        // Miscellaneous
+        addOnNewIntentListener { it.resolveIntent() }
         m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
             .use { it.readText().split(' ') }
-
-        // Miscellaneous
-        if (Kit.reqPermissions.isNotEmpty())
-            ActivityCompat.requestPermissions(this, Kit.reqPermissions, 0)
         if (try {
                 packageManager.getPackageInfo(SEXBOOK, 0)
                 true
@@ -240,17 +241,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 false
             } && m.sexbook == null
         ) Sexbook(this).start()
-        (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
-            cancel(Nyx.CHANNEL)
-            createNotificationChannel(
-                NotificationChannel(
-                    Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
-                    NotificationManager.IMPORTANCE_LOW
-                ).apply { description = getString(R.string.ntfReminderDesc) }
-            )
-        }
-        addOnNewIntentListener { it.resolveIntent() }
-        Nyx.alarm(c) // Nyx.test(c)
     }
 
     var firstResume = true // a new instance of Main is created on a configuration change.
@@ -322,15 +312,30 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         return true
     }
 
+    /** Requests all the required permissions. (currently only for notifications in Android 13+) */
+    private val reqPermLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) return@registerForActivityResult
+        (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+            cancel(Nyx.CHANNEL)
+            createNotificationChannel(
+                NotificationChannel(
+                    Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
+                    NotificationManager.IMPORTANCE_LOW
+                ).apply { description = getString(R.string.ntfReminderDesc) }
+            )
+        }
+    }
+
     /** Invoked when a file is ready to be exported. */
     private val exportLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode != RESULT_OK) return@registerForActivityResult
             val bExp = try {
                 c.contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
-                    FileOutputStream(des.fileDescriptor).use { fos ->
-                        fos.write(m.vita?.export(c))
-                    }
+                    FileOutputStream(des.fileDescriptor)
+                        .use { fos -> fos.write(m.vita?.export(c)) }
                 }
                 true
             } catch (ignored: Exception) {
@@ -413,7 +418,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
         (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
-            b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).toString()
+            b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).groupDigits()
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
             b.emoji.text = it.luna.emoji
             b.emoji.isVisible = it.luna.emoji?.isNotBlank() == true
@@ -518,8 +523,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val sum = scores.sum()
             val text = getString(
                 R.string.statText,
-                (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).toString(),
-                sum.toString(), scores.size.toString()
+                (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
+                sum.groupDigits(), scores.size.groupDigits()
             )
 
             val maxMonths = calType.create().getMaximum(Calendar.MONTH) + 1
@@ -564,7 +569,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                                 else -> nullCellColour
                             }
                         )
-                        tooltipText = "${monthNames[month]} $year${score?.let { "\n$it" } ?: ""}"
+                        tooltipText =
+                            "${monthNames[month]} $year${
+                                score?.groupDigits()?.let { "\n$it" } ?: ""
+                            }"
                         setOnClickListener(object : Kit.DoubleClickListener() {
                             override fun onDoubleClick() {
                                 m.calendar = calType.create().apply {
@@ -617,6 +625,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             setMessage(R.string.backupDesc)
             setView(
                 BackupBinding.inflate(layoutInflater).apply {
+                    val f = Vita.Backup(c)
                     updateStatus()
                     for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
                         ColorStateList.valueOf(
@@ -637,11 +646,11 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         MaterialAlertDialogBuilder(this@Main).apply {
                             setTitle(c.resources.getString(R.string.restore))
                             setMessage(
-                                c.resources.getString(R.string.backupRestoreSure, lastBackup())
+                                c.resources.getString(R.string.backupRestoreSure, lastBackup(f))
                             )
                             setPositiveButton(R.string.yes) { _, _ ->
                                 m.vita = Vita.loads(
-                                    FileInputStream(Vita.Backup(c)).use { String(it.readBytes()) }
+                                    FileInputStream(f).use { String(it.readBytes()) }
                                 ).also { vita -> vita.save(c) }
                                 updateGrid()
                                 Toast.makeText(c, R.string.done, Toast.LENGTH_LONG).show()
@@ -650,9 +659,9 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         }.show()
                     }
                     export.setOnClickListener {
-                        if (!Vita.Backup(c).exists()) return@setOnClickListener
+                        if (!f.exists()) return@setOnClickListener
                         sendFile(
-                            FileInputStream(Vita.Backup(c)).use { it.readBytes() },
+                            FileInputStream(f).use { it.readBytes() },
                             R.string.backup_file
                         )
                     }
@@ -664,8 +673,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     /** @return the human-readable modification date of the backup. */
-    private fun lastBackup(): String {
-        val f = Vita.Backup(c)
+    private fun lastBackup(f: Vita.Backup): String {
         if (!f.exists()) return getString(R.string.never)
         val d = calType.create().apply { timeInMillis = f.lastModified() }
         return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
@@ -675,7 +683,10 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 
     /** Updates the modification date of the backup file. */
     private fun BackupBinding.updateStatus() {
-        status.text = getString(R.string.backupTime, lastBackup())
+        val f = Vita.Backup(c)
+        status.text = getString(
+            R.string.backupStatus, lastBackup(f), Kit.showBytes(c, f.length())
+        )
     }
 
     /** Shows an AlertDialog containing the guide for this app. */
@@ -747,8 +758,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Implement thousand separators for numbers in Statistics
   * Select multiple day cells in order to score them once; needs custom selection
   * Calculate a day's distance from another specific day, put some EditTexts in Grid::detailDate
-  * Month size in bytes
   */

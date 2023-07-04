@@ -65,7 +65,10 @@ object Kit {
     ).filter { it != calType }
     val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
-    /** List of the required permissions */
+    /**
+     * List of all the required permissions.
+     * Change Main::reqPermLauncher to RequestMultiplePermissions() if you wanna add more.
+     */
     val reqPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
@@ -123,22 +126,38 @@ object Kit {
     fun Calendar.compareByDays(other: Calendar): Int =
         ((other.timeInMillis - timeInMillis) / A_DAY).toInt()
 
-    /** Separates the digits of a number triply; e.g. 6401 -> 6,401. */
-    fun Number.decSep(): String {
-        val s: String
-        var fraction = ""
-        val ss = StringBuilder()
+    /**
+     * Groups the digits of a number triply (both integral and fractional ones).
+     * e.g. 6401 -> 6,401 or 1234.5678 -> 1,234.567,8
+     */
+    fun Number.groupDigits(): String {
+        val i: String
+        var f: String? = null
         toString().split(".").also {
-            if (it.size == 2) fraction = "." + it[1]
-            s = it[0]
+            if (it.size == 2) f = it[1]
+            i = it[0]
         }
-        var sep = 0
-        for (i in s.length - 1 downTo 0) {
-            ss.insert(0, s[i])
-            sep++
-            if (sep % 3 == 0 && i != 0) ss.insert(0, ",")
+        val ret = StringBuilder()
+
+        // group the integral digits
+        var left = 0
+        for (ii in i.length - 1 downTo 0) {
+            ret.insert(0, i[ii])
+            left++
+            if (left % 3 == 0 && ii != 0) ret.insert(0, ",")
         }
-        return ss.toString() + fraction
+
+        // group the fractional digits (if available)
+        if (f != null) {
+            ret.append(".")
+            var right = 0
+            for (ff in 0 until f!!.length) {
+                ret.append(f!![ff])
+                right++
+                if (right % 3 == 0 && ff != 0) ret.append(",")
+            }
+        }
+        return "$ret"
     }
 
     /** Converts a hexadecimal colour integer into a Float of range 0..1. */
@@ -179,6 +198,19 @@ object Kit {
     }
 
     fun <T> Class<T>.create(): T = getDeclaredConstructor().newInstance()
+
+    /** Explains bytes for humans. */
+    fun showBytes(c: Context, length: Long): String {
+        val units = c.resources.getStringArray(R.array.bytes)
+        var unit = 0
+        var nominalSize = length
+        while ((nominalSize / 1024L) > 1) {
+            nominalSize /= 1024L
+            unit++
+            if (unit == units.size - 1) break
+        }
+        return units[unit].format(nominalSize)
+    }
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {

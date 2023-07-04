@@ -29,6 +29,13 @@
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
     <string name="export">Export</string>
+    <string-array name="bytes" translatable="false">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
 
     <!-- Main -->
     <string name="variabilis">Variable: %s</string>
@@ -56,7 +63,7 @@
     <string name="backupDesc">
         Your data is automatically backed up in a separate file every night.
     </string>
-    <string name="backupTime">Last time at %s</string>
+    <string name="backupStatus">Last time at %1$s\nFile size: %2$s</string>
     <string name="backupRestoreSure">
         Are you sure you want to replace the current data with the earlier backed-up one at %s ?
     </string>

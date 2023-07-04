@@ -32,7 +32,7 @@ import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.color
 import ir.mahdiparastesh.fortuna.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.Kit.create
-import ir.mahdiparastesh.fortuna.Kit.decSep
+import ir.mahdiparastesh.fortuna.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.toValue
@@ -451,7 +451,7 @@ class Grid(private val c: Main) : ListAdapter {
      * @return a clean string
      */
     private fun enumerate(@StringRes res: Int, num: Int): String {
-        var ret = c.getString(res, num.decSep())
+        var ret = c.getString(res, num.groupDigits())
         ret = if (num == 1) ret.removeRange(ret.indexOf("("), ret.indexOf(")") + 1)
         else ret.substringBefore("(") + ret.substringAfter("(")
             .substringBefore(")") + ret.substringAfter(")")
