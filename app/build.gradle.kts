@@ -9,8 +9,8 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
-        versionName = "10.2.0"
+        versionCode = 5
+        versionName = "10.2.5"
     }
 
     sourceSets.getByName("main") {

@@ -12,6 +12,7 @@
         <item name="android:layoutDirection">ltr</item>
         <item name="android:fontFamily">@font/quattrocento</item>
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
+        <item name="checkboxStyle">@style/Widget.Fortuna.CheckBox</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Fortuna.Dialogue</item>
         <item name="navigationViewStyle">@style/Widget.Fortuna.NavigationView</item>
         <!--<item name="tooltipStyle">@style/Widget.Fortuna.Tooltip</item>-->
@@ -66,6 +67,24 @@
     </style>
 
 
+    <style name="Theme.Fortuna.Picker" parent="Theme.Fortuna">
+        <item name="android:colorControlNormal">@android:color/transparent</item><!--divider-->
+    </style>
+
+    <style name="Widget.Fortuna.OverflowButton" parent="@android:style/Widget.Material.ActionButton.Overflow">
+        <item name="android:src">@drawable/arabic_numerals</item>
+    </style>
+
+    <style name="Widget.Fortuna.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="android:textColor">?android:colorControlNormal
+        </item><!--avoid ?android:attr/textColor-->
+        <item name="buttonTint">?colorPrimary</item><!--avoid ?android:attr/textColor-->
+        <item name="buttonIconTint">?colorOnPrimary</item><!--avoid transparent-->
+    </style>
+
+    <!--<style name="Widget.Fortuna.Tooltip" parent="Widget.Material3.Tooltip"></style>-->
+
+
     <style name="ShapeAppearance_Fortuna_Nav">
         <item name="cornerFamilyBottomRight">cut</item>
         <item name="cornerFamilyTopRight">cut</item>
@@ -82,15 +101,4 @@
         <item name="cornerFamily">cut</item><!--rounded|cut-->
         <item name="cornerSize">@dimen/smallCornerSize</item>
     </style>
-
-
-    <style name="Theme.Fortuna.Picker" parent="Theme.Fortuna">
-        <item name="android:colorControlNormal">@android:color/transparent</item><!--divider-->
-    </style>
-
-    <style name="Widget.Fortuna.OverflowButton" parent="@android:style/Widget.Material.ActionButton.Overflow">
-        <item name="android:src">@drawable/arabic_numerals</item>
-    </style>
-
-    <!--<style name="Widget.Fortuna.Tooltip" parent="Widget.Material3.Tooltip"></style>-->
 </resources>
