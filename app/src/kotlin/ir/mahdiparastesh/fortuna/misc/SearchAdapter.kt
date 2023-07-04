@@ -6,12 +6,14 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Kit
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
+import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,6 +35,7 @@ import kotlin.math.min
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(private val c: Main) :
     RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
+    lateinit var dialogue: AlertDialog
 
     companion object {
         const val sampleRadius = 50
@@ -62,7 +65,12 @@ class SearchAdapter(private val c: Main) :
         h.b.sample.text = c.m.searchResults[i].sample
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
-        h.b.root.setOnClickListener { }
+        h.b.root.setOnClickListener {
+            c.m.calendar = c.m.searchResults[i].luna.toCalendar(Kit.calType)
+            c.onCalendarChanged()
+            dialogue.cancel()
+            c.closeDrawer()
+        }
     }
 
     override fun getItemCount(): Int = c.m.searchResults.size
@@ -167,7 +175,6 @@ class SearchAdapter(private val c: Main) :
                 if (leastMin != 0) preSample.insert(0, sampleMore)
                 if (greatestMax != verbum.length) preSample.append(sampleMore)
 
-                //preSample = preSample.replace(Regex("\\n"), " ")
                 for (ch in preSample.indices)
                     if (preSample[ch] == '\n') preSample.replace(ch, ch + 1, " ")
                 if (includeTheEmoji) preSample.insert(0, "${emoji!!} ")

@@ -98,7 +98,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
     }
 
-    /** The Application subclass */
     class Fortuna : Application() {
         override fun onConfigurationChanged(newConfig: Configuration) {
             super.onConfigurationChanged(newConfig)
@@ -441,7 +440,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     }
 
     /** Updates everything whenever the calendar changes. */
-    private fun onCalendarChanged() {
+    fun onCalendarChanged() {
         m.luna = m.calendar.toKey()
         rollingLunaWithAnnus = true
         rollingLuna = true
@@ -464,26 +463,27 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (m.searching != null && !firstResume) return
         if (m.searching == null) m.searching = ""
         var dialogue: AlertDialog? = null
+        val bs = SearchBinding.inflate(layoutInflater).apply {
+            field.setText(m.searching)
+            field.addTextChangedListener {
+                m.searching = it.toString()
+                dialogue?.setCancelable(it.isNullOrEmpty())
+            }
+            field.setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_GO)
+                    (list.adapter as SearchAdapter).search(v.text)
+                return@setOnEditorActionListener true
+            }
+            inclusivity.isChecked = sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+            inclusivity.setOnCheckedChangeListener { _, bb ->
+                sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
+                (list.adapter as SearchAdapter).search(field.text, true)
+            }
+            list.adapter = SearchAdapter(this@Main)
+        }
         dialogue = MaterialAlertDialogBuilder(this).apply {
             setTitle(R.string.navSearch)
-            setView(SearchBinding.inflate(layoutInflater).apply {
-                field.setText(m.searching)
-                field.addTextChangedListener {
-                    m.searching = it.toString()
-                    dialogue?.setCancelable(it.isNullOrEmpty())
-                }
-                field.setOnEditorActionListener { v, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_GO)
-                        (list.adapter as SearchAdapter).search(v.text)
-                    return@setOnEditorActionListener true
-                }
-                inclusivity.isChecked = sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
-                inclusivity.setOnCheckedChangeListener { _, bb ->
-                    sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
-                    (list.adapter as SearchAdapter).search(field.text, true)
-                }
-                list.adapter = SearchAdapter(this@Main)
-            }.root)
+            setView(bs.root)
             setNegativeButton(R.string.cancel, null)
             setCancelable(m.searching.isNullOrEmpty())
             setOnDismissListener {
@@ -491,6 +491,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 m.searchResults.clear()
             }
         }.show()
+        (bs.list.adapter as SearchAdapter).dialogue = dialogue
     }
 
     /**
@@ -698,7 +699,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 
-    private fun closeDrawer() {
+    fun closeDrawer() {
         b.root.closeDrawer(GravityCompat.START, true)
     }
 
