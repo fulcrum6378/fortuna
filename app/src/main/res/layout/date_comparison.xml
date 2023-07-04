@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="Autofill,LabelFor">
+
+    <LinearLayout
+        android:id="@+id/dat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_small"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/y"
+            style="@style/dateComparisonField"
+            android:inputType="numberSigned"
+            android:maxLength="5" />
+
+        <TextView
+            style="@style/dateComparisonSep"
+            android:text="@string/dateSeparator" />
+
+        <EditText
+            android:id="@+id/m"
+            style="@style/dateComparisonField"
+            android:maxLength="2" />
+
+        <TextView
+            style="@style/dateComparisonSep"
+            android:text="@string/dateSeparator" />
+
+        <EditText
+            android:id="@+id/d"
+            style="@style/dateComparisonField"
+            android:maxLength="2" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:background="@drawable/button_rect"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp" />
+</LinearLayout>

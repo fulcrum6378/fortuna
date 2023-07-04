@@ -44,6 +44,21 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="dateComparisonSep">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="dateComparisonField" parent="dateComparisonSep">
+        <item name="android:inputType">number</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColor">?android:attr/textColor</item>
+        <item name="android:paddingVertical">9dp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
 
     <!-- #TextAppearance (don't override Material TextAppearances) -->
     <style name="TextAppearance.Fortuna.Toolbar" parent="@android:style/TextAppearance">

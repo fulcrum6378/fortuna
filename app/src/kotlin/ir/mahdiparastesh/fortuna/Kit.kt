@@ -2,6 +2,8 @@ package ir.mahdiparastesh.fortuna
 
 import android.Manifest
 import android.app.PendingIntent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -172,6 +174,13 @@ object Kit {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         ) // A unique request code protects the PendingIntent from being recycled!
+
+    /** Helper function for copying a text to clipboard. */
+    fun copyToClipboard(c: Context, text: CharSequence, label: CharSequence?) {
+        (c.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
+            ?.setPrimaryClip(ClipData.newPlainText(label, text))
+        Toast.makeText(c, R.string.copied, Toast.LENGTH_SHORT).show()
+    }
 
     /** Clears focus from an EditText. */
     fun EditText.blur(c: Context) {
