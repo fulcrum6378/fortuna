@@ -750,6 +750,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var showingBack = false
         var showingHelp = false
         var showingDate: Int? = null
+        var compareDatesWith: Calendar? = null
         var changingConfigForLunaSpinner = false
 
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
