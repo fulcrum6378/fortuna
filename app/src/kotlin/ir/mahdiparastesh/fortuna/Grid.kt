@@ -415,7 +415,7 @@ class Grid(private val c: Main) : ListAdapter {
                     override fun afterTextChanged(s: Editable?) {
                         result.text = try {
                             result.isVisible = true
-                            dateComparison(cal, calType.create().resetHours().apply {
+                            val dat = calType.create().resetHours().apply {
                                 this[Calendar.YEAR] = y.text.toString().toInt()
                                 this[Calendar.MONTH] = (m.text.toString().toInt() - 1).also {
                                     if (it > getActualMaximum(Calendar.MONTH) || it <= 0)
@@ -425,23 +425,25 @@ class Grid(private val c: Main) : ListAdapter {
                                     if (it > getActualMaximum(Calendar.DAY_OF_MONTH) || it <= 0)
                                         throw IllegalArgumentException()
                                 }
-                            })
+                            }
+                            c.m.compareDatesWith = dat
+                            dateComparison(cal, dat)
                         } catch (_: Exception) {
                             result.isVisible = false
                             ""
                         }
                     }
                 }
-                y.setText(z(c.todayCalendar[Calendar.YEAR]))
-                m.setText(z(c.todayCalendar[Calendar.MONTH] + 1))
+                val dit = c.m.compareDatesWith ?: c.todayCalendar
+                y.setText(z(dit[Calendar.YEAR]))
+                m.setText(z(dit[Calendar.MONTH] + 1))
                 y.addTextChangedListener(watcher)
                 m.addTextChangedListener(watcher)
                 d.addTextChangedListener(watcher)
-                d.setText(z(c.todayCalendar[Calendar.DAY_OF_MONTH]))
+                d.setText(z(dit[Calendar.DAY_OF_MONTH]))
 
                 result.setOnLongClickListener {
-                    Kit.copyToClipboard(c.c, result.text, null)
-                    true
+                    Kit.copyToClipboard(c.c, result.text, null); true
                 }
             }.root)
             setPositiveButton(R.string.ok, null)
