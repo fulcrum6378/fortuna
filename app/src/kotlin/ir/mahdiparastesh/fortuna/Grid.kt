@@ -177,7 +177,7 @@ class Grid(private val c: Main) : ListAdapter {
     /**
      * Open an AlertDialog in order to let the user change the score of this day.
      *
-     * @param i day
+     * @param i day (starting from 0)
      * @param cal the calendar indicating that day
      */
     @SuppressLint("ClickableViewAccessibility")

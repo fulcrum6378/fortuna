@@ -2,6 +2,7 @@ package ir.mahdiparastesh.fortuna.misc
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
+import android.icu.util.Calendar
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
@@ -9,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Kit
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
@@ -19,16 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.ArrayList
-import kotlin.collections.any
-import kotlin.collections.arrayListOf
-import kotlin.collections.forEach
-import kotlin.collections.hashMapOf
-import kotlin.collections.indices
-import kotlin.collections.mutableSetOf
-import kotlin.collections.plus
 import kotlin.collections.set
-import kotlin.collections.toSortedMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -66,8 +59,11 @@ class SearchAdapter(private val c: Main) :
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
         h.b.root.setOnClickListener {
-            c.m.calendar = c.m.searchResults[i].luna.toCalendar(Kit.calType)
+            c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(Kit.calType)
             c.onCalendarChanged()
+            val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
+            if (dies >= 0) (c.b.grid.adapter as? Grid)
+                ?.changeVar(dies, c.m.calendar.apply { this[Calendar.DAY_OF_MONTH] = dies + 1 })
             dialogue.cancel()
             c.closeDrawer()
         }
