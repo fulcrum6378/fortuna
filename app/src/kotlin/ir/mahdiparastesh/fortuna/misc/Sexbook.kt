@@ -12,7 +12,8 @@ import ir.mahdiparastesh.fortuna.Kit.iterate
 import ir.mahdiparastesh.fortuna.Main
 
 /**
- * Imports data from the Sexbook Android app in a separate thread.
+ * Imports data from the Sexbook app in a separate thread, if the app is installed.
+ * The data includes orgasm times and crushes' birthdays.
  *
  * @see <a href="https://play.google.com/store/apps/details?id=ir.mahdiparastesh.sexbook">Sexbook in Google Play</a>
  * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repository</a>
@@ -53,11 +54,13 @@ class Sexbook(private val c: Context) : Thread() {
         // Also load the crushes
         c.contentResolver.query(
             Uri.parse("content://${Kit.SEXBOOK}/crush"),
-            null, null, null, null
+            arrayOf("key", "first_name", "middle_name", "last_name", "birth"),
+            "birth IS NOT NULL", null, null
         ).iterate {
-            var y = getInt(6)
-            var m = getInt(7)
-            var d = getInt(8)
+            val birth = getString(4).split(".")
+            var y = birth[0].toInt()
+            var m = birth[1].toInt()
+            var d = birth[2].toInt()
             if (Kit.calType != GregorianCalendar::class.java) {
                 val cal = Kit.calType.create()
                 cal.timeInMillis = GregorianCalendar(y, m, d).timeInMillis
@@ -67,8 +70,8 @@ class Sexbook(private val c: Context) : Thread() {
             }
             crushes.add(
                 Crush(
-                    getString(0), getString(1), getString(2),
-                    getString(3), y.toShort(), (m + 1).toShort(), d.toShort()
+                    getString(0), getString(1), getString(2), getString(3),
+                    y.toShort(), m.toShort(), d.toShort()
                 )
             )
         }

@@ -329,8 +329,19 @@ class Grid(private val c: Main) : ListAdapter {
         if (birth.isNullOrEmpty()) return
 
         val sb = StringBuilder()
-        for (b in birth)
-            sb.append("Happy ${b.theirs()} birthday!\n")
+        val thisYear = c.todayCalendar[Calendar.YEAR]
+        for (b in birth) {
+            sb.append("Happy ${b.theirs()} ")
+            val age = (thisYear - b.birthYear).toString()
+            sb.append(age).append(
+                when (age.last()) {
+                    '1' -> "st"
+                    '2' -> "nd"
+                    '3' -> "rd"
+                    else -> "th"
+                }
+            ).append(" birthday!\n")
+        }
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
         isVisible = true
