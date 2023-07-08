@@ -121,7 +121,7 @@ class Sexbook(private val c: Context) : Thread() {
         val key: String, val fName: String?, val mName: String?, val lName: String?,
         val birthYear: Short, val birthMonth: Short, val birthDay: Short
     ) {
-        private fun visName(): String =
+        fun visName(): String =
             if (fName.isNullOrEmpty() || lName.isNullOrEmpty()) when {
                 !fName.isNullOrEmpty() -> fName
                 !lName.isNullOrEmpty() -> lName

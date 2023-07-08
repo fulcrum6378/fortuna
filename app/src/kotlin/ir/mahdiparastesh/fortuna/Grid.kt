@@ -140,13 +140,8 @@ class Grid(private val c: Main) : ListAdapter {
                     }
                 }
             )
-            val cal = calType.create().apply {
-                timeInMillis = c.m.calendar.timeInMillis
-                set(Calendar.DAY_OF_MONTH, i + 1)
-                resetHours()
-            }
-            root.setOnClickListener { changeVar(i, cal) }
-            root.setOnLongClickListener { detailDate(i, cal); true }
+            root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
+            root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
             if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
@@ -172,6 +167,13 @@ class Grid(private val c: Main) : ListAdapter {
             it.reports.filter { x -> x.year == yr && x.month == mo },
             it.crushes.filter { x -> x.birthYear <= yr && x.birthMonth == mo }
         )
+    }
+
+    /** Creates a calendar indicating this day. */
+    fun dailyCalendar(i: Int) = calType.create().apply {
+        timeInMillis = c.m.calendar.timeInMillis
+        set(Calendar.DAY_OF_MONTH, i + 1)
+        resetHours()
     }
 
     /**
@@ -247,8 +249,10 @@ class Grid(private val c: Main) : ListAdapter {
             }
         }
         cvTvSexbook = bv.sexbook
-        bv.sexbook.appendCrushBirthdays(i)
-        bv.sexbook.appendSexReports(i)
+        if (i != -1) {
+            bv.sexbook.appendCrushBirthdays(i, cal)
+            bv.sexbook.appendSexReports(i)
+        }
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 c.getString(
@@ -323,24 +327,26 @@ class Grid(private val c: Main) : ListAdapter {
      *
      * @param i day
      */
-    fun TextView.appendCrushBirthdays(i: Int) {
+    fun TextView.appendCrushBirthdays(i: Int, cal: Calendar) {
         if (i == -1) return
         val birth = sexbook?.crushes?.filter { it.birthDay == (i + 1).toShort() }
         if (birth.isNullOrEmpty()) return
 
         val sb = StringBuilder()
-        val thisYear = c.todayCalendar[Calendar.YEAR]
         for (b in birth) {
-            sb.append("Happy ${b.theirs()} ")
-            val age = (thisYear - b.birthYear).toString()
-            sb.append(age).append(
-                when (age.last()) {
-                    '1' -> "st"
-                    '2' -> "nd"
-                    '3' -> "rd"
-                    else -> "th"
-                }
-            ).append(" birthday!\n")
+            val age = cal[Calendar.YEAR] - b.birthYear
+            if (age > 0) {
+                sb.append("Happy ${b.theirs()} ")
+                val sAge = age.toString()
+                sb.append(sAge).append(
+                    if (sAge.first() != '1' || sAge.length != 2) when (sAge.last()) {
+                        '1' -> "st"
+                        '2' -> "nd"
+                        '3' -> "rd"
+                        else -> "th"
+                    } else "th"
+                ).append(" birthday!\n")
+            } else sb.append(b.visName().uppercase(Locale.getDefault())).append(" was born!\n")
         }
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()

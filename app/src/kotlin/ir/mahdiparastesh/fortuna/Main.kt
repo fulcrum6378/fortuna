@@ -212,7 +212,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                         (b.grid.adapter as? Grid)?.apply {
                             sexbook = cacheSexbook()
                             m.changingVar?.also { i ->
-                                cvTvSexbook?.appendCrushBirthdays(i)
+                                cvTvSexbook?.appendCrushBirthdays(i, dailyCalendar(i))
                                 cvTvSexbook?.appendSexReports(i)
                             }
                         }
@@ -758,5 +758,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
+  * Migrate to DialogFragment
   * Select multiple day cells in order to score them once; needs custom selection
   */
