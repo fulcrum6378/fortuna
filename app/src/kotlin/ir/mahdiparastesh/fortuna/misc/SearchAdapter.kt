@@ -7,8 +7,8 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Kit
@@ -28,9 +28,9 @@ import kotlin.math.min
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(private val c: Main) :
     RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
-    lateinit var dialogue: AlertDialog
 
     companion object {
+        const val FRAGMENT_TAG = "srch"
         const val sampleRadius = 50
         const val sampleMore = "..."
     }
@@ -64,7 +64,9 @@ class SearchAdapter(private val c: Main) :
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
             if (dies >= 0) (c.b.grid.adapter as? Grid)
                 ?.changeVar(dies, c.m.calendar.apply { this[Calendar.DAY_OF_MONTH] = dies + 1 })
-            dialogue.cancel()
+            //dialogue.cancel()
+            (c.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? DialogFragment)
+                ?.dismiss()
             c.closeDrawer()
         }
     }

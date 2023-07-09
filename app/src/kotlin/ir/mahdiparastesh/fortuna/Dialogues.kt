@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.fortuna
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.RippleDrawable
@@ -47,32 +48,35 @@ abstract class BaseDialogue : DialogFragment() {
 
 /** A dialogue for searching in VITA. */
 class SearchDialog : BaseDialogue() {
-    @Suppress("KotlinConstantConditions")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        var dialogue: AlertDialog? = null
-        val bs = SearchBinding.inflate(layoutInflater).apply {
-            field.addTextChangedListener { dialogue?.setCancelable(it.isNullOrEmpty()) }
-            field.setOnEditorActionListener { v, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_GO)
-                    (list.adapter as SearchAdapter).search(v.text)
-                return@setOnEditorActionListener true
-            }
-            inclusivity.isChecked = c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
-            inclusivity.setOnCheckedChangeListener { _, bb ->
-                c.sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
-                (list.adapter as SearchAdapter).search(field.text, true)
-            }
-            list.adapter = SearchAdapter(c)
-        }
-        dialogue = MaterialAlertDialogBuilder(c).apply {
+        return MaterialAlertDialogBuilder(c).apply {
             setTitle(R.string.navSearch)
-            setView(bs.root)
+            setView(SearchBinding.inflate(layoutInflater).apply {
+                field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
+                field.setOnEditorActionListener { v, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_GO)
+                        (list.adapter as SearchAdapter).search(v.text)
+                    return@setOnEditorActionListener true
+                }
+                inclusivity.isChecked = c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+                inclusivity.setOnCheckedChangeListener { _, bb ->
+                    c.sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
+                    (list.adapter as SearchAdapter).search(field.text, true)
+                }
+                list.adapter = SearchAdapter(c)
+            }.root)
             setNegativeButton(R.string.cancel, null)
-            setOnCancelListener { c.m.searchResults.clear() }
-            setOnDismissListener { c.m.searchResults.clear() }
-        }.show()
-        (bs.list.adapter as SearchAdapter).dialogue = dialogue
-        return dialogue
+        }.create()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        c.m.searchResults.clear()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        c.m.searchResults.clear()
     }
 }
 
@@ -84,6 +88,9 @@ class SearchDialog : BaseDialogue() {
  * someone accidentally or deliberately score a day in year 25 or 8000.
  */
 class StatisticsDialog : BaseDialogue() {
+    private var dialogue: AlertDialog? = null
+    private lateinit var text: String
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()
@@ -95,13 +102,12 @@ class StatisticsDialog : BaseDialogue() {
             keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()
         } // don't use Luna.mean() for efficiency.
         val sum = scores.sum()
-        val text = getString(
+        text = getString(
             R.string.statText,
             (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
             sum.groupDigits(), scores.size.groupDigits()
         )
 
-        var dialogue: AlertDialog? = null
         dialogue = MaterialAlertDialogBuilder(c).apply {
             val maxMonths = Kit.calType.create().getMaximum(Calendar.MONTH) + 1
             val meanMap = SparseArray<Array<Float?>>()
@@ -121,7 +127,7 @@ class StatisticsDialog : BaseDialogue() {
             val monthNames = resources.getStringArray(R.array.luna)
             meanMap.forEach { year, array ->
                 bw.years.addView(TextView(c).apply {
-                    setText(year.toString())
+                    text = year.toString()
                     textSize = cellH.toFloat() * 0.25f
                     gravity = Gravity.CENTER_VERTICAL
                 }, LinearLayout.LayoutParams(-2, cellH))
@@ -179,11 +185,14 @@ class StatisticsDialog : BaseDialogue() {
             setView(bw.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.copy, null)
-        }.show()
-        dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-            Kit.copyToClipboard(c, text, getString(R.string.fortunaStat))
-        }
-        return dialogue
+        }.create()
+        return dialogue!!
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialogue?.getButton(AlertDialog.BUTTON_NEUTRAL)
+            ?.setOnClickListener { Kit.copyToClipboard(c, text, getString(R.string.fortunaStat)) }
     }
 }
 
@@ -242,16 +251,17 @@ class BackupDialog : BaseDialogue() {
                     }
                 }.root
             )
-            setCancelable(true)
-        }.show()
+        }.create()
     }
+
+    override fun isCancelable(): Boolean = true
 
     /** @return the human-readable modification date of the backup. */
     private fun lastBackup(f: Vita.Backup): String {
         if (!f.exists()) return getString(R.string.never)
         val d = Kit.calType.create().apply { timeInMillis = f.lastModified() }
         return "${Kit.z(d[Calendar.YEAR], 4)}.${Kit.z(d[Calendar.MONTH] + 1)}." +
-            "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR])}:" +
+            "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
             "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
     }
 
@@ -271,6 +281,6 @@ class HelpDialog : BaseDialogue() {
             setTitle(R.string.navHelp)
             setMessage(R.string.help)
             setPositiveButton(R.string.ok, null)
-        }.show()
+        }.create()
     }
 }

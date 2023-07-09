@@ -77,6 +77,8 @@ Here is a complete example:
 
 ## Structure of the Source Code
 
+- [**Dialogues.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Dialogues.kt) : contains all the
+  DialogFragment instances, mostly used in in the navigation drawer.
 - [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) : controls the calendar table
   and the dialogues that might pop up while interacting with it.
 - [**Kit.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Kit.kt) : a set of miscellaneous static functions and utilities.
