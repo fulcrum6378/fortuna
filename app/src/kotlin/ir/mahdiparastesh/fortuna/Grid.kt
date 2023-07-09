@@ -150,8 +150,8 @@ class Grid(private val c: Main) : ListAdapter {
     fun onRefresh() {
         luna = c.m.thisLuna()
         sexbook = cacheSexbook()
-        numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
-            .let { if (it == Kit.arNumType) null else it }
+        numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
+            .let { if (it == Kit.defNumType) null else it }
         numeral = Numerals.build(numType)
     }
 

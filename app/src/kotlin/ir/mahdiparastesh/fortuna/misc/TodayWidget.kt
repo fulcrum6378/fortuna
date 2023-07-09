@@ -43,8 +43,8 @@ class TodayWidget : AppWidgetProvider() {
                 })
             setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
             setTextViewText(
-                R.id.dies, Numerals.build(c.sp().getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType)
-                    .let { if (it == Kit.arNumType) null else it })
+                R.id.dies, Numerals.build(c.sp().getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
+                    .let { if (it == Kit.defNumType) null else it })
                     .write(cal[Calendar.DAY_OF_MONTH])
             )
             val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]
