@@ -6,39 +6,27 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.RippleDrawable
 import android.icu.util.Calendar
 import android.os.*
-import android.util.SparseArray
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.ActionMenuView
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
-import androidx.core.util.containsKey
-import androidx.core.util.forEach
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
@@ -55,17 +43,13 @@ import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.Kit.pdcf
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.sp
-import ir.mahdiparastesh.fortuna.Kit.toValue
 import ir.mahdiparastesh.fortuna.Kit.z
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
-import ir.mahdiparastesh.fortuna.databinding.SearchBinding
-import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.misc.Numerals
 import ir.mahdiparastesh.fortuna.misc.SearchAdapter
 import ir.mahdiparastesh.fortuna.misc.Sexbook
@@ -80,7 +64,7 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import kotlin.math.ceil
 
-class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListener {
+class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener {
     val c: Context get() = applicationContext
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
@@ -133,8 +117,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
-                    (nt.jClass?.simpleName ?: Kit.arNumType)
+                isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
+                    (nt.jClass?.simpleName ?: Kit.defNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -143,7 +127,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
             sp.edit {
                 putString(
                     Kit.SP_NUMERAL_TYPE,
-                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName ?: Kit.arNumType
+                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
+                        ?: Kit.defNumType
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -225,11 +210,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         if (Kit.reqPermissions.isNotEmpty()) reqPermLauncher.launch(Kit.reqPermissions.first())
         Nyx.alarm(c) // Nyx.test(c)
 
-        // Restore saved states
-        if (m.searching != null) srch()
-        if (m.showingStat) stat()
-        if (m.showingHelp) help()
-
         // Miscellaneous
         addOnNewIntentListener { it.resolveIntent() }
         m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
@@ -294,8 +274,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                     onCalendarChanged(); }
                 closeDrawer()
             }
-            R.id.navSearch -> srch()
-            R.id.navStat -> stat()
+            R.id.navSearch -> SearchDialog().show(supportFragmentManager, "srch")
+            R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = Vita.MIME_TYPE
@@ -306,8 +286,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
                 type = Vita.MIME_TYPE
             })
             R.id.navSend -> m.vita?.export(c)?.also { sendFile(it, R.string.export_file) }
-            R.id.navBackup -> navBackup()
-            R.id.navHelp -> help()
+            R.id.navBackup -> BackupDialog().show(supportFragmentManager, "back")
+            R.id.navHelp -> HelpDialog().show(supportFragmentManager, "help")
         }
         return true
     }
@@ -383,7 +363,7 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         }
 
     /** Caches the data and lets it be shared. */
-    private fun sendFile(binary: ByteArray, @StringRes fileName: Int) {
+    fun sendFile(binary: ByteArray, @StringRes fileName: Int) {
         val exported = File(cacheDir, c.getString(fileName))
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -433,8 +413,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.arNumType) ==
-                (Numerals.all[i].jClass?.simpleName ?: Kit.arNumType)
+            item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
+                (Numerals.all[i].jClass?.simpleName ?: Kit.defNumType)
         }
     }
 
@@ -460,244 +440,6 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
-    }
-
-    /** Opens an AlertDialog for searching in VITA. */
-    @Suppress("KotlinConstantConditions")
-    private fun srch() {
-        if (m.searching != null && !firstResume) return
-        if (m.searching == null) m.searching = ""
-        var dialogue: AlertDialog? = null
-        val bs = SearchBinding.inflate(layoutInflater).apply {
-            field.setText(m.searching)
-            field.addTextChangedListener {
-                m.searching = it.toString()
-                dialogue?.setCancelable(it.isNullOrEmpty())
-            }
-            field.setOnEditorActionListener { v, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_GO)
-                    (list.adapter as SearchAdapter).search(v.text)
-                return@setOnEditorActionListener true
-            }
-            inclusivity.isChecked = sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
-            inclusivity.setOnCheckedChangeListener { _, bb ->
-                sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
-                (list.adapter as SearchAdapter).search(field.text, true)
-            }
-            list.adapter = SearchAdapter(this@Main)
-        }
-        dialogue = MaterialAlertDialogBuilder(this).apply {
-            setTitle(R.string.navSearch)
-            setView(bs.root)
-            setNegativeButton(R.string.cancel, null)
-            setCancelable(m.searching.isNullOrEmpty())
-            setOnDismissListener {
-                m.searching = null
-                m.searchResults.clear()
-            }
-        }.show()
-        (bs.list.adapter as SearchAdapter).dialogue = dialogue
-    }
-
-    /**
-     * Opens an AlertDialog for statistics.
-     *
-     * Making statistics in a way that it'll show every year since the minimum scored days till the
-     * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
-     * someone accidentally or deliberately score a day in year 25 or 8000.
-     */
-    private fun stat() {
-        if (m.showingStat && !firstResume) return
-        m.showingStat = true
-
-        val scores = arrayListOf<Float>()
-        val keyMeanMap = hashMapOf<String, Float>()
-        m.vita?.forEach { key, luna ->
-            val lunaScores = arrayListOf<Float>()
-            for (v in 0 until key.toCalendar(calType).lunaMaxima())
-                (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
-            scores.addAll(lunaScores)
-            keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()
-        } // don't use Luna.mean() for efficiency.
-        val sum = scores.sum()
-        val text = getString(
-            R.string.statText,
-            (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
-            sum.groupDigits(), scores.size.groupDigits()
-        )
-
-        var dialogue: AlertDialog? = null
-        dialogue = MaterialAlertDialogBuilder(this).apply {
-            val maxMonths = calType.create().getMaximum(Calendar.MONTH) + 1
-            val meanMap = SparseArray<Array<Float?>>()
-            keyMeanMap.forEach { (key, mean) ->
-                val spl = key.split(".")
-                val y = spl[0].toInt()
-                val m = spl[1].toInt() - 1
-                if (!meanMap.containsKey(y)) meanMap[y] = Array(maxMonths) { null }
-                meanMap[y][m] = mean
-            }
-            val bw = WholeBinding.inflate(layoutInflater)
-
-            val cp = getColor(R.color.CP)
-            val cs = getColor(R.color.CS)
-            val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
-            val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
-            val monthNames = resources.getStringArray(R.array.luna)
-            meanMap.forEach { year, array ->
-                bw.years.addView(TextView(this@Main).apply {
-                    setText(year.toString())
-                    textSize = cellH.toFloat() * 0.25f
-                    gravity = Gravity.CENTER_VERTICAL
-                }, LinearLayout.LayoutParams(-2, cellH))
-
-                val tr = LinearLayout(this@Main)
-                tr.orientation = LinearLayout.HORIZONTAL
-                tr.weightSum = maxMonths.toFloat()
-                array.forEachIndexed { month, score ->
-                    tr.addView(View(this@Main).apply {
-                        setBackgroundColor(
-                            when {
-                                score != null && score > 0f -> Color.valueOf(
-                                    cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
-                                    score / Vita.MAX_RANGE
-                                ).toArgb()
-                                score != null && score < 0f -> Color.valueOf(
-                                    cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
-                                    -score / Vita.MAX_RANGE
-                                ).toArgb()
-                                score != null -> Color.TRANSPARENT
-                                else -> nullCellColour
-                            }
-                        )
-                        tooltipText =
-                            "${monthNames[month]} $year${
-                                score?.groupDigits()?.let { "\n$it" } ?: ""
-                            }"
-                        setOnClickListener(object : Kit.DoubleClickListener() {
-                            override fun onDoubleClick() {
-                                m.calendar = calType.create().apply {
-                                    set(Calendar.YEAR, year)
-                                    set(Calendar.MONTH, month)
-                                    set(Calendar.DAY_OF_MONTH, 1)
-                                    resetHours()
-                                }
-                                onCalendarChanged()
-                                dialogue?.cancel()
-                                closeDrawer()
-                            }
-                        })
-                    }, LinearLayout.LayoutParams(0, cellH, 1f)
-                        .apply { setMargins(1, 1, 1, 1) })
-                }
-                bw.table.addView(tr, LinearLayout.LayoutParams(-1, cellH))
-            }
-            bw.sv.post {
-                bw.sv.smoothScrollTo(
-                    0, (bw.body.bottom + bw.sv.paddingBottom) - (bw.sv.scrollY + bw.sv.height)
-                )
-            }
-
-            setTitle(R.string.navStat)
-            setMessage(text)
-            setView(bw.root)
-            setPositiveButton(R.string.ok, null)
-            setNeutralButton(R.string.copy, null)
-            setOnDismissListener { m.showingStat = false }
-        }.show()
-        dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-            Kit.copyToClipboard(c, text, getString(R.string.fortunaStat))
-        }
-    }
-
-    /**
-     * Shows the status of the automatically backed-up file with 3 action buttons:<br />
-     * - Backup: manually backs up the data.<br />
-     * - Restore: overwrites the backup file on the main file.<br />
-     * - Export: exports the backup file.
-     */
-    private fun navBackup() {
-        if (m.showingBack && !firstResume) return
-        m.showingBack = true
-        MaterialAlertDialogBuilder(this).apply {
-            setTitle(R.string.backup)
-            setMessage(R.string.backupDesc)
-            setView(
-                BackupBinding.inflate(layoutInflater).apply {
-                    val f = Vita.Backup(c)
-                    updateStatus()
-                    for (butt in arrayOf(backup, export)) butt.background = RippleDrawable(
-                        ColorStateList.valueOf(
-                            color(com.google.android.material.R.attr.colorPrimaryVariant)
-                        ), null, MaterialShapeDrawable(
-                            ShapeAppearanceModel.Builder().apply {
-                                val dim = resources.getDimension(R.dimen.mediumCornerSize)
-                                var premise = butt == backup
-                                if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL)
-                                    premise = !premise
-                                if (premise) setBottomLeftCorner(CornerFamily.CUT, dim)
-                                else setBottomRightCorner(CornerFamily.CUT, dim)
-                            }.build()
-                        )
-                    )
-                    backup.setOnClickListener { Vita.backup(c); updateStatus() }
-                    restore.setOnClickListener {
-                        MaterialAlertDialogBuilder(this@Main).apply {
-                            setTitle(c.resources.getString(R.string.restore))
-                            setMessage(
-                                c.resources.getString(R.string.backupRestoreSure, lastBackup(f))
-                            )
-                            setPositiveButton(R.string.yes) { _, _ ->
-                                m.vita = Vita.loads(
-                                    FileInputStream(f).use { String(it.readBytes()) }
-                                ).also { vita -> vita.save(c) }
-                                updateGrid()
-                                Toast.makeText(c, R.string.done, Toast.LENGTH_LONG).show()
-                            }
-                            setNegativeButton(R.string.no, null)
-                        }.show()
-                    }
-                    export.setOnClickListener {
-                        if (!f.exists()) return@setOnClickListener
-                        sendFile(
-                            FileInputStream(f).use { it.readBytes() },
-                            R.string.backup_file
-                        )
-                    }
-                }.root
-            )
-            setCancelable(true)
-            setOnDismissListener { m.showingBack = false }
-        }.show()
-    }
-
-    /** @return the human-readable modification date of the backup. */
-    private fun lastBackup(f: Vita.Backup): String {
-        if (!f.exists()) return getString(R.string.never)
-        val d = calType.create().apply { timeInMillis = f.lastModified() }
-        return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
-            "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR])}:" +
-            "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
-    }
-
-    /** Updates the modification date of the backup file. */
-    private fun BackupBinding.updateStatus() {
-        val f = Vita.Backup(c)
-        status.text = getString(
-            R.string.backupStatus, lastBackup(f), Kit.showBytes(c, f.length())
-        )
-    }
-
-    /** Shows an AlertDialog containing the guide for this app. */
-    private fun help() {
-        if (m.showingHelp && !firstResume) return
-        m.showingHelp = true
-        MaterialAlertDialogBuilder(this).apply {
-            setTitle(R.string.navHelp)
-            setMessage(R.string.help)
-            setPositiveButton(R.string.ok, null)
-            setOnDismissListener { m.showingHelp = false }
-        }.show()
     }
 
     /** Proper implementation of Vibration in across different supported APIs. */
@@ -743,12 +485,8 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
         var changingVarScore: Int? = null
         var changingVarEmoji: String? = null
         var changingVarVerbum: String? = null
-        var searching: String? = null
         var lastSearchQuery: String? = null
         var searchResults = ArrayList<SearchAdapter.Result>()
-        var showingStat = false
-        var showingBack = false
-        var showingHelp = false
         var showingDate: Int? = null
         var compareDatesWith: Calendar? = null
         var changingConfigForLunaSpinner = false
@@ -758,6 +496,5 @@ class Main : ComponentActivity(), NavigationView.OnNavigationItemSelectedListene
 }
 
 /* TODO:
-  * Migrate to DialogFragment
   * Select multiple day cells in order to score them once; needs custom selection
   */
