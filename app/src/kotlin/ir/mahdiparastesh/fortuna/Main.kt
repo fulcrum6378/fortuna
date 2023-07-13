@@ -403,7 +403,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
-            b.lunaMean.text = "x̄: " + it.luna.mean(m.calendar.lunaMaxima()).groupDigits()
+            b.lunaMean.text = "x̄: " + it.luna.mean(m.calendar.lunaMaxima()).groupDigits(6)
             b.lunaSize.text = Kit.showBytes(this@Main, it.luna.size)
             b.lunaSize.isInvisible = it.luna.size == 0L
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true

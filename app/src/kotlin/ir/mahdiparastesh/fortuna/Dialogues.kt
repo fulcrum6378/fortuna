@@ -104,7 +104,7 @@ class StatisticsDialog : BaseDialogue() {
         val sum = scores.sum()
         text = getString(
             R.string.statText,
-            (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(),
+            (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(6),
             sum.groupDigits(), scores.size.groupDigits()
         )
 

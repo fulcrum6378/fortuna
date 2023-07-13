@@ -158,7 +158,7 @@ object Kit {
             for (ff in 0 until f!!.length) {
                 ret.append(f!![ff])
                 right++
-                if (fractionLimit > 0 && right >= fractionLimit) break
+                if (fractionLimit in 1..right) break
                 if (right % 3 == 0 && ff != 0) ret.append(",")
             }
         }
@@ -215,13 +215,13 @@ object Kit {
     fun showBytes(c: Context, length: Long): String {
         val units = c.resources.getStringArray(R.array.bytes)
         var unit = 0
-        var nominalSize = length
-        while ((nominalSize / 1024L) > 1) {
-            nominalSize /= 1024L
+        var nominalSize = length.toDouble()
+        while ((nominalSize / 1024.0) > 1.0) {
+            nominalSize /= 1024.0
             unit++
             if (unit == units.size - 1) break
         }
-        return units[unit].format(nominalSize)
+        return units[unit].format(nominalSize.toInt())
     }
 
 
