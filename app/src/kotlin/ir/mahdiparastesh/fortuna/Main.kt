@@ -24,6 +24,7 @@ import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
@@ -393,6 +394,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     /** Refreshes the {@link Grid} and adjusts its size. */
+    @SuppressLint("SetTextI18n")
     fun updateGrid() {
         if (b.grid.adapter == null) b.grid.adapter = Grid(this)
         else {
@@ -401,7 +403,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
-            b.lunaMean.text = it.luna.mean(m.calendar.lunaMaxima()).groupDigits()
+            b.lunaMean.text = "x̄: " + it.luna.mean(m.calendar.lunaMaxima()).groupDigits()
+            b.lunaSize.text = Kit.showBytes(this@Main, it.luna.size)
+            b.lunaSize.isInvisible = it.luna.size == 0L
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
             b.emoji.text = it.luna.emoji
             b.emoji.isVisible = it.luna.emoji?.isNotBlank() == true
