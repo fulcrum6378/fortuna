@@ -100,7 +100,8 @@ class Vita : HashMap<String, Luna>() {
                         cal,
                         s.getOrNull(1)?.toFloat(),
                         sn.getOrNull(1)?.ifBlank { null },
-                        sn.getOrNull(2)?.loadVitaText()
+                        sn.getOrNull(2)?.loadVitaText(),
+                        ln.length + 1L
                     )
                     dies = 0
                 } else {
@@ -113,6 +114,7 @@ class Vita : HashMap<String, Luna>() {
                     vita[key]!!.diebus[dies] = (s.getOrNull(1) ?: s[0]).toFloat()
                     vita[key]!!.emojis[dies] = sn.getOrNull(1)?.ifBlank { null }
                     vita[key]!!.verba[dies] = sn.getOrNull(2)?.loadVitaText()
+                    vita[key]!!.size += ln.length + 1L
                     dies++
                 }
             } catch (e: Exception) {
@@ -201,6 +203,7 @@ class Luna(
     var default: Float? = null,
     var emoji: String? = null,
     var verbum: String? = null,
+    var size: Long = 0L,
 ) {
     val diebus: Array<Float?>
     val emojis: Array<String?>

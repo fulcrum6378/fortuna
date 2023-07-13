@@ -131,8 +131,10 @@ object Kit {
     /**
      * Groups the digits of a number triply (both integral and fractional ones).
      * e.g. 6401 -> 6,401 or 1234.5678 -> 1,234.567,8
+     *
+     * @param fractionLimit cut the fraction numbers since this position
      */
-    fun Number.groupDigits(): String {
+    fun Number.groupDigits(fractionLimit: Int = 0): String {
         val i: String
         var f: String? = null
         toString().split(".").also {
@@ -156,6 +158,7 @@ object Kit {
             for (ff in 0 until f!!.length) {
                 ret.append(f!![ff])
                 right++
+                if (fractionLimit > 0 && right >= fractionLimit) break
                 if (right % 3 == 0 && ff != 0) ret.append(",")
             }
         }
