@@ -9,7 +9,7 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 34
-        versionCode = 6
+        versionCode = 7
         versionName = "10.8.0"
     }
 
