@@ -503,5 +503,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 }
 
 /* TODO:
+  * "found nothing" message in Search
   * Select multiple day cells in order to score them once; needs custom selection
   */
