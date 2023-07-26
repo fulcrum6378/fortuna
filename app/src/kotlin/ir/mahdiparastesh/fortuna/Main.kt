@@ -209,6 +209,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
         // Nyx
         if (Kit.reqPermissions.isNotEmpty()) reqPermLauncher.launch(Kit.reqPermissions.first())
+        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
         // Miscellaneous
@@ -503,6 +504,5 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 }
 
 /* TODO:
-  * "found nothing" message in Search
   * Select multiple day cells in order to score them once; needs custom selection
   */
