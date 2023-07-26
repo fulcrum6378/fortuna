@@ -7,6 +7,7 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
@@ -40,8 +41,12 @@ class SearchAdapter(private val c: Main) :
         if (q == c.m.lastSearchQuery && !inclusivityChanged) return
         c.m.lastSearchQuery = q.toString()
         c.m.searchResults.clear()
-        if (q != null && c.m.vita != null)
-            Search(q, c.m.vita!!.clone() as Vita) { notifyDataSetChanged() }
+        if (!q.isNullOrBlank() && c.m.vita != null)
+            Search(q.trim(), c.m.vita!!.clone() as Vita) {
+                notifyDataSetChanged()
+                if (c.m.searchResults.isEmpty())
+                    Toast.makeText(c, R.string.foundNothing, Toast.LENGTH_SHORT).show()
+            }
         else notifyDataSetChanged()
     }
 
