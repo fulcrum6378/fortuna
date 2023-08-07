@@ -479,14 +479,19 @@ class Grid(private val c: Main) : ListAdapter {
 
     private fun dateComparison(dit: Calendar, dat: Calendar): String {
         val dif = dat.compareByDays(dit)
+        val basedOnToday = dat == c.todayCalendar
         val sb = StringBuilder()
         sb.append(" => ").append(
             when {
-                dif == -1 -> c.getString(R.string.yesterday)
-                dif == 1 -> c.getString(R.string.tomorrow)
-                dif < 0 -> enumerate(R.string.difAgo, dif.absoluteValue)
-                dif > 0 -> enumerate(R.string.difLater, dif)
-                else -> c.getString(R.string.today)
+                basedOnToday && dif == -1 -> c.getString(R.string.yesterday)
+                basedOnToday && dif == 1 -> c.getString(R.string.tomorrow)
+                dif < 0 -> enumerate(
+                    if (basedOnToday) R.string.difAgo else R.string.difBefore, dif.absoluteValue
+                )
+                dif > 0 -> enumerate(
+                    if (basedOnToday) R.string.difLater else R.string.difAfter, dif
+                )
+                else -> c.getString(if (basedOnToday) R.string.today else R.string.sameDay)
             }
         )
         if (abs(dif) > dat.getLeastMaximum(Calendar.DAY_OF_MONTH)) {
