@@ -96,13 +96,16 @@
         \n* The \"Statistics\" section describes the status of your entire life, plus a table of
         tiny cells, each describing a month of your life;
         long click on the cells to see brief details, double click on them to jump to that month.
+        It does not take values of the days in the future into the account. (only today and the past)
         \n
         \nNote: this app does not believe in weeks!!
     </string>
 
     <!-- Nyx -->
     <string name="ntfReminderTitle">Daily Reminder</string>
-    <string name="ntfReminderDesc">Notifies you when you everyday to record your well-being status.</string>
+    <string name="ntfReminderDesc">
+        Notifies you when you everyday to record your well-being status.
+    </string>
     <string name="ntfReminder">How was your day?</string>
 
     <!-- TodayWidget -->

@@ -33,7 +33,6 @@ import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.Kit.resetHours
 import ir.mahdiparastesh.fortuna.Kit.toValue
-import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
@@ -94,9 +93,11 @@ class StatisticsDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()
-        c.m.vita?.forEach { key, luna ->
+        if (c.m.vita != null) for ((key, luna) in c.m.vita!!) {
             val lunaScores = arrayListOf<Float>()
-            for (v in 0 until key.toCalendar(Kit.calType).lunaMaxima())
+            val cal = key.toCalendar(Kit.calType).resetHours()
+            val maxima = c.maximaForStats(cal, key) ?: break
+            for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
             scores.addAll(lunaScores)
             keyMeanMap[key] = lunaScores.sum() / lunaScores.size.toFloat()

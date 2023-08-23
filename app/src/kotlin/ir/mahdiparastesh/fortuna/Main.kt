@@ -404,7 +404,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
-            b.lunaMean.text = "x̄: " + it.luna.mean(m.calendar.lunaMaxima()).groupDigits(6)
+            b.lunaMean.text = "x̄: " + it.luna.mean(
+                maximaForStats(m.calendar, m.luna!!) ?: 0
+            ).groupDigits(6)
             b.lunaSize.text = Kit.showBytes(this@Main, it.luna.size)
             b.lunaSize.isInvisible = it.luna.size == 0L
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
@@ -448,6 +450,18 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
+    }
+
+    /**
+     * Calculates the maximum date for getting a mean value for statistics, ignores the future.
+     * @return null if the given month is the future
+     */
+    fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? {
+        if (cal.timeInMillis >= todayCalendar.timeInMillis)
+            return if (key == todayLuna)
+                todayCalendar[Calendar.DAY_OF_MONTH] // + 1
+            else null
+        return cal.lunaMaxima()
     }
 
     /** Proper implementation of Vibration in across different supported APIs. */
