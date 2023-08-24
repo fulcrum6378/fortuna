@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="IconLocation">
+        <ignore path="C:/Users/fulcr/Projects/Fortuna/app/src/res_iranian/drawable/today_widget_preview.png" />
+    </issue>
+</lint>

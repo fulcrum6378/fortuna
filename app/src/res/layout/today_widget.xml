@@ -62,6 +62,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="?attr/colorOnPrimary"
-            android:textSize="11sp" />
+            android:textSize="11sp"
+            tools:ignore="InconsistentLayout" />
     </LinearLayout>
 </RelativeLayout>
