@@ -10,7 +10,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 7
-        versionName = "10.9.5"
+        versionName = "11.0.0"
     }
 
     sourceSets.getByName("main") {
@@ -27,9 +27,9 @@ android {
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19; targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_20; targetCompatibility = JavaVersion.VERSION_20
     }
-    kotlinOptions { jvmTarget = "19" }
+    kotlinOptions { jvmTarget = "20" }
     buildFeatures { viewBinding = true }
 
     signingConfigs {

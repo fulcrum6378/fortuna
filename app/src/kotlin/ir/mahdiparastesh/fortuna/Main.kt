@@ -477,8 +477,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.root.closeDrawer(GravityCompat.START, true)
     }
 
-    @Deprecated("Deprecated in Java")
-    @Suppress("DEPRECATION")
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
         if (b.root.isDrawerOpen(GravityCompat.START)) {
             closeDrawer()
