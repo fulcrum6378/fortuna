@@ -456,13 +456,12 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
      * Calculates the maximum date for getting a mean value for statistics, ignores the future.
      * @return null if the given month is the future
      */
-    fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? {
-        if (cal.timeInMillis >= todayCalendar.timeInMillis)
-            return if (key == todayLuna)
-                todayCalendar[Calendar.DAY_OF_MONTH] // + 1
-            else null
-        return cal.lunaMaxima()
-    }
+    fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? =
+        if (key == todayLuna) todayCalendar[Calendar.DAY_OF_MONTH] // + 1
+        else {
+            if (cal.timeInMillis >= todayCalendar.timeInMillis) null
+            else cal.lunaMaxima()
+        }
 
     /** Proper implementation of Vibration in across different supported APIs. */
     @Suppress("DEPRECATION")
