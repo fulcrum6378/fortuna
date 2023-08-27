@@ -159,7 +159,7 @@ object Kit {
                 ret.append(f!![ff])
                 right++
                 if (fractionLimit in 1..right) break
-                if (right % 3 == 0 && ff != 0) ret.append(",")
+                if (right % 3 == 0 && ff != 0 && ff < f!!.length - 1) ret.append(",")
             }
         }
         return "$ret"
