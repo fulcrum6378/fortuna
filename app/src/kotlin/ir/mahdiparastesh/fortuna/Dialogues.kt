@@ -96,7 +96,7 @@ class StatisticsDialog : BaseDialogue() {
         if (c.m.vita != null) for ((key, luna) in c.m.vita!!) {
             val lunaScores = arrayListOf<Float>()
             val cal = key.toCalendar(Kit.calType).resetHours()
-            val maxima = c.maximaForStats(cal, key) ?: break
+            val maxima = c.maximaForStats(cal, key) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
             scores.addAll(lunaScores)
@@ -110,7 +110,7 @@ class StatisticsDialog : BaseDialogue() {
         )
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
-            val maxMonths = Kit.calType.create().getMaximum(Calendar.MONTH) + 1
+            val maxMonths = c.m.calendar.getMaximum(Calendar.MONTH) + 1
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
                 val spl = key.split(".")
