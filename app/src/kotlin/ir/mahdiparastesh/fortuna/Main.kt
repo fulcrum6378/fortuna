@@ -457,11 +457,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
      * @return null if the given month is the future
      */
     fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? =
-        if (key == todayLuna) todayCalendar[Calendar.DAY_OF_MONTH] // + 1
-        else {
-            if (cal.timeInMillis >= todayCalendar.timeInMillis) null
-            else cal.lunaMaxima()
-        }
+        if (key == todayLuna) todayCalendar[Calendar.DAY_OF_MONTH] // this month
+        else if (cal.timeInMillis < todayCalendar.timeInMillis) cal.lunaMaxima() // past months
+        else null // future months
 
     /** Proper implementation of Vibration in across different supported APIs. */
     @Suppress("DEPRECATION")
