@@ -184,6 +184,7 @@ class Vita : HashMap<String, Luna>() {
         }
 
         fun Luna.mean(maxDays: Int): Float {
+            if (maxDays == 0) return 0f
             val scores = arrayListOf<Float>()
             for (v in 0 until maxDays) (this[v] ?: this.default)?.let { scores.add(it) }
             return if (scores.isEmpty()) 0f else scores.sum() / scores.size

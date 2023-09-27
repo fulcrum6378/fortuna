@@ -64,6 +64,7 @@ class Grid(private val c: Main) : ListAdapter {
     var sexbook: Sexbook.Data? = null
     private var numType: String? = null
     private var numeral: Numeral? = null
+    var maximumStats: Int? = null
 
     init {
         onRefresh()
@@ -93,7 +94,8 @@ class Grid(private val c: Main) : ListAdapter {
     @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
         ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
-            val score: Float? = luna[i] ?: luna.default
+            val score: Float? =
+                if (i <= (maximumStats ?: 0)) luna[i] ?: luna.default else null
             val isEstimated = luna[i] == null && luna.default != null
 
             dies.text = numeral.write(i + 1)
@@ -153,6 +155,7 @@ class Grid(private val c: Main) : ListAdapter {
         numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
             .let { if (it == Kit.defNumType) null else it }
         numeral = Numerals.build(numType)
+        maximumStats = c.maximaForStats(c.m.calendar, c.m.luna!!)
     }
 
     /**
