@@ -95,8 +95,8 @@ class Grid(private val c: Main) : ListAdapter {
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
         ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? =
-                if (i <= (maximumStats ?: 0)) luna[i] ?: luna.default else null
-            val isEstimated = luna[i] == null && luna.default != null
+                if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
+            val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
 
             dies.text = numeral.write(i + 1)
             val enlarge =
