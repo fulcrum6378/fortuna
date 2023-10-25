@@ -119,7 +119,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
                 isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
-                    (nt.jClass?.simpleName ?: Kit.defNumType)
+                        (nt.jClass?.simpleName ?: Kit.defNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -413,8 +413,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         b.grid.layoutParams.apply {
             height = ((resources.getDimension(R.dimen.gridItemHeight) *
-                ceil(m.calendar.lunaMaxima().toFloat() / 5f)) +
-                resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
+                    ceil(m.calendar.lunaMaxima().toFloat() / 5f)) +
+                    resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
         }
     }
 
@@ -422,7 +422,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
             item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
-                (Numerals.all[i].jClass?.simpleName ?: Kit.defNumType)
+                    (Numerals.all[i].jClass?.simpleName ?: Kit.defNumType)
         }
     }
 
@@ -477,7 +477,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         if (b.root.isDrawerOpen(GravityCompat.START)) {
             closeDrawer()
             return; }
-        super.onBackPressed()
+        @Suppress("DEPRECATION") super.onBackPressed()
     }
 
     override fun onStop() {
@@ -513,4 +513,5 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
 /* TODO:
   * Select multiple day cells in order to score them once; needs custom selection
+  * Separate Vita file by year or month and merge them during export and backup
   */

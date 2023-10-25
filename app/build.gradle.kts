@@ -9,8 +9,8 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 34
-        versionCode = 9
-        versionName = "11.0.6"
+        versionCode = 10
+        versionName = "11.1.0"
     }
 
     sourceSets.getByName("main") {
@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.7.2")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("com.google.android.material:material:1.10.0")
 }

@@ -9,7 +9,6 @@ import android.text.style.StyleSpan
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Kit
@@ -51,15 +50,15 @@ class SearchAdapter(private val c: Main) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-        Kit.AnyViewHolder<SearchItemBinding> =
+            Kit.AnyViewHolder<SearchItemBinding> =
         Kit.AnyViewHolder(SearchItemBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: Kit.AnyViewHolder<SearchItemBinding>, i: Int) {
         h.b.date.text = c.m.searchResults[i].luna + "." + (
-            if (c.m.searchResults[i].dies >= 0) Kit.z(c.m.searchResults[i].dies + 1)
-            else c.getString(R.string.defValue)
-            )
+                if (c.m.searchResults[i].dies >= 0) Kit.z(c.m.searchResults[i].dies + 1)
+                else c.getString(R.string.defValue)
+                )
         h.b.sample.text = c.m.searchResults[i].sample
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
@@ -69,10 +68,6 @@ class SearchAdapter(private val c: Main) :
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
             if (dies >= 0) (c.b.grid.adapter as? Grid)
                 ?.changeVar(dies, c.m.calendar.apply { this[Calendar.DAY_OF_MONTH] = dies + 1 })
-            //dialogue.cancel()
-            (c.supportFragmentManager.findFragmentByTag(FRAGMENT_TAG) as? DialogFragment)
-                ?.dismiss()
-            c.closeDrawer()
         }
     }
 
