@@ -199,7 +199,7 @@ class Grid(private val c: Main) : ListAdapter {
             minValue = 0
             value = c.m.changingVarScore
                 ?: (if (i != -1) luna[i]?.toVariabilis() else null)
-                    ?: luna.default?.toVariabilis() ?: 6
+                        ?: luna.default?.toVariabilis() ?: 6
             wrapSelectorWheel = false
             setFormatter { it.toScore().showScore() }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -250,6 +250,8 @@ class Grid(private val c: Main) : ListAdapter {
                     ret = true
                 }; ret
             }
+            // https://stackoverflow.com/a/54118763/10728785   : equal to "clipToPadding"!
+            setShadowLayer(extendedPaddingBottom.toFloat(), 0f, 0f, Color.TRANSPARENT)
         }
         cvTvSexbook = bv.sexbook
         if (i != -1) {
