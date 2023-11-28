@@ -19,6 +19,7 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.ActionMenuView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
@@ -208,7 +209,10 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         // Nyx
-        if (Kit.reqPermissions.isNotEmpty()) reqPermLauncher.launch(Kit.reqPermissions.first())
+        Kit.reqPermissions.forEach {
+            if (ActivityCompat.checkSelfPermission(c, it) != PackageManager.PERMISSION_GRANTED)
+                reqPermLauncher.launch(it)
+        }
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
