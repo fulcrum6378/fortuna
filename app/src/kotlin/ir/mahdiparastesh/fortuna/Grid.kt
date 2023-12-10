@@ -382,11 +382,11 @@ class Grid(private val c: Main) : ListAdapter {
                     else -> continue
                 }
             )
-            if (x.key.isNotBlank()) sb.append(" with ${x.key}")
+            if (!x.key.isNullOrBlank()) sb.append(" with ${x.key}")
             if (x.accurate) sb.append(" at ${z(x.hour)}:${z(x.minute)}:${z(x.second)}")
             else sb.append(" at ~${z(x.hour)}:${z(x.minute)}")
             if (x.place?.isNotBlank() == true) sb.append(" in ${x.place}")
-            if (x.desc.isBlank()) sb.append(".\n")
+            if (x.desc.isNullOrBlank()) sb.append(".\n")
             else sb.append(": ${x.desc}\n")
         }
         sb.deleteCharAt(sb.length - 1)

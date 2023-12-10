@@ -102,7 +102,7 @@ class Sexbook(private val c: Context) : Thread() {
     data class Report(
         val id: Long, val year: Short, val month: Short, val day: Short, // never compare bytes!
         val hour: Byte, val minute: Byte, val second: Byte,
-        val key: String, val type: Byte, val desc: String, val accurate: Boolean, val place: String?
+        val key: String?, val type: Byte, val desc: String?, val accurate: Boolean, val place: String?
     )
 
     /**
