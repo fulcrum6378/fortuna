@@ -10,7 +10,12 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.StringReader
 
-/** Representation of the VITA file type as {@link HashMap HashMap<String, Luna>} */
+/**
+ * Representation of the VITA file type as {@link HashMap HashMap<String, Luna>}
+ *
+ * We need the whole Vita loaded on startup for search and statistics;
+ * so we put the whole data in a single file.
+ */
 class Vita : HashMap<String, Luna>() {
 
     fun find(key: String): Luna? = getOrElse(key) { null }
