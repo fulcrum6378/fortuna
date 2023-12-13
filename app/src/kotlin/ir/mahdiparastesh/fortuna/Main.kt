@@ -517,5 +517,4 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
 /* TODO:
   * Select multiple day cells in order to score them once; needs custom selection
-  * Separate Vita file by year or month and merge them during export and backup
   */
