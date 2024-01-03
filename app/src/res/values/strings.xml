@@ -22,8 +22,8 @@
     <string name="difAgo">%s day(s) ago</string>
     <string name="difLater">%s day(s) later</string>
     <string name="sameDay">Same day</string>
-    <string name="difBefore">%s day(s) before</string>
-    <string name="difAfter">%s day(s) after</string>
+    <string name="difBefore">%s day(s) before that time</string>
+    <string name="difAfter">%s day(s) after that time</string>
     <string name="difYears">%s year(s)</string>
     <string name="difMonths">%s month(s)</string>
     <string name="difDays">%s day(s)</string>
