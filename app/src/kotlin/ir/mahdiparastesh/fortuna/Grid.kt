@@ -440,7 +440,7 @@ class Grid(private val c: Main) : ListAdapter {
                             val dat = calType.create().resetHours().apply {
                                 this[Calendar.YEAR] = y.text.toString().toInt()
                                 this[Calendar.MONTH] = (m.text.toString().toInt() - 1).also {
-                                    if (it > getActualMaximum(Calendar.MONTH) || it <= 0)
+                                    if (it > getActualMaximum(Calendar.MONTH) || it < 0)
                                         throw IllegalArgumentException()
                                 }
                                 this[Calendar.DAY_OF_MONTH] = d.text.toString().toInt().also {
