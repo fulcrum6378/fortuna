@@ -30,7 +30,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_20; targetCompatibility = JavaVersion.VERSION_20
     }
     kotlinOptions { jvmTarget = "20" }
-    buildFeatures { viewBinding = true }
+    buildFeatures { buildConfig = true; viewBinding = true }
 
     signingConfigs {
         create("release") {
@@ -53,7 +53,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.8.1")
+    implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.core:core-ktx:1.12.0")
+    //noinspection GradleDependency
     implementation("com.google.android.material:material:1.10.0")
 }
