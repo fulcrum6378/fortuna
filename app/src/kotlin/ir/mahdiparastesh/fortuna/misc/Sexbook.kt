@@ -55,7 +55,7 @@ class Sexbook(private val c: Context) : Thread() {
         c.contentResolver.query(
             Uri.parse("content://${Kit.SEXBOOK}/crush"),
             arrayOf("key", "first_name", "middle_name", "last_name", "birth"),
-            "birth IS NOT NULL", null, null
+            "birth IS NOT NULL AND (status & 128) LIKE 0", null, null
         ).iterate {
             val birth = getString(4).split(".")
             var y = birth[0].toInt()
