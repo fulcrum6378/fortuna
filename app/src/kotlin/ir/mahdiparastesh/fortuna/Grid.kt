@@ -165,10 +165,13 @@ class Grid(private val c: Main) : ListAdapter {
     fun cacheSexbook() = c.m.sexbook?.let {
         val spl = c.m.luna!!.split(".")
         val yr = spl[0].toShort()
-        val mo = spl[1].toShort()
+        val mo = (spl[1].toInt() - 1).toShort()
         Sexbook.Data(
             it.reports.filter { x -> x.year == yr && x.month == mo },
-            it.crushes.filter { x -> x.birthYear <= yr && x.birthMonth == mo }
+            it.crushes.filter { x ->
+                (x.birthYear != null && x.birthYear <= yr && x.birthMonth == mo) ||
+                        (x.firstMetYear == yr && x.firstMetMonth == mo)
+            }
         )
     }
 
@@ -255,7 +258,7 @@ class Grid(private val c: Main) : ListAdapter {
         }
         cvTvSexbook = bv.sexbook
         if (i != -1) {
-            bv.sexbook.appendCrushBirthdays(i, cal)
+            bv.sexbook.appendCrushDates(i, cal)
             bv.sexbook.appendSexReports(i)
         }
         dialogue = MaterialAlertDialogBuilder(c).apply {
@@ -327,21 +330,30 @@ class Grid(private val c: Main) : ListAdapter {
     private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
     /**
-     * Explains the birthdays of the crushes imported from the Sexbook app and puts them
-     * inside the TextView, and makes the TextView visible.
+     * Elaborates birthdays and other special dates related to crushes imported from the Sexbook app
+     * and puts them inside the specified TextView, and makes the TextView visible.
      *
      * @param i day
      */
-    fun TextView.appendCrushBirthdays(i: Int, cal: Calendar) {
+    fun TextView.appendCrushDates(i: Int, cal: Calendar) {
         if (i == -1) return
-        val birth = sexbook?.crushes?.filter { it.birthDay == (i + 1).toShort() }
-        if (birth.isNullOrEmpty()) return
+        val yr = cal[Calendar.YEAR].toShort()
+        val mo = cal[Calendar.MONTH].toShort()
+        val da = (i + 1).toShort()
+        val birth = sexbook?.crushes?.filter {
+            it.birthYear != null && it.birthYear <= yr && it.birthMonth == mo && it.birthDay == da
+        }
+        val firstMet = sexbook?.crushes?.filter {
+            it.firstMetYear == yr && it.firstMetMonth == mo && it.firstMetDay == da
+        }
+        if (birth.isNullOrEmpty() && firstMet.isNullOrEmpty()) return
 
         val sb = StringBuilder()
-        for (b in birth) {
-            val age = cal[Calendar.YEAR] - b.birthYear
+        if (!birth.isNullOrEmpty()) for (b in birth) {
+            val age = yr - b.birthYear!!
             if (age > 0) {
-                sb.append("Happy ${b.theirs()} ")
+                if (b.active) sb.append("Happy ")
+                sb.append("${b.theirs()} ")
                 val sAge = age.toString()
                 sb.append(sAge).append(
                     if (sAge.first() != '1' || sAge.length != 2) when (sAge.last()) {
@@ -353,14 +365,17 @@ class Grid(private val c: Main) : ListAdapter {
                 ).append(" birthday!\n")
             } else sb.append(b.visName().uppercase(Locale.getDefault())).append(" was born!\n")
         }
+        if (!firstMet.isNullOrEmpty()) for (fm in firstMet)
+            sb.append("Met ${fm.visName()} for the first time!\n")
+
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
         isVisible = true
     }
 
     /**
-     * Explains the sex records imported from the Sexbook app and puts them inside the TextView,
-     * and makes the TextView visible and clickable.
+     * Elaborates sex records imported from the Sexbook app and puts them inside the specified
+     * TextView, and makes the TextView visible and clickable.
      *
      * @param i day
      */
