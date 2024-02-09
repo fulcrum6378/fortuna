@@ -53,25 +53,55 @@ class Sexbook(private val c: Context) : Thread() {
 
         // Also load the crushes
         c.contentResolver.query(
-            Uri.parse("content://${Kit.SEXBOOK}/crush"),
-            arrayOf("key", "first_name", "middle_name", "last_name", "birth"),
-            "birth IS NOT NULL AND (status & 128) LIKE 0", null, null
+            Uri.parse("content://${Kit.SEXBOOK}/crush"), arrayOf(
+                "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
+            ), "(birth IS NOT NULL OR first_met IS NOT NULL) " +
+                    "AND ((status & 128) LIKE 0 OR (status & 16) LIKE 1)",
+            null, null
         ).iterate {
-            val birth = getString(4).split(".")
-            var y = birth[0].toInt()
-            var m = birth[1].toInt()
-            var d = birth[2].toInt()
-            if (Kit.calType != GregorianCalendar::class.java) {
-                val cal = Kit.calType.create()
-                cal.timeInMillis = GregorianCalendar(y, m, d).timeInMillis
-                y = cal[Calendar.YEAR]
-                m = cal[Calendar.MONTH]
-                d = cal[Calendar.DAY_OF_MONTH]
+            // Birthday
+            var yb: Int? = null
+            var mb: Int? = null
+            var db: Int? = null
+            getString(5)?.also { birthDate ->
+                val birth = birthDate.split(".")
+                yb = birth[0].toInt()
+                mb = birth[1].toInt() - 1
+                db = birth[2].toInt()
+                if (Kit.calType != GregorianCalendar::class.java) {
+                    val cal = Kit.calType.create()
+                    cal.timeInMillis = GregorianCalendar(yb!!, mb!!, db!!).timeInMillis
+                    yb = cal[Calendar.YEAR]
+                    mb = cal[Calendar.MONTH]
+                    db = cal[Calendar.DAY_OF_MONTH]
+                }
             }
+
+            // First Met Date
+            var yf: Int? = null
+            var mf: Int? = null
+            var df: Int? = null
+            getString(6)?.also { firstMetDate ->
+                val firstMet = firstMetDate.split(".")
+                yf = firstMet[0].toInt()
+                mf = firstMet[1].toInt() - 1
+                df = firstMet[2].toInt()
+                if (Kit.calType != GregorianCalendar::class.java) {
+                    val cal = Kit.calType.create()
+                    cal.timeInMillis = GregorianCalendar(yf!!, mf!!, df!!).timeInMillis
+                    yf = cal[Calendar.YEAR]
+                    mf = cal[Calendar.MONTH]
+                    df = cal[Calendar.DAY_OF_MONTH]
+                }
+            }
+
             crushes.add(
                 Crush(
-                    getString(0), getString(1), getString(2), getString(3),
-                    y.toShort(), m.toShort(), d.toShort()
+                    getString(0),
+                    getString(1), getString(2), getString(3),
+                    yb?.toShort(), mb?.toShort(), db?.toShort(),
+                    (getInt(4) and 128) == 0,
+                    yf?.toShort(), mf?.toShort(), df?.toShort()
                 )
             )
         }
@@ -100,26 +130,40 @@ class Sexbook(private val c: Context) : Thread() {
      * @see Grid#appendSexReports
      */
     data class Report(
-        val id: Long, val year: Short, val month: Short, val day: Short, // never compare bytes!
-        val hour: Byte, val minute: Byte, val second: Byte,
-        val key: String?, val type: Byte, val desc: String?, val accurate: Boolean, val place: String?
+        val id: Long,
+        val year: Short,
+        val month: Short,
+        val day: Short, // never compare bytes!
+        val hour: Byte,
+        val minute: Byte,
+        val second: Byte,
+        val key: String?,
+        val type: Byte,
+        val desc: String?,
+        val accurate: Boolean,
+        val place: String?
     )
 
     /**
      * Data class containing the information about a crush's birthday from Sexbook.
      *
-     * @param fName First Name
-     * @param mName Middle Name
-     * @param lName Last Name
-     * @param birthYear in this calendar (Short)
-     * @param birthMonth in this calendar (Short)
-     * @param birthDay in this calendar (Short)
+     * @param fName first name
+     * @param mName middle name
+     * @param lName last name
+     * @param birthYear in this calendar (Short?)
+     * @param birthMonth ... (0-based)
+     * @param birthDay ...
+     * @param active whether or not the crush is specified as active
+     * @param firstMetYear first encounter with this person (Short?)
+     * @param firstMetMonth ... (0-based)
+     * @param firstMetYear ...
      *
-     * @see Grid#appendCrushBirthdays
+     * @see Grid#appendCrushDates
      */
     data class Crush(
         val key: String, val fName: String?, val mName: String?, val lName: String?,
-        val birthYear: Short, val birthMonth: Short, val birthDay: Short
+        val birthYear: Short?, val birthMonth: Short?, val birthDay: Short?, val active: Boolean,
+        val firstMetYear: Short?, val firstMetMonth: Short?, val firstMetDay: Short?,
     ) {
         fun visName(): String =
             if (fName.isNullOrEmpty() || lName.isNullOrEmpty()) when {

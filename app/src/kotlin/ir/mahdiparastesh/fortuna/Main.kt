@@ -199,7 +199,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         (b.grid.adapter as? Grid)?.apply {
                             sexbook = cacheSexbook()
                             m.changingVar?.also { i ->
-                                cvTvSexbook?.appendCrushBirthdays(i, dailyCalendar(i))
+                                cvTvSexbook?.appendCrushDates(i, dailyCalendar(i))
                                 cvTvSexbook?.appendSexReports(i)
                             }
                         }
