@@ -381,7 +381,8 @@ class Grid(private val c: Main) : ListAdapter {
      */
     fun TextView.appendSexReports(i: Int) {
         if (i == -1) return
-        val sex = sexbook?.reports?.filter { it.day == (i + 1).toShort() }
+        val da = (i + 1).toShort()
+        val sex = sexbook?.reports?.filter { it.day == da }
         if (sex.isNullOrEmpty()) return
 
         val sb = StringBuilder()

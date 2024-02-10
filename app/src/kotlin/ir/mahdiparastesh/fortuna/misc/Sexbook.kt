@@ -41,7 +41,7 @@ class Sexbook(private val c: Context) : Thread() {
             reports.add(
                 Report(
                     getLong(6),
-                    cal[Calendar.YEAR].toShort(), (cal[Calendar.MONTH] + 1).toShort(),
+                    cal[Calendar.YEAR].toShort(), cal[Calendar.MONTH].toShort(),
                     cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR_OF_DAY].toByte(),
                     cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
                     getString(1), getShort(2).toByte(),
@@ -116,8 +116,8 @@ class Sexbook(private val c: Context) : Thread() {
      *
      * @param id the unique id (Long)
      * @param year in this calendar (Short)
-     * @param month in this calendar (Short)
-     * @param day in this calendar (Short)
+     * @param month ... (0-based)
+     * @param day ...
      * @param hour (Byte)
      * @param minute (Byte)
      * @param second (Byte)
