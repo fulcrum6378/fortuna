@@ -26,6 +26,8 @@
         <item name="colorSecondaryVariant">#44F44336</item>
         <item name="colorOnSecondary">?attr/colorOnPrimary</item>
         <item name="colorSecondaryContainer">#33000000</item><!--nav checked item-->
+        <item name="colorSurfaceContainer">#F0F5EF</item><!--PopupMenu-->
+        <item name="colorSurfaceContainerHigh">#ECF1EB</item><!--Dialog-->
         <item name="android:textColorHighlight">#70999999</item>
     </style>
 

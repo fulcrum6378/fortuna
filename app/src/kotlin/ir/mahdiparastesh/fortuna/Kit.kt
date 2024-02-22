@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.misc.HumanistIranianCalendar
-import java.util.*
+import java.util.Locale
 
 /** Static functions and utilities used everywhere. */
 object Kit {

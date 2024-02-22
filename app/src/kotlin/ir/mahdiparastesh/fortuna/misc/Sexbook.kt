@@ -26,10 +26,15 @@ class Sexbook(private val c: Context) : Thread() {
         val crushes = arrayListOf<Crush>()
 
         // Get list of Places
-        c.contentResolver.query(
-            Uri.parse("content://${Kit.SEXBOOK}/place"),
-            null, null, null, null
-        ).iterate { places[getLong(0)] = getString(1) }
+        try {
+            c.contentResolver.query(
+                Uri.parse("content://${Kit.SEXBOOK}/place"),
+                null, null, null, null
+            ).iterate { places[getLong(0)] = getString(1) }
+        } catch (_: SecurityException) {
+            interrupt()
+            return
+        }
 
         // Now get the sex reports
         c.contentResolver.query(

@@ -14,10 +14,10 @@ class Variabilis(
 ) : NumberPicker(context, attrs, defStyleAttr, defStyleRes) {
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) :
-        this(context, attrs, android.R.attr.numberPickerStyle)
+            this(context, attrs, android.R.attr.numberPickerStyle)
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
-        this(context, attrs, defStyleAttr, 0)
+            this(context, attrs, defStyleAttr, 0)
 
     override fun addView(child: View?, params: ViewGroup.LayoutParams?) {
         super.addView(child, params)

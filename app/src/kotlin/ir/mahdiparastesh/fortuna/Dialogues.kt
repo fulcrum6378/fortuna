@@ -262,8 +262,8 @@ class BackupDialog : BaseDialogue() {
         if (!f.exists()) return getString(R.string.never)
         val d = Kit.calType.create().apply { timeInMillis = f.lastModified() }
         return "${Kit.z(d[Calendar.YEAR], 4)}.${Kit.z(d[Calendar.MONTH] + 1)}." +
-            "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
-            "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
+                "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
+                "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
     }
 
     /** Updates the modification date of the backup file. */
