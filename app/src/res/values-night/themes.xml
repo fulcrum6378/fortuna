@@ -9,6 +9,8 @@
         <item name="colorSecondaryVariant">#44F44336</item>
         <item name="colorOnSecondary">?android:attr/textColor</item>
         <item name="colorSecondaryContainer">#33FFFFFF</item><!--nav checked item-->
+        <item name="colorSurfaceContainer">#1A1E1D</item><!--PopupMenu-->
+        <item name="colorSurfaceContainerHigh">#191F1B</item><!--Dialog-->
         <item name="android:textColorHighlight">#66FFFFFF</item>
     </style>
 </resources>

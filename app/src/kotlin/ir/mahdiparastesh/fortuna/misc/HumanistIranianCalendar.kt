@@ -35,19 +35,19 @@ class HumanistIranianCalendar : Calendar {
     }
 
     constructor(date: Date) :
-        super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
+            super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
         this.time = date
     }
 
     constructor(year: Int, month: Int, day: Int) :
-        super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
+            super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
         this[YEAR] = year
         this[MONTH] = month
         this[DATE] = day
     }
 
     constructor(year: Int, month: Int, day: Int, hour: Int, minute: Int, second: Int) :
-        super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
+            super(TimeZone.getDefault(), ULocale.getDefault(ULocale.Category.FORMAT)) {
         this[YEAR] = year
         this[MONTH] = month
         this[DATE] = day
@@ -74,7 +74,7 @@ class HumanistIranianCalendar : Calendar {
         // len2 length of month in a leap year
         // st   days in year before start of month
     )
-    private val EPOCH = 122108
+    private val EPOCH = 122108 // Islamic: 1948320
     private val LIMITS = arrayOf(
         //          Minimum  Greatest    Least  Maximum
         //                    Minimum  Maximum
@@ -143,7 +143,7 @@ class HumanistIranianCalendar : Calendar {
             month_ = rem[0]
         }
         var julianDay = EPOCH - 1 + 365 * (eYear_ - 1) +
-            floorDivide(8 * eYear_ + 21, 33)
+                floorDivide(8 * eYear_ + 21, 33)
         if (month_ != 0) julianDay += MONTH_COUNT[month_][2]
         return julianDay
     }

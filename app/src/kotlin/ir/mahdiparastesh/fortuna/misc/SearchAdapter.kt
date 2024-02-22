@@ -66,8 +66,8 @@ class SearchAdapter(private val c: Main) :
             c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(Kit.calType)
             c.onCalendarChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
-            if (dies >= 0) (c.b.grid.adapter as? Grid)
-                ?.changeVar(dies, c.m.calendar.apply { this[Calendar.DAY_OF_MONTH] = dies + 1 })
+            (c.b.grid.adapter as? Grid)?.changeVar(dies, c.m.calendar
+                .apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
         }
     }
 
