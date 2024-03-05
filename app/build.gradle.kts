@@ -27,9 +27,9 @@ android {
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_20; targetCompatibility = JavaVersion.VERSION_20
+        sourceCompatibility = JavaVersion.VERSION_21; targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions { jvmTarget = "20" }
+    kotlinOptions { jvmTarget = "21" }
     buildFeatures { buildConfig = true; viewBinding = true }
 
     signingConfigs {
