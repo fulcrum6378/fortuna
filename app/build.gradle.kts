@@ -3,14 +3,14 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 android {
     namespace = "ir.mahdiparastesh.fortuna"
     compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = "35.0.0-rc2"
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 34
-        versionCode = 11
-        versionName = "11.3.7"
+        versionCode = 12
+        versionName = "11.4.0"
     }
 
     sourceSets.getByName("main") {
