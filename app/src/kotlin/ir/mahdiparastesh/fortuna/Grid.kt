@@ -50,7 +50,7 @@ import ir.mahdiparastesh.fortuna.misc.Numeral
 import ir.mahdiparastesh.fortuna.misc.Numerals
 import ir.mahdiparastesh.fortuna.misc.Numerals.write
 import ir.mahdiparastesh.fortuna.misc.Sexbook
-import java.util.*
+import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
@@ -229,6 +229,12 @@ class Grid(private val c: Main) : ListAdapter {
                     this@apply.text.isNotEmpty() -> ""
                     source == null -> null
                     c.m.emojis.any { it == source } -> null
+                    source.toString().toByteArray(Charsets.UTF_8).let { ba ->
+                        ba.size > 3 &&
+                                ba[ba.size - 1] == (-113).toByte() &&
+                                ba[ba.size - 2] == (-72).toByte() &&
+                                ba[ba.size - 3] == (-17).toByte()
+                    } -> null
                     else -> ""
                 } // do NOT invoke "setText()" in a filter!
             })
