@@ -61,7 +61,7 @@ class Sexbook(private val c: Context) : Thread() {
             Uri.parse("content://${Kit.SEXBOOK}/crush"), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "(birth IS NOT NULL OR first_met IS NOT NULL) " +
-                    "AND ((status & 128) LIKE 0 OR (status & 16) LIKE 1)",
+                    "AND ((status & 128) LIKE 0 OR (status & 16) LIKE 16)",
             null, null
         ).iterate {
             // Birthday
