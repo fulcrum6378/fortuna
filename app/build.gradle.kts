@@ -3,7 +3,7 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 android {
     namespace = "ir.mahdiparastesh.fortuna"
     compileSdk = 34
-    buildToolsVersion = "35.0.0-rc3"
+    buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
