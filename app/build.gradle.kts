@@ -20,7 +20,7 @@ android {
     setFlavorDimensions(listOf("calendar"))
     productFlavors {
         all { dimension = "calendar" }
-        create("iranian")
+        create("iranian") { isDefault = true }
         create("gregorian") { applicationIdSuffix = ".gregorian" }
     }
     sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
