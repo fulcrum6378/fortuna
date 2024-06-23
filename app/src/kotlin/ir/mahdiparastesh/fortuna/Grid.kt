@@ -369,10 +369,12 @@ class Grid(private val c: Main) : ListAdapter {
                         else -> "th"
                     } else "th"
                 ).append(" birthday!\n")
-            } else sb.append(b.visName().uppercase(Locale.getDefault())).append(" was born!\n")
+            } else sb.append(b.visName().uppercase(Locale.getDefault()))
+                .append(" was born${if (b.birthTime != null) " at ${b.birthTime}" else ""}!\n")
         }
         if (!firstMet.isNullOrEmpty()) for (fm in firstMet)
-            sb.append("Met ${fm.visName()} for the first time!\n")
+            sb.append("Met ${fm.visName()} for the first time" +
+                    "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n")
 
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
