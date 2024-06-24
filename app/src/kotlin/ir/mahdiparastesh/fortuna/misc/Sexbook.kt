@@ -73,9 +73,9 @@ class Sexbook(private val c: Context) : Thread() {
                 var date = birth
                 if (' ' in birth) birth.split(" ").also {
                     date = it[0]
-                    tb = it[1]
+                    tb = fixTime(it[1])
                 }
-                val spl = date.replace(".", "/").split("/")
+                val spl = date.split("/")
                 try {
                     yb = spl[0].toInt()
                     mb = spl[1].toInt() - 1
@@ -101,9 +101,9 @@ class Sexbook(private val c: Context) : Thread() {
                 var date = first
                 if (' ' in first) first.split(" ").also {
                     date = it[0]
-                    tf = it[1]
+                    tf = fixTime(it[1])
                 }
-                val spl = date.replace(".", "/").split("/")
+                val spl = date.split("/")
                 try {
                     yf = spl[0].toInt()
                     mf = spl[1].toInt() - 1
@@ -135,6 +135,9 @@ class Sexbook(private val c: Context) : Thread() {
             Main.HANDLE_SEXBOOK_LOADED, Data(reports.toList(), crushes.toList())
         )?.sendToTarget()
     }
+
+    private fun fixTime(raw: String): String =
+        raw.split(":").joinToString(":") { Kit.z(it.toIntOrNull() ?: 0) }
 
     /**
      * Data class containing the information about a sex record from Sexbook.
