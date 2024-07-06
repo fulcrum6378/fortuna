@@ -221,23 +221,7 @@ class Grid(private val c: Main) : ListAdapter {
                 c.m.changingVarEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji)?.toString()
             )
             if (text.isEmpty()) luna.emoji?.also { hint = it }
-            filters = arrayOf(object : InputFilter {
-                override fun filter(
-                    source: CharSequence?, start: Int, end: Int,
-                    dest: Spanned?, dstart: Int, dend: Int
-                ): CharSequence? = when {
-                    this@apply.text.isNotEmpty() -> ""
-                    source == null -> null
-                    c.m.emojis.any { it == source } -> null
-                    source.toString().toByteArray(Charsets.UTF_8).let { ba ->
-                        ba.size > 3 &&
-                                ba[ba.size - 1] == (-113).toByte() &&
-                                ba[ba.size - 2] == (-72).toByte() &&
-                                ba[ba.size - 3] == (-17).toByte()
-                    } -> null
-                    else -> ""
-                } // do NOT invoke "setText()" in a filter!
-            })
+            filters = arrayOf(EmojiFilter(this@apply))
             if (c.m.changingVarEmoji != null) isCancelable = false
             addTextChangedListener {
                 c.m.changingVarEmoji = it.toString()
@@ -590,5 +574,27 @@ class Grid(private val c: Main) : ListAdapter {
             arr[0] = abs(arr[0])
         }
         return arr
+    }
+
+    inner class EmojiFilter(private val field: EditText) : InputFilter {
+        override fun filter(
+            source: CharSequence?, start: Int, end: Int,
+            dest: Spanned?, dstart: Int, dend: Int
+        ): CharSequence? {
+            if (field.text.isNotEmpty()) return ""
+            if (source == null || c.m.emojis.any { it == source }) return null
+
+            val ba = source.toString().toByteArray(Charsets.UTF_8)
+            if (ba.size > 3 && // Android's excess char
+                ba[ba.size - 1] == (-113).toByte() &&
+                ba[ba.size - 2] == (-72).toByte() &&
+                ba[ba.size - 3] == (-17).toByte()) return null
+            if (ba.size > 4 && // skin colours
+                ba[ba.size - 1].toInt() in 59..63 &&
+                ba[ba.size - 2] == 15.toByte() &&
+                ba[ba.size - 3] == 31.toByte() &&
+                ba[ba.size - 4] == 112.toByte()) return null // FIXME
+            return "" // do NOT invoke "setText()" in a filter!
+        }
     }
 }
