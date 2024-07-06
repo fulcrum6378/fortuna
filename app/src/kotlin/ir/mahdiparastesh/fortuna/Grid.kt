@@ -357,8 +357,10 @@ class Grid(private val c: Main) : ListAdapter {
                 .append(" was born${if (b.birthTime != null) " at ${b.birthTime}" else ""}!\n")
         }
         if (!firstMet.isNullOrEmpty()) for (fm in firstMet)
-            sb.append("Met ${fm.visName()} for the first time" +
-                    "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n")
+            sb.append(
+                "Met ${fm.visName()} for the first time" +
+                        "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n"
+            )
 
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
@@ -585,15 +587,19 @@ class Grid(private val c: Main) : ListAdapter {
             if (source == null || c.m.emojis.any { it == source }) return null
 
             val ba = source.toString().toByteArray(Charsets.UTF_8)
-            if (ba.size > 3 && // Android's excess char
-                ba[ba.size - 1] == (-113).toByte() &&
-                ba[ba.size - 2] == (-72).toByte() &&
-                ba[ba.size - 3] == (-17).toByte()) return null
-            if (ba.size > 4 && // skin colours
-                ba[ba.size - 1].toInt() in 59..63 &&
-                ba[ba.size - 2] == 15.toByte() &&
-                ba[ba.size - 3] == 31.toByte() &&
-                ba[ba.size - 4] == 112.toByte()) return null // FIXME
+            val bz = ba.size
+            if (bz > 3 && // Android's excess char
+                ba[bz - 1] == (-113).toByte() &&
+                ba[bz - 2] == (-72).toByte() &&
+                ba[bz - 3] == (-17).toByte()
+            ) return null
+            if (bz > 4 && // skin colours
+                ba[bz - 1].toInt() in -69..-65 &&
+                ba[bz - 2] == (-113).toByte() &&
+                ba[bz - 3] == (-97).toByte() &&
+                ba[bz - 4] == (-16).toByte()
+            ) return null
+            //Toast.makeText(c, ba.joinToString(","), Toast.LENGTH_LONG).show()
             return "" // do NOT invoke "setText()" in a filter!
         }
     }
