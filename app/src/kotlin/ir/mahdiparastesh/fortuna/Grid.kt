@@ -332,10 +332,10 @@ class Grid(private val c: Main) : ListAdapter {
         val da = (i + 1).toShort()
         val birth = sexbook?.crushes?.filter {
             it.birthYear != null && it.birthYear <= yr && it.birthMonth == mo && it.birthDay == da
-        }
+        }?.sortedBy { it.birthTime }?.sortedBy { it.birthDay }
         val firstMet = sexbook?.crushes?.filter {
             it.firstMetYear == yr && it.firstMetMonth == mo && it.firstMetDay == da
-        }
+        }?.sortedBy { it.firstMetTime }?.sortedBy { it.firstMetDay }
         if (birth.isNullOrEmpty() && firstMet.isNullOrEmpty()) return
 
         val sb = StringBuilder()
