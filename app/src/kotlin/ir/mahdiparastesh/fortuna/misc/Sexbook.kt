@@ -98,7 +98,6 @@ class Sexbook(private val c: Context) : Thread() {
             var df: Int? = null
             var tf: String? = null
             getString(6)?.also { first ->
-                if ((status and 32) != 0) return@also
                 var date = first
                 if (' ' in first) first.split(" ").also {
                     date = it[0]

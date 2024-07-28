@@ -10,7 +10,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 12
-        versionName = "11.5.3"
+        versionName = "11.5.4"
     }
 
     sourceSets.getByName("main") {
@@ -52,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.9.0")
+    implementation("androidx.activity:activity-ktx:1.9.1")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("com.google.android.material:material:1.12.0")
 }
