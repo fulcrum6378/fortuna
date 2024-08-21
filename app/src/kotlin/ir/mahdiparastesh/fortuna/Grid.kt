@@ -169,7 +169,7 @@ class Grid(private val c: Main) : ListAdapter {
         Sexbook.Data(
             it.reports.filter { x -> x.year == yr && x.month == mo },
             it.crushes.filter { x ->
-                (x.birthYear != null && x.birthYear <= yr && x.birthMonth == mo) ||
+                (x.birthYear != null && x.birthYear!! <= yr && x.birthMonth == mo) ||
                         (x.firstMetYear == yr && x.firstMetMonth == mo)
             }
         )
@@ -331,7 +331,7 @@ class Grid(private val c: Main) : ListAdapter {
         val mo = cal[Calendar.MONTH].toShort()
         val da = (i + 1).toShort()
         val birth = sexbook?.crushes?.filter {
-            it.birthYear != null && it.birthYear <= yr && it.birthMonth == mo && it.birthDay == da
+            it.birthYear != null && it.birthYear!! <= yr && it.birthMonth == mo && it.birthDay == da
         }?.sortedBy { it.birthTime }?.sortedBy { it.birthDay }
         val firstMet = sexbook?.crushes?.filter {
             it.firstMetYear == yr && it.firstMetMonth == mo && it.firstMetDay == da
