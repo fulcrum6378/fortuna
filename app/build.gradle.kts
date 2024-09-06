@@ -2,13 +2,13 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
-    compileSdk = 34
+    compileSdk = 35
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 12
         versionName = "11.6.0"
     }
@@ -52,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.9.1")
+    implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("com.google.android.material:material:1.12.0")
 }
