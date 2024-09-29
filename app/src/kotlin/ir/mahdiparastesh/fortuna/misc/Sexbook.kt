@@ -129,8 +129,8 @@ class Sexbook(private val c: Context) : Thread() {
         var firstMetTime: String? = null
 
         init {
-            //if (((status and 128) == 0) || ((status and 16) == 16))
-            if (birth != null && (status and 32) == 0) parseDateTime(birth).also { dt ->
+            if (birth != null && (((status and 128) == 0) || ((status and 16) == 16)) // (status and 32) == 0
+            ) parseDateTime(birth).also { dt ->
                 dt.first.also {
                     birthYear = it[0]
                     birthMonth = it[1]
