@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<full-backup-content xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="FullBackupContent">
+<full-backup-content xmlns:tools="http://schemas.android.com/tools">
     <include
         domain="file"
-        path="@string/export_file" />
+        path="@string/export_file"
+        requireFlags="clientSideEncryption" />
     <include
         domain="file"
-        path="@string/backup_file" />
+        path="@string/backup_file"
+        requireFlags="clientSideEncryption" />
     <include
         domain="sharedpref"
-        path="@string/shared_prefs" />
+        path="@string/shared_prefs"
+        tools:ignore="FullBackupContent" />
 </full-backup-content>

@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.res.ColorStateList
@@ -90,6 +91,7 @@ class StatisticsDialog : BaseDialogue() {
     private var dialogue: AlertDialog? = null
     private lateinit var text: String
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()

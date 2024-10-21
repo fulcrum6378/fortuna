@@ -68,7 +68,7 @@ abstract class Numeral(
     fun output(num: Int): String =
         if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
             convert(num)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             defaultStr
         } else defaultStr
 }

@@ -155,11 +155,11 @@ object Kit {
         if (f != null) {
             ret.append(".")
             var right = 0
-            for (ff in 0 until f!!.length) {
-                ret.append(f!![ff])
+            for (ff in 0 until f.length) {
+                ret.append(f[ff])
                 right++
                 if (fractionLimit in 1..right) break
-                if (right % 3 == 0 && ff != 0 && ff < f!!.length - 1) ret.append(",")
+                if (right % 3 == 0 && ff != 0 && ff < f.length - 1) ret.append(",")
             }
         }
         return "$ret"
@@ -205,7 +205,7 @@ object Kit {
      */
     fun findClass(jc: String): Class<*>? = try {
         Class.forName(jc)
-    } catch (e: ClassNotFoundException) {
+    } catch (_: ClassNotFoundException) {
         null
     }
 

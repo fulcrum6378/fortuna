@@ -213,7 +213,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             if (ActivityCompat.checkSelfPermission(c, it) != PackageManager.PERMISSION_GRANTED)
                 reqPermLauncher.launch(it)
         }
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
         // Miscellaneous
@@ -223,7 +223,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         if (try {
                 packageManager.getPackageInfo(SEXBOOK, 0)
                 true
-            } catch (e: PackageManager.NameNotFoundException) {
+            } catch (_: PackageManager.NameNotFoundException) {
                 false
             } && m.sexbook == null
         ) Sexbook(this).start()
@@ -306,7 +306,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (!isGranted) return@registerForActivityResult
-        (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).apply {
+        (c.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).apply {
             cancel(Nyx.CHANNEL)
             createNotificationChannel(
                 NotificationChannel(
@@ -327,7 +327,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         .use { fos -> fos.write(m.vita?.export(c)) }
                 }
                 true
-            } catch (ignored: Exception) {
+            } catch (_: Exception) {
                 false
             }
             Toast.makeText(
@@ -346,15 +346,15 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         .toString(Charsets.UTF_8)
                 }
                 data!!
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Toast.makeText(
                     c, R.string.importOpenError, Toast.LENGTH_LONG
                 ).show(); return@registerForActivityResult
             }
             val imported: Vita
             try {
-                imported = Vita.loads(data!!)
-            } catch (e: Exception) {
+                imported = Vita.loads(data)
+            } catch (_: Exception) {
                 Toast.makeText(
                     c, R.string.importReadError, Toast.LENGTH_LONG
                 ).show(); return@registerForActivityResult
@@ -393,6 +393,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     }
 
     /** Updates year and month inputs of the top panel. */
+    @SuppressLint("SetTextI18n")
     private fun updatePanel() {
         b.annus.setText(m.calendar[Calendar.YEAR].toString())
         b.luna.setSelection(m.calendar[Calendar.MONTH])
@@ -467,8 +468,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
         (if (Build.VERSION.SDK_INT >= 31)
-            (getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
-        else getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+            (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        else getSystemService(VIBRATOR_SERVICE) as Vibrator)
             .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 

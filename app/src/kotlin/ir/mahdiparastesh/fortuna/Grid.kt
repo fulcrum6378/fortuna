@@ -99,8 +99,7 @@ class Grid(private val c: Main) : ListAdapter {
             val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
 
             dies.text = numeral.write(i + 1)
-            val enlarge =
-                Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge ?: false
+            val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
             if (enlarge) dies.textSize =
                 (dies.textSize / c.resources.displayMetrics.density) * 1.75f
             variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
@@ -253,11 +252,8 @@ class Grid(private val c: Main) : ListAdapter {
         }
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                c.getString(
-                    R.string.variabilis,
-                    if (i != -1) "${c.m.luna!!}.${z(i + 1)}"
-                    else c.getString(R.string.defValue)
-                )
+                if (i != -1) "${c.m.luna!!}.${z(i + 1)}"
+                else c.getString(R.string.defValue)
             )
             setView(bv.root)
             setNegativeButton(R.string.cancel, null)
@@ -410,7 +406,7 @@ class Grid(private val c: Main) : ListAdapter {
                         .setData(android.net.Uri.parse(sex.first().id.toString()))
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 false
             }
         }

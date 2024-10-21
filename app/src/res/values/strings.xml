@@ -43,7 +43,6 @@
     <string name="copied">Copied to clipboard.</string>
 
     <!-- Main -->
-    <string name="variabilis">Variable: %s</string>
     <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
