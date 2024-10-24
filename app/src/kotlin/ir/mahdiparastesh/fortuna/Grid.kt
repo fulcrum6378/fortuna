@@ -147,7 +147,7 @@ class Grid(private val c: Main) : ListAdapter {
                 root.foreground = c.getDrawable(R.drawable.dies_today)
         }.root
 
-    /** Invoked via {@link Main#updateGrid()} */
+    /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
         luna = c.m.thisLuna()
         sexbook = cacheSexbook()

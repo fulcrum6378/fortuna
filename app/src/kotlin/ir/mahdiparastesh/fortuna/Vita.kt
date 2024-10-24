@@ -11,7 +11,7 @@ import java.io.IOException
 import java.io.StringReader
 
 /**
- * Representation of the VITA file type as {@link HashMap HashMap<String, Luna>}
+ * Representation of the VITA file type as [HashMap]<String, Luna>
  *
  * We need the whole Vita loaded on startup for search and statistics;
  * so we put the whole data in a single file.
@@ -20,28 +20,33 @@ class Vita : HashMap<String, Luna>() {
 
     fun find(key: String): Luna? = getOrElse(key) { null }
 
+    /** Saves Vita data in [Stored]. */
     fun save(c: Context) {
         save(c, this)
     }
 
+    /** Reforms the Vita data and dumps it to be exported. */
     fun export(c: Context): ByteArray {
         reform(c)
         return dump().encodeToByteArray()
     }
 
+    /** Dumps Vita data into a string to be written in a *.vita file. */
     fun dump(): String = StringBuilder().apply {
+        var hasVerbum = false
         this@Vita.toSortedMap().forEach { (k, luna) ->
             append("@$k")
             luna.default?.also { score ->
                 append("~${score.writeScore()}")
+                hasVerbum = luna.verbum?.isNotBlank() == true
                 if (luna.emoji?.isNotBlank() == true)
                     append(";${luna.emoji!!}")
-                else if (luna.verbum?.isNotBlank() == true)
-                    append(";")
-                if (luna.verbum?.isNotBlank() == true)
+                else if (hasVerbum) append(";")
+                if (hasVerbum)
                     append(";${luna.verbum!!.saveVitaText()}")
             }
             append("\n")
+
             var skipped = false
             for (d in luna.diebus.indices) {
                 if (luna.diebus[d] == null) {
@@ -52,11 +57,11 @@ class Vita : HashMap<String, Luna>() {
                     skipped = false
                 }
                 append(luna.diebus[d]!!.writeScore())
+                hasVerbum = luna.verba[d]?.isNotBlank() == true
                 if (luna.emojis[d]?.isNotBlank() == true)
                     append(";${luna.emojis[d]!!}")
-                else if (luna.verba[d]?.isNotBlank() == true)
-                    append(";")
-                if (luna.verba[d]?.isNotBlank() == true)
+                else if (hasVerbum) append(";")
+                if (hasVerbum)
                     append(";${luna.verba[d]!!.saveVitaText()}")
                 append("\n")
             }
@@ -76,7 +81,7 @@ class Vita : HashMap<String, Luna>() {
         const val MAX_RANGE = 3f
         const val MIME_TYPE = "application/octet-stream"
 
-        /** Loads the Vita data from {@link Stored}. */
+        /** Loads the Vita data from [Stored]. */
         fun load(c: Context): Vita {
             val stored = Stored(c)
             return if (stored.exists()) {
@@ -136,7 +141,7 @@ class Vita : HashMap<String, Luna>() {
             }
         }
 
-        /** Puts the data of {@link Stored} into {@link Backup}. */
+        /** Copies data from [Stored] into [Backup]. */
         fun backup(c: Context) {
             FileOutputStream(Backup(c)).use { fos ->
                 fos.write(FileInputStream(Stored(c)).use { it.readBytes() })
@@ -199,11 +204,11 @@ class Vita : HashMap<String, Luna>() {
     /** Default Vita file */
     class Stored(c: Context) : File(c.filesDir, c.getString(R.string.export_file))
 
-    /** A copy of {@link Stored} */
+    /** A copy of [Stored] */
     class Backup(c: Context) : File(c.filesDir, c.getString(R.string.backup_file))
 }
 
-/** Part of {@link Vita} for managing months. */
+/** Subset of [Vita] for managing months. */
 class Luna(
     cal: Calendar = Kit.calType.create(),
     var default: Float? = null,

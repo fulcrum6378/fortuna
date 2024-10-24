@@ -399,7 +399,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.luna.setSelection(m.calendar[Calendar.MONTH])
     }
 
-    /** Refreshes the {@link Grid} and adjusts its size. */
+    /** Refreshes the [Grid] and adjusts its size. */
     @SuppressLint("SetTextI18n")
     fun updateGrid() {
         if (b.grid.adapter == null) b.grid.adapter = Grid(this)

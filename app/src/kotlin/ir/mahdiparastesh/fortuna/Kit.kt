@@ -236,7 +236,7 @@ object Kit {
         abstract fun onDoubleClick()
     }
 
-    /** Subclass of {@link View#OnClickListener} which shows one Toast at a time. */
+    /** Subclass of [View.OnClickListener] which shows one Toast at a time. */
     class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int) :
         View.OnClickListener {
         private var last = 0L
