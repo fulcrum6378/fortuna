@@ -1,4 +1,7 @@
-plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+}
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
@@ -10,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 13
-        versionName = "11.6.4"
+        versionName = "11.7.5"
     }
 
     sourceSets.getByName("main") {
@@ -26,7 +29,8 @@ android {
     sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_22; targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_22
+        targetCompatibility = JavaVersion.VERSION_22
     }
     kotlinOptions { jvmTarget = "22" }
 
@@ -52,7 +56,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-ktx:1.9.3")
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.activity.ktx)
+    implementation(libs.core.ktx)
+    implementation(libs.material)
 }

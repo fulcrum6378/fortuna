@@ -517,5 +517,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 }
 
 /* TODO:
-  * Select multiple day cells in order to score them once; needs custom selection
+  * - Select multiple day cells in order to score them once; needs custom selection
+  * - Backup reminder for Fortuna; record latest export! (notify inside the app)
   */
