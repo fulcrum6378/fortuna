@@ -108,7 +108,8 @@ class StatisticsDialog : BaseDialogue() {
         text = getString(
             R.string.statText,
             (if (scores.isEmpty()) 0f else sum / scores.size.toFloat()).groupDigits(6),
-            sum.groupDigits(), scores.size.groupDigits()
+            sum.groupDigits(),
+            resources.getQuantityString(R.plurals.day, scores.size, scores.size.groupDigits())
         )
 
         dialogue = MaterialAlertDialogBuilder(c).apply {

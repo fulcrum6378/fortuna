@@ -5,50 +5,37 @@
     <string name="backup_file" translatable="false">fortuna_backup.vita</string>
     <string name="shared_prefs" translatable="false">settings.xml</string>
 
-    <!-- GLOBAL -->
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
-    <string name="ok">OK</string>
-    <string name="save">Save</string>
-    <string name="cancel">Cancel</string>
-    <string name="clear">Clear</string>
-    <string name="copy">Copy</string>
-    <string name="done">Done!</string>
-    <string name="failed">Failed!</string>
-    <string name="year">Year</string>
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
-    <string name="tomorrow">Tomorrow</string>
-    <string name="difAgo">%s day(s) ago</string>
-    <string name="difLater">%s day(s) later</string>
-    <string name="sameDay">Same day</string>
-    <string name="difBefore">%s day(s) before that time</string>
-    <string name="difAfter">%s day(s) after that time</string>
-    <string name="difYears">%s year(s)</string>
-    <string name="difMonths">%s month(s)</string>
-    <string name="difDays">%s day(s)</string>
-    <string name="difSep" translatable="false">,&#160;</string>
-    <string name="never">\"never\"</string>
-    <string name="backup">Backup</string>
-    <string name="restore">Restore</string>
-    <string name="export">Export</string>
-    <string-array name="bytes" translatable="false">
-        <item>%d B</item>
-        <item>%d KB</item>
-        <item>%d MB</item>
-        <item>%d GB</item>
-        <item>%d TB</item>
-    </string-array>
-    <string name="dateSeparator">/</string>
-    <string name="copied">Copied to clipboard.</string>
+    <plurals name="day">
+        <item quantity="one">%s day</item>
+        <item quantity="other">%s days</item>
+    </plurals>
+    <plurals name="month">
+        <item quantity="one">%s month</item>
+        <item quantity="other">%s months</item>
+    </plurals>
+    <plurals name="year">
+        <item quantity="one">%s year</item>
+        <item quantity="other">%s years</item>
+    </plurals>
 
-    <!-- Main -->
+    <!-- Panel -->
+    <string name="year">Year</string>
     <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
     <string name="viewInCalendar">Calendar</string>
     <string name="holdLonger">Hold a little longer&#8230;</string>
     <string name="scoreFuture">You don\'t know your future!!!</string>
+
+    <!-- Numerals -->
+    <string name="numerals">Numerals</string>
+    <string name="numArabic">Arabic</string>
+    <string name="numRoman">Roman</string>
+    <string name="numEtruscan">Etruscan</string>
+    <string name="numAttic">Attic</string>
+    <string name="numOldPersian">Old Persian</string>
+    <string name="numBrahmi">Brahmi</string>
+    <string name="numHieroglyph">Hieroglyph</string>
 
     <!-- Drawer -->
     <string name="navOpen">Open</string>
@@ -58,7 +45,7 @@
     <string name="foundNothing">Nothing was found!</string>
     <string name="navStat">Statistics</string>
     <string name="fortunaStat">Fortuna Statistics</string>
-    <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s days.\n</string>
+    <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s.\n</string>
     <string name="navExport">Export data</string>
     <string name="navImport">Import data</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
@@ -100,6 +87,31 @@
         \nNote: this app does not believe in weeks!!
     </string>
 
+    <!-- Backup -->
+    <string name="never">\"never\"</string>
+    <string name="backup">Backup</string>
+    <string name="restore">Restore</string>
+    <string name="export">Export</string>
+    <string-array name="bytes" translatable="false">
+        <item>%d B</item>
+        <item>%d KB</item>
+        <item>%d MB</item>
+        <item>%d GB</item>
+        <item>%d TB</item>
+    </string-array>
+    <string name="dateSeparator">/</string>
+
+    <!-- Dif -->
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="difAgo">%s ago</string>
+    <string name="difLater">%s later</string>
+    <string name="sameDay">Same day</string>
+    <string name="difBefore">%s before that time</string>
+    <string name="difAfter">%s after that time</string>
+    <string name="difSep" translatable="false">,&#160;</string>
+
     <!-- Nyx -->
     <string name="ntfReminderTitle">Daily Reminder</string>
     <string name="ntfReminderDesc">
@@ -110,13 +122,15 @@
     <!-- TodayWidget -->
     <string name="widTodayDesc">Shows current date like a calendar app.</string>
 
-    <!-- Numerals -->
-    <string name="numerals">Numerals</string>
-    <string name="numArabic">Arabic</string>
-    <string name="numRoman">Roman</string>
-    <string name="numEtruscan">Etruscan</string>
-    <string name="numAttic">Attic</string>
-    <string name="numOldPersian">Old Persian</string>
-    <string name="numBrahmi">Brahmi</string>
-    <string name="numHieroglyph">Hieroglyph</string>
+    <!-- Dialogues -->
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="copy">Copy</string>
+    <string name="done">Done!</string>
+    <string name="failed">Failed!</string>
+    <string name="copied">Copied to clipboard.</string>
 </resources>

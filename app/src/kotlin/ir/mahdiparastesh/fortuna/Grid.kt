@@ -20,7 +20,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ListAdapter
 import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
@@ -496,11 +495,15 @@ class Grid(private val c: Main) : ListAdapter {
             when {
                 basedOnToday && dif == -1 -> c.getString(R.string.yesterday)
                 basedOnToday && dif == 1 -> c.getString(R.string.tomorrow)
-                dif < 0 -> enumerate(
-                    if (basedOnToday) R.string.difAgo else R.string.difBefore, dif.absoluteValue
+                dif < 0 -> c.getString(
+                    if (basedOnToday) R.string.difAgo else R.string.difBefore,
+                    c.resources.getQuantityString(
+                        R.plurals.day, dif.absoluteValue, dif.absoluteValue.groupDigits()
+                    )
                 )
-                dif > 0 -> enumerate(
-                    if (basedOnToday) R.string.difLater else R.string.difAfter, dif
+                dif > 0 -> c.getString(
+                    if (basedOnToday) R.string.difLater else R.string.difAfter,
+                    c.resources.getQuantityString(R.plurals.day, dif, dif.groupDigits())
                 )
                 else -> c.getString(if (basedOnToday) R.string.today else R.string.sameDay)
             }
@@ -510,32 +513,20 @@ class Grid(private val c: Main) : ListAdapter {
             if (expDif[0] != 0 || expDif[1] != 0) {
                 sb.append(" (")
                 val sep = c.getString(R.string.difSep)
-                if (expDif[0] != 0) sb.append(enumerate(R.string.difYears, expDif[0]) + sep)
-                if (expDif[1] != 0) sb.append(enumerate(R.string.difMonths, expDif[1]) + sep)
-                if (expDif[2] != 0) sb.append(enumerate(R.string.difDays, expDif[2]) + sep)
+                if (expDif[0] != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.year, expDif[0], expDif[0]))
+                        .append(sep)
+                if (expDif[1] != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.month, expDif[1], expDif[1]))
+                        .append(sep)
+                if (expDif[2] != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.day, expDif[2], expDif[2]))
+                        .append(sep)
                 sb.deleteRange(sb.length - sep.length, sb.length)
                 sb.append(")")
             }
         }
         return sb.toString()
-    }
-
-    /**
-     * Helper function for string resources which contain a number and a word with a probable
-     * plurality; namely "(s)".
-     * Only one "(" and one ")" are allowed and required in "res".
-     *
-     * @param res string resource
-     * @param num number
-     *
-     * @return a clean string
-     */
-    private fun enumerate(@StringRes res: Int, num: Int): String {
-        var ret = c.getString(res, num.groupDigits())
-        ret = if (num == 1) ret.removeRange(ret.indexOf("("), ret.indexOf(")") + 1)
-        else ret.substringBefore("(") + ret.substringAfter("(")
-            .substringBefore(")") + ret.substringAfter(")")
-        return ret
     }
 
     /** Explains the difference of the Calendar instances in years, months and days */
