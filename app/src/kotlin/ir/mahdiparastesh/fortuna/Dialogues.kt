@@ -38,7 +38,12 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
+import ir.mahdiparastesh.fortuna.misc.Dropbox
 import ir.mahdiparastesh.fortuna.misc.SearchAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileInputStream
 
 /** Base class for DialogFragment instances in this app. */
@@ -229,7 +234,22 @@ class BackupDialog : BaseDialogue() {
                             }.build()
                         )
                     )
-                    backup.setOnClickListener { Vita.backup(c); updateStatus() }
+                    backup.setOnClickListener {
+                        //Vita.backup(c); updateStatus()
+                        if (!c.dropbox.isAuthenticated()) c.dropbox.login()
+                        else CoroutineScope(Dispatchers.IO).launch {
+                            val res: Dropbox.UploadApiResponse
+                            FileInputStream(Vita.Stored(c)).use {
+                                res = c.dropbox.uploadFile(it)
+                            }
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    c, (res is Dropbox.UploadApiResponse.Success).toString(),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    }
                     restore.setOnClickListener {
                         MaterialAlertDialogBuilder(c).apply {
                             setTitle(c.resources.getString(R.string.restore))

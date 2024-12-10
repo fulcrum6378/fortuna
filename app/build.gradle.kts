@@ -13,7 +13,12 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 13
-        versionName = "11.8.0"
+        versionName = "11.9.0"
+
+        var dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
+            ?: logger.warn("Dropbox app key was not found!")
+        buildConfigField("String", "DROPBOX_APP_KEY", "\"${dropboxKey}\"")
+        manifestPlaceholders.put("dropboxKey", dropboxKey)
     }
 
     sourceSets.getByName("main") {
@@ -28,6 +33,7 @@ android {
     }
     sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_22
         targetCompatibility = JavaVersion.VERSION_22
@@ -56,7 +62,9 @@ android {
 }
 
 dependencies {
-    implementation(libs.activity.ktx)
-    implementation(libs.core.ktx)
+    implementation(libs.ktx.activity)
+    implementation(libs.ktx.core)
+    implementation(libs.dropbox.android)
+    implementation(libs.dropbox.core)
     implementation(libs.material)
 }

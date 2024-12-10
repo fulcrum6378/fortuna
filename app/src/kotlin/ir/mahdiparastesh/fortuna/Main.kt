@@ -52,6 +52,7 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import ir.mahdiparastesh.fortuna.misc.Dropbox
 import ir.mahdiparastesh.fortuna.misc.Numerals
 import ir.mahdiparastesh.fortuna.misc.SearchAdapter
 import ir.mahdiparastesh.fortuna.misc.Sexbook
@@ -83,6 +84,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 .build()
         ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
     }
+    val dropbox = Dropbox(this)
 
     class Fortuna : Application() {
         override fun onConfigurationChanged(newConfig: Configuration) {
@@ -232,6 +234,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     var firstResume = true // a new instance of Main is created on a configuration change.
     override fun onResume() {
         super.onResume()
+
         if (m.luna == null) {
             intent.resolveIntent()
             if (!Vita.Stored(c).exists()) {
@@ -249,6 +252,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, m.calendar) }
         }
         firstResume = false
+
+        dropbox.onResume()
     }
 
     var resolvingIntent = false

@@ -7,6 +7,7 @@
     <uses-permission android:name="ir.mahdiparastesh.sexbook.READ_DATABASE" />
 
     <queries>
+        <package android:name="com.dropbox.android" />
         <package android:name="ir.mahdiparastesh.sexbook" />
     </queries>
 
@@ -34,6 +35,27 @@
 
             <!-- Fuck Android and subsequently the file managers, you cannot associate an app to
                  a certain file extension on content:// scheme. -->
+        </activity>
+
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:exported="true"
+            android:launchMode="singleTask">
+
+            <intent-filter>
+                <data android:scheme="db-${dropboxKey}" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <provider
