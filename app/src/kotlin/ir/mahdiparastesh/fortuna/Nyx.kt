@@ -14,14 +14,16 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import ir.mahdiparastesh.fortuna.Kit.create
 import ir.mahdiparastesh.fortuna.Kit.resetHours
+import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.misc.Dropbox
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
 
 /** Awakens every night at 12 AM and perform various actions. */
 class Nyx : BroadcastReceiver() {
     companion object {
         const val REMIND = "remind"
-        const val CHANNEL = 666
+        const val CHANNEL = 378
 
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
@@ -45,6 +47,10 @@ class Nyx : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             alarm(c); return; }
 
+        // Today
+        TodayWidget.externalUpdate(c)
+        Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
+
         // Remind the user to score the recent day if already has not
         val cal = Kit.calType.create().apply { timeInMillis -= Kit.A_DAY }
         val score = Vita.load(c).getOrDefault(cal.toKey(), null)
@@ -62,9 +68,9 @@ class Nyx : BroadcastReceiver() {
                 .build()
         )
 
-        // Miscellaneous
+        // Backup
         Vita.backup(c)
-        TodayWidget.externalUpdate(c)
-        Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
+        val dropbox = Dropbox(c.sp())
+        if (dropbox.isAuthenticated()) dropbox.backup(c)
     }
 }

@@ -28,6 +28,9 @@ import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.calType
 import ir.mahdiparastesh.fortuna.Kit.color
@@ -89,6 +92,14 @@ class Grid(private val c: Main) : ListAdapter {
     override fun areAllItemsEnabled(): Boolean = true
     override fun registerDataSetObserver(observer: DataSetObserver) {}
     override fun unregisterDataSetObserver(observer: DataSetObserver) {}
+
+    private val varFieldBg: MaterialShapeDrawable by lazy {
+        MaterialShapeDrawable(
+            ShapeAppearanceModel.Builder()
+                .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
+                .build()
+        ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
+    }
 
     @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
@@ -194,7 +205,7 @@ class Grid(private val c: Main) : ListAdapter {
         val bv = VariabilisBinding.inflate(c.layoutInflater)
         var dialogue: AlertDialog? = null
         var isCancelable = true
-        arrayOf(bv.highlight, bv.verbum).forEach { it.background = c.varFieldBg }
+        arrayOf(bv.highlight, bv.verbum).forEach { it.background = varFieldBg }
         bv.picker.apply {
             maxValue = 12
             minValue = 0
@@ -435,7 +446,7 @@ class Grid(private val c: Main) : ListAdapter {
                 }
             }.toString())
             setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
-                dat.background = c.varFieldBg
+                dat.background = varFieldBg
                 val watcher = object : TextWatcher {
                     override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
                     override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}

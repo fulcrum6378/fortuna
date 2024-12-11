@@ -32,9 +32,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.shape.CornerFamily
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.Kit.blur
 import ir.mahdiparastesh.fortuna.Kit.calType
@@ -77,14 +74,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     private var rollingLuna = true // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
     private var rollingAnnusItself = false
-    val varFieldBg: MaterialShapeDrawable by lazy {
-        MaterialShapeDrawable(
-            ShapeAppearanceModel.Builder()
-                .setAllCorners(CornerFamily.CUT, resources.getDimension(R.dimen.smallCornerSize))
-                .build()
-        ).apply { fillColor = resources.getColorStateList(R.color.varField, null) }
-    }
-    val dropbox = Dropbox(this)
+    var dropbox: Dropbox? = null
 
     class Fortuna : Application() {
         override fun onConfigurationChanged(newConfig: Configuration) {
@@ -244,7 +234,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         } else if (firstResume) {
             updateGrid()
 
-            // Restore saved states (null-safe)
+            // restore saved states (null-safe)
             m.changingVar?.also {
                 (b.grid.adapter as? Grid)?.changeVar(it,
                     (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
@@ -253,7 +243,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         firstResume = false
 
-        dropbox.onResume()
+        dropbox?.onResume()
     }
 
     var resolvingIntent = false
@@ -523,5 +513,4 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
 /* TODO:
   * - Select multiple day cells in order to score them once; needs custom selection
-  * - Backup reminder for Fortuna; record latest export! (notify inside the app)
   */

@@ -15,7 +15,6 @@
         android:textSize="16sp" />
 
     <LinearLayout
-        android:id="@+id/actions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -30,12 +29,22 @@
         <TextView
             android:id="@+id/restore"
             style="@style/backupAction"
-            android:background="@drawable/button_rect"
             android:text="@string/restore" />
 
         <TextView
             android:id="@+id/export"
             style="@style/backupAction"
             android:text="@string/export" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/dropbox"
+            style="@style/backupAction" />
     </LinearLayout>
 </LinearLayout>

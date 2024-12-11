@@ -18,30 +18,31 @@
     <style name="arrow">
         <item name="android:layout_width">36dp</item>
         <item name="android:layout_height">36dp</item>
-        <item name="android:src">@drawable/arrow</item>
         <item name="android:background">@drawable/button_small</item>
         <item name="android:padding">6dp</item>
+        <item name="android:src">@drawable/arrow</item>
     </style>
 
     <style name="hArrow" parent="arrow">
-        <item name="layout_constraintTop_toTopOf">parent</item>
         <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
     </style>
 
     <style name="vArrow" parent="arrow">
-        <item name="layout_constraintStart_toStartOf">@id/annus</item>
         <item name="layout_constraintEnd_toEndOf">@id/annus</item>
+        <item name="layout_constraintStart_toStartOf">@id/annus</item>
     </style>
 
     <style name="backupAction">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textAlignment">center</item>
+        <item name="android:background">@drawable/button_rect_bordered</item>
         <item name="android:gravity">center</item>
-        <item name="android:textSize">15sp</item>
         <item name="android:paddingVertical">15sp</item>
+        <item name="android:textAlignment">center</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="dateComparisonSep">
@@ -51,11 +52,11 @@
     </style>
 
     <style name="dateComparisonField" parent="dateComparisonSep">
-        <item name="android:inputType">number</item>
         <item name="android:background">@null</item>
-        <item name="android:textColor">?android:attr/textColor</item>
+        <item name="android:inputType">number</item>
         <item name="android:paddingVertical">9dp</item>
         <item name="android:paddingHorizontal">16dp</item>
+        <item name="android:textColor">?android:attr/textColor</item>
         <item name="android:textSize">19sp</item>
     </style>
 
@@ -68,7 +69,7 @@
     </style>
 
     <style name="TextAppearance.Fortuna.Navigation" parent="@android:style/TextAppearance">
-        <item name="android:textStyle">bold</item>
         <item name="android:textSize">17sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 </resources>

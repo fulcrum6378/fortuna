@@ -12,10 +12,10 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "11.9.0"
+        versionCode = 14
+        versionName = "12.0.0"
 
-        var dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
+        val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
         buildConfigField("String", "DROPBOX_APP_KEY", "\"${dropboxKey}\"")
         manifestPlaceholders.put("dropboxKey", dropboxKey)

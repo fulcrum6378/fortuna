@@ -52,13 +52,6 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
     <string name="navSend">Send data to</string>
-    <string name="backupDesc">
-        Your data is automatically backed up in a separate file every night.
-    </string>
-    <string name="backupStatus">Last time at %1$s\nFile size: %2$s</string>
-    <string name="backupRestoreSure">
-        Are you sure you want to replace the current data with the earlier backed-up one at %s ?
-    </string>
     <string name="navHelp">Help</string>
     <string name="help">
         This app is designed based on the \"Hedonist\" philosophy!
@@ -88,6 +81,14 @@
     </string>
 
     <!-- Backup -->
+    <string name="backupDesc">
+        Your data is automatically backed up every night in a separate file in your own device
+        and also another copy on the cloud (if you enable it).
+    </string>
+    <string name="backupStatus">Last time at %1$s\nFile size: %2$s</string>
+    <string name="backupRestoreSure">
+        Are you sure you want to replace the current data with the earlier backed-up one at %s ?
+    </string>
     <string name="never">\"never\"</string>
     <string name="backup">Backup</string>
     <string name="restore">Restore</string>
@@ -100,6 +101,15 @@
         <item>%d TB</item>
     </string-array>
     <string name="dateSeparator">/</string>
+    <string name="cloudOn">ON</string>
+    <string name="cloudOff">OFF</string>
+    <string name="logout">Logout</string>
+    <string name="dropbox">Dropbox:&#160;</string>
+    <string name="dropboxSuccess">Uploaded to Dropbox!</string>
+    <string name="dropboxFailure">Couldn\'t upload to Dropbox!</string>
+    <string name="dropboxLogoutSure">
+        Are you sure you want to log out of your Dropbox account?
+    </string>
 
     <!-- Dif -->
     <string name="today">Today</string>
