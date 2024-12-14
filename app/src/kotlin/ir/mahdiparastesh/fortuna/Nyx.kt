@@ -22,7 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-/** Awakens every night at 12 AM and perform various actions. */
+/** Awakens every night at 12 AM and performs various actions. */
 class Nyx : BroadcastReceiver() {
     companion object {
         const val REMIND = "remind"

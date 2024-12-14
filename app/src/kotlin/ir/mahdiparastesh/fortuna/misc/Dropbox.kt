@@ -16,6 +16,11 @@ import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import java.io.FileInputStream
 
+/**
+ * Wrapper for the Dropbox Java API which can log in to Dropbox and upload files.
+ *
+ * @see <a href="https://github.com/dropbox/dropbox-sdk-java/">dropbox-sdk-java</a>
+ */
 @Suppress("RedundantSuspendModifier")
 class Dropbox(private val sp: SharedPreferences) {
     private var awaitingLogin: (() -> Unit)? = null
@@ -64,7 +69,7 @@ class Dropbox(private val sp: SharedPreferences) {
                 .withMode(WriteMode.OVERWRITE)
                 .uploadAndFinish(fis)
             true
-        } catch (_: DbxException) {
+        } catch (_: DbxException) { // includes when no network is available
             false
         }
         fis.close()

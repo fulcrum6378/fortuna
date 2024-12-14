@@ -21,6 +21,7 @@ import android.widget.EditText
 import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
@@ -56,10 +57,7 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-/**
- * Main table of our calendar
- * Subclass of ListAdapter, customised to be used in a GridView, and list the days.
- */
+/** Main table of our calendar grid which lists days of a month. */
 @SuppressLint("SetTextI18n")
 class Grid(private val c: Main) : ListAdapter {
     lateinit var luna: Luna
@@ -72,7 +70,7 @@ class Grid(private val c: Main) : ListAdapter {
         onRefresh()
     }
 
-    /** The TextView inside the changeVar()'s dialogue. */
+    /** Reference to the TextView inside the dialogue of [changeVar]. */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -93,6 +91,7 @@ class Grid(private val c: Main) : ListAdapter {
     override fun registerDataSetObserver(observer: DataSetObserver) {}
     override fun unregisterDataSetObserver(observer: DataSetObserver) {}
 
+    /** Improved drawable for the fields in [changeVar] */
     private val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -101,7 +100,7 @@ class Grid(private val c: Main) : ListAdapter {
         ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
     }
 
-    @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
+    @SuppressLint("ViewHolder")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
         ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
             val score: Float? =
@@ -154,7 +153,7 @@ class Grid(private val c: Main) : ListAdapter {
             root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
             root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
             if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
-                root.foreground = c.getDrawable(R.drawable.dies_today)
+                root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
         }.root
 
     /** Invoked via [Main.updateGrid] */
@@ -167,10 +166,7 @@ class Grid(private val c: Main) : ListAdapter {
         maximumStats = c.maximaForStats(c.m.calendar, c.m.luna!!)
     }
 
-    /**
-     * Return a copy of the main Sexbook data (<code>m.sexbook</code>)
-     * in order to cache it in this class.
-     */
+    /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */
     fun cacheSexbook() = c.m.sexbook?.let {
         val spl = c.m.luna!!.split(".")
         val yr = spl[0].toShort()

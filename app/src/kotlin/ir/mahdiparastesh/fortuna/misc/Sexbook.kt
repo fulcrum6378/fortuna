@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.fortuna.misc
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
@@ -19,7 +18,6 @@ import ir.mahdiparastesh.fortuna.Main
  * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repository</a>
  */
 class Sexbook(private val c: Context) : Thread() {
-    @SuppressLint("Recycle")
     override fun run() {
         val places = hashMapOf<Long, String>()
         val reports = arrayListOf<Report>()

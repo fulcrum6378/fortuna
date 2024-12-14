@@ -510,7 +510,3 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 }
-
-/* TODO:
-  * - Select multiple day cells in order to score them once; needs custom selection
-  */

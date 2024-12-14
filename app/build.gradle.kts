@@ -12,7 +12,7 @@ android {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
         targetSdk = 35
-        versionCode = 14
+        versionCode = 15
         versionName = "12.0.1"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")

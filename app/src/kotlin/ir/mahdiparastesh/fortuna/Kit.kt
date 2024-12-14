@@ -29,14 +29,16 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.misc.HumanistIranianCalendar
 import java.util.Locale
 
-/** Static functions and utilities used everywhere. */
+/** Static fields and methods used everywhere. */
 object Kit {
     const val A_DAY = 86400000L
+    const val SEXBOOK = "ir.mahdiparastesh.sexbook"
+
+    /* Keys of Shared Preferences */
     const val SP_NUMERAL_TYPE = "numeral_type"
+    const val defNumType = "0" // Arabic
     const val SP_SEARCH_INCLUSIVE = "search_inclusive"
     const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"
-    const val defNumType = "0" // Arabic
-    const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
     /**
      * Default Calendar Type
