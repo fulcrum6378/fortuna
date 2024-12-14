@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 14
-        versionName = "12.0.0"
+        versionName = "12.0.1"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -62,8 +62,8 @@ android {
 }
 
 dependencies {
-    implementation(libs.ktx.activity)
-    implementation(libs.ktx.core)
+    implementation(libs.activity.ktx)
+    implementation(libs.core.ktx)
     implementation(libs.dropbox.android)
     implementation(libs.dropbox.core)
     implementation(libs.material)

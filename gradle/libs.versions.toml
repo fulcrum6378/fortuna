@@ -11,8 +11,8 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [libraries]
-ktx-activity = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
-ktx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 dropbox-android = { group = "com.dropbox.core", name = "dropbox-android-sdk", version.ref = "dropBox" }
 dropbox-core = { group = "com.dropbox.core", name = "dropbox-core-sdk", version.ref = "dropBox" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }

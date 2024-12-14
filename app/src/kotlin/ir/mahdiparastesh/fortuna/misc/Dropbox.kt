@@ -2,7 +2,6 @@ package ir.mahdiparastesh.fortuna.misc
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.annotation.WorkerThread
 import androidx.core.content.edit
 import com.dropbox.core.DbxException
 import com.dropbox.core.DbxRequestConfig
@@ -17,6 +16,7 @@ import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import java.io.FileInputStream
 
+@Suppress("RedundantSuspendModifier")
 class Dropbox(private val sp: SharedPreferences) {
     private var awaitingLogin: (() -> Unit)? = null
 
@@ -55,8 +55,7 @@ class Dropbox(private val sp: SharedPreferences) {
 
     fun client() = DbxClientV2(requestConfig(), credential())
 
-    @WorkerThread
-    fun backup(c: Context): Boolean {
+    suspend fun backup(c: Context): Boolean {
         val fis = FileInputStream(Vita.Stored(c))
         val success = try {
             client()
@@ -72,7 +71,6 @@ class Dropbox(private val sp: SharedPreferences) {
         return success
     }
 
-    @Suppress("RedundantSuspendModifier")
     suspend fun logout() {
         if (!isAuthenticated()) return
         try {

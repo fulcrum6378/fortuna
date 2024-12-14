@@ -84,8 +84,8 @@ Here is a complete example:
 - [**Kit.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Kit.kt) : a set of miscellaneous static functions and utilities.
 - [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) : the main and only Activity instance in this app.
 - [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) : a BroadcastReceiver that takes some necessary
-  or optional actions at 12 AM, including a Vita backup, reminding users to score their day and updating views
-  according to the current new date.
+  or optional actions at 12 AM; including a Vita backup (local+cloud), reminding users to score their day
+  and updating views according to the current new date.
 - [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) : reads and writes Vita files and all related
   utilities.
 - [**misc**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) subpackage : miscellaneous add-ons and utilities.

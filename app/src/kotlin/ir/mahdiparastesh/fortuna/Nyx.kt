@@ -18,6 +18,9 @@ import ir.mahdiparastesh.fortuna.Kit.sp
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.misc.Dropbox
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /** Awakens every night at 12 AM and perform various actions. */
 class Nyx : BroadcastReceiver() {
@@ -71,6 +74,7 @@ class Nyx : BroadcastReceiver() {
         // Backup
         Vita.backup(c)
         val dropbox = Dropbox(c.sp())
-        if (dropbox.isAuthenticated()) dropbox.backup(c)
+        if (dropbox.isAuthenticated())
+            CoroutineScope(Dispatchers.IO).launch { dropbox.backup(c) }
     }
 }
