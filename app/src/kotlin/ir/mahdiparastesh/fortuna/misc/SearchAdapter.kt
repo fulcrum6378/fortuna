@@ -28,12 +28,8 @@ import kotlin.math.min
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(private val c: Main) :
     RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
-
-    companion object {
-        const val FRAGMENT_TAG = "srch"
-        const val sampleRadius = 50
-        const val sampleMore = "..."
-    }
+    private val sampleRadius = 50
+    private val sampleMore = "..."
 
     @SuppressLint("NotifyDataSetChanged")
     fun search(q: CharSequence?, inclusivityChanged: Boolean = false) {

@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 15
-        versionName = "12.0.1"
+        versionName = "12.0.2"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -35,10 +35,10 @@ android {
     sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_22
-        targetCompatibility = JavaVersion.VERSION_22
+        sourceCompatibility = JavaVersion.VERSION_23
+        targetCompatibility = JavaVersion.VERSION_23
     }
-    kotlinOptions { jvmTarget = "22" }
+    kotlinOptions { jvmTarget = "23" }
 
     buildFeatures { buildConfig = true; viewBinding = true }
     signingConfigs {

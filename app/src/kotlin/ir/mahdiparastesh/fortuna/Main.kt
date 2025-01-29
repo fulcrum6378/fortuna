@@ -275,10 +275,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                     onCalendarChanged(); }
                 closeDrawer()
             }
-            R.id.navSearch -> SearchDialog().show(
-                supportFragmentManager,
-                SearchAdapter.FRAGMENT_TAG
-            )
+            R.id.navSearch -> SearchDialog().show(supportFragmentManager, "srch")
             R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
