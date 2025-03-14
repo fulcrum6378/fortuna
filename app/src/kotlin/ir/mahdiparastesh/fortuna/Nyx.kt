@@ -49,13 +49,14 @@ class Nyx : BroadcastReceiver() {
     override fun onReceive(c: Context, intent: Intent) {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             alarm(c); return; }
+        val c = c.applicationContext as Fortuna
 
         // Today
-        TodayWidget.externalUpdate(c.applicationContext as Fortuna)
+        TodayWidget.externalUpdate(c)
         Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
         // Remind the user to score the recent day if already has not
-        val cal = Kit.calType.create().apply { timeInMillis -= Kit.A_DAY }
+        val cal = c.calType.create().apply { timeInMillis -= Kit.A_DAY }
         val score = Vita.load(c).getOrDefault(cal.toKey(), null)
             ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
@@ -73,7 +74,7 @@ class Nyx : BroadcastReceiver() {
 
         // Backup
         Vita.backup(c)
-        val dropbox = Dropbox((c.applicationContext as Fortuna).sp)
+        val dropbox = Dropbox(c.sp)
         if (dropbox.isAuthenticated())
             CoroutineScope(Dispatchers.IO).launch { dropbox.backup(c) }
     }

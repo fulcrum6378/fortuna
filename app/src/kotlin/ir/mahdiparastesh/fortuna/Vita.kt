@@ -2,7 +2,6 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
-import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.z
 import java.io.File
@@ -83,19 +82,19 @@ class Vita : HashMap<String, Luna>() {
         const val MIME_TYPE = "application/octet-stream"
 
         /** Loads the Vita data from [Stored]. */
-        fun load(c: Context): Vita {
+        fun load(c: Fortuna): Vita {
             val stored = Stored(c)
             return if (stored.exists()) {
                 val data: ByteArray
                 FileInputStream(stored).use { data = it.readBytes() }
-                loads(String(data))
+                loads(c, String(data))
             } else Vita()
         }
 
         /** Loads the Vita data from a given string. */
-        fun loads(text: String): Vita {
+        fun loads(c: Fortuna, text: String): Vita {
             val vita = Vita()
-            val cal = Kit.calType.create()
+            val cal = c.calType.create()
             var key: String? = null
             var dies = 0
             for (ln in StringReader(text).readLines()) try {
@@ -108,6 +107,7 @@ class Vita : HashMap<String, Luna>() {
                     cal.set(Calendar.YEAR, splitKey[0].toInt())
                     cal.set(Calendar.MONTH, splitKey[1].toInt() - 1)
                     vita[key] = Luna(
+                        c,
                         cal,
                         s.getOrNull(1)?.toFloat(),
                         sn.getOrNull(1)?.ifBlank { null },
@@ -211,7 +211,8 @@ class Vita : HashMap<String, Luna>() {
 
 /** Subset of [Vita] for managing months. */
 class Luna(
-    cal: Calendar = Kit.calType.create(),
+    c: Fortuna,
+    cal: Calendar = c.calType.create(),
     var default: Float? = null,
     var emoji: String? = null,
     var verbum: String? = null,

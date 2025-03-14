@@ -33,7 +33,7 @@ class TodayWidget : AppWidgetProvider() {
 
     companion object {
         fun update(c: Fortuna) = RemoteViews(c.packageName, R.layout.today_widget).apply {
-            val cal = Kit.calType.create()
+            val cal = c.calType.create()
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(
@@ -46,8 +46,8 @@ class TodayWidget : AppWidgetProvider() {
             setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
             setTextViewText(
                 R.id.dies, Numerals.build(
-                    c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
-                        .let { if (it == Kit.defNumType) null else it }
+                    c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
+                        .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
                 ).write(cal[Calendar.DAY_OF_MONTH])
             )
             val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]

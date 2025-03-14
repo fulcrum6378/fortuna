@@ -56,7 +56,6 @@ import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.util.Kit.blur
-import ir.mahdiparastesh.fortuna.util.Kit.calType
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
@@ -80,7 +79,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
-    var todayCalendar: Calendar = calType.create().resetHours()
+    var todayCalendar: Calendar = c.calType.create().resetHours()
     var todayLuna: String = todayCalendar.toKey()
     private var rollingLuna = true // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
@@ -110,8 +109,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         var showingDate: Int? = null
         var compareDatesWith: Calendar? = null
         var changingConfigForLunaSpinner = false
-
-        fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -134,8 +131,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
-                        (nt.jClass?.simpleName ?: Kit.defNumType)
+                isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF) ==
+                        (nt.jClass?.simpleName ?: Kit.SP_NUMERAL_TYPE_DEF)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -145,7 +142,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 putString(
                     Kit.SP_NUMERAL_TYPE,
                     Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
-                        ?: Kit.defNumType
+                        ?: Kit.SP_NUMERAL_TYPE_DEF
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -163,7 +160,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 if (m.changingConfigForLunaSpinner) {
                     m.changingConfigForLunaSpinner = false; return; }
                 m.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
-                m.calendar = m.luna!!.toCalendar(calType)
+                m.calendar = m.luna!!.toCalendar(c.calType)
                 updateGrid()
             }
         } // setOnItemClickListener cannot be used with a spinner
@@ -176,7 +173,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 return@addTextChangedListener // don't move this before rollingLunaWithAnnus
 
             m.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            m.calendar = m.luna!!.toCalendar(calType)
+            m.calendar = m.luna!!.toCalendar(c.calType)
             updateGrid()
         }
         b.annus.setOnEditorActionListener { v, actionId, _ ->
@@ -184,7 +181,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val annus = v.text.toString()
             if (annus == "" || annus == "-") return@setOnEditorActionListener true
             m.luna = "${z(annus, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            m.calendar = m.luna!!.toCalendar(calType)
+            m.calendar = m.luna!!.toCalendar(c.calType)
             updateGrid()
             b.annus.blur(c)
             return@setOnEditorActionListener true
@@ -205,7 +202,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
-                        todayCalendar = calType.create().resetHours()
+                        todayCalendar = c.calType.create().resetHours()
                         todayLuna = todayCalendar.toKey()
                         updateGrid()
                     }
@@ -224,7 +221,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         // Nyx
-        Kit.reqPermissions.forEach {
+        c.requiredPermissions.forEach {
             if (ActivityCompat.checkSelfPermission(c, it) != PackageManager.PERMISSION_GRANTED)
                 reqPermLauncher.launch(it)
         }
@@ -241,7 +238,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             } catch (_: PackageManager.NameNotFoundException) {
                 false
             } && m.sexbook == null
-        ) Sexbook(this).start()
+        ) Sexbook(c).start()
     }
 
     var firstResume = true // a new instance of Main is created on a configuration change.
@@ -251,7 +248,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         if (m.luna == null) {
             intent.resolveIntent()
             if (!Vita.Stored(c).exists()) {
-                m.vita!![m.luna!!] = Luna(m.calendar)
+                m.vita!![m.luna!!] = Luna(c, m.calendar)
                 m.vita!!.save(c)
             } else m.vita?.reform(c)
         } else if (firstResume) {
@@ -277,9 +274,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         val extraLuna = getStringExtra(EXTRA_LUNA)
         if (extraLuna != null) {
             m.luna = extraLuna
-            m.calendar = extraLuna.toCalendar(calType)
+            m.calendar = extraLuna.toCalendar(c.calType)
         } else {
-            m.calendar = calType.create()
+            m.calendar = c.calType.create()
             m.luna = m.calendar.toKey()
         }
         updatePanel()
@@ -296,7 +293,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         when (item.itemId) {
             R.id.navToday -> {
                 if (todayLuna != m.calendar.toKey()) {
-                    m.calendar = calType.create()
+                    m.calendar = c.calType.create()
                     onCalendarChanged(); }
                 closeDrawer()
             }
@@ -370,7 +367,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }
             val imported: Vita
             try {
-                imported = Vita.loads(data)
+                imported = Vita.loads(c, data)
             } catch (_: Exception) {
                 Toast.makeText(
                     c, R.string.importReadError, Toast.LENGTH_LONG
@@ -443,8 +440,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
-                    (Numerals.all[i].jClass?.simpleName ?: Kit.defNumType)
+            item.isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF) ==
+                    (Numerals.all[i].jClass?.simpleName ?: Kit.SP_NUMERAL_TYPE_DEF)
         }
     }
 

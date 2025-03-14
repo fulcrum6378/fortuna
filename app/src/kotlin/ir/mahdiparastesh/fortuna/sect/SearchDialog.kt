@@ -24,7 +24,6 @@ import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
-import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /** A dialogue for searching in [Vita]. */
-class SearchDialog : BaseDialogue() {
+class SearchDialog : Kit.BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
             setTitle(R.string.navSearch)
@@ -101,7 +100,7 @@ class SearchAdapter(private val c: Main) :
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
         h.b.root.setOnClickListener {
-            c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(Kit.calType)
+            c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(c.c.calType)
             c.onCalendarChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
             (c.b.grid.adapter as? Grid)?.changeVar(

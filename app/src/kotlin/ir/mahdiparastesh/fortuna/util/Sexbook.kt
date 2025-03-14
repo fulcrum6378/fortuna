@@ -1,9 +1,9 @@
 package ir.mahdiparastesh.fortuna.util
 
-import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 import androidx.core.net.toUri
+import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.util.Kit.create
@@ -13,9 +13,10 @@ import ir.mahdiparastesh.fortuna.util.Kit.iterate
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
  * The data includes orgasm times and crushes' birthdays.
  *
- * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repository</a>
+ * @see <a href="https://github.com/fulcrum6378/sexbook">The Sexbook repository</a>
  */
-class Sexbook(private val c: Context) : Thread() {
+class Sexbook(private val c: Fortuna) : Thread() {
+
     override fun run() {
         val places = hashMapOf<Long, String>()
         val reports = arrayListOf<Report>()
@@ -37,7 +38,7 @@ class Sexbook(private val c: Context) : Thread() {
             "content://${Kit.SEXBOOK}/report".toUri(),
             null, null, null, "time ASC" // DESC
         ).iterate {
-            val cal = Kit.calType.create()
+            val cal = c.calType.create()
             cal.timeInMillis = getLong(0)
             reports.add(
                 Report(
@@ -109,7 +110,7 @@ class Sexbook(private val c: Context) : Thread() {
      * Class containing the information about a crush from Sexbook.
      * @see Grid#appendCrushDates
      */
-    class Crush(
+    inner class Crush(
         private val key: String,
         private val fName: String?, private val mName: String?, private val lName: String?,
         status: Int, birth: String?, firstMet: String?
@@ -173,8 +174,8 @@ class Sexbook(private val c: Context) : Thread() {
                 yb = spl[0].toInt()
                 mb = spl[1].toInt() - 1
                 db = spl[2].toInt()
-                if (Kit.calType != GregorianCalendar::class.java) {
-                    val cal = Kit.calType.create()
+                if (c.calType != GregorianCalendar::class.java) {
+                    val cal = c.calType.create()
                     cal.timeInMillis = GregorianCalendar(yb, mb, db).timeInMillis
                     yb = cal[Calendar.YEAR]
                     mb = cal[Calendar.MONTH]

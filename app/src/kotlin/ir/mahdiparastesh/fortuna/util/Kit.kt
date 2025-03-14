@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.fortuna.util
 
-import android.Manifest
 import android.app.PendingIntent
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -21,13 +20,12 @@ import android.widget.Toast
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import java.util.Locale
 
 /** Static fields and methods used everywhere. */
 object Kit {
@@ -36,48 +34,9 @@ object Kit {
 
     /* Keys of Shared Preferences */
     const val SP_NUMERAL_TYPE = "numeral_type"
-    const val defNumType = "0" // Arabic
+    const val SP_NUMERAL_TYPE_DEF = "0" // defaults to Arabic
     const val SP_SEARCH_INCLUSIVE = "search_inclusive"
     const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"
-
-    /**
-     * Default Calendar Type
-     * This is a very important constant containing the class type of our default calendar,
-     * which must be a subclass of android.icu.util.Calendar.
-     *
-     * Do NOT use Lunisolar calendars here!
-     *
-     * @see android.icu.util.Calendar
-     * @see <a href="https://en.wikipedia.org/wiki/Lunisolar_calendar">Lunisolar calendar - Wikipedia</a>
-     */
-    @Suppress("KotlinConstantConditions")
-    val calType = when (BuildConfig.FLAVOR) {
-        "iranian" -> HumanistIranianCalendar::class.java
-        "gregorian" -> android.icu.util.GregorianCalendar::class.java
-        else -> throw Exception("Unknown calendar type!")
-    }
-
-    /** Other supported Calendar types */
-    val otherCalendars = arrayOf(
-        HumanistIranianCalendar::class.java,
-        // GregorianCalendar does not show a negative number in BCE, which is correct!
-        android.icu.util.GregorianCalendar::class.java,
-        android.icu.util.IndianCalendar::class.java,
-        android.icu.util.ChineseCalendar::class.java,
-        android.icu.util.IslamicCalendar::class.java,
-        android.icu.util.HebrewCalendar::class.java,
-        android.icu.util.CopticCalendar::class.java,
-    ).filter { it != calType }
-    val locale: Locale = Locale.UK // never ever use SimpleDateFormat
-
-    /**
-     * List of all the required permissions.
-     * Change Main::reqPermLauncher to RequestMultiplePermissions() if you wanna add more.
-     */
-    val reqPermissions =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS)
-        else arrayOf()
 
     /** @return the colour value of this attribute resource from the theme. */
     @ColorInt
@@ -246,4 +205,9 @@ object Kit {
 
     /** Helper class for implementing RecyclerView.ViewHolder. */
     open class AnyViewHolder<B>(val b: B) : RecyclerView.ViewHolder(b.root) where B : ViewBinding
+
+    /** Base class for DialogFragment instances in this app. */
+    abstract class BaseDialogue : DialogFragment() {
+        protected val c: Main by lazy { activity as Main }
+    }
 }

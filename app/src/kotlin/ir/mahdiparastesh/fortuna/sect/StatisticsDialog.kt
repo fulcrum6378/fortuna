@@ -22,7 +22,6 @@ import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
-import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
@@ -36,7 +35,7 @@ import ir.mahdiparastesh.fortuna.util.Kit.toValue
  * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
  * someone accidentally or deliberately score a day in year 25 or 8000.
  */
-class StatisticsDialog : BaseDialogue() {
+class StatisticsDialog : Kit.BaseDialogue() {
     private var dialogue: AlertDialog? = null
     private lateinit var text: String
 
@@ -46,7 +45,7 @@ class StatisticsDialog : BaseDialogue() {
         val keyMeanMap = hashMapOf<String, Float>()
         if (c.m.vita != null) for ((key, luna) in c.m.vita!!) {
             val lunaScores = arrayListOf<Float>()
-            val cal = key.toCalendar(Kit.calType).resetHours()
+            val cal = key.toCalendar(c.c.calType).resetHours()
             val maxima = c.maximaForStats(cal, key) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
@@ -111,7 +110,7 @@ class StatisticsDialog : BaseDialogue() {
                                 }"
                             setOnClickListener(object : Kit.DoubleClickListener() {
                                 override fun onDoubleClick() {
-                                    c.m.calendar = Kit.calType.create().apply {
+                                    c.m.calendar = c.c.calType.create().apply {
                                         set(Calendar.YEAR, year)
                                         set(Calendar.MONTH, month)
                                         set(Calendar.DAY_OF_MONTH, 1)

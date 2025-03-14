@@ -41,7 +41,6 @@ import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
-import ir.mahdiparastesh.fortuna.util.Kit.calType
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.util.Kit.create
@@ -159,10 +158,10 @@ class Grid(private val c: Main) : ListAdapter {
 
     /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
-        luna = c.m.thisLuna()
+        luna = c.m.vita?.find(c.m.luna!!) ?: Luna(c.c, c.m.calendar)
         sexbook = cacheSexbook()
-        numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
-            .let { if (it == Kit.defNumType) null else it }
+        numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
+            .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
         maximumStats = c.maximaForStats(c.m.calendar, c.m.luna!!)
     }
@@ -182,7 +181,7 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     /** Creates a calendar indicating this day. */
-    fun dailyCalendar(i: Int) = calType.create().apply {
+    fun dailyCalendar(i: Int) = c.c.calType.create().apply {
         timeInMillis = c.m.calendar.timeInMillis
         set(Calendar.DAY_OF_MONTH, i + 1)
         resetHours()
@@ -431,11 +430,11 @@ class Grid(private val c: Main) : ListAdapter {
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Kit.locale)
+                "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
                     .weekdays[cal[Calendar.DAY_OF_WEEK]]
             )
             setMessage(StringBuilder().apply {
-                for (oc in Kit.otherCalendars) {
+                for (oc in c.c.otherCalendars) {
                     val d = oc.create()
                     d.timeInMillis = cal.timeInMillis
                     append("${oc.simpleName.substringBefore("Calendar")}: ")
@@ -450,7 +449,7 @@ class Grid(private val c: Main) : ListAdapter {
                     override fun afterTextChanged(s: Editable?) {
                         result.text = try {
                             result.isVisible = true
-                            val dat = calType.create().resetHours().apply {
+                            val dat = c.c.calType.create().resetHours().apply {
                                 this[Calendar.YEAR] = y.text.toString().toInt()
                                 this[Calendar.MONTH] = (m.text.toString().toInt() - 1).also {
                                     if (it > getActualMaximum(Calendar.MONTH) || it < 0)
@@ -547,7 +546,7 @@ class Grid(private val c: Main) : ListAdapter {
             /* the first part of the month always starts with 1,
              * but the second part of the month ends with changeable numbers;
              * therefore we need to use the previous month's maximum when explaining the future! */
-            val prev = calType.create().apply {
+            val prev = c.c.calType.create().apply {
                 timeInMillis = other.timeInMillis
                 moveCalendarInMonths(false)
             }
