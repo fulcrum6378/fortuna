@@ -1,29 +1,71 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.sect
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.content.DialogInterface
 import android.graphics.Typeface
 import android.icu.util.Calendar
+import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.core.content.edit
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
+import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
+import ir.mahdiparastesh.fortuna.util.BaseDialogue
+import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.min
+
+/** A dialogue for searching in [Vita]. */
+class SearchDialog : BaseDialogue() {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return MaterialAlertDialogBuilder(c).apply {
+            setTitle(R.string.navSearch)
+            setView(SearchBinding.inflate(layoutInflater).apply {
+                field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
+                field.setOnEditorActionListener { v, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_GO)
+                        (list.adapter as SearchAdapter).search(v.text)
+                    return@setOnEditorActionListener true
+                }
+                inclusivity.isChecked = c.c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+                inclusivity.setOnCheckedChangeListener { _, bb ->
+                    c.c.sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
+                    (list.adapter as SearchAdapter).search(field.text, true)
+                }
+                list.adapter = SearchAdapter(c)
+            }.root)
+            setNegativeButton(R.string.cancel, null)
+        }.create()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        c.m.searchResults.clear()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        super.onCancel(dialog)
+        c.m.searchResults.clear()
+    }
+}
 
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(private val c: Main) :
@@ -62,8 +104,9 @@ class SearchAdapter(private val c: Main) :
             c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(Kit.calType)
             c.onCalendarChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
-            (c.b.grid.adapter as? Grid)?.changeVar(dies, c.m.calendar
-                .apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
+            (c.b.grid.adapter as? Grid)?.changeVar(
+                dies,
+                c.m.calendar.apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
         }
     }
 
@@ -74,7 +117,7 @@ class SearchAdapter(private val c: Main) :
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
         private val qEmojis = mutableSetOf<String>()
         private val qWords = mutableSetOf<String>()
-        private val exclusive = !c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+        private val exclusive = !c.c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
 
         init {
             CoroutineScope(Dispatchers.IO).launch {

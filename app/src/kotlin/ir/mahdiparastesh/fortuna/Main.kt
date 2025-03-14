@@ -1,18 +1,26 @@
 package ir.mahdiparastesh.fortuna
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.*
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.icu.util.Calendar
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -32,6 +40,20 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
+import ir.mahdiparastesh.fortuna.Vita.Companion.mean
+import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
+import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import ir.mahdiparastesh.fortuna.sect.BackupDialog
+import ir.mahdiparastesh.fortuna.sect.HelpDialog
+import ir.mahdiparastesh.fortuna.sect.SearchAdapter
+import ir.mahdiparastesh.fortuna.sect.SearchDialog
+import ir.mahdiparastesh.fortuna.sect.StatisticsDialog
+import ir.mahdiparastesh.fortuna.sect.TodayWidget
+import ir.mahdiparastesh.fortuna.util.Dropbox
+import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.util.Kit.blur
 import ir.mahdiparastesh.fortuna.util.Kit.calType
@@ -41,20 +63,9 @@ import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.pdcf
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.sp
 import ir.mahdiparastesh.fortuna.util.Kit.z
-import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
-import ir.mahdiparastesh.fortuna.Vita.Companion.mean
-import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
-import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.databinding.MainBinding
-import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.Numerals
-import ir.mahdiparastesh.fortuna.misc.SearchAdapter
 import ir.mahdiparastesh.fortuna.util.Sexbook
-import ir.mahdiparastesh.fortuna.misc.TodayWidget
-import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -69,7 +80,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
-    val sp: SharedPreferences by lazy { sp() }
     var todayCalendar: Calendar = calType.create().resetHours()
     var todayLuna: String = todayCalendar.toKey()
     private var rollingLuna = true // "true" in order to trick onItemSelected
@@ -77,19 +87,31 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     private var rollingAnnusItself = false
     var dropbox: Dropbox? = null
 
-    class Fortuna : Application() {
-        override fun onConfigurationChanged(newConfig: Configuration) {
-            super.onConfigurationChanged(newConfig)
-            TodayWidget.externalUpdate(applicationContext)
-        }
-    }
-
     companion object {
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_SEXBOOK_LOADED = 1
         var handler: Handler? = null
+    }
+
+    class Model : ViewModel() {
+        var vita: Vita? = null
+        var luna: String? = null
+        lateinit var calendar: Calendar
+        var sexbook: Sexbook.Data? = null
+        var emojis = listOf<String>()
+        var changingVar: Int? = null
+        var changingVarScore: Int? = null
+        var changingVarEmoji: String? = null
+        var changingVarVerbum: String? = null
+        var lastSearchQuery: String? = null
+        var searchResults = ArrayList<SearchAdapter.Result>()
+        var showingDate: Int? = null
+        var compareDatesWith: Calendar? = null
+        var changingConfigForLunaSpinner = false
+
+        fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,14 +134,14 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
+                isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
                         (nt.jClass?.simpleName ?: Kit.defNumType)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
             .tooltipText = getString(R.string.numerals)
         b.toolbar.setOnMenuItemClickListener { mItem ->
-            sp.edit {
+            c.sp.edit {
                 putString(
                     Kit.SP_NUMERAL_TYPE,
                     Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
@@ -237,7 +259,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
             // restore saved states (null-safe)
             m.changingVar?.also {
-                (b.grid.adapter as? Grid)?.changeVar(it,
+                (b.grid.adapter as? Grid)?.changeVar(
+                    it,
                     (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
             }
             m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, m.calendar) }
@@ -262,7 +285,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         updatePanel()
         updateGrid()
         if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
-            (b.grid.adapter as? Grid)?.changeVar(it - 1,
+            (b.grid.adapter as? Grid)?.changeVar(
+                it - 1,
                 (m.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
         }
         resolvingIntent = false
@@ -419,7 +443,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
+            item.isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType) ==
                     (Numerals.all[i].jClass?.simpleName ?: Kit.defNumType)
         }
     }
@@ -488,32 +512,4 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         handler = null
         super.onDestroy()
     }
-
-    class Model : ViewModel() {
-        var vita: Vita? = null
-        var luna: String? = null
-        lateinit var calendar: Calendar
-        var sexbook: Sexbook.Data? = null
-        var emojis = listOf<String>()
-        var changingVar: Int? = null
-        var changingVarScore: Int? = null
-        var changingVarEmoji: String? = null
-        var changingVarVerbum: String? = null
-        var lastSearchQuery: String? = null
-        var searchResults = ArrayList<SearchAdapter.Result>()
-        var showingDate: Int? = null
-        var compareDatesWith: Calendar? = null
-        var changingConfigForLunaSpinner = false
-
-        fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
-    }
 }
-
-/* TODO:
-  * A new icon
-  * Search count
-  * Creation date for fictional characters
-  * Estimated dates
-  * -
-  * JavaFX
-*/

@@ -12,13 +12,12 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.ActivityCompat
+import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.sect.TodayWidget
+import ir.mahdiparastesh.fortuna.util.Dropbox
+import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.sp
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.misc.TodayWidget
-import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,7 +51,7 @@ class Nyx : BroadcastReceiver() {
             alarm(c); return; }
 
         // Today
-        TodayWidget.externalUpdate(c)
+        TodayWidget.externalUpdate(c.applicationContext as Fortuna)
         Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
         // Remind the user to score the recent day if already has not
@@ -74,7 +73,7 @@ class Nyx : BroadcastReceiver() {
 
         // Backup
         Vita.backup(c)
-        val dropbox = Dropbox(c.sp())
+        val dropbox = Dropbox((c.applicationContext as Fortuna).sp)
         if (dropbox.isAuthenticated())
             CoroutineScope(Dispatchers.IO).launch { dropbox.backup(c) }
     }

@@ -6,8 +6,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.res.Configuration
 import android.database.Cursor
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
@@ -29,7 +27,6 @@ import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
 import java.util.Locale
 
 /** Static fields and methods used everywhere. */
@@ -81,10 +78,6 @@ object Kit {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
-
-
-    /** @return the main shared preferences instance; <code>settings.xml</code>. */
-    fun Context.sp(): SharedPreferences = getSharedPreferences("settings", Context.MODE_PRIVATE)
 
     /** @return the colour value of this attribute resource from the theme. */
     @ColorInt
@@ -197,9 +190,6 @@ object Kit {
             ?.hideSoftInputFromWindow(windowToken, 0)
         clearFocus()
     }
-
-    fun Context.isLandscape() =
-        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     fun Cursor?.iterate(action: Cursor.() -> Unit) {
         this?.use { cur -> while (cur.moveToNext()) cur.action() }

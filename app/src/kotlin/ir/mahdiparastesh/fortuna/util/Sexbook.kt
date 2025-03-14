@@ -5,10 +5,9 @@ import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.iterate
-import ir.mahdiparastesh.fortuna.Main
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.

@@ -1,8 +1,9 @@
 # Fortuna
 
-An open-source neuroscientific Android app based on the [Hedonist philosophy](https://en.wikipedia.org/wiki/Hedonism),
-using which you will score your mood every day in your desired calendar system. You can also set an emoji for a day
-or a month and enter some notes!
+An open-source neuroscientific Android app based on the
+[Hedonist philosophy](https://en.wikipedia.org/wiki/Hedonism),
+using which you will score your mood every day in your desired calendar system.
+You can also set an emoji for a day or a month and enter some notes!
 
 <p>
   <img src="about/Screenshot_20230120-044811_Fortuna.jpg" width="32%" />
@@ -77,18 +78,28 @@ Here is a complete example:
 
 ## Structure of the Source Code
 
-- [**Dialogues.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Dialogues.kt) : contains all the
-  DialogFragment instances, mostly used in in the navigation drawer.
-- [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) : controls the calendar table
-  and the dialogues that might pop up while interacting with it.
-- [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) : the main and only Activity instance in this app.
-- [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) : a BroadcastReceiver that takes some necessary
-  or optional actions at 12 AM; including a Vita backup (local+cloud), reminding users to score their day
+#### Main Classes
+
+- [**Fortuna.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Fortuna.kt) : the Application subclass
+
+- [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) :
+  the main and only Activity instance in this app
+
+- [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) :
+  reads and writes Vita files and all related utilities
+
+- [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) :
+  controls the calendar table and the dialogues that might pop up while interacting with it
+
+- [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) :
+  a BroadcastReceiver that takes some necessary or optional actions at 12 AM;
+  including a Vita backup (local+cloud), reminding users to score their day
   and updating views according to the current new date.
-- [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) : reads and writes Vita files and all related
-  utilities.
-- [**misc**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) subpackage : miscellaneous add-ons and utilities.
-- [**util**](app\src\kotlin\ir\mahdiparastesh\fortuna\util) subpackage : general-purpose utilities.
+
+#### Subpackages
+
+- [**sect**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) : internal and external sections of this app
+- [**util**](app\src\kotlin\ir\mahdiparastesh\fortuna\util) : general-purpose utilities
 
 ### Add your own Calendar
 

@@ -32,6 +32,14 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
+import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
+import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
+import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
+import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
+import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
+import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.util.Kit.calType
 import ir.mahdiparastesh.fortuna.util.Kit.color
@@ -42,14 +50,6 @@ import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
 import ir.mahdiparastesh.fortuna.util.Kit.toValue
 import ir.mahdiparastesh.fortuna.util.Kit.z
-import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
-import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
-import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
-import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
-import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
-import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
@@ -161,7 +161,7 @@ class Grid(private val c: Main) : ListAdapter {
     fun onRefresh() {
         luna = c.m.thisLuna()
         sexbook = cacheSexbook()
-        numType = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
+        numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.defNumType)
             .let { if (it == Kit.defNumType) null else it }
         numeral = Numerals.build(numType)
         maximumStats = c.maximaForStats(c.m.calendar, c.m.luna!!)

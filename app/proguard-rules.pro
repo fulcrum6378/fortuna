@@ -1,3 +1,3 @@
--keep class * extends ir.mahdiparastesh.fortuna.misc.Numeral { public <init>(...); }
+-keep class * extends ir.mahdiparastesh.fortuna.util.Numeral { public <init>(...); }
 -keep class ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
--keep class ir.mahdiparastesh.fortuna.misc.Numerals
+-keep class ir.mahdiparastesh.fortuna.util.Numerals
