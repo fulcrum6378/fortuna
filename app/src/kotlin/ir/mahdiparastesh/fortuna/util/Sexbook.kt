@@ -1,20 +1,19 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.util
 
 import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.GregorianCalendar
-import android.net.Uri
+import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.Kit
-import ir.mahdiparastesh.fortuna.Kit.create
-import ir.mahdiparastesh.fortuna.Kit.iterate
+import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.iterate
 import ir.mahdiparastesh.fortuna.Main
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
  * The data includes orgasm times and crushes' birthdays.
  *
- * @see <a href="https://play.google.com/store/apps/details?id=ir.mahdiparastesh.sexbook">Sexbook in Google Play</a>
  * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repository</a>
  */
 class Sexbook(private val c: Context) : Thread() {
@@ -26,7 +25,7 @@ class Sexbook(private val c: Context) : Thread() {
         // Get list of Places
         try {
             c.contentResolver.query(
-                Uri.parse("content://${Kit.SEXBOOK}/place"),
+                "content://${Kit.SEXBOOK}/place".toUri(),
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
@@ -36,7 +35,7 @@ class Sexbook(private val c: Context) : Thread() {
 
         // Now get the sex reports
         c.contentResolver.query(
-            Uri.parse("content://${Kit.SEXBOOK}/report"),
+            "content://${Kit.SEXBOOK}/report".toUri(),
             null, null, null, "time ASC" // DESC
         ).iterate {
             val cal = Kit.calType.create()
@@ -56,7 +55,7 @@ class Sexbook(private val c: Context) : Thread() {
 
         // Also load the crushes
         c.contentResolver.query(
-            Uri.parse("content://${Kit.SEXBOOK}/crush"), arrayOf(
+            "content://${Kit.SEXBOOK}/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
         ).iterate {

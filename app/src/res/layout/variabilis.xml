@@ -27,7 +27,7 @@
                 app:layout_constraintHeight_percent="0.4"
                 app:layout_constraintWidth_percent="0.5" />
 
-            <ir.mahdiparastesh.fortuna.misc.Variabilis
+            <ir.mahdiparastesh.fortuna.util.Variabilis
                 android:id="@+id/picker"
                 style="@style/parentConstraint"
                 android:layout_width="0dp"

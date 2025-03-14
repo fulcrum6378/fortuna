@@ -1,9 +1,9 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.util
 
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import ir.mahdiparastesh.fortuna.Kit
-import ir.mahdiparastesh.fortuna.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.R
 import kotlin.math.pow
 

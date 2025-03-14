@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.util
 
 import android.icu.util.Calendar
 import android.icu.util.TimeZone

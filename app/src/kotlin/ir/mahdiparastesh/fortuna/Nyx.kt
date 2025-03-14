@@ -12,12 +12,13 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.ActivityCompat
-import ir.mahdiparastesh.fortuna.Kit.create
-import ir.mahdiparastesh.fortuna.Kit.resetHours
-import ir.mahdiparastesh.fortuna.Kit.sp
+import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.resetHours
+import ir.mahdiparastesh.fortuna.util.Kit.sp
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.misc.Dropbox
+import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
+import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

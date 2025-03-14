@@ -2,8 +2,9 @@ package ir.mahdiparastesh.fortuna
 
 import android.content.Context
 import android.icu.util.Calendar
-import ir.mahdiparastesh.fortuna.Kit.create
-import ir.mahdiparastesh.fortuna.Kit.z
+import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.z
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

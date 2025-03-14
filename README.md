@@ -81,7 +81,6 @@ Here is a complete example:
   DialogFragment instances, mostly used in in the navigation drawer.
 - [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) : controls the calendar table
   and the dialogues that might pop up while interacting with it.
-- [**Kit.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Kit.kt) : a set of miscellaneous static functions and utilities.
 - [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) : the main and only Activity instance in this app.
 - [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) : a BroadcastReceiver that takes some necessary
   or optional actions at 12 AM; including a Vita backup (local+cloud), reminding users to score their day
@@ -89,6 +88,7 @@ Here is a complete example:
 - [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) : reads and writes Vita files and all related
   utilities.
 - [**misc**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) subpackage : miscellaneous add-ons and utilities.
+- [**util**](app\src\kotlin\ir\mahdiparastesh\fortuna\util) subpackage : general-purpose utilities.
 
 ### Add your own Calendar
 

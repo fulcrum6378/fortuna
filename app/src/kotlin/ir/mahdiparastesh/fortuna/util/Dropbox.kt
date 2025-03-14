@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.util
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -10,7 +10,7 @@ import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.WriteMode
 import ir.mahdiparastesh.fortuna.BuildConfig
-import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita

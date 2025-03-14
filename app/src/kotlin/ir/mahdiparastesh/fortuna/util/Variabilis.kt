@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna.misc
+package ir.mahdiparastesh.fortuna.util
 
 import android.content.Context
 import android.util.AttributeSet

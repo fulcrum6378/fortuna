@@ -32,28 +32,29 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import ir.mahdiparastesh.fortuna.Kit.SEXBOOK
-import ir.mahdiparastesh.fortuna.Kit.blur
-import ir.mahdiparastesh.fortuna.Kit.calType
-import ir.mahdiparastesh.fortuna.Kit.color
-import ir.mahdiparastesh.fortuna.Kit.create
-import ir.mahdiparastesh.fortuna.Kit.groupDigits
-import ir.mahdiparastesh.fortuna.Kit.moveCalendarInMonths
-import ir.mahdiparastesh.fortuna.Kit.pdcf
-import ir.mahdiparastesh.fortuna.Kit.resetHours
-import ir.mahdiparastesh.fortuna.Kit.sp
-import ir.mahdiparastesh.fortuna.Kit.z
+import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.Kit.blur
+import ir.mahdiparastesh.fortuna.util.Kit.calType
+import ir.mahdiparastesh.fortuna.util.Kit.color
+import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
+import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
+import ir.mahdiparastesh.fortuna.util.Kit.pdcf
+import ir.mahdiparastesh.fortuna.util.Kit.resetHours
+import ir.mahdiparastesh.fortuna.util.Kit.sp
+import ir.mahdiparastesh.fortuna.util.Kit.z
 import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
 import ir.mahdiparastesh.fortuna.Vita.Companion.mean
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
-import ir.mahdiparastesh.fortuna.misc.Dropbox
-import ir.mahdiparastesh.fortuna.misc.Numerals
+import ir.mahdiparastesh.fortuna.util.Dropbox
+import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.misc.SearchAdapter
-import ir.mahdiparastesh.fortuna.misc.Sexbook
+import ir.mahdiparastesh.fortuna.util.Sexbook
 import ir.mahdiparastesh.fortuna.misc.TodayWidget
+import ir.mahdiparastesh.fortuna.util.Kit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -65,7 +66,7 @@ import java.io.InputStreamReader
 import kotlin.math.ceil
 
 class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener {
-    val c: Context get() = applicationContext
+    val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
     val sp: SharedPreferences by lazy { sp() }
@@ -507,3 +508,12 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         fun thisLuna() = vita?.find(luna!!) ?: Luna(calendar)
     }
 }
+
+/* TODO:
+  * A new icon
+  * Search count
+  * Creation date for fictional characters
+  * Estimated dates
+  * -
+  * JavaFX
+*/

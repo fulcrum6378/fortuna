@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.Kit
+import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita

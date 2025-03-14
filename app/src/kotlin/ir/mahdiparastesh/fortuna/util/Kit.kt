@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.util
 
 import android.Manifest
 import android.app.PendingIntent
@@ -25,8 +25,11 @@ import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import ir.mahdiparastesh.fortuna.BuildConfig
+import ir.mahdiparastesh.fortuna.Main
+import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
-import ir.mahdiparastesh.fortuna.misc.HumanistIranianCalendar
+import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
 import java.util.Locale
 
 /** Static fields and methods used everywhere. */
