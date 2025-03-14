@@ -80,7 +80,7 @@
         </receiver>
 
         <receiver
-            android:name=".misc.TodayWidget"
+            android:name=".sect.TodayWidget"
             android:exported="false">
 
             <intent-filter>

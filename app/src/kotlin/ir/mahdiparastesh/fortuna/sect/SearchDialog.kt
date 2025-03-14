@@ -49,7 +49,7 @@ class SearchDialog : Kit.BaseDialogue() {
                     c.c.sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
                     (list.adapter as SearchAdapter).search(field.text, true)
                 }
-                list.adapter = SearchAdapter(c)
+                list.adapter = SearchAdapter(c, this@SearchDialog)
             }.root)
             setNegativeButton(R.string.cancel, null)
         }.create()
@@ -67,8 +67,10 @@ class SearchDialog : Kit.BaseDialogue() {
 }
 
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
-class SearchAdapter(private val c: Main) :
-    RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
+class SearchAdapter(
+    private val c: Main, private val f: SearchDialog
+) : RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
+
     private val sampleRadius = 50
     private val sampleMore = "..."
 
@@ -82,8 +84,13 @@ class SearchAdapter(private val c: Main) :
                 notifyDataSetChanged()
                 if (c.m.searchResults.isEmpty())
                     Toast.makeText(c, R.string.foundNothing, Toast.LENGTH_SHORT).show()
+                f.requireDialog()
+                    .setTitle(f.getString(R.string.navSearch) + " {${c.m.searchResults.size}}")
             }
-        else notifyDataSetChanged()
+        else {
+            notifyDataSetChanged()
+            f.requireDialog().setTitle(R.string.navSearch)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):

@@ -66,7 +66,5 @@ class Fortuna : Application() {
 
 /* TODO:
   * A new icon
-  * Search count
-  * -
   * JavaFX
 */

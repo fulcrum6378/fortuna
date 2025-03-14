@@ -32,7 +32,7 @@ object Kit {
     const val A_DAY = 86400000L
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
 
-    /* Keys of Shared Preferences */
+    /* Keys of the Shared Preferences */
     const val SP_NUMERAL_TYPE = "numeral_type"
     const val SP_NUMERAL_TYPE_DEF = "0" // defaults to Arabic
     const val SP_SEARCH_INCLUSIVE = "search_inclusive"
