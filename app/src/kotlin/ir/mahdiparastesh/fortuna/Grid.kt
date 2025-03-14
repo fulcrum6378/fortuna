@@ -202,6 +202,8 @@ class Grid(private val c: Main) : ListAdapter {
         var dialogue: AlertDialog? = null
         var isCancelable = true
         arrayOf(bv.highlight, bv.verbum).forEach { it.background = varFieldBg }
+
+        // score picker
         bv.picker.apply {
             maxValue = 12
             minValue = 0
@@ -221,6 +223,8 @@ class Grid(private val c: Main) : ListAdapter {
                 dialogue?.setCancelable(false)
             }
         }
+
+        // emojis
         bv.emoji.apply {
             setText(
                 c.m.changingVarEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji)?.toString()
@@ -233,6 +237,8 @@ class Grid(private val c: Main) : ListAdapter {
                 dialogue?.setCancelable(false)
             }
         }
+
+        // descriptions
         bv.verbum.apply {
             setText(c.m.changingVarVerbum ?: (if (i != -1) luna.verba[i] else luna.verbum))
             if (c.m.changingVarVerbum != null) isCancelable = false
@@ -251,11 +257,14 @@ class Grid(private val c: Main) : ListAdapter {
             // https://stackoverflow.com/a/54118763/10728785   : equal to "clipToPadding"!
             setShadowLayer(extendedPaddingBottom.toFloat(), 0f, 0f, Color.TRANSPARENT)
         }
+
+        // Sexbook records for this day
         cvTvSexbook = bv.sexbook
         if (i != -1) {
-            bv.sexbook.appendCrushDates(i, cal)
+            bv.sexbook.appendCrushDates(i.toShort(), cal[Calendar.YEAR].toShort())
             bv.sexbook.appendSexReports(i)
         }
+
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 if (i != -1) "${c.m.luna!!}.${z(i + 1)}"
@@ -282,6 +291,7 @@ class Grid(private val c: Main) : ListAdapter {
             }
             setCancelable(isCancelable)
         }.show()
+
         if (i > -1) {
             val isPast = c.todayCalendar.timeInMillis - (Kit.A_DAY * 6L) > cal.timeInMillis
             val isFuture = c.todayCalendar.timeInMillis + (Kit.A_DAY * 1L) < cal.timeInMillis
@@ -324,25 +334,23 @@ class Grid(private val c: Main) : ListAdapter {
     /**
      * Elaborates birthdays and other special dates related to crushes imported from the Sexbook app
      * and puts them inside the specified TextView, and makes the TextView visible.
-     *
-     * @param i day
+     * Unfortunately estimated dates cannot be imported because of the difference in the calendars!
      */
-    fun TextView.appendCrushDates(i: Int, cal: Calendar) {
-        if (i == -1) return
-        val yr = cal[Calendar.YEAR].toShort()
-        val mo = cal[Calendar.MONTH].toShort()
-        val da = (i + 1).toShort()
-        val birth = sexbook?.crushes?.filter {
-            it.birthYear != null && it.birthYear!! <= yr && it.birthMonth == mo && it.birthDay == da
-        }?.sortedBy { it.birthTime }?.sortedBy { it.birthDay }
-        val firstMet = sexbook?.crushes?.filter {
-            it.firstMetYear == yr && it.firstMetMonth == mo && it.firstMetDay == da
-        }?.sortedBy { it.firstMetTime }?.sortedBy { it.firstMetDay }
+    fun TextView.appendCrushDates(day: Short, year: Short) {
+        if (day == (-1).toShort()) return
+        val birth = sexbook?.crushes
+            ?.filter { it.birthDay == day }
+            ?.sortedBy { it.birthTime }
+            ?.sortedBy { it.birthDay }
+        val firstMet = sexbook?.crushes
+            ?.filter { it.firstMetDay == day }
+            ?.sortedBy { it.firstMetTime }
+            ?.sortedBy { it.firstMetDay }
         if (birth.isNullOrEmpty() && firstMet.isNullOrEmpty()) return
 
         val sb = StringBuilder()
         if (!birth.isNullOrEmpty()) for (b in birth) {
-            val age = yr - b.birthYear!!
+            val age = year - b.birthYear!!
             if (age > 0) {
                 if (b.active) sb.append("Happy ")
                 sb.append("${b.theirs()} ")

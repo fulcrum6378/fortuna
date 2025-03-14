@@ -47,7 +47,8 @@ class Fortuna : Application() {
 
     /**
      * List of all the required permissions.
-     * Change [Main.reqPermLauncher] to RequestMultiplePermissions() if you wanna add more.
+     *
+     * Note: Change [Main.reqPermLauncher] to RequestMultiplePermissions() if you wanna add more.
      */
     val requiredPermissions =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -66,8 +67,6 @@ class Fortuna : Application() {
 /* TODO:
   * A new icon
   * Search count
-  * Creation date for fictional characters
-  * Estimated dates
   * -
   * JavaFX
 */

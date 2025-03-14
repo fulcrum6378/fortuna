@@ -22,7 +22,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
         val reports = arrayListOf<Report>()
         val crushes = arrayListOf<Crush>()
 
-        // Get list of Places
+        // get a list of all Places
         try {
             c.contentResolver.query(
                 "content://${Kit.SEXBOOK}/place".toUri(),
@@ -33,7 +33,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
             return
         }
 
-        // Now get the sex reports
+        // now get a list of all sex Reports
         c.contentResolver.query(
             "content://${Kit.SEXBOOK}/report".toUri(),
             null, null, null, "time ASC" // DESC
@@ -53,7 +53,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
             )
         }
 
-        // Also load the crushes
+        // also load Crushes
         c.contentResolver.query(
             "content://${Kit.SEXBOOK}/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"

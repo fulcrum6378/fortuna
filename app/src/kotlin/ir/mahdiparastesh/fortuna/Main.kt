@@ -79,8 +79,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
-    var todayCalendar: Calendar = c.calType.create().resetHours()
-    var todayLuna: String = todayCalendar.toKey()
+    lateinit var todayCalendar: Calendar
+    lateinit var todayLuna: String
     private var rollingLuna = true // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
     private var rollingAnnusItself = false
@@ -211,7 +211,10 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         (b.grid.adapter as? Grid)?.apply {
                             sexbook = cacheSexbook()
                             m.changingVar?.also { i ->
-                                cvTvSexbook?.appendCrushDates(i, dailyCalendar(i))
+                                cvTvSexbook?.appendCrushDates(
+                                    i.toShort(),
+                                    dailyCalendar(i)[Calendar.YEAR].toShort()
+                                )
                                 cvTvSexbook?.appendSexReports(i)
                             }
                         }
@@ -228,7 +231,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
-        // Miscellaneous
+        // miscellaneous
         addOnNewIntentListener { it.resolveIntent() }
         m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
             .use { it.readText().split(' ') }
@@ -244,6 +247,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     var firstResume = true // a new instance of Main is created on a configuration change.
     override fun onResume() {
         super.onResume()
+
+        todayCalendar = c.calType.create().resetHours()
+        todayLuna = todayCalendar.toKey()
 
         if (m.luna == null) {
             intent.resolveIntent()

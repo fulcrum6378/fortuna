@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 15
-        versionName = "12.2.0"
+        versionName = "12.3.0"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -40,7 +40,10 @@ android {
     }
     kotlinOptions { jvmTarget = "23" }
 
-    buildFeatures { buildConfig = true; viewBinding = true }
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+    }
     signingConfigs {
         create("release") {
             storeFile = file(System.getenv("JKS_PATH"))
