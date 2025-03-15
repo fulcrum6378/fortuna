@@ -92,9 +92,11 @@ Here is a complete example:
   controls the calendar table and the dialogues that might pop up while interacting with it
 
 - [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) :
-  a BroadcastReceiver that takes some necessary or optional actions at 12 AM;
-  including a Vita backup (local+cloud), reminding users to score their day
-  and updating views according to the current new date.
+  a BroadcastReceiver that performs a few tasks at 12 AM; including:
+
+  1. Updating any available views according to the new date
+  2. Reminding the user to score their day if they haven't yet
+  3. Backing up Vita locally and in the cloud
 
 #### Subpackages
 
