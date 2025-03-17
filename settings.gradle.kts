@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fortuna"
 include(":app")
+include(":javafx")

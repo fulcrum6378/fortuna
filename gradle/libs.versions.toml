@@ -1,16 +1,27 @@
 [versions]
 agp = "8.9.0"
 kotlin = "2.1.10"
+javaFX = "0.1.0"
+modularity = "1.8.15"
+jLink = "3.1.1"
 activityKtx = "1.10.1"
 coreKtx = "1.15.0"
 dropBox = "7.0.0"
 material = "1.12.0"
 
 [plugins]
+# :app
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
+# :javafx
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+javafx = { id = "org.openjfx.javafxplugin", version.ref = "javaFX" }
+modularity = { id = "org.javamodularity.moduleplugin", version.ref = "modularity" }
+jlink = { id = "org.beryx.jlink", version.ref = "jLink" }
+
 [libraries]
+# :app
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 dropbox-android = { group = "com.dropbox.core", name = "dropbox-android-sdk", version.ref = "dropBox" }

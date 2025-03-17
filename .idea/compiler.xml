@@ -3,6 +3,9 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="22">
       <module name="Fortuna.app" target="23" />
+      <module name="Fortuna.javafx" target="23" />
+      <module name="Fortuna.javafx.main" target="23" />
+      <module name="Fortuna.javafx.test" target="23" />
     </bytecodeTargetLevel>
   </component>
 </project>
