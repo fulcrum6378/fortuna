@@ -25,6 +25,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.blue
 import androidx.core.graphics.green
 import androidx.core.graphics.red
+import androidx.core.net.toUri
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -417,7 +418,7 @@ class Grid(private val c: Main) : ListAdapter {
                 c.startActivity(
                     Intent("$SEXBOOK.ACTION_VIEW")
                         .setComponent(ComponentName(SEXBOOK, "$SEXBOOK.Main"))
-                        .setData(android.net.Uri.parse(sex.first().id.toString()))
+                        .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true
             } catch (_: ActivityNotFoundException) {

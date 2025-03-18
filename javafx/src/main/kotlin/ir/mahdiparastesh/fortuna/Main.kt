@@ -1,52 +1,53 @@
 package ir.mahdiparastesh.fortuna
 
 import javafx.fxml.FXML
+import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
 
 class Main {
-    val maxCols = 5
+    private val gridMaxCols = 5
 
     @FXML
     private lateinit var grid: GridPane
-
-    /*@FXML
-    private fun onHelloButtonClick() {
-        welcomeText.text = "Welcome to JavaFX Application!"
-    }*/
 
     @Suppress("unused")
     fun initialize() {
         setupGrid()
     }
 
-    fun setupGrid() {
-        (0 until maxCols).forEach {
+    private fun setupGrid() {
+        (0 until gridMaxCols).forEach {
             val columnConstraints = ColumnConstraints()
-            columnConstraints.percentWidth = 100.0 / maxCols
+            columnConstraints.percentWidth = 100.0 / gridMaxCols
             columnConstraints.hgrow = Priority.ALWAYS
             grid.columnConstraints.add(columnConstraints)
         }
         populateGrid()
     }
 
-    fun populateGrid() {
+    private fun populateGrid() {
         grid.children.clear()
         for (i in 0..(30 - 1)) grid.add(
             createGridItem(i),
-            i % maxCols,
-            i / maxCols
+            i % gridMaxCols,
+            i / gridMaxCols
         )
     }
 
-    fun createGridItem(i: Int): AnchorPane =
+    private fun createGridItem(i: Int): AnchorPane =
         AnchorPane(
-            Label((i + 1).toString())
+            Label((i + 1).toString()).apply {
+                alignment = Pos.CENTER
+                AnchorPane.setTopAnchor(this, 0.0)
+                AnchorPane.setRightAnchor(this, 0.0)
+                AnchorPane.setBottomAnchor(this, 0.0)
+                AnchorPane.setLeftAnchor(this, 0.0)
+            }
         ).apply {
-            styleClass.add("grid-item")
+            styleClass.add(listOf("pleasant", "mediocre", "painful").random())
         }
 }

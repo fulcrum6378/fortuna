@@ -8,7 +8,7 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "0.5.0"
+version = "0.6.0"
 
 application {
     mainModule.set("ir.mahdiparastesh.fortuna")

@@ -1,3 +1,36 @@
-.grid-item {
-    -fx-background-color: #4CAF50;
+* {
+    -fx-cp: #4CAF50;
+    -fx-cs: #F44336;
+    -fx-cop: #FFF;
+    -fx-bg: #FFF;
+    -fx-tc: #777;
+
+    -fx-text-fill: -fx-tc;
+}
+
+#root {
+    -fx-background-color: -fx-bg;
+}
+
+#grid > AnchorPane {
+    -fx-pref-height: 100px;
+}
+#grid > AnchorPane > Label {
+    -fx-font-size: 18px;
+}
+#grid > .pleasant {
+    -fx-background-color: -fx-cp;
+}
+#grid > .pleasant > Label {
+    -fx-text-fill: -fx-cop;
+}
+#grid > .mediocre {
+}
+#grid > .mediocre > Label {
+}
+#grid > .painful {
+    -fx-background-color: -fx-cs;
+}
+#grid > .painful > Label {
+    -fx-text-fill: -fx-cop;
 }
