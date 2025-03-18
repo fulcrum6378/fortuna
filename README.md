@@ -1,28 +1,27 @@
 # Fortuna
 
-An open-source neuroscientific Android app based on the
-[Hedonist philosophy](https://en.wikipedia.org/wiki/Hedonism),
-using which you will score your mood every day in your desired calendar system.
-You can also set an emoji for a day or a month and enter some notes!
+An open-source philosophical application based on
+the [**Pleasure Principle**](https://en.wikipedia.org/wiki/Pleasure_principle_(psychology)) and
+the [**Hedonist philosophy**](https://en.wikipedia.org/wiki/Hedonism).
 
-<p>
-  <img src="about/Screenshot_20230120-044811_Fortuna.jpg" width="32%" />
-  <img src="about/Screenshot_20230120-044823_Fortuna.jpg" width="32%" />
-  <img src="about/Screenshot_20230120-044843_Fortuna.jpg" width="32%" />
-</p>
+This app simply lets you record a mean amount of pleasure and pain you feel everyday in a scale
+between -3 up to +3 for each day in your desired calendar system (Gregorian or etc).
 
-## How it works
-
-This app is designed based on the Hedonist philosophy!
-It's used to calculate the amount of pleasure and pain one senses in their life.
-
-You can enter the quality of your life in a scale between -3 to +3 for each day.
-
-Alternatively you can estimate the number of a whole month using the field right to the year field
-at the top of the page.
-
+Alternatively you can estimate the score of a whole month using the field
+right next to the year field at the top of the page.
 Then you can see how much pleasure and pain you've sensed overall in your life or in a particular
 month.
+
+You can also use this app as a diary and record your daily life events
+and also set emojis for days and months.
+This app is also equipped with advanced searching and navigating tools
+so you'll know exactly when what happened.
+
+<p>
+  <img src="about/Screenshot_20230120-044811_Fortuna.jpg" alt="screenshot-1" width="32%" />
+  <img src="about/Screenshot_20230120-044823_Fortuna.jpg" alt="screenshot-2" width="32%" />
+  <img src="about/Screenshot_20230120-044843_Fortuna.jpg" alt="screenshot-3" width="32%" />
+</p>
 
 ## Download & Install
 
@@ -30,19 +29,18 @@ Currently only two calendars are supported, but this app can be adapted to new c
 by adding new product flavours.
 
 - In Gregorian calendar:
-  [Install from Google Play](
-  https://play.google.com/store/apps/details?id=ir.mahdiparastesh.fortuna.gregorian)
-- In [Humanist Iranian](
-  https://gist.github.com/62264825004f0ba83020c11db15567eb) calendar:
-  [Contact me](mailto:fulcrum1378@gmail.com)
+  [Install from APK Pure](https://apkpure.com/p/ir.mahdiparastesh.fortuna.gregorian)
+- In Iranian calendar: [Contact me](mailto:fulcrum1378@gmail.com)
 - In any other calendar:
-  Either [add it yourself](#add-your-own-calendar) or [contact me](mailto:fulcrum1378@gmail.com).
+  Either [contact me](mailto:fulcrum1378@gmail.com)
+  or [implement it yourself](#add-your-own-calendar).
 
 ## VITA Markup Language
 
 Vita means *life* in Latin. Fortuna reads and writes its data in **\*.vita** plain text file format.
 It defines data separated by months and every month is separated using a line break;\
-At the beginning of each month, there is a "**@**" symbol and then year and month number; for example: **@2022.03**\
+At the beginning of each month, there is a "**@**" symbol and then year and month number; for
+example: **@2022.03**\
 You can optionally enter a "**~**" symbol and define an estimated score for the whole month
 which will apply only on days with no specific score; for example **@2022.03~3**\
 After a line break, there come scores for each date.
@@ -80,28 +78,29 @@ Here is a complete example:
 
 #### Main Classes
 
-- [**Fortuna.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Fortuna.kt) : the Application subclass
+- [**Fortuna.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt) : the Application subclass
 
-- [**Main.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Main.kt) :
+- [**Main.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Main.kt) :
   the main and only Activity instance in this app
 
-- [**Vita.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Vita.kt) :
+- [**Vita.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) :
   reads and writes Vita files and all related utilities
 
-- [**Grid.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Grid.kt) :
+- [**Grid.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Grid.kt) :
   controls the calendar table and the dialogues that might pop up while interacting with it
 
-- [**Nyx.kt**](app\src\kotlin\ir\mahdiparastesh\fortuna\Nyx.kt) :
+- [**Nyx.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Nyx.kt) :
   a BroadcastReceiver that performs a few tasks at 12 AM; including:
 
-  1. Updating any available views according to the new date
-  2. Reminding the user to score their day if they haven't yet
-  3. Backing up Vita locally and in the cloud
+    1. Updating any available views according to the new date
+    2. Reminding the user to score their day if they haven't yet
+    3. Backing up Vita locally and in the cloud
 
 #### Subpackages
 
-- [**sect**](app\src\kotlin\ir\mahdiparastesh\fortuna\misc) : internal and external sections of this app
-- [**util**](app\src\kotlin\ir\mahdiparastesh\fortuna\util) : general-purpose utilities
+- [**sect**](app/src/kotlin/ir/mahdiparastesh/fortuna/sect) :
+- internal and external sections of this app
+- [**util**](app/src/kotlin/ir/mahdiparastesh/fortuna/util) : general-purpose utilities
 
 ### Add your own Calendar
 
@@ -111,14 +110,14 @@ https://developer.android.com/reference/android/icu/util/Calendar) to work based
 Google has already developed implementations of some different calendars,
 if you don't find your calendar in the [**android.icu.util**](
 https://android.googlesource.com/platform/external/icu/+/refs/heads/master/android_icu4j/src/main/java/android/icu/util/)
-package, you should develop it yourself.
-In Fortuna, [build flavours](https://developer.android.com/build/build-variants) represent calendar systems,
-so all you need to do is to:
+package, you should develop it yourself. In Fortuna,
+[build flavours](https://developer.android.com/build/build-variants)
+represent calendar systems, so all you need to do is to:
 
 1. Add a new build flavour for Gradle
 2. Create "app/src/res_CALENDAR" (e.g. res_indian) and inside it:
     - *drawable/today_widget_preview.png* : a preview
-      for [TodayWidget](app/src/kotlin/ir/mahdiparastesh/fortuna/misc/TodayWidget.kt)
+      for [TodayWidget](app/src/kotlin/ir/mahdiparastesh/fortuna/sect/TodayWidget.kt)
     - *values/strings.xml* : month names as *<string-array name="luna"/>*
 3. Attribute that build flavour to your Calendar class in Kit.kt.
 
@@ -126,26 +125,26 @@ so all you need to do is to:
 
 ```kotlin
 android {
-    ...
+    //...
     productFlavors {
-        ...
+        //...
         create("indian") { applicationIdSuffix = ".indian" }
     }
-    ...
+    //...
     sourceSets.getByName("indian") {
         res.setSrcDirs(listOf("src/res", "src/res_indian"))
     }
-    ...
+    //...
 }
 ```
 
-#### **[Kit.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Kit.kt#:~:text=val%20calType)**
+#### **[Fortuna.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=val%20calType)**
 
 ```kotlin
 val calType = when (BuildConfig.FLAVOR) {
-    ...
+    //...
     "indian" -> android.icu.util.IndianCalendar::class.java
-    ...
+    //...
 }
 ```
 
@@ -171,8 +170,10 @@ val calType = when (BuildConfig.FLAVOR) {
 </resources>
 ```
 
-> :warning: **Do NOT implement [Lunisolar](https://en.wikipedia.org/wiki/Lunisolar_calendar) calendars**;
-> their structure is so irregular in *android.icu.util* and they also get problematic with *Vita* structure!
+> :warning: **Do NOT implement [Lunisolar](https://en.wikipedia.org/wiki/Lunisolar_calendar)
+> calendars**; their structure is so irregular in *android.icu.util*
+> and they also get problematic with *Vita*
+> structure!
 
 ## License
 

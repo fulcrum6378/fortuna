@@ -10,11 +10,6 @@ kotlin { jvmToolchain(23) }
 group = "ir.mahdiparastesh"
 version = "0.5.0"
 
-sourceSets.getByName("main") {
-    java.srcDirs("src/main/java")
-    kotlin.srcDirs("src/main/kotlin")
-}
-
 application {
     mainModule.set("ir.mahdiparastesh.fortuna")
     mainClass.set("ir.mahdiparastesh.fortuna.FortunaKt")
