@@ -8,8 +8,9 @@ import javafx.stage.Stage
 class Fortuna : Application() {
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(Fortuna::class.java.getResource("main.fxml"))
-        val scene = Scene(fxmlLoader.load(), 320.0, 240.0)
-        stage.title = "Hello!"
+        val scene = Scene(fxmlLoader.load(), 800.0, 500.0)
+        scene.stylesheets.add(Fortuna::class.java.getResource("main.css")!!.toExternalForm())
+        stage.title = "Fortuna"
         stage.scene = scene
         stage.show()
     }
