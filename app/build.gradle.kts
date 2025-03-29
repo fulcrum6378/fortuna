@@ -5,15 +5,15 @@ plugins {
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
-    compileSdk = 35
+    compileSdk = 36
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 15
-        versionName = "12.3.3"
+        versionName = "12.3.6"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -66,8 +66,12 @@ android {
 
 dependencies {
     implementation(libs.activity.ktx)
+    implementation(libs.constraintlayout)
     implementation(libs.core.ktx)
+    implementation(libs.drawerlayout)
+    implementation(libs.recyclerview)
     implementation(libs.dropbox.android)
     implementation(libs.dropbox.core)
     implementation(libs.material)
+    implementation(libs.coroutines.android)
 }

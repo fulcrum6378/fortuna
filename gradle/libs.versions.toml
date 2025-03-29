@@ -1,12 +1,16 @@
 [versions]
-agp = "8.9.0"
-kotlin = "2.1.10"
+agp = "8.9.1"
+kotlin = "2.1.20"
 javaFX = "0.1.0"
 modularity = "1.8.15"
 jLink = "3.1.1"
 activityKtx = "1.10.1"
+constraintLayout = "2.2.1"
 coreKtx = "1.15.0"
+drawerLayout = "1.2.0"
+recyclerView = "1.4.0"
 dropBox = "7.0.0"
+coroutines = "1.10.1"
 material = "1.12.0"
 
 [plugins]
@@ -23,7 +27,11 @@ jlink = { id = "org.beryx.jlink", version.ref = "jLink" }
 [libraries]
 # :app
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerLayout" }
+recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerView" }
 dropbox-android = { group = "com.dropbox.core", name = "dropbox-android-sdk", version.ref = "dropBox" }
 dropbox-core = { group = "com.dropbox.core", name = "dropbox-core-sdk", version.ref = "dropBox" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
