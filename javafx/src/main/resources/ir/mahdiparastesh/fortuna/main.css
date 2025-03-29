@@ -15,7 +15,10 @@
 #panel {
 }
 #panelFields {
-    -fx-padding: 30px 0;
+    -fx-padding: 50px 0;
+}
+#panelFields > ComboBox {
+    -fx-cursor: hand;
 }
 
 #grid > AnchorPane {

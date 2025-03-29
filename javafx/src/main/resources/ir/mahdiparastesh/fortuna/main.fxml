@@ -19,7 +19,7 @@
         AnchorPane.rightAnchor="0.0"
         AnchorPane.topAnchor="0.0"
         alignment="CENTER"
-        spacing="20"
+        spacing="50"
         fx:id="panelFields">
 
       <ComboBox fx:id="luna" />

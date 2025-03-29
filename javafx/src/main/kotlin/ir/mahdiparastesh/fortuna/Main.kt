@@ -5,22 +5,33 @@ import javafx.fxml.FXML
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
+import javafx.scene.control.TextField
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 
 class Main {
+    private lateinit var c: Fortuna
+
     private val gridMaxCols = 5
 
     @FXML
     private lateinit var luna: ComboBox<String>
 
     @FXML
+    private lateinit var annus: TextField
+
+    @FXML
     private lateinit var grid: GridPane
 
+    /** Called when FXMLLoader.load() is invoked. */
     @Suppress("unused")
     fun initialize() {
+    }
+
+    fun prepare(c: Fortuna) {
+        this.c = c
         setupPanel()
         setupGrid()
     }
@@ -34,6 +45,8 @@ class Main {
                 "Dey", "Bahman", "Esfand"
             )
         )
+        luna.selectionModel.select(c.today.monthValue - 1)
+        annus.text = c.today.year.toString()
     }
 
     private fun setupGrid() {
