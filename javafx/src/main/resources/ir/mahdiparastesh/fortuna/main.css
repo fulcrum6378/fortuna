@@ -12,7 +12,14 @@
     -fx-background-color: -fx-bg;
 }
 
+#panel {
+}
+#panelFields {
+    -fx-padding: 30px 0;
+}
+
 #grid > AnchorPane {
+    -fx-cursor: hand;
     -fx-pref-height: 100px;
 }
 #grid > AnchorPane > Label {

@@ -1,7 +1,9 @@
 package ir.mahdiparastesh.fortuna
 
+import javafx.collections.FXCollections
 import javafx.fxml.FXML
 import javafx.geometry.Pos
+import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.ColumnConstraints
@@ -12,11 +14,26 @@ class Main {
     private val gridMaxCols = 5
 
     @FXML
+    private lateinit var luna: ComboBox<String>
+
+    @FXML
     private lateinit var grid: GridPane
 
     @Suppress("unused")
     fun initialize() {
+        setupPanel()
         setupGrid()
+    }
+
+    private fun setupPanel() {
+        luna.items = FXCollections.observableArrayList<String>(
+            listOf(
+                "Farvardin", "Ordibehesht", "Khordad",
+                "Tir", "Mordad", "Shahrivar",
+                "Mehr", "Aban", "Azar",
+                "Dey", "Bahman", "Esfand"
+            )
+        )
     }
 
     private fun setupGrid() {

@@ -12,6 +12,7 @@ import kotlin.math.pow
  * @see <a href="https://en.wikipedia.org/wiki/List_of_numeral_systems">More on Wikipedia</a>
  */
 object Numerals {
+
     /** List of all the supported ancient numeral systems */
     val all = arrayOf(
         NumeralType(null, R.string.numArabic, R.id.numArabic),
