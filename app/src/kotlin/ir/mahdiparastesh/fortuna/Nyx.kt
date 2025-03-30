@@ -12,12 +12,12 @@ import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.ActivityCompat
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
+import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,7 +57,7 @@ class Nyx : BroadcastReceiver() {
 
         // Remind the user to score the recent day if already has not
         val cal = c.calType.create().apply { timeInMillis -= Kit.A_DAY }
-        val score = Vita.load(c).getOrDefault(cal.toKey(), null)
+        val score = Vita(c).getOrDefault(cal.toKey(), null) // FIXME heavy operation
             ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                     ActivityCompat.checkSelfPermission(c, Manifest.permission.POST_NOTIFICATIONS)
@@ -73,9 +73,9 @@ class Nyx : BroadcastReceiver() {
         )
 
         // Backup
-        Vita.backup(c)
-        val dropbox = Dropbox(c.sp)
+        c.backupVita()
+        val dropbox = Dropbox(c)
         if (dropbox.isAuthenticated())
-            CoroutineScope(Dispatchers.IO).launch { dropbox.backup(c) }
+            CoroutineScope(Dispatchers.IO).launch { dropbox.backup() }
     }
 }

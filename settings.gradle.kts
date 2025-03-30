@@ -20,5 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Fortuna"
+include(":core")
 include(":app")
 include(":javafx")

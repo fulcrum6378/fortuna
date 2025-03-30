@@ -25,18 +25,19 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 
 /** Static fields and methods used everywhere. */
 object Kit {
     const val A_DAY = 86400000L
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"
+    const val VITA_MIME_TYPE = "application/octet-stream"
 
     /* Keys of the Shared Preferences */
     const val SP_NUMERAL_TYPE = "numeral_type"
     const val SP_NUMERAL_TYPE_DEF = "0" // defaults to Arabic
     const val SP_SEARCH_INCLUSIVE = "search_inclusive"
     const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"
+
 
     /** @return the colour value of this attribute resource from the theme. */
     @ColorInt
@@ -47,6 +48,11 @@ object Kit {
     /** @return the colour filter instance of this colour with the given PorterDuff.Mode. */
     fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
         PorterDuffColorFilter(color, mode)
+
+    fun Calendar.toKey(): String =
+        "${z(this[Calendar.YEAR], 4)}.${z(this[Calendar.MONTH] + 1)}"
+
+    fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
     /**
      * Fills a String with a number and zeroes before it. (e.g. 2 -> "02")

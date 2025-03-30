@@ -9,7 +9,8 @@ import javafx.stage.Stage
 
 class Fortuna : Application() {
 
-    val today: PersianDate = PersianDate.now()
+    var today: PersianDate = PersianDate.now()
+    var calendar: PersianDate = today
 
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(Fortuna::class.java.getResource("main.fxml"))

@@ -4,12 +4,24 @@ import android.Manifest
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.icu.util.Calendar
 import android.os.Build
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
+import ir.mahdiparastesh.fortuna.util.Kit.create
+import java.io.File
 import java.util.Locale
 
-class Fortuna : Application() {
+class Fortuna : Application(), FortunaContext<Calendar> {
+
+    override lateinit var calendar: Calendar
+    override lateinit var todayCalendar: Calendar
+    override lateinit var todayLuna: String
+    override var vita: Vita? = null
+    override var luna: String? = null
+
+    override val stored by lazy { File(filesDir, getString(R.string.export_file)) }
+    override val backup by lazy { File(filesDir, getString(R.string.backup_file)) }
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
@@ -55,9 +67,33 @@ class Fortuna : Application() {
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
 
+    /** A single calendar for all calculations to be performed on. */
+    private val calendarForCalculation: Calendar = calType.create()
+
+
+    override fun onCreate() {
+        super.onCreate()
+        vita = Vita(this)
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         TodayWidget.externalUpdate(this)
+    }
+
+    override fun getMonthLength(year: Int, month: Int): Int {
+        calendarForCalculation.set(Calendar.YEAR, year)
+        calendarForCalculation.set(Calendar.MONTH, month - 1)
+        return calendarForCalculation.getActualMaximum(Calendar.DAY_OF_MONTH)
+    }
+
+    fun lunaToCalendar(luna: String): Calendar {
+        val spl = luna.split(".")
+        return calType.create().apply {
+            this[Calendar.YEAR] = spl[0].toInt()
+            this[Calendar.MONTH] = spl[1].toInt() - 1
+            this[Calendar.DAY_OF_MONTH] = 1
+        }
     }
 
     fun isLandscape() =
@@ -66,4 +102,5 @@ class Fortuna : Application() {
 
 /* TODO:
   * A new icon
+  * Trim memory
 */

@@ -45,8 +45,8 @@ class Main {
                 "Dey", "Bahman", "Esfand"
             )
         )
-        luna.selectionModel.select(c.today.monthValue - 1)
-        annus.text = c.today.year.toString()
+        luna.selectionModel.select(c.calendar.monthValue - 1)
+        annus.text = c.calendar.year.toString()
     }
 
     private fun setupGrid() {
@@ -61,7 +61,7 @@ class Main {
 
     private fun populateGrid() {
         grid.children.clear()
-        for (i in 0..(30 - 1)) grid.add(
+        for (i in 0..(c.calendar.month.length(c.calendar.isLeapYear) - 1)) grid.add(
             createGridItem(i),
             i % gridMaxCols,
             i / gridMaxCols

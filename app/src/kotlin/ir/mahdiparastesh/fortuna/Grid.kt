@@ -33,10 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import ir.mahdiparastesh.fortuna.Vita.Companion.lunaMaxima
-import ir.mahdiparastesh.fortuna.Vita.Companion.saveDies
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
-import ir.mahdiparastesh.fortuna.Vita.Companion.toKey
 import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
@@ -46,8 +43,10 @@ import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
+import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
 import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
+import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import ir.mahdiparastesh.fortuna.util.Kit.toValue
 import ir.mahdiparastesh.fortuna.util.Kit.z
 import ir.mahdiparastesh.fortuna.util.Numeral
@@ -71,7 +70,7 @@ class Grid(private val c: Main) : ListAdapter {
         onRefresh()
     }
 
-    /** Reference to the TextView inside the dialogue of [changeVar]. */
+    /** Reference to the [TextView] inside the dialogue of [changeVar]. */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -80,7 +79,7 @@ class Grid(private val c: Main) : ListAdapter {
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
-    override fun getCount(): Int = c.m.calendar.lunaMaxima()
+    override fun getCount(): Int = c.c.calendar.lunaMaxima()
     override fun isEmpty(): Boolean = false
     override fun getItem(i: Int): Any = 0f
     override fun getItemId(i: Int): Long = i.toLong()
@@ -153,23 +152,24 @@ class Grid(private val c: Main) : ListAdapter {
             )
             root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
             root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
-            if (c.m.luna == c.todayLuna && c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
+            if (c.c.luna == c.c.todayLuna && c.c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
                 root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
         }.root
 
     /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
-        luna = c.m.vita?.find(c.m.luna!!) ?: Luna(c.c, c.m.calendar)
+        luna = c.c.vita?.find(c.c.luna!!)
+            ?: Luna(c.c.calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
         sexbook = cacheSexbook()
         numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
             .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.maximaForStats(c.m.calendar, c.m.luna!!)
+        maximumStats = c.maximaForStats(c.c.calendar, c.c.luna!!)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */
     fun cacheSexbook() = c.m.sexbook?.let {
-        val spl = c.m.luna!!.split(".")
+        val spl = c.c.luna!!.split(".")
         val yr = spl[0].toShort()
         val mo = (spl[1].toInt() - 1).toShort()
         Sexbook.Data(
@@ -183,7 +183,7 @@ class Grid(private val c: Main) : ListAdapter {
 
     /** Creates a calendar indicating this day. */
     fun dailyCalendar(i: Int) = c.c.calType.create().apply {
-        timeInMillis = c.m.calendar.timeInMillis
+        timeInMillis = c.c.calendar.timeInMillis
         set(Calendar.DAY_OF_MONTH, i + 1)
         resetHours()
     }
@@ -196,7 +196,7 @@ class Grid(private val c: Main) : ListAdapter {
      */
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
-    fun changeVar(i: Int, cal: Calendar = c.m.calendar) {
+    fun changeVar(i: Int, cal: Calendar = c.c.calendar) {
         if (c.m.changingVar != null && !c.firstResume) return
         c.m.changingVar = i
         val bv = VariabilisBinding.inflate(c.layoutInflater)
@@ -268,15 +268,15 @@ class Grid(private val c: Main) : ListAdapter {
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                if (i != -1) "${c.m.luna!!}.${z(i + 1)}"
+                if (i != -1) "${c.c.luna!!}.${z(i + 1)}"
                 else c.getString(R.string.defValue)
             )
             setView(bv.root)
             setNegativeButton(R.string.cancel, null)
             setPositiveButton(R.string.save) { _, _ ->
-                if (c.m.vita == null) return@setPositiveButton
-                luna.saveDies(
-                    c, i, bv.picker.value.toScore(),
+                if (c.c.vita == null) return@setPositiveButton
+                c.saveDies(
+                    luna, i, bv.picker.value.toScore(),
                     bv.emoji.text.toString(), bv.verbum.text.toString()
                 )
                 c.shake()
@@ -294,8 +294,8 @@ class Grid(private val c: Main) : ListAdapter {
         }.show()
 
         if (i > -1) {
-            val isPast = c.todayCalendar.timeInMillis - (Kit.A_DAY * 6L) > cal.timeInMillis
-            val isFuture = c.todayCalendar.timeInMillis + (Kit.A_DAY * 1L) < cal.timeInMillis
+            val isPast = c.c.todayCalendar.timeInMillis - (Kit.A_DAY * 6L) > cal.timeInMillis
+            val isFuture = c.c.todayCalendar.timeInMillis + (Kit.A_DAY * 1L) < cal.timeInMillis
             if ((isPast && luna.diebus[i] != null) || isFuture) {
                 bv.picker.isEnabled = false
                 bv.picker.alpha = 0.4f
@@ -318,8 +318,8 @@ class Grid(private val c: Main) : ListAdapter {
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
             setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
-                if (c.m.vita == null) return@setOnLongClickListener true
-                luna.saveDies(c, i, null, null, null)
+                if (c.c.vita == null) return@setOnLongClickListener true
+                c.saveDies(luna, i, null, null, null)
                 c.shake()
                 dialogue?.dismiss(); true
             }
@@ -439,7 +439,7 @@ class Grid(private val c: Main) : ListAdapter {
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.m.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
+                "${c.c.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
                     .weekdays[cal[Calendar.DAY_OF_WEEK]]
             )
             setMessage(StringBuilder().apply {
@@ -477,7 +477,7 @@ class Grid(private val c: Main) : ListAdapter {
                         }
                     }
                 }
-                val dit = c.m.compareDatesWith ?: c.todayCalendar
+                val dit = c.m.compareDatesWith ?: c.c.todayCalendar
                 y.setText(z(dit[Calendar.YEAR]))
                 m.setText(z(dit[Calendar.MONTH] + 1))
                 y.addTextChangedListener(watcher)
@@ -505,7 +505,7 @@ class Grid(private val c: Main) : ListAdapter {
 
     private fun dateComparison(dit: Calendar, dat: Calendar): String {
         val dif = dat.compareByDays(dit)
-        val basedOnToday = dat == c.todayCalendar
+        val basedOnToday = dat == c.c.todayCalendar
         val sb = StringBuilder()
         sb.append(" => ").append(
             when {

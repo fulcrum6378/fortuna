@@ -20,6 +20,10 @@ javafx {
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
+dependencies {
+    implementation(project(":core"))
+}
+
 jlink {
     launcher { name = "Fortuna" }
 }

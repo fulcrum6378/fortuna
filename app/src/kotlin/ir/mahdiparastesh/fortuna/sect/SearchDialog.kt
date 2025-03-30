@@ -21,7 +21,6 @@ import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
 import ir.mahdiparastesh.fortuna.util.Kit
@@ -34,6 +33,7 @@ import kotlin.math.min
 
 /** A dialogue for searching in [Vita]. */
 class SearchDialog : Kit.BaseDialogue() {
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
             setTitle(R.string.navSearch)
@@ -79,8 +79,8 @@ class SearchAdapter(
         if (q == c.m.lastSearchQuery && !inclusivityChanged) return
         c.m.lastSearchQuery = q.toString()
         c.m.searchResults.clear()
-        if (!q.isNullOrBlank() && c.m.vita != null)
-            Search(q.trim(), c.m.vita!!.clone() as Vita) {
+        if (!q.isNullOrBlank() && c.c.vita != null)
+            Search(q.trim(), c.c.vita!!.clone() as Vita) {
                 notifyDataSetChanged()
                 if (c.m.searchResults.isEmpty())
                     Toast.makeText(c, R.string.foundNothing, Toast.LENGTH_SHORT).show()
@@ -107,12 +107,12 @@ class SearchAdapter(
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
         h.b.root.setOnClickListener {
-            c.m.calendar = c.m.searchResults[h.layoutPosition].luna.toCalendar(c.c.calType)
+            c.c.calendar = c.c.lunaToCalendar(c.m.searchResults[h.layoutPosition].luna)
             c.onCalendarChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
             (c.b.grid.adapter as? Grid)?.changeVar(
                 dies,
-                c.m.calendar.apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
+                c.c.calendar.apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
         }
     }
 

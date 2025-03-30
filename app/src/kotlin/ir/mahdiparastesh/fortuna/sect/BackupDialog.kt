@@ -12,7 +12,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
-import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
@@ -33,17 +32,17 @@ import java.io.FileInputStream
  * - Export: exports the backup file.
  */
 class BackupDialog : Kit.BaseDialogue() {
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val b = BackupBinding.inflate(layoutInflater)
 
-        val f = Vita.Backup(c)
-        b.updateStatus(f)
+        b.updateStatus()
         b.backup.setOnClickListener {
-            Vita.backup(c)
+            c.c.backupVita()
             b.updateStatus()
 
             CoroutineScope(Dispatchers.IO).launch {
-                val res = c.dropbox!!.backup(c)
+                val res = c.dropbox!!.backup()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         c, if (res) R.string.dropboxSuccess else R.string.dropboxFailure,
@@ -56,12 +55,11 @@ class BackupDialog : Kit.BaseDialogue() {
             MaterialAlertDialogBuilder(c).apply {
                 setTitle(R.string.restore)
                 setMessage(
-                    c.resources.getString(R.string.backupRestoreSure, lastBackup(c.c, f))
+                    c.resources.getString(R.string.backupRestoreSure, lastBackup())
                 )
                 setPositiveButton(R.string.yes) { _, _ ->
-                    c.m.vita = Vita.loads(
-                        c.c, FileInputStream(f).use { String(it.readBytes()) }
-                    ).also { vita -> vita.save(c) }
+                    c.c.vita = Vita(c.c, c.c.backup)
+                        .also { vita -> vita.save() }
                     c.updateGrid()
                     Toast.makeText(c, R.string.done, Toast.LENGTH_LONG).show()
                 }
@@ -69,14 +67,14 @@ class BackupDialog : Kit.BaseDialogue() {
             }.show()
         }
         b.export.setOnClickListener {
-            if (!f.exists()) return@setOnClickListener
+            if (!c.c.backup.exists()) return@setOnClickListener
             c.sendFile(
-                FileInputStream(f).use { it.readBytes() },
+                FileInputStream(c.c.backup).use { it.readBytes() },
                 R.string.backup_file
             )
         }
 
-        if (c.dropbox == null) c.dropbox = Dropbox(c.c.sp)
+        if (c.dropbox == null) c.dropbox = Dropbox(c.c)
         b.updateDropbox()
         b.dropbox.background = RippleDrawable(
             ColorStateList.valueOf(
@@ -100,18 +98,18 @@ class BackupDialog : Kit.BaseDialogue() {
     override fun isCancelable(): Boolean = true
 
     /** @return the human-readable modification date of the backup. */
-    private fun lastBackup(c: Fortuna, f: Vita.Backup): String {
-        if (!f.exists()) return getString(R.string.never)
-        val d = c.calType.create().apply { timeInMillis = f.lastModified() }
+    private fun lastBackup(): String {
+        if (!c.c.backup.exists()) return getString(R.string.never)
+        val d = c.c.calType.create().apply { timeInMillis = c.c.backup.lastModified() }
         return "${Kit.z(d[Calendar.YEAR], 4)}.${Kit.z(d[Calendar.MONTH] + 1)}." +
                 "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
                 "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
     }
 
     /** Updates the modification date of the backup file. */
-    private fun BackupBinding.updateStatus(f: Vita.Backup = Vita.Backup(c)) {
+    private fun BackupBinding.updateStatus() {
         status.text = getString(
-            R.string.backupStatus, lastBackup(c.c, f), Kit.showBytes(c, f.length())
+            R.string.backupStatus, lastBackup(), Kit.showBytes(c, c.c.backup.length())
         )
     }
 

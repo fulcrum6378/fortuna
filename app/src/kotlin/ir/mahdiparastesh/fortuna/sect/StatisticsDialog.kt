@@ -20,7 +20,6 @@ import androidx.core.util.forEach
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.Vita.Companion.toCalendar
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
@@ -43,9 +42,9 @@ class StatisticsDialog : Kit.BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()
-        if (c.m.vita != null) for ((key, luna) in c.m.vita!!) {
+        if (c.c.vita != null) for ((key, luna) in c.c.vita!!) {
             val lunaScores = arrayListOf<Float>()
-            val cal = key.toCalendar(c.c.calType).resetHours()
+            val cal = c.c.lunaToCalendar(key).resetHours()
             val maxima = c.maximaForStats(cal, key) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
@@ -61,7 +60,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
         )
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
-            val maxMonths = c.m.calendar.getMaximum(Calendar.MONTH) + 1
+            val maxMonths = c.c.calendar.getMaximum(Calendar.MONTH) + 1
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
                 val spl = key.split(".")
@@ -110,7 +109,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
                                 }"
                             setOnClickListener(object : Kit.DoubleClickListener() {
                                 override fun onDoubleClick() {
-                                    c.m.calendar = c.c.calType.create().apply {
+                                    c.c.calendar = c.c.calType.create().apply {
                                         set(Calendar.YEAR, year)
                                         set(Calendar.MONTH, month)
                                         set(Calendar.DAY_OF_MONTH, 1)

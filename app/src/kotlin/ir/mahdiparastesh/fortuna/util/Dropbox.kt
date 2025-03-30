@@ -1,7 +1,5 @@
 package ir.mahdiparastesh.fortuna.util
 
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.dropbox.core.DbxException
 import com.dropbox.core.DbxRequestConfig
@@ -10,9 +8,9 @@ import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.WriteMode
 import ir.mahdiparastesh.fortuna.BuildConfig
+import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.Vita
 import java.io.FileInputStream
 
 /**
@@ -21,7 +19,7 @@ import java.io.FileInputStream
  * @see <a href="https://github.com/dropbox/dropbox-sdk-java/">dropbox-sdk-java</a>
  */
 @Suppress("RedundantSuspendModifier")
-class Dropbox(private val sp: SharedPreferences) {
+class Dropbox(private val c: Fortuna) {
     private var awaitingLogin: (() -> Unit)? = null
 
     fun requestConfig() = DbxRequestConfig("db-${BuildConfig.DROPBOX_APP_KEY}")
@@ -36,7 +34,7 @@ class Dropbox(private val sp: SharedPreferences) {
     fun onResume() {
         if (awaitingLogin == null) return
         Auth.getDbxCredential()?.also { credential ->
-            sp.edit {
+            c.sp.edit {
                 putString(Kit.SP_DROPBOX_CREDENTIAL, DbxCredential.Writer.writeToString(credential))
             }
         }
@@ -45,7 +43,7 @@ class Dropbox(private val sp: SharedPreferences) {
     }
 
     fun credential(): DbxCredential? = try {
-        sp.getString(Kit.SP_DROPBOX_CREDENTIAL, null)?.let { DbxCredential.Reader.readFully(it) }
+        c.sp.getString(Kit.SP_DROPBOX_CREDENTIAL, null)?.let { DbxCredential.Reader.readFully(it) }
     } catch (_: Exception) {
         removeCredential()
         null
@@ -54,13 +52,13 @@ class Dropbox(private val sp: SharedPreferences) {
     fun isAuthenticated() = credential() != null
 
     fun removeCredential() {
-        sp.edit { remove(Kit.SP_DROPBOX_CREDENTIAL) }
+        c.sp.edit { remove(Kit.SP_DROPBOX_CREDENTIAL) }
     }
 
     fun client() = DbxClientV2(requestConfig(), credential())
 
-    suspend fun backup(c: Context): Boolean {
-        val fis = FileInputStream(Vita.Stored(c))
+    suspend fun backup(): Boolean {
+        val fis = FileInputStream(c.stored)
         val success = try {
             client()
                 .files()
