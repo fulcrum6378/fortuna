@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -15,15 +14,17 @@ import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.BackupBinding
+import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.color
-import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
+import ir.mahdiparastesh.fortuna.util.UiTools
+import ir.mahdiparastesh.fortuna.util.UiTools.color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
+import java.time.temporal.ChronoField
 
 /**
  * Shows the status of the automatically backed-up file with 3 action buttons:<br />
@@ -31,7 +32,7 @@ import java.io.FileInputStream
  * - Restore: overwrites the backup file on the main file.<br />
  * - Export: exports the backup file.
  */
-class BackupDialog : Kit.BaseDialogue() {
+class BackupDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val b = BackupBinding.inflate(layoutInflater)
@@ -100,16 +101,16 @@ class BackupDialog : Kit.BaseDialogue() {
     /** @return the human-readable modification date of the backup. */
     private fun lastBackup(): String {
         if (!c.c.backup.exists()) return getString(R.string.never)
-        val d = c.c.calType.create().apply { timeInMillis = c.c.backup.lastModified() }
-        return "${Kit.z(d[Calendar.YEAR], 4)}.${Kit.z(d[Calendar.MONTH] + 1)}." +
-                "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
-                "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
+        val d = c.c.createDateTime(c.c.backup.lastModified())
+        return "${z(d[ChronoField.YEAR], 4)}.${z(d[ChronoField.MONTH_OF_YEAR] + 1)}." +
+                "${z(d[ChronoField.DAY_OF_MONTH])} - ${z(d[ChronoField.HOUR_OF_DAY])}:" +
+                "${z(d[ChronoField.MINUTE_OF_HOUR])}:${z(d[ChronoField.SECOND_OF_MINUTE])}"
     }
 
     /** Updates the modification date of the backup file. */
     private fun BackupBinding.updateStatus() {
         status.text = getString(
-            R.string.backupStatus, lastBackup(), Kit.showBytes(c, c.c.backup.length())
+            R.string.backupStatus, lastBackup(), UiTools.showBytes(c, c.c.backup.length())
         )
     }
 

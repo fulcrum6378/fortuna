@@ -37,22 +37,21 @@ import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
-import ir.mahdiparastesh.fortuna.util.Kit.color
-import ir.mahdiparastesh.fortuna.util.Kit.compareByDays
-import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
-import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
-import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
-import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.toKey
-import ir.mahdiparastesh.fortuna.util.Kit.toValue
-import ir.mahdiparastesh.fortuna.util.Kit.z
+import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
 import ir.mahdiparastesh.fortuna.util.Sexbook
+import ir.mahdiparastesh.fortuna.util.UiTools
+import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.UiTools.color
+import java.time.DateTimeException
+import java.time.chrono.ChronoLocalDate
+import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
@@ -79,7 +78,7 @@ class Grid(private val c: Main) : ListAdapter {
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
-    override fun getCount(): Int = c.c.calendar.lunaMaxima()
+    override fun getCount(): Int = c.c.date.lengthOfMonth()
     override fun isEmpty(): Boolean = false
     override fun getItem(i: Int): Any = 0f
     override fun getItemId(i: Int): Long = i.toLong()
@@ -129,7 +128,7 @@ class Grid(private val c: Main) : ListAdapter {
                         variabilis.setTextColor(cpo)
                         verbumIcon.setColorFilter(cpo)
                         Color.valueOf(
-                            cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
+                            cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
                             score / Vita.MAX_RANGE
                         ).toArgb()
                     }
@@ -138,7 +137,7 @@ class Grid(private val c: Main) : ListAdapter {
                         variabilis.setTextColor(cso)
                         verbumIcon.setColorFilter(cso)
                         Color.valueOf(
-                            cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
+                            cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
                             -score / Vita.MAX_RANGE
                         ).toArgb()
                     }
@@ -152,19 +151,20 @@ class Grid(private val c: Main) : ListAdapter {
             )
             root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
             root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
-            if (c.c.luna == c.c.todayLuna && c.c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
+            if (c.c.luna == c.c.todayLuna &&
+                c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1
+            )
                 root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
         }.root
 
     /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
-        luna = c.c.vita?.find(c.c.luna!!)
-            ?: Luna(c.c.calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+        luna = c.c.vita?.find(c.c.luna!!) ?: Luna(c.c.date.lengthOfMonth())
         sexbook = cacheSexbook()
-        numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
-            .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
+        numType = c.c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
+            .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.maximaForStats(c.c.calendar, c.c.luna!!)
+        maximumStats = c.maximaForStats(c.c.date, c.c.luna!!)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */
@@ -182,11 +182,8 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     /** Creates a calendar indicating this day. */
-    fun dailyCalendar(i: Int) = c.c.calType.create().apply {
-        timeInMillis = c.c.calendar.timeInMillis
-        set(Calendar.DAY_OF_MONTH, i + 1)
-        resetHours()
-    }
+    fun dailyCalendar(i: Int): ChronoLocalDate =
+        c.c.date.with(ChronoField.DAY_OF_MONTH, i + 1L)
 
     /**
      * Open an AlertDialog in order to let the user change the score of this day.
@@ -196,7 +193,7 @@ class Grid(private val c: Main) : ListAdapter {
      */
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
-    fun changeVar(i: Int, cal: Calendar = c.c.calendar) {
+    fun changeVar(i: Int, cal: ChronoLocalDate = c.c.date) {
         if (c.m.changingVar != null && !c.firstResume) return
         c.m.changingVar = i
         val bv = VariabilisBinding.inflate(c.layoutInflater)
@@ -262,7 +259,7 @@ class Grid(private val c: Main) : ListAdapter {
         // Sexbook records for this day
         cvTvSexbook = bv.sexbook
         if (i != -1) {
-            bv.sexbook.appendCrushDates(i.toShort(), cal[Calendar.YEAR].toShort())
+            bv.sexbook.appendCrushDates(i.toShort(), cal[ChronoField.YEAR].toShort())
             bv.sexbook.appendSexReports(i)
         }
 
@@ -294,16 +291,18 @@ class Grid(private val c: Main) : ListAdapter {
         }.show()
 
         if (i > -1) {
-            val isPast = c.c.todayCalendar.timeInMillis - (Kit.A_DAY * 6L) > cal.timeInMillis
-            val isFuture = c.c.todayCalendar.timeInMillis + (Kit.A_DAY * 1L) < cal.timeInMillis
+            val isPast = cal.isBefore(c.c.todayDate) &&
+                    c.c.todayDate.until(cal, ChronoUnit.DAYS) >= 6
+            val isFuture = cal.isAfter(c.c.todayDate) &&
+                    c.c.todayDate.until(cal, ChronoUnit.DAYS) >= 1
             if ((isPast && luna.diebus[i] != null) || isFuture) {
                 bv.picker.isEnabled = false
                 bv.picker.alpha = 0.4f
                 bv.lock.isVisible = true
                 if (isFuture)
-                    bv.lock.setOnClickListener(Kit.LimitedToastAlert(c, R.string.scoreFuture))
+                    bv.lock.setOnClickListener(LimitedToastAlert(c, R.string.scoreFuture))
                 else { // obviously is past
-                    bv.lock.setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
+                    bv.lock.setOnClickListener(LimitedToastAlert(c, R.string.holdLonger))
                     bv.lock.setOnLongClickListener {
                         bv.lock.isVisible = false
                         bv.lock.setOnClickListener(null)
@@ -316,7 +315,7 @@ class Grid(private val c: Main) : ListAdapter {
             }
         }
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
-            setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
+            setOnClickListener(LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
                 if (c.c.vita == null) return@setOnLongClickListener true
                 c.saveDies(luna, i, null, null, null)
@@ -434,22 +433,22 @@ class Grid(private val c: Main) : ListAdapter {
      * @param i day
      * @param cal the calendar indicating that day
      */
-    fun detailDate(i: Int, cal: Calendar) {
+    fun detailDate(i: Int, cal: ChronoLocalDate) {
         if (c.m.showingDate != null && !c.firstResume) return
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 "${c.c.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
-                    .weekdays[cal[Calendar.DAY_OF_WEEK]]
+                    .weekdays[cal[ChronoField.DAY_OF_WEEK]]
             )
-            setMessage(StringBuilder().apply {
+            /*TODO setMessage(StringBuilder().apply {
                 for (oc in c.c.otherCalendars) {
                     val d = oc.create()
                     d.timeInMillis = cal.timeInMillis
                     append("${oc.simpleName.substringBefore("Calendar")}: ")
                     append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
                 }
-            }.toString())
+            }.toString())*/
             setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
                 dat.background = varFieldBg
                 val watcher = object : TextWatcher {
@@ -458,54 +457,48 @@ class Grid(private val c: Main) : ListAdapter {
                     override fun afterTextChanged(s: Editable?) {
                         result.text = try {
                             result.isVisible = true
-                            val dat = c.c.calType.create().resetHours().apply {
-                                this[Calendar.YEAR] = y.text.toString().toInt()
-                                this[Calendar.MONTH] = (m.text.toString().toInt() - 1).also {
-                                    if (it > getActualMaximum(Calendar.MONTH) || it < 0)
-                                        throw IllegalArgumentException()
-                                }
-                                this[Calendar.DAY_OF_MONTH] = d.text.toString().toInt().also {
-                                    if (it > getActualMaximum(Calendar.DAY_OF_MONTH) || it <= 0)
-                                        throw IllegalArgumentException()
-                                }
-                            }
+                            val dat = c.c.createDate(
+                                y.text.toString().toInt(),
+                                (m.text.toString().toInt()),
+                                d.text.toString().toInt()
+                            )
                             c.m.compareDatesWith = dat
                             dateComparison(cal, dat)
-                        } catch (_: Exception) {
+                        } catch (_: DateTimeException) {
                             result.isVisible = false
                             ""
                         }
                     }
                 }
-                val dit = c.m.compareDatesWith ?: c.c.todayCalendar
-                y.setText(z(dit[Calendar.YEAR]))
-                m.setText(z(dit[Calendar.MONTH] + 1))
+                val dit = c.m.compareDatesWith ?: c.c.todayDate
+                y.setText(z(dit[ChronoField.YEAR]))
+                m.setText(z(dit[ChronoField.MONTH_OF_YEAR]))
                 y.addTextChangedListener(watcher)
                 m.addTextChangedListener(watcher)
                 d.addTextChangedListener(watcher)
-                d.setText(z(dit[Calendar.DAY_OF_MONTH]))
+                d.setText(z(dit[ChronoField.DAY_OF_MONTH]))
 
                 result.setOnLongClickListener {
-                    Kit.copyToClipboard(c.c, result.text, null); true
+                    UiTools.copyToClipboard(c.c, result.text, null); true
                 }
             }.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.viewInCalendar) { _, _ ->
-                c.startActivity(
+                /*TODO c.startActivity(
                     Intent(Intent.ACTION_VIEW).setData(
                         CalendarContract.CONTENT_URI.buildUpon()
                             .appendPath("time")
                             .appendEncodedPath(cal.timeInMillis.toString()).build()
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
+                )*/
             }
             setOnDismissListener { c.m.showingDate = null }
         }.show()
     }
 
-    private fun dateComparison(dit: Calendar, dat: Calendar): String {
-        val dif = dat.compareByDays(dit)
-        val basedOnToday = dat == c.c.todayCalendar
+    private fun dateComparison(dit: ChronoLocalDate, dat: ChronoLocalDate): String {
+        val dif = dat.until(dit, ChronoUnit.DAYS).toInt()
+        val basedOnToday = dat == c.c.todayDate
         val sb = StringBuilder()
         sb.append(" => ").append(
             when {
@@ -524,7 +517,7 @@ class Grid(private val c: Main) : ListAdapter {
                 else -> c.getString(if (basedOnToday) R.string.today else R.string.sameDay)
             }
         )
-        if (abs(dif) > dat.getLeastMaximum(Calendar.DAY_OF_MONTH)) {
+        if (abs(dif) > dat.lengthOfMonth()) {
             val expDif = explainDatesDif(dat, dit, dif > 0)
             if (expDif[0] != 0 || expDif[1] != 0) {
                 sb.append(" (")
@@ -545,35 +538,34 @@ class Grid(private val c: Main) : ListAdapter {
         return sb.toString()
     }
 
-    /** Explains the difference of the Calendar instances in years, months and days */
-    private fun explainDatesDif(main: Calendar, other: Calendar, isFuture: Boolean): IntArray {
+    /** Explains the difference of the [ChronoLocalDate] instances in years, months and days */
+    private fun explainDatesDif(
+        main: ChronoLocalDate, other: ChronoLocalDate, isFuture: Boolean
+    ): IntArray {
         val arr = IntArray(3)
-        arr[0] = other[Calendar.YEAR] - main[Calendar.YEAR]
-        arr[1] = (other[Calendar.MONTH] + 1) - (main[Calendar.MONTH] + 1)
-        arr[2] = other[Calendar.DAY_OF_MONTH] - main[Calendar.DAY_OF_MONTH]
+        arr[0] = other[ChronoField.YEAR] - main[ChronoField.YEAR]
+        arr[1] = other[ChronoField.MONTH_OF_YEAR] - main[ChronoField.MONTH_OF_YEAR]
+        arr[2] = other[ChronoField.DAY_OF_MONTH] - main[ChronoField.DAY_OF_MONTH]
         if (isFuture) {
             /* the first part of the month always starts with 1,
              * but the second part of the month ends with changeable numbers;
              * therefore we need to use the previous month's maximum when explaining the future! */
-            val prev = c.c.calType.create().apply {
-                timeInMillis = other.timeInMillis
-                moveCalendarInMonths(false)
-            }
+            val prev = other.minus(1L, ChronoUnit.MONTHS)
             if (arr[2] < 0) {
-                arr[2] += prev.getActualMaximum(Calendar.DAY_OF_MONTH)
+                arr[2] += prev.lengthOfMonth()
                 arr[1]--
             }
             if (arr[1] < 0) {
-                arr[1] += prev.getActualMaximum(Calendar.MONTH) + 1
+                arr[1] += prev.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1
                 arr[0]--
             }
         } else {
             if (arr[2] > 0) {
-                arr[2] = other.getActualMaximum(Calendar.DAY_OF_MONTH) - arr[2]
+                arr[2] = other.lengthOfMonth() - arr[2]
                 arr[1]++
             } else arr[2] = abs(arr[2])
             if (arr[1] > 0) {
-                arr[1] = (other.getActualMaximum(Calendar.MONTH) + 1) - arr[1]
+                arr[1] = (other.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1) - arr[1]
                 arr[0]++
             } else arr[1] = abs(arr[1])
             arr[0] = abs(arr[0])

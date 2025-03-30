@@ -4,18 +4,20 @@ import android.Manifest
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.icu.util.Calendar
 import android.os.Build
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
-import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
-import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.time.PersianDate
+import ir.mahdiparastesh.fortuna.time.PersianDateTime
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.chrono.ChronoLocalDate
 import java.util.Locale
 
-class Fortuna : Application(), FortunaContext<Calendar> {
+class Fortuna : Application(), FortunaContext {
 
-    override lateinit var calendar: Calendar
-    override lateinit var todayCalendar: Calendar
+    override lateinit var date: ChronoLocalDate
+    override lateinit var todayDate: ChronoLocalDate
     override lateinit var todayLuna: String
     override var vita: Vita? = null
     override var luna: String? = null
@@ -23,37 +25,27 @@ class Fortuna : Application(), FortunaContext<Calendar> {
     override val stored by lazy { File(filesDir, getString(R.string.export_file)) }
     override val backup by lazy { File(filesDir, getString(R.string.backup_file)) }
 
-    /** @return the main shared preferences instance; <code>settings.xml</code>. */
-    val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
-
-    /**
-     * Default Calendar Type
-     * This is a very important constant containing the class type of our default calendar,
-     * which must be a subclass of android.icu.util.Calendar.
-     *
-     * Do NOT use Lunisolar calendars here!
-     *
-     * @see android.icu.util.Calendar
-     * @see <a href="https://en.wikipedia.org/wiki/Lunisolar_calendar">Lunisolar calendar - Wikipedia</a>
-     */
     @Suppress("KotlinConstantConditions")
-    val calType = when (BuildConfig.FLAVOR) {
-        "iranian" -> HumanistIranianCalendar::class.java
-        "gregorian" -> android.icu.util.GregorianCalendar::class.java
+    override val calType = when (BuildConfig.FLAVOR) {
+        "iranian" -> Pair(PersianDate::class.java, PersianDateTime::class.java)
+        "gregorian" -> Pair(LocalDate::class.java, LocalDateTime::class.java)
         else -> throw Exception("Unknown calendar type!")
     }
 
-    /** Other supported Calendar types */
-    val otherCalendars = arrayOf(
-        HumanistIranianCalendar::class.java,
-        // GregorianCalendar does not show a negative number in BCE, which is correct!
-        android.icu.util.GregorianCalendar::class.java,
-        android.icu.util.IndianCalendar::class.java,
+    override val otherCalendars = arrayOf(
+        PersianDate::class.java,
+        // Todo GregorianCalendar does not show a negative number in BCE, which is correct!
+        LocalDate::class.java,
+        /*android.icu.util.IndianCalendar::class.java,
         android.icu.util.ChineseCalendar::class.java,
         android.icu.util.IslamicCalendar::class.java,
         android.icu.util.HebrewCalendar::class.java,
-        android.icu.util.CopticCalendar::class.java,
-    ).filter { it != calType }
+        android.icu.util.CopticCalendar::class.java,*/
+    ).filter { it != calType.first }
+
+
+    /** @return the main shared preferences instance; <code>settings.xml</code>. */
+    val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
 
     val locale: Locale = Locale.UK // never ever use SimpleDateFormat
 
@@ -67,9 +59,6 @@ class Fortuna : Application(), FortunaContext<Calendar> {
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
 
-    /** A single calendar for all calculations to be performed on. */
-    private val calendarForCalculation: Calendar = calType.create()
-
 
     override fun onCreate() {
         super.onCreate()
@@ -79,21 +68,6 @@ class Fortuna : Application(), FortunaContext<Calendar> {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         TodayWidget.externalUpdate(this)
-    }
-
-    override fun getMonthLength(year: Int, month: Int): Int {
-        calendarForCalculation.set(Calendar.YEAR, year)
-        calendarForCalculation.set(Calendar.MONTH, month - 1)
-        return calendarForCalculation.getActualMaximum(Calendar.DAY_OF_MONTH)
-    }
-
-    fun lunaToCalendar(luna: String): Calendar {
-        val spl = luna.split(".")
-        return calType.create().apply {
-            this[Calendar.YEAR] = spl[0].toInt()
-            this[Calendar.MONTH] = spl[1].toInt() - 1
-            this[Calendar.DAY_OF_MONTH] = 1
-        }
     }
 
     fun isLandscape() =

@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
-import android.icu.util.Calendar
 import android.widget.RemoteViews
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.shape.CornerFamily
@@ -12,10 +11,10 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
+import ir.mahdiparastesh.fortuna.util.UiTools
+import java.time.temporal.ChronoField
 
 /**
  * An app widget for notifying the user of the current date in the current calendar with the chosen
@@ -33,7 +32,7 @@ class TodayWidget : AppWidgetProvider() {
 
     companion object {
         fun update(c: Fortuna) = RemoteViews(c.packageName, R.layout.today_widget).apply {
-            val cal = c.calType.create()
+            val cal = c.createDate()
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(
@@ -43,20 +42,20 @@ class TodayWidget : AppWidgetProvider() {
                     val size = if (!c.isLandscape()) arrayOf(70, 100) else arrayOf(140, 50)
                     it.toBitmap((den * size[0]).toInt(), (den * size[1]).toInt())
                 })
-            setOnClickPendingIntent(R.id.root, Kit.openInDate(c, cal, 1))
+            setOnClickPendingIntent(R.id.root, UiTools.openInDate(c, cal, 1))
             setTextViewText(
                 R.id.dies, Numerals.build(
-                    c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
-                        .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
-                ).write(cal[Calendar.DAY_OF_MONTH])
+                    c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
+                        .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }
+                ).write(cal[ChronoField.DAY_OF_MONTH])
             )
-            val month = c.resources.getStringArray(R.array.luna)[cal[Calendar.MONTH]]
+            val month = c.resources.getStringArray(R.array.luna)[cal[ChronoField.MONTH_OF_YEAR]]
             if (c.isLandscape()) {
-                setTextViewText(R.id.luna, "$month\n${cal[Calendar.YEAR]}")
+                setTextViewText(R.id.luna, "$month\n${cal[ChronoField.YEAR]}")
                 setTextViewText(R.id.year, "")
             } else {
                 setTextViewText(R.id.luna, month)
-                setTextViewText(R.id.year, "${cal[Calendar.YEAR]}")
+                setTextViewText(R.id.year, "${cal[ChronoField.YEAR]}")
             }
         } // RemoteViews has no getters.
 

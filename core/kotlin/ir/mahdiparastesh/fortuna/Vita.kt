@@ -5,6 +5,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.StringReader
+import java.time.chrono.ChronoLocalDate
+import java.time.temporal.ChronoField
 
 /**
  * Representation of the VITA file type as [HashMap]<String, Luna>
@@ -12,11 +14,11 @@ import java.io.StringReader
  * We need the whole Vita loaded on startup for search and statistics;
  * so we put the whole data in a single file.
  */
-class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Luna>() {
+class Vita(private val c: FortunaContext, text: String) : HashMap<String, Luna>() {
 
-    constructor(c: FortunaContext<*>) : this(c, c.stored)
+    constructor(c: FortunaContext) : this(c, c.stored)
 
-    constructor(c: FortunaContext<*>, file: File) :
+    constructor(c: FortunaContext, file: File) :
             this(c, String(FileInputStream(file).use { it.readBytes() }))
 
     init {
@@ -25,17 +27,20 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
 
     /** Loads Vita data from a given string. */
     private fun load(text: String) {
+        var cal: ChronoLocalDate = c.createDate()
         var key: String? = null
         var dies = 0
-        for (ln in StringReader(text).readLines()) try {
+        for (ln in StringReader(text).readLines()) /*try*/ {
             if (key == null) {
                 if (!ln.startsWith('@')) continue
                 val sn = ln.split(";", limit = 3)
                 val s = sn[0].split("~")
                 key = s[0].substring(1)
                 val splitKey = key.split(".")
+                cal = cal.with(ChronoField.YEAR, splitKey[0].toLong())
+                cal = cal.with(ChronoField.MONTH_OF_YEAR, splitKey[1].toLong())
                 this[key] = Luna(
-                    c.getMonthLength(splitKey[0].toInt(), splitKey[1].toInt()),
+                    cal.lengthOfMonth(),
                     s.getOrNull(1)?.toFloat(),
                     sn.getOrNull(1)?.ifBlank { null },
                     sn.getOrNull(2)?.loadVitaText(),
@@ -55,11 +60,11 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
                 this[key]!!.size += ln.length + 1L
                 dies++
             }
-        } catch (e: Exception) {
+        }/* catch (e: Exception) {
             throw IOException(
                 "Luna $key Dies $dies threw ${e.javaClass.simpleName}\n${e.stackTraceToString()}"
             )
-        }
+        }*/
     }
 
     /** Dumps Vita data into a string to be written in a *.vita file. */

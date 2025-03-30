@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -49,20 +48,16 @@ import ir.mahdiparastesh.fortuna.sect.SearchDialog
 import ir.mahdiparastesh.fortuna.sect.StatisticsDialog
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
-import ir.mahdiparastesh.fortuna.util.Kit.blur
-import ir.mahdiparastesh.fortuna.util.Kit.color
-import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
-import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
-import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
-import ir.mahdiparastesh.fortuna.util.Kit.pdcf
-import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.toKey
-import ir.mahdiparastesh.fortuna.util.Kit.z
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Sexbook
+import ir.mahdiparastesh.fortuna.util.UiTools
+import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.UiTools.blur
+import ir.mahdiparastesh.fortuna.util.UiTools.color
+import ir.mahdiparastesh.fortuna.util.UiTools.pdcf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -71,6 +66,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStreamReader
+import java.time.chrono.ChronoLocalDate
+import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
 class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -100,7 +98,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         var lastSearchQuery: String? = null
         var searchResults = ArrayList<SearchAdapter.Result>()
         var showingDate: Int? = null
-        var compareDatesWith: Calendar? = null
+        var compareDatesWith: ChronoLocalDate? = null
         var changingConfigForLunaSpinner = false
     }
 
@@ -123,8 +121,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF) ==
-                        (nt.jClass?.simpleName ?: Kit.SP_NUMERAL_TYPE_DEF)
+                isChecked = c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF) ==
+                        (nt.jClass?.simpleName ?: UiTools.SP_NUMERAL_TYPE_DEF)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -132,9 +130,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.toolbar.setOnMenuItemClickListener { mItem ->
             c.sp.edit {
                 putString(
-                    Kit.SP_NUMERAL_TYPE,
+                    UiTools.SP_NUMERAL_TYPE,
                     Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
-                        ?: Kit.SP_NUMERAL_TYPE_DEF
+                        ?: UiTools.SP_NUMERAL_TYPE_DEF
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -152,7 +150,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 if (m.changingConfigForLunaSpinner) {
                     m.changingConfigForLunaSpinner = false; return; }
                 c.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
-                c.calendar = c.lunaToCalendar(c.luna!!)
+                c.date = c.lunaToDate(c.luna!!)
                 updateGrid()
             }
         } // setOnItemClickListener cannot be used with a spinner
@@ -165,7 +163,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 return@addTextChangedListener // don't move this before rollingLunaWithAnnus
 
             c.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            c.calendar = c.lunaToCalendar(c.luna!!)
+            c.date = c.lunaToDate(c.luna!!)
             updateGrid()
         }
         b.annus.setOnEditorActionListener { v, actionId, _ ->
@@ -173,7 +171,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val annus = v.text.toString()
             if (annus == "" || annus == "-") return@setOnEditorActionListener true
             c.luna = "${z(annus, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            c.calendar = c.lunaToCalendar(c.luna!!)
+            c.date = c.lunaToDate(c.luna!!)
             updateGrid()
             b.annus.blur(c)
             return@setOnEditorActionListener true
@@ -194,8 +192,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
-                        c.todayCalendar = c.calType.create().resetHours()
-                        c.todayLuna = c.todayCalendar.toKey()
+                        c.todayDate = c.createDate()
+                        c.todayLuna = c.todayDate.toKey()
                         updateGrid()
                     }
                     HANDLE_SEXBOOK_LOADED -> {
@@ -205,7 +203,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                             m.changingVar?.also { i ->
                                 cvTvSexbook?.appendCrushDates(
                                     i.toShort(),
-                                    dailyCalendar(i)[Calendar.YEAR].toShort()
+                                    dailyCalendar(i)[ChronoField.YEAR].toShort()
                                 )
                                 cvTvSexbook?.appendSexReports(i)
                             }
@@ -240,25 +238,25 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     override fun onResume() {
         super.onResume()
 
-        c.todayCalendar = c.calType.create().resetHours()
-        c.todayLuna = c.todayCalendar.toKey()
+        c.todayDate = c.createDate()
+        c.todayLuna = c.todayDate.toKey()
 
         if (c.luna == null) {
             intent.resolveIntent()
             if (!c.stored.exists()) {
-                c.vita!![c.luna!!] = Luna(c.calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                c.vita!![c.luna!!] = Luna(c.date.lengthOfMonth())
                 c.vita!!.save()
             } else c.vita?.reform()
         } else if (firstResume) {
             updateGrid()
 
             // restore saved states (null-safe)
+
             m.changingVar?.also {
-                (b.grid.adapter as? Grid)?.changeVar(
-                    it,
-                    (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+                (b.grid.adapter as? Grid)
+                    ?.changeVar(it, c.date.with(ChronoField.DAY_OF_MONTH, (it + 1).toLong()))
             }
-            m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, c.calendar) }
+            m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, c.date) }
         }
         firstResume = false
 
@@ -272,17 +270,16 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         val extraLuna = getStringExtra(EXTRA_LUNA)
         if (extraLuna != null) {
             c.luna = extraLuna
-            c.calendar = c.lunaToCalendar(extraLuna)
+            c.date = c.lunaToDate(extraLuna)
         } else {
-            c.calendar = c.calType.create()
-            c.luna = c.calendar.toKey()
+            c.date = c.createDate()
+            c.luna = c.date.toKey()
         }
         updatePanel()
         updateGrid()
         if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
-            (b.grid.adapter as? Grid)?.changeVar(
-                it - 1,
-                (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+            (b.grid.adapter as? Grid)
+                ?.changeVar(it - 1, c.date.with(ChronoField.DAY_OF_MONTH, it.toLong()))
         }
         resolvingIntent = false
     }
@@ -290,8 +287,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.navToday -> {
-                if (c.todayLuna != c.calendar.toKey()) {
-                    c.calendar = c.calType.create()
+                if (c.todayLuna != c.date.toKey()) {
+                    c.date = c.createDate()
                     onCalendarChanged(); }
                 closeDrawer()
             }
@@ -299,12 +296,12 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
             R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = Kit.VITA_MIME_TYPE
+                type = UiTools.VITA_MIME_TYPE
                 putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
             })
             R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = Kit.VITA_MIME_TYPE
+                type = UiTools.VITA_MIME_TYPE
             })
             R.id.navSend -> c.vita?.export()?.also { sendFile(it, R.string.export_file) }
             R.id.navBackup -> BackupDialog().show(supportFragmentManager, "back")
@@ -392,7 +389,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }.onSuccess {
                 withContext(Dispatchers.Main) {
                     Intent(Intent.ACTION_SEND).apply {
-                        type = Kit.VITA_MIME_TYPE
+                        type = UiTools.VITA_MIME_TYPE
                         putExtra(
                             Intent.EXTRA_STREAM,
                             FileProvider.getUriForFile(c, packageName, exported)
@@ -407,8 +404,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Updates year and month inputs of the top panel. */
     @SuppressLint("SetTextI18n")
     private fun updatePanel() {
-        b.annus.setText(c.calendar[Calendar.YEAR].toString())
-        b.luna.setSelection(c.calendar[Calendar.MONTH])
+        b.annus.setText(c.date[ChronoField.YEAR].toString())
+        b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR])
     }
 
     /** Refreshes the [Grid] and adjusts its size. */
@@ -422,7 +419,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         (b.grid.adapter as Grid).also {
             b.defVar.text = it.luna.default.showScore()
             b.lunaMean.text = "x̄: " + it.luna.mean(it.maximumStats ?: 0).groupDigits(6)
-            b.lunaSize.text = Kit.showBytes(this@Main, it.luna.size)
+            b.lunaSize.text = UiTools.showBytes(this@Main, it.luna.size)
             b.lunaSize.isInvisible = it.luna.size == 0L
             b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
             b.emoji.text = it.luna.emoji
@@ -430,7 +427,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
         b.grid.layoutParams.apply {
             height = ((resources.getDimension(R.dimen.gridItemHeight) *
-                    ceil(c.calendar.lunaMaxima().toFloat() / 5f)) +
+                    ceil(c.date.lengthOfMonth().toFloat() / 5f)) +
                     resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
         }
     }
@@ -438,20 +435,22 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF) ==
-                    (Numerals.all[i].jClass?.simpleName ?: Kit.SP_NUMERAL_TYPE_DEF)
+            item.isChecked = c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF) ==
+                    (Numerals.all[i].jClass?.simpleName ?: UiTools.SP_NUMERAL_TYPE_DEF)
         }
     }
 
     /** Moves the calendar in months for N times. */
-    private fun rollCalendar(forward: Boolean, nTimes: Int = 1) {
-        repeat(nTimes) { c.calendar.moveCalendarInMonths(forward) }
+    private fun rollCalendar(forward: Boolean, nTimes: Long = 1L) {
+        c.date =
+            if (forward) c.date.plus(nTimes, ChronoUnit.MONTHS)
+            else c.date.minus(nTimes, ChronoUnit.MONTHS)
         onCalendarChanged()
     }
 
     /** Updates everything whenever the calendar changes. */
     fun onCalendarChanged() {
-        c.luna = c.calendar.toKey()
+        c.luna = c.date.toKey()
         rollingLunaWithAnnus = true
         rollingLuna = true
         updatePanel()
@@ -471,9 +470,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
      * Calculates the maximum date for getting a mean value for statistics, ignores the future.
      * @return null if the given month is the future
      */
-    fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? =
-        if (key == c.todayLuna) c.todayCalendar[Calendar.DAY_OF_MONTH] // this month
-        else if (cal.timeInMillis < c.todayCalendar.timeInMillis) cal.lunaMaxima() // past months
+    fun maximaForStats(cal: ChronoLocalDate, key: String = cal.toKey()): Int? =
+        if (key == c.todayLuna) c.todayDate[ChronoField.DAY_OF_MONTH] // this month
+        else if (cal.isBefore(c.todayDate)) cal.lengthOfMonth() // past months
         else null // future months
 
     fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {

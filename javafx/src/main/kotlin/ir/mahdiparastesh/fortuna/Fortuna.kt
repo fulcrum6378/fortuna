@@ -6,11 +6,14 @@ import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
+import java.time.LocalDate
+import java.time.chrono.ChronoLocalDate
 
-class Fortuna : Application() {
+class Fortuna : Application(), FortunaContext<ChronoLocalDate> {
 
-    var today: PersianDate = PersianDate.now()
-    var calendar: PersianDate = today
+    override var todayCalendar: ChronoLocalDate = PersianDate.now()
+    //override var todayLuna: String =
+    override var calendar: ChronoLocalDate = todayCalendar
 
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(Fortuna::class.java.getResource("main.fxml"))

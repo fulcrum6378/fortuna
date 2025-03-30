@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.graphics.Typeface
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
@@ -23,16 +22,20 @@ import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
-import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.util.AnyViewHolder
+import ir.mahdiparastesh.fortuna.util.BaseDialogue
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
+import ir.mahdiparastesh.fortuna.util.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.temporal.ChronoField
 import kotlin.math.max
 import kotlin.math.min
 
 /** A dialogue for searching in [Vita]. */
-class SearchDialog : Kit.BaseDialogue() {
+class SearchDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
@@ -44,9 +47,9 @@ class SearchDialog : Kit.BaseDialogue() {
                         (list.adapter as SearchAdapter).search(v.text)
                     return@setOnEditorActionListener true
                 }
-                inclusivity.isChecked = c.c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+                inclusivity.isChecked = c.c.sp.getBoolean(UiTools.SP_SEARCH_INCLUSIVE, false)
                 inclusivity.setOnCheckedChangeListener { _, bb ->
-                    c.c.sp.edit { putBoolean(Kit.SP_SEARCH_INCLUSIVE, bb) }
+                    c.c.sp.edit { putBoolean(UiTools.SP_SEARCH_INCLUSIVE, bb) }
                     (list.adapter as SearchAdapter).search(field.text, true)
                 }
                 list.adapter = SearchAdapter(c, this@SearchDialog)
@@ -69,7 +72,7 @@ class SearchDialog : Kit.BaseDialogue() {
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(
     private val c: Main, private val f: SearchDialog
-) : RecyclerView.Adapter<Kit.AnyViewHolder<SearchItemBinding>>() {
+) : RecyclerView.Adapter<AnyViewHolder<SearchItemBinding>>() {
 
     private val sampleRadius = 50
     private val sampleMore = "..."
@@ -94,25 +97,25 @@ class SearchAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            Kit.AnyViewHolder<SearchItemBinding> =
-        Kit.AnyViewHolder(SearchItemBinding.inflate(c.layoutInflater, parent, false))
+            AnyViewHolder<SearchItemBinding> =
+        AnyViewHolder(SearchItemBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(h: Kit.AnyViewHolder<SearchItemBinding>, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<SearchItemBinding>, i: Int) {
         h.b.date.text = c.m.searchResults[i].luna + "." + (
-                if (c.m.searchResults[i].dies >= 0) Kit.z(c.m.searchResults[i].dies + 1)
+                if (c.m.searchResults[i].dies >= 0) z(c.m.searchResults[i].dies + 1)
                 else c.getString(R.string.defValue)
                 )
         h.b.sample.text = c.m.searchResults[i].sample
         h.b.sep.isVisible = i < c.m.searchResults.size - 1
 
         h.b.root.setOnClickListener {
-            c.c.calendar = c.c.lunaToCalendar(c.m.searchResults[h.layoutPosition].luna)
+            c.c.date = c.c.lunaToDate(c.m.searchResults[h.layoutPosition].luna)
             c.onCalendarChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
-            (c.b.grid.adapter as? Grid)?.changeVar(
-                dies,
-                c.c.calendar.apply { if (dies >= 0) this[Calendar.DAY_OF_MONTH] = dies + 1 })
+
+            (c.b.grid.adapter as? Grid)
+                ?.changeVar(dies, c.c.date.with(ChronoField.DAY_OF_MONTH, dies + 1L))
         }
     }
 
@@ -123,7 +126,7 @@ class SearchAdapter(
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
         private val qEmojis = mutableSetOf<String>()
         private val qWords = mutableSetOf<String>()
-        private val exclusive = !c.c.sp.getBoolean(Kit.SP_SEARCH_INCLUSIVE, false)
+        private val exclusive = !c.c.sp.getBoolean(UiTools.SP_SEARCH_INCLUSIVE, false)
 
         init {
             CoroutineScope(Dispatchers.IO).launch {

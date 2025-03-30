@@ -1,13 +1,14 @@
 package ir.mahdiparastesh.fortuna.util
 
-import android.icu.util.Calendar
-import android.icu.util.GregorianCalendar
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
-import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.iterate
+import ir.mahdiparastesh.fortuna.util.UiTools.iterate
+import java.lang.reflect.Modifier
+import java.time.LocalDate
+import java.time.chrono.ChronoLocalDate
+import java.time.temporal.ChronoField
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
@@ -25,7 +26,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
         // get a list of all Places
         try {
             c.contentResolver.query(
-                "content://${Kit.SEXBOOK}/place".toUri(),
+                "content://${UiTools.SEXBOOK}/place".toUri(),
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
@@ -35,17 +36,19 @@ class Sexbook(private val c: Fortuna) : Thread() {
 
         // now get a list of all sex Reports
         c.contentResolver.query(
-            "content://${Kit.SEXBOOK}/report".toUri(),
+            "content://${UiTools.SEXBOOK}/report".toUri(),
             null, null, null, "time ASC" // DESC
         ).iterate {
-            val cal = c.calType.create()
-            cal.timeInMillis = getLong(0)
+            val cal = c.createDateTime(getLong(0))
             reports.add(
                 Report(
                     getLong(6),
-                    cal[Calendar.YEAR].toShort(), cal[Calendar.MONTH].toShort(),
-                    cal[Calendar.DAY_OF_MONTH].toShort(), cal[Calendar.HOUR_OF_DAY].toByte(),
-                    cal[Calendar.MINUTE].toByte(), cal[Calendar.SECOND].toByte(),
+                    cal[ChronoField.YEAR].toShort(),
+                    cal[ChronoField.MONTH_OF_YEAR].toShort(),
+                    cal[ChronoField.DAY_OF_MONTH].toShort(),
+                    cal[ChronoField.HOUR_OF_DAY].toByte(),
+                    cal[ChronoField.MINUTE_OF_HOUR].toByte(),
+                    cal[ChronoField.SECOND_OF_MINUTE].toByte(),
                     getString(1), getShort(2).toByte(),
                     getString(3), getInt(4) == 1,
                     places[getLong(5)]
@@ -55,7 +58,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
 
         // also load Crushes
         c.contentResolver.query(
-            "content://${Kit.SEXBOOK}/crush".toUri(), arrayOf(
+            "content://${UiTools.SEXBOOK}/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
         ).iterate {
@@ -167,19 +170,22 @@ class Sexbook(private val c: Fortuna) : Thread() {
             if (' ' in dt) dt.split(" ").also { dta ->
                 date = dta[0]
                 tb = dta[1].split(":")
-                    .joinToString(":") { Kit.z(it.toIntOrNull() ?: 0) }
+                    .joinToString(":") { NumberUtils.z(it.toIntOrNull() ?: 0) }
             }
             val spl = date.split("/")
             try {
                 yb = spl[0].toInt()
                 mb = spl[1].toInt() - 1
                 db = spl[2].toInt()
-                if (c.calType != GregorianCalendar::class.java) {
-                    val cal = c.calType.create()
-                    cal.timeInMillis = GregorianCalendar(yb, mb, db).timeInMillis
-                    yb = cal[Calendar.YEAR]
-                    mb = cal[Calendar.MONTH]
-                    db = cal[Calendar.DAY_OF_MONTH]
+                if (c.calType.first != LocalDate::class.java) {
+
+                    val cal = c.calType.first.methods.find {
+                        it.name == "fromGregorian" && it.parameterCount == 1 &&
+                                Modifier.isStatic(it.modifiers)
+                    }!!.invoke(null, LocalDate.of(yb, mb, db)) as ChronoLocalDate
+                    yb = cal[ChronoField.YEAR]
+                    mb = cal[ChronoField.MONTH_OF_YEAR]
+                    db = cal[ChronoField.DAY_OF_MONTH]
                 }
             } catch (_: Exception) {
             }

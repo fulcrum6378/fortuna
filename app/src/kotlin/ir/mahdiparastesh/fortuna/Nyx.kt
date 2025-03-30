@@ -9,18 +9,20 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.icu.util.Calendar
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
 
 /** Awakens every night at 12 AM and performs various actions. */
 class Nyx : BroadcastReceiver() {
@@ -30,9 +32,15 @@ class Nyx : BroadcastReceiver() {
 
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
-                AlarmManager.RTC, Calendar.getInstance()
-                    .apply { timeInMillis += Kit.A_DAY; resetHours() }.timeInMillis,
-                Kit.A_DAY, broadcast(c)
+                AlarmManager.RTC,
+                LocalDateTime.now()
+                    .plus(1, ChronoUnit.DAYS)
+                    .withHour(0)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .toInstant(ZoneOffset.UTC)
+                    .toEpochMilli(),
+                NumberUtils.A_DAY, broadcast(c)
             )
         }
 
@@ -51,14 +59,14 @@ class Nyx : BroadcastReceiver() {
             alarm(c); return; }
         val c = c.applicationContext as Fortuna
 
-        // Today
+        // today
         TodayWidget.externalUpdate(c)
         Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
-        // Remind the user to score the recent day if already has not
-        val cal = c.calType.create().apply { timeInMillis -= Kit.A_DAY }
+        // remind the user to score the recent day if already has not
+        val cal = c.createDate().minus(1, ChronoUnit.DAYS)
         val score = Vita(c).getOrDefault(cal.toKey(), null) // FIXME heavy operation
-            ?.get(cal[Calendar.DAY_OF_MONTH] - 1)
+            ?.get(cal[ChronoField.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
                     ActivityCompat.checkSelfPermission(c, Manifest.permission.POST_NOTIFICATIONS)
                     == PackageManager.PERMISSION_GRANTED)
@@ -66,13 +74,13 @@ class Nyx : BroadcastReceiver() {
             CHANNEL, Notification.Builder(c, REMIND)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(c.getString(R.string.ntfReminder))
-                .setContentIntent(Kit.openInDate(c, cal, 0))
+                .setContentIntent(UiTools.openInDate(c, cal, 0))
                 .setAutoCancel(true)
                 .setShowWhen(false)
                 .build()
         )
 
-        // Backup
+        // backup
         c.backupVita()
         val dropbox = Dropbox(c)
         if (dropbox.isAuthenticated())

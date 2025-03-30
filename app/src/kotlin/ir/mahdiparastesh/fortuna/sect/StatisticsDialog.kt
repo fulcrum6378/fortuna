@@ -3,7 +3,6 @@ package ir.mahdiparastesh.fortuna.sect
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.SparseArray
 import android.view.Gravity
@@ -21,11 +20,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
-import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
-import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.toValue
+import ir.mahdiparastesh.fortuna.util.BaseDialogue
+import ir.mahdiparastesh.fortuna.util.DoubleClickListener
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
+import ir.mahdiparastesh.fortuna.util.UiTools
+import java.time.temporal.ChronoField
 
 /**
  * A dialogue doing some statistics.
@@ -34,7 +34,7 @@ import ir.mahdiparastesh.fortuna.util.Kit.toValue
  * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
  * someone accidentally or deliberately score a day in year 25 or 8000.
  */
-class StatisticsDialog : Kit.BaseDialogue() {
+class StatisticsDialog : BaseDialogue() {
     private var dialogue: AlertDialog? = null
     private lateinit var text: String
 
@@ -44,7 +44,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
         val keyMeanMap = hashMapOf<String, Float>()
         if (c.c.vita != null) for ((key, luna) in c.c.vita!!) {
             val lunaScores = arrayListOf<Float>()
-            val cal = c.c.lunaToCalendar(key).resetHours()
+            val cal = c.c.lunaToDate(key)
             val maxima = c.maximaForStats(cal, key) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
@@ -60,7 +60,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
         )
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
-            val maxMonths = c.c.calendar.getMaximum(Calendar.MONTH) + 1
+            val maxMonths = c.c.date.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
                 val spl = key.split(".")
@@ -92,11 +92,15 @@ class StatisticsDialog : Kit.BaseDialogue() {
                             setBackgroundColor(
                                 when {
                                     score != null && score > 0f -> Color.valueOf(
-                                        cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
+                                        cp.red.hexToValue(),
+                                        cp.green.hexToValue(),
+                                        cp.blue.hexToValue(),
                                         score / Vita.MAX_RANGE
                                     ).toArgb()
                                     score != null && score < 0f -> Color.valueOf(
-                                        cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
+                                        cs.red.hexToValue(),
+                                        cs.green.hexToValue(),
+                                        cs.blue.hexToValue(),
                                         -score / Vita.MAX_RANGE
                                     ).toArgb()
                                     score != null -> Color.TRANSPARENT
@@ -107,14 +111,9 @@ class StatisticsDialog : Kit.BaseDialogue() {
                                 "${monthNames[month]} $year${
                                     score?.groupDigits()?.let { "\n$it" } ?: ""
                                 }"
-                            setOnClickListener(object : Kit.DoubleClickListener() {
+                            setOnClickListener(object : DoubleClickListener() {
                                 override fun onDoubleClick() {
-                                    c.c.calendar = c.c.calType.create().apply {
-                                        set(Calendar.YEAR, year)
-                                        set(Calendar.MONTH, month)
-                                        set(Calendar.DAY_OF_MONTH, 1)
-                                        resetHours()
-                                    }
+                                    c.c.date = c.c.createDate(year, month, 1)
                                     c.onCalendarChanged()
                                     dialogue?.cancel()
                                     c.closeDrawer()
@@ -143,6 +142,12 @@ class StatisticsDialog : Kit.BaseDialogue() {
     override fun onResume() {
         super.onResume()
         dialogue?.getButton(AlertDialog.BUTTON_NEUTRAL)
-            ?.setOnClickListener { Kit.copyToClipboard(c, text, getString(R.string.fortunaStat)) }
+            ?.setOnClickListener {
+                UiTools.copyToClipboard(
+                    c,
+                    text,
+                    getString(R.string.fortunaStat)
+                )
+            }
     }
 }

@@ -1,9 +1,12 @@
 package ir.mahdiparastesh.fortuna.time;
 
+import static java.time.temporal.ChronoField.NANO_OF_SECOND;
+
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +46,9 @@ public final class PersianDateTime implements ChronoLocalDateTime<PersianDate> {
      * The local time.
      */
     private final LocalTime time;
+
+    private static final long NANOS_PER_SECOND = 1000000000L;
+    private static final int SECONDS_PER_DAY = 86400;
 
     /**
      * Returns an instance of this class with the actual current date and time.
@@ -238,6 +244,32 @@ public final class PersianDateTime implements ChronoLocalDateTime<PersianDate> {
         Objects.requireNonNull(formatter, "formatter");
         return formatter.withChronology(PersianChronology.INSTANCE)
                 .parse(text, PersianDateTime::from);
+    }
+
+    /**
+     * Obtains an instance of {@code PersianDateTime} using seconds from the
+     * epoch of 1970-01-01T00:00:00Z.
+     * <p>
+     * This allows the {@link ChronoField#INSTANT_SECONDS epoch-second} field
+     * to be converted to a local date-time. This is primarily intended for
+     * low-level conversions rather than general application usage.
+     *
+     * @param epochSecond  the number of seconds from the epoch of 1970-01-01T00:00:00Z
+     * @param nanoOfSecond the nanosecond within the second, from 0 to 999,999,999
+     * @param offset       the zone offset, not null
+     * @return the local date-time, not null
+     * @throws DateTimeException if the result exceeds the supported range,
+     *                           or if the nano-of-second is invalid
+     */
+    public static PersianDateTime ofEpochSecond(long epochSecond, int nanoOfSecond, ZoneOffset offset) {
+        Objects.requireNonNull(offset, "offset");
+        NANO_OF_SECOND.checkValidValue(nanoOfSecond);
+        long localSecond = epochSecond + offset.getTotalSeconds();  // overflow caught later
+        long localEpochDay = Math.floorDiv(localSecond, SECONDS_PER_DAY);
+        int secsOfDay = Math.floorMod(localSecond, SECONDS_PER_DAY);
+        PersianDate date = PersianDate.ofEpochDay(localEpochDay);
+        LocalTime time = LocalTime.ofNanoOfDay(secsOfDay * NANOS_PER_SECOND + nanoOfSecond);
+        return new PersianDateTime(date, time);
     }
 
     /**
