@@ -54,13 +54,13 @@ import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.util.Kit.blur
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
 import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.pdcf
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
 import ir.mahdiparastesh.fortuna.util.Kit.toKey
-import ir.mahdiparastesh.fortuna.util.Kit.z
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Sexbook
 import kotlinx.coroutines.CoroutineScope

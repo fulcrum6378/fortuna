@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 
 /** Static fields and methods used everywhere. */
 object Kit {
@@ -54,23 +55,6 @@ object Kit {
 
     fun Calendar.lunaMaxima() = getActualMaximum(Calendar.DAY_OF_MONTH)
 
-    /**
-     * Fills a String with a number and zeroes before it. (e.g. 2 -> "02")
-     *
-     * @param n number
-     * @param ideal the desired length of the returned string
-     */
-    fun z(n: Any?, ideal: Int = 2): String {
-        var s = n.toString()
-        var neg = false
-        if (s.startsWith("-")) {
-            s = s.substring(1)
-            neg = true
-        }
-        while (s.length < ideal) s = "0$s"
-        return if (!neg) s else "-$s"
-    }
-
     /** Sets the time of the calendar on 00:00:00:000 */
     fun Calendar.resetHours(): Calendar {
         set(Calendar.HOUR_OF_DAY, 0)
@@ -91,46 +75,6 @@ object Kit {
     /** Compares two Calendar instances and returns their difference in days. */
     fun Calendar.compareByDays(other: Calendar): Int =
         ((other.timeInMillis - timeInMillis) / A_DAY).toInt()
-
-    /**
-     * Groups the digits of a number triply (both integral and fractional ones).
-     * e.g. 6401 -> 6,401 or 1234.5678 -> 1,234.567,8
-     *
-     * @param fractionLimit cut the fraction numbers since this position
-     */
-    fun Number.groupDigits(fractionLimit: Int = 0): String {
-        val i: String
-        var f: String? = null
-        toString().split(".").also {
-            if (it.size == 2) f = it[1]
-            i = it[0]
-        }
-        val ret = StringBuilder()
-
-        // group the integral digits
-        var left = 0
-        for (ii in i.length - 1 downTo 0) {
-            ret.insert(0, i[ii])
-            left++
-            if (left % 3 == 0 && ii != 0) ret.insert(0, ",")
-        }
-
-        // group the fractional digits (if available)
-        if (f != null) {
-            ret.append(".")
-            var right = 0
-            for (ff in 0 until f.length) {
-                ret.append(f[ff])
-                right++
-                if (fractionLimit in 1..right) break
-                if (right % 3 == 0 && ff != 0 && ff < f.length - 1) ret.append(",")
-            }
-        }
-        return "$ret"
-    }
-
-    /** Converts a hexadecimal colour integer into a Float of range 0..1. */
-    fun Int.toValue() = toFloat() / 256f
 
     /** Opens the specified date in the device's default calendar app. */
     fun openInDate(c: Context, cal: Calendar, req: Int): PendingIntent =
@@ -160,30 +104,11 @@ object Kit {
         this?.use { cur -> while (cur.moveToNext()) cur.action() }
     }
 
-    /**
-     * Finds a Java class name in a safer way.
-     * @param jc simple Java class name (e.g. RomanNumeral)
-     */
-    fun findClass(jc: String): Class<*>? = try {
-        Class.forName(jc)
-    } catch (_: ClassNotFoundException) {
-        null
-    }
-
     fun <T> Class<T>.create(): T = getDeclaredConstructor().newInstance()
 
     /** Explains bytes for humans. */
-    fun showBytes(c: Context, length: Long): String {
-        val units = c.resources.getStringArray(R.array.bytes)
-        var unit = 0
-        var nominalSize = length.toDouble()
-        while ((nominalSize / 1024.0) > 1.0) {
-            nominalSize /= 1024.0
-            unit++
-            if (unit == units.size - 1) break
-        }
-        return units[unit].format(nominalSize.toInt())
-    }
+    fun showBytes(c: Context, length: Long): String =
+        NumberUtils.showBytes(c.resources.getStringArray(R.array.bytes), length)
 
 
     abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickListener {

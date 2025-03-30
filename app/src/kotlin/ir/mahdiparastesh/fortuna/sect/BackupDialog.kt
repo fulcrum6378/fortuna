@@ -19,6 +19,7 @@ import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,9 +102,9 @@ class BackupDialog : Kit.BaseDialogue() {
     private fun lastBackup(): String {
         if (!c.c.backup.exists()) return getString(R.string.never)
         val d = c.c.calType.create().apply { timeInMillis = c.c.backup.lastModified() }
-        return "${Kit.z(d[Calendar.YEAR], 4)}.${Kit.z(d[Calendar.MONTH] + 1)}." +
-                "${Kit.z(d[Calendar.DAY_OF_MONTH])} - ${Kit.z(d[Calendar.HOUR_OF_DAY])}:" +
-                "${Kit.z(d[Calendar.MINUTE])}:${Kit.z(d[Calendar.SECOND])}"
+        return "${z(d[Calendar.YEAR], 4)}.${z(d[Calendar.MONTH] + 1)}." +
+                "${z(d[Calendar.DAY_OF_MONTH])} - ${z(d[Calendar.HOUR_OF_DAY])}:" +
+                "${z(d[Calendar.MINUTE])}:${z(d[Calendar.SECOND])}"
     }
 
     /** Updates the modification date of the backup file. */

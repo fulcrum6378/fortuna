@@ -8,6 +8,7 @@ import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.iterate
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
@@ -167,7 +168,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
             if (' ' in dt) dt.split(" ").also { dta ->
                 date = dta[0]
                 tb = dta[1].split(":")
-                    .joinToString(":") { Kit.z(it.toIntOrNull() ?: 0) }
+                    .joinToString(":") { z(it.toIntOrNull() ?: 0) }
             }
             val spl = date.split("/")
             try {

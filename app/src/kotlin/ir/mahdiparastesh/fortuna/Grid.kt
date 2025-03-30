@@ -42,13 +42,13 @@ import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
 import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
 import ir.mahdiparastesh.fortuna.util.Kit.toKey
-import ir.mahdiparastesh.fortuna.util.Kit.toValue
-import ir.mahdiparastesh.fortuna.util.Kit.z
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
@@ -57,7 +57,7 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-/** Main table of our calendar grid which lists days of a month. */
+/** Main table of our calendar grid which lists days of a month */
 @SuppressLint("SetTextI18n")
 class Grid(private val c: Main) : ListAdapter {
     lateinit var luna: Luna
@@ -70,7 +70,7 @@ class Grid(private val c: Main) : ListAdapter {
         onRefresh()
     }
 
-    /** Reference to the [TextView] inside the dialogue of [changeVar]. */
+    /** Reference to the [TextView] inside the dialogue of [changeVar] */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -129,7 +129,7 @@ class Grid(private val c: Main) : ListAdapter {
                         variabilis.setTextColor(cpo)
                         verbumIcon.setColorFilter(cpo)
                         Color.valueOf(
-                            cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
+                            cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
                             score / Vita.MAX_RANGE
                         ).toArgb()
                     }
@@ -138,7 +138,7 @@ class Grid(private val c: Main) : ListAdapter {
                         variabilis.setTextColor(cso)
                         verbumIcon.setColorFilter(cso)
                         Color.valueOf(
-                            cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
+                            cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
                             -score / Vita.MAX_RANGE
                         ).toArgb()
                     }

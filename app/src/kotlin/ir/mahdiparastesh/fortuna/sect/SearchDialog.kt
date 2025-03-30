@@ -24,6 +24,7 @@ import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
 import ir.mahdiparastesh.fortuna.util.Kit
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -100,7 +101,7 @@ class SearchAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(h: Kit.AnyViewHolder<SearchItemBinding>, i: Int) {
         h.b.date.text = c.m.searchResults[i].luna + "." + (
-                if (c.m.searchResults[i].dies >= 0) Kit.z(c.m.searchResults[i].dies + 1)
+                if (c.m.searchResults[i].dies >= 0) z(c.m.searchResults[i].dies + 1)
                 else c.getString(R.string.defValue)
                 )
         h.b.sample.text = c.m.searchResults[i].sample

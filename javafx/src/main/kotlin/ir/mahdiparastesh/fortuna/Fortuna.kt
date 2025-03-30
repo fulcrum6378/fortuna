@@ -1,16 +1,26 @@
 package ir.mahdiparastesh.fortuna
 
 import ir.mahdiparastesh.fortuna.time.PersianDate
+import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
 import javafx.scene.Scene
 import javafx.stage.Stage
+import java.io.File
 
-class Fortuna : Application() {
+class Fortuna : Application(), FortunaContext<PersianDate> {
 
-    var today: PersianDate = PersianDate.now()
-    var calendar: PersianDate = today
+    override var vita: Vita? = null
+    override var luna: String? = null
+    override var todayCalendar: PersianDate = PersianDate.now()
+    override var todayLuna: String = todayCalendar.toKey()
+    override var calendar: PersianDate = todayCalendar
+    override val stored: File by lazy { File("fortuna.vita") }
+    override val backup: File by lazy { File("fortuna_backup.vita") }
+
+    override fun getMonthLength(year: Int, month: Int): Int =
+        PersianDate.of(year, month, 1).lengthOfMonth()
 
     override fun start(stage: Stage) {
         val fxmlLoader = FXMLLoader(Fortuna::class.java.getResource("main.fxml"))

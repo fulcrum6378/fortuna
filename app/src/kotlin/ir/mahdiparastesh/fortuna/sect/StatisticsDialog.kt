@@ -23,9 +23,9 @@ import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.util.Kit
 import ir.mahdiparastesh.fortuna.util.Kit.create
-import ir.mahdiparastesh.fortuna.util.Kit.groupDigits
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
-import ir.mahdiparastesh.fortuna.util.Kit.toValue
+import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
+import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
 
 /**
  * A dialogue doing some statistics.
@@ -92,11 +92,15 @@ class StatisticsDialog : Kit.BaseDialogue() {
                             setBackgroundColor(
                                 when {
                                     score != null && score > 0f -> Color.valueOf(
-                                        cp.red.toValue(), cp.green.toValue(), cp.blue.toValue(),
+                                        cp.red.hexToValue(),
+                                        cp.green.hexToValue(),
+                                        cp.blue.hexToValue(),
                                         score / Vita.MAX_RANGE
                                     ).toArgb()
                                     score != null && score < 0f -> Color.valueOf(
-                                        cs.red.toValue(), cs.green.toValue(), cs.blue.toValue(),
+                                        cs.red.hexToValue(),
+                                        cs.green.hexToValue(),
+                                        cs.blue.hexToValue(),
                                         -score / Vita.MAX_RANGE
                                     ).toArgb()
                                     score != null -> Color.TRANSPARENT
