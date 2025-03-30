@@ -1,17 +1,21 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.javafx)
-    alias(libs.plugins.modularity)
-    alias(libs.plugins.jlink)
+    application
 }
 
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "0.6.5"
+version = "0.6.6"
+
+sourceSets.getByName("main") {
+    java.srcDirs("src/java")
+    kotlin.srcDirs("src/kotlin")
+    resources.srcDirs("src/resources")
+}
 
 application {
-    mainModule.set("ir.mahdiparastesh.fortuna")
     mainClass.set("ir.mahdiparastesh.fortuna.FortunaKt")
 }
 
@@ -24,11 +28,15 @@ dependencies {
     implementation(project(":core"))
 }
 
-jlink {
-    launcher { name = "Fortuna" }
+tasks.jar {
+    archiveBaseName = "Fortuna"
+    manifest {
+        attributes["Main-Class"] = "ir.mahdiparastesh.fortuna.FortunaKt"
+        attributes["Manifest-Version"] = version
+    }
+    from(configurations.runtimeClasspath.get().map(::zipTree))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// some fucking painful lessons:
-// - do NOT alter the /src/main/* structure.
-// - do NOT remove the modularity plugin.
-// - do NOT enable the configuration cache.
+// adding "--module-path" and "--add-modules" as JVM arguments will make no difference in the output,
+// but it will silence a nasty warning.

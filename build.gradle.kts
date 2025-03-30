@@ -2,9 +2,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.modularity) apply false
     alias(libs.plugins.javafx) apply false
-    alias(libs.plugins.jlink) apply false
 }
 
 tasks.register("clean", Delete::class) {

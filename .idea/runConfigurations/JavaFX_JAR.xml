@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Link JavaFX" type="GradleRunConfiguration" factoryName="Gradle">
+  <configuration default="false" name="JavaFX JAR" type="GradleRunConfiguration" factoryName="Gradle">
     <ExternalSystemSettings>
       <option name="executionName" />
       <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -10,10 +10,10 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":javafx:jlink" />
+          <option value=":javafx:jar" />
         </list>
       </option>
-      <option name="vmOptions" />
+      <option name="vmOptions" value="--module-path &quot;D:\Programming\JavaFX\javafx-sdk-23.0.2\lib&quot;; --add-modules javafx.controls,javafx.fxml" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>

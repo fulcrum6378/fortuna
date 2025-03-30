@@ -2,8 +2,6 @@
 agp = "8.9.1"
 kotlin = "2.1.20"
 javaFX = "0.1.0"
-modularity = "1.8.15"
-jLink = "3.1.1"
 activityKtx = "1.10.1"
 constraintLayout = "2.2.1"
 coreKtx = "1.15.0"
@@ -21,8 +19,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 # :javafx
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 javafx = { id = "org.openjfx.javafxplugin", version.ref = "javaFX" }
-modularity = { id = "org.javamodularity.moduleplugin", version.ref = "modularity" }
-jlink = { id = "org.beryx.jlink", version.ref = "jLink" }
 
 [libraries]
 # :app
