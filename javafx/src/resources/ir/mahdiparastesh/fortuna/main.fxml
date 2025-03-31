@@ -22,7 +22,7 @@
         spacing="50"
         fx:id="panelFields">
 
-      <ComboBox fx:id="luna" />
+      <ComboBox fx:id="lunaBox" />
 
       <TextField
           promptText="Year"

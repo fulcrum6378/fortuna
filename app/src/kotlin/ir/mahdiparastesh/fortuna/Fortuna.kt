@@ -9,6 +9,7 @@ import android.os.Build
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
 import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
 import ir.mahdiparastesh.fortuna.util.Kit.resetHours
 import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import java.io.File
@@ -80,10 +81,9 @@ class Fortuna : Application(), FortunaContext<Calendar> {
         calendar = calType.create()
         luna = calendar.toKey()
         vita = Vita(this)
+        updateToday()
         if (luna !in vita) vita[todayLuna] =
             Luna(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-
-        updateToday()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -102,6 +102,14 @@ class Fortuna : Application(), FortunaContext<Calendar> {
         return calendarForCalculation.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
+    override fun maximaForStats(cal: Calendar): Int? =
+        if (cal.timeInMillis == todayCalendar.timeInMillis) // this month
+            todayCalendar[Calendar.DAY_OF_MONTH]
+        else if (cal.timeInMillis < todayCalendar.timeInMillis) // past months
+            cal.lunaMaxima()
+        else // future months
+            null
+
     fun lunaToCalendar(luna: String): Calendar {
         val spl = luna.split(".")
         return calType.create().apply {
@@ -117,5 +125,5 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 
 /* TODO:
   * A new icon
-  * Index Vita
+  * Reading Vita doesn't seem to be a heavy process! There's something else...
 */

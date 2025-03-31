@@ -460,15 +460,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.annus.blur(c)
     }
 
-    /**
-     * Calculates the maximum date for getting a mean value for statistics, ignores the future.
-     * @return null if the given month is the future
-     */
-    fun maximaForStats(cal: Calendar, key: String = cal.toKey()): Int? =
-        if (key == c.todayLuna) c.todayCalendar[Calendar.DAY_OF_MONTH] // this month
-        else if (cal.timeInMillis < c.todayCalendar.timeInMillis) cal.lunaMaxima() // past months
-        else null // future months
-
     fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {
         luna.set(i, score, emoji, verbum)
         c.vita.save()

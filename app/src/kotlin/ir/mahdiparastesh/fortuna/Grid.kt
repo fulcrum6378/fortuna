@@ -164,7 +164,7 @@ class Grid(private val c: Main) : ListAdapter {
         numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
             .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.maximaForStats(c.c.calendar, c.c.luna)
+        maximumStats = c.c.maximaForStats(c.c.calendar)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */

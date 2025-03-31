@@ -34,6 +34,13 @@ interface FortunaContext<Calendar> {
     /** @return number of days in a local month of any calendar system */
     fun getMonthLength(year: Int, month: Int): Int
 
+    /**
+     * Calculates the maximum date for getting a mean value for statistics, ignores the future.
+     * @return null if the given month is the future
+     */
+    fun maximaForStats(cal: Calendar): Int?
+
+
     /** Copies data from [stored] into [backup]. */
     fun backupVita() {
         FileOutputStream(backup).use { fos ->

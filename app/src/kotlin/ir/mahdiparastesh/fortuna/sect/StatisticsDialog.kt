@@ -45,7 +45,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
         for ((key, luna) in c.c.vita) {
             val lunaScores = arrayListOf<Float>()
             val cal = c.c.lunaToCalendar(key).resetHours()
-            val maxima = c.maximaForStats(cal, key) ?: continue
+            val maxima = c.c.maximaForStats(cal) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
             scores.addAll(lunaScores)
