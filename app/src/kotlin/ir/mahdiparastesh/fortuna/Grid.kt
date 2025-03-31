@@ -158,18 +158,18 @@ class Grid(private val c: Main) : ListAdapter {
 
     /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
-        luna = c.c.vita?.find(c.c.luna!!)
+        luna = c.c.vita.find(c.c.luna)
             ?: Luna(c.c.calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
         sexbook = cacheSexbook()
         numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
             .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.maximaForStats(c.c.calendar, c.c.luna!!)
+        maximumStats = c.maximaForStats(c.c.calendar, c.c.luna)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */
     fun cacheSexbook() = c.m.sexbook?.let {
-        val spl = c.c.luna!!.split(".")
+        val spl = c.c.luna.split(".")
         val yr = spl[0].toShort()
         val mo = (spl[1].toInt() - 1).toShort()
         Sexbook.Data(
@@ -197,7 +197,7 @@ class Grid(private val c: Main) : ListAdapter {
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
     fun changeVar(i: Int, cal: Calendar = c.c.calendar) {
-        if (c.m.changingVar != null && !c.firstResume) return
+        if (c.m.changingVar != null) return
         c.m.changingVar = i
         val bv = VariabilisBinding.inflate(c.layoutInflater)
         var dialogue: AlertDialog? = null
@@ -268,13 +268,12 @@ class Grid(private val c: Main) : ListAdapter {
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                if (i != -1) "${c.c.luna!!}.${z(i + 1)}"
+                if (i != -1) "${c.c.luna}.${z(i + 1)}"
                 else c.getString(R.string.defValue)
             )
             setView(bv.root)
             setNegativeButton(R.string.cancel, null)
             setPositiveButton(R.string.save) { _, _ ->
-                if (c.c.vita == null) return@setPositiveButton
                 c.saveDies(
                     luna, i, bv.picker.value.toScore(),
                     bv.emoji.text.toString(), bv.verbum.text.toString()
@@ -318,7 +317,6 @@ class Grid(private val c: Main) : ListAdapter {
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
             setOnClickListener(Kit.LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
-                if (c.c.vita == null) return@setOnLongClickListener true
                 c.saveDies(luna, i, null, null, null)
                 c.shake()
                 dialogue?.dismiss(); true
@@ -435,11 +433,11 @@ class Grid(private val c: Main) : ListAdapter {
      * @param cal the calendar indicating that day
      */
     fun detailDate(i: Int, cal: Calendar) {
-        if (c.m.showingDate != null && !c.firstResume) return
+        if (c.m.showingDate != null) return
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.c.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
+                "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
                     .weekdays[cal[Calendar.DAY_OF_WEEK]]
             )
             setMessage(StringBuilder().apply {

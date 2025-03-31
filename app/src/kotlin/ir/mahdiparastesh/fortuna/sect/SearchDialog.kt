@@ -80,8 +80,8 @@ class SearchAdapter(
         if (q == c.m.lastSearchQuery && !inclusivityChanged) return
         c.m.lastSearchQuery = q.toString()
         c.m.searchResults.clear()
-        if (!q.isNullOrBlank() && c.c.vita != null)
-            Search(q.trim(), c.c.vita!!.clone() as Vita) {
+        if (!q.isNullOrBlank())
+            Search(q.trim(), c.c.vita.clone() as Vita) {
                 notifyDataSetChanged()
                 if (c.m.searchResults.isEmpty())
                     Toast.makeText(c, R.string.foundNothing, Toast.LENGTH_SHORT).show()

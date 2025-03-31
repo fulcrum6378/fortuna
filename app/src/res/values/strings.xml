@@ -47,6 +47,7 @@
     <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s.\n</string>
     <string name="navExport">Export data</string>
+    <string name="emptyVita">Your vita is empty!</string>
     <string name="navImport">Import data</string>
     <string name="importOpenError">Unfortunately an error occurred while opening the file!</string>
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>

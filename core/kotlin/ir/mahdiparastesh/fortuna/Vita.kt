@@ -7,20 +7,24 @@ import java.io.IOException
 import java.io.StringReader
 
 /**
- * Representation of the VITA file type as [HashMap]<String, Luna>
+ * Representation of the VITA file type as [HashMap]<String, [Luna]>
  *
  * We need the whole Vita loaded on startup for search and statistics;
  * so we put the whole data in a single file.
  */
-class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Luna>() {
-
-    constructor(c: FortunaContext<*>) : this(c, c.stored)
-
-    constructor(c: FortunaContext<*>, file: File) :
-            this(c, String(FileInputStream(file).use { it.readBytes() }))
+class Vita(
+    private val c: FortunaContext<*>,
+    file: File? = null,
+    text: String? = null,
+) : HashMap<String, Luna>() {
 
     init {
-        load(text)
+        if (text != null) load(text)
+        else {
+            val f: File = file ?: c.stored
+            if (f.exists())
+                load(String(FileInputStream(f).use { it.readBytes() }))
+        }
     }
 
     /** Loads Vita data from a given string. */
@@ -72,7 +76,8 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
                 hasVerbum = luna.verbum?.isNotBlank() == true
                 if (luna.emoji?.isNotBlank() == true)
                     append(";${luna.emoji!!}")
-                else if (hasVerbum) append(";")
+                else if (hasVerbum)
+                    append(";")
                 if (hasVerbum)
                     append(";${luna.verbum!!.saveVitaText()}")
             }
@@ -91,7 +96,8 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
                 hasVerbum = luna.verba[d]?.isNotBlank() == true
                 if (luna.emojis[d]?.isNotBlank() == true)
                     append(";${luna.emojis[d]!!}")
-                else if (hasVerbum) append(";")
+                else if (hasVerbum)
+                    append(";")
                 if (hasVerbum)
                     append(";${luna.verba[d]!!.saveVitaText()}")
                 append("\n")
@@ -103,6 +109,7 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
     fun find(key: String): Luna? = getOrElse(key) { null }
 
     fun save() {
+        reform()
         FileOutputStream(c.stored).use { fos ->
             fos.write(dump().encodeToByteArray())
         }
@@ -114,13 +121,24 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
         return dump().encodeToByteArray()
     }
 
-    /** Removes the empty entries. */
+    /** Removes all empty entries. */
     fun reform() {
         val removal = arrayListOf<String>()
-        forEach { key, luna -> if (luna.isEmpty()) removal.add(key) }
-        removal.forEach { remove(it) }
-        save()
+        for ((key, luna) in this) {
+            if (luna.isEmpty() && key != c.todayLuna)
+                removal.add(key)
+        }
+        for (r in removal) remove(r)
     }
+
+    /** Checks it there are any valuable data in the Vita. */
+    fun hasData(): Boolean {
+        for ((_, luna) in this)
+            if (!luna.isEmpty())
+                return true
+        return false
+    }
+
 
     companion object {
         const val MAX_RANGE = 3f
@@ -138,7 +156,12 @@ class Vita(private val c: FortunaContext<*>, text: String) : HashMap<String, Lun
     }
 }
 
-/** Subset of [Vita] for managing months. */
+/**
+ * Subset of [Vita] for managing months.
+ *
+ * We shall never re-design [diebus], [emojis] and [verba] as data classes
+ * in exchange for high performance.
+ */
 class Luna(
     length: Int,
     var default: Float? = null,
@@ -151,8 +174,17 @@ class Luna(
     val verba: Array<String?> = Array(length) { null }
 
     operator fun get(index: Int): Float? = diebus[index]
-    operator fun set(index: Int, value: Float?) {
-        diebus[index] = value
+
+    fun set(i: Int, score: Float?, emoji: String?, verbum: String?) {
+        if (i != -1) {
+            diebus[i] = score
+            verba[i] = verbum?.ifBlank { null }
+            emojis[i] = emoji?.ifBlank { null }
+        } else {
+            default = score
+            this.verbum = verbum?.ifBlank { null }
+            this.emoji = emoji?.ifBlank { null }
+        }
     }
 
     fun isEmpty() = diebus.all { it == null } && default == null

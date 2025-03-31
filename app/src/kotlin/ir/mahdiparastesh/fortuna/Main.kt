@@ -57,7 +57,6 @@ import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.lunaMaxima
 import ir.mahdiparastesh.fortuna.util.Kit.moveCalendarInMonths
 import ir.mahdiparastesh.fortuna.util.Kit.pdcf
-import ir.mahdiparastesh.fortuna.util.Kit.resetHours
 import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
@@ -77,10 +76,11 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
+    var dropbox: Dropbox? = null
+
     private var rollingLuna = true // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
     private var rollingAnnusItself = false
-    var dropbox: Dropbox? = null
 
     companion object {
         const val EXTRA_LUNA = "luna"
@@ -107,6 +107,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(b.root)
+        updateGrid()
 
         // Toolbar & Navigation
         ActionBarDrawerToggle(
@@ -143,16 +144,16 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.luna.adapter = ArrayAdapter(
             this, R.layout.spinner, resources.getStringArray(R.array.luna)
         ).apply { setDropDownViewResource(R.layout.spinner_dd) }
+        updatePanel()
         b.luna.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>) {}
             override fun onItemSelected(parent: AdapterView<*>, view: View?, i: Int, id: Long) {
-                if (resolvingIntent) return
                 if (rollingLuna) {
                     rollingLuna = false; return; }
                 if (m.changingConfigForLunaSpinner) {
                     m.changingConfigForLunaSpinner = false; return; }
                 c.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
-                c.calendar = c.lunaToCalendar(c.luna!!)
+                c.calendar = c.lunaToCalendar(c.luna)
                 updateGrid()
             }
         } // setOnItemClickListener cannot be used with a spinner
@@ -161,11 +162,11 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 rollingAnnusItself = false; return@addTextChangedListener; }
             if (rollingLunaWithAnnus) {
                 rollingLunaWithAnnus = false; return@addTextChangedListener; }
-            if (c.luna?.split(".")?.get(0) == it.toString() || resolvingIntent)
+            if (c.luna.split(".")[0] == it.toString())
                 return@addTextChangedListener // don't move this before rollingLunaWithAnnus
 
             c.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            c.calendar = c.lunaToCalendar(c.luna!!)
+            c.calendar = c.lunaToCalendar(c.luna)
             updateGrid()
         }
         b.annus.setOnEditorActionListener { v, actionId, _ ->
@@ -173,7 +174,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val annus = v.text.toString()
             if (annus == "" || annus == "-") return@setOnEditorActionListener true
             c.luna = "${z(annus, 4)}.${z(b.luna.selectedItemPosition + 1)}"
-            c.calendar = c.lunaToCalendar(c.luna!!)
+            c.calendar = c.lunaToCalendar(c.luna)
             updateGrid()
             b.annus.blur(c)
             return@setOnEditorActionListener true
@@ -194,8 +195,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
-                        c.todayCalendar = c.calType.create().resetHours()
-                        c.todayLuna = c.todayCalendar.toKey()
+                        c.updateToday()
                         updateGrid()
                     }
                     HANDLE_SEXBOOK_LOADED -> {
@@ -223,8 +223,18 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
+        // restore saved states (null-safe)
+        m.changingVar?.also {
+            (b.grid.adapter as? Grid)?.changeVar(
+                it, (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) }
+            )
+        }
+        m.showingDate?.also {
+            (b.grid.adapter as? Grid)?.detailDate(it, c.calendar)
+        }
+
         // miscellaneous
-        addOnNewIntentListener { it.resolveIntent() }
+        addOnNewIntentListener { resolveIntent(it) }
         m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
             .use { it.readText().split(' ') }
         if (try {
@@ -236,55 +246,25 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         ) Sexbook(c).start()
     }
 
-    var firstResume = true // a new instance of Main is created on a configuration change.
     override fun onResume() {
         super.onResume()
-
-        c.todayCalendar = c.calType.create().resetHours()
-        c.todayLuna = c.todayCalendar.toKey()
-
-        if (c.luna == null) {
-            intent.resolveIntent()
-            if (!c.stored.exists()) {
-                c.vita!![c.luna!!] = Luna(c.calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
-                c.vita!!.save()
-            } else c.vita?.reform()
-        } else if (firstResume) {
-            updateGrid()
-
-            // restore saved states (null-safe)
-            m.changingVar?.also {
-                (b.grid.adapter as? Grid)?.changeVar(
-                    it,
-                    (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
-            }
-            m.showingDate?.also { (b.grid.adapter as? Grid)?.detailDate(it, c.calendar) }
-        }
-        firstResume = false
-
+        c.updateToday()
         dropbox?.onResume()
     }
 
-    var resolvingIntent = false
-    private fun Intent.resolveIntent() {
+    private fun resolveIntent(intent: Intent) {
         if (m.changingVar != null) return
-        resolvingIntent = true
-        val extraLuna = getStringExtra(EXTRA_LUNA)
-        if (extraLuna != null) {
+        intent.getStringExtra(EXTRA_LUNA)?.also { extraLuna ->
             c.luna = extraLuna
             c.calendar = c.lunaToCalendar(extraLuna)
-        } else {
-            c.calendar = c.calType.create()
-            c.luna = c.calendar.toKey()
+            updatePanel()
+            updateGrid()
         }
-        updatePanel()
-        updateGrid()
-        if (hasExtra(EXTRA_DIES)) getIntExtra(EXTRA_DIES, 1).also {
+        if (intent.hasExtra(EXTRA_DIES)) intent.getIntExtra(EXTRA_DIES, 1).also {
             (b.grid.adapter as? Grid)?.changeVar(
-                it - 1,
-                (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) })
+                it - 1, (c.calendar.clone() as Calendar).apply { set(Calendar.DAY_OF_MONTH, it) }
+            )
         }
-        resolvingIntent = false
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -297,16 +277,28 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }
             R.id.navSearch -> SearchDialog().show(supportFragmentManager, "srch")
             R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
-            R.id.navExport -> exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = Kit.VITA_MIME_TYPE
-                putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
-            })
-            R.id.navImport -> importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = Kit.VITA_MIME_TYPE
-            })
-            R.id.navSend -> c.vita?.export()?.also { sendFile(it, R.string.export_file) }
+
+            R.id.navExport ->
+                if (c.vita.hasData()
+                ) exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = Kit.VITA_MIME_TYPE
+                    putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
+                })
+                else Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
+
+            R.id.navImport ->
+                importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = Kit.VITA_MIME_TYPE
+                })
+
+            R.id.navSend ->
+                if (c.vita.hasData())
+                    sendFile(c.vita.export(), R.string.export_file)
+                else
+                    Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
+
             R.id.navBackup -> BackupDialog().show(supportFragmentManager, "back")
             R.id.navHelp -> HelpDialog().show(supportFragmentManager, "help")
         }
@@ -335,8 +327,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             if (it.resultCode != RESULT_OK) return@registerForActivityResult
             val bExp = try {
                 c.contentResolver.openFileDescriptor(it.data!!.data!!, "w")?.use { des ->
-                    FileOutputStream(des.fileDescriptor)
-                        .use { fos -> fos.write(c.vita?.export()) }
+                    FileOutputStream(des.fileDescriptor).use { fos ->
+                        fos.write(c.vita.export())
+                    }
                 }
                 true
             } catch (_: Exception) {
@@ -365,7 +358,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }
             val imported: Vita
             try {
-                imported = Vita(c, data)
+                imported = Vita(c, text = data)
             } catch (_: Exception) {
                 Toast.makeText(
                     c, R.string.importReadError, Toast.LENGTH_LONG
@@ -385,8 +378,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
     /** Caches the data and lets it be shared. */
     fun sendFile(binary: ByteArray, @StringRes fileName: Int) {
-        val exported = File(cacheDir, c.getString(fileName))
         CoroutineScope(Dispatchers.IO).launch {
+            val exported = File(cacheDir, c.getString(fileName))
             runCatching {
                 FileOutputStream(exported).use { it.write(binary) }
             }.onSuccess {
@@ -477,21 +470,12 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         else null // future months
 
     fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {
-        if (i != -1) {
-            luna.diebus[i] = score
-            luna.verba[i] = verbum?.ifBlank { null }
-            luna.emojis[i] = emoji?.ifBlank { null }
-        } else {
-            luna.default = score
-            luna.verbum = verbum?.ifBlank { null }
-            luna.emoji = emoji?.ifBlank { null }
-        }
-        c.vita!![c.luna!!] = luna
-        c.vita!!.save()
+        luna.set(i, score, emoji, verbum)
+        c.vita.save()
         updateGrid()
     }
 
-    /** Proper implementation of Vibration in across different supported APIs. */
+    /** Proper implementation of vibration in across different supported APIs. */
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
         (if (Build.VERSION.SDK_INT >= 31)

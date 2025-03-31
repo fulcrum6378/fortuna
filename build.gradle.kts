@@ -6,5 +6,11 @@ plugins {
 }
 
 tasks.register("clean", Delete::class) {
-    delete("$rootDir/build", "$rootDir/app/build", "$rootDir/javafx/build")
+    delete(
+        "$rootDir/.kotlin",
+        "$rootDir/build",
+        "$rootDir/app/build",
+        "$rootDir/core/build",
+        "$rootDir/javafx/build",
+    )
 }

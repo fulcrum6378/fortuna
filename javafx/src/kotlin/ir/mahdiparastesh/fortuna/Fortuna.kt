@@ -12,12 +12,12 @@ import java.io.File
 class Fortuna : Application(), FortunaContext<PersianDate> {
 
     override var vita: Vita? = null
+    override val stored: File by lazy { File("fortuna.vita") }
+    override val backup: File by lazy { File("fortuna_backup.vita") }
+    override var calendar: PersianDate = PersianDate.now()
     override var luna: String? = null
     override var todayCalendar: PersianDate = PersianDate.now()
     override var todayLuna: String = todayCalendar.toKey()
-    override var calendar: PersianDate = todayCalendar
-    override val stored: File by lazy { File("fortuna.vita") }
-    override val backup: File by lazy { File("fortuna_backup.vita") }
 
     override fun getMonthLength(year: Int, month: Int): Int =
         PersianDate.of(year, month, 1).lengthOfMonth()

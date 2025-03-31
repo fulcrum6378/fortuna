@@ -9,19 +9,21 @@ import android.os.Build
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.HumanistIranianCalendar
 import ir.mahdiparastesh.fortuna.util.Kit.create
+import ir.mahdiparastesh.fortuna.util.Kit.resetHours
+import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import java.io.File
 import java.util.Locale
 
 class Fortuna : Application(), FortunaContext<Calendar> {
 
-    override lateinit var calendar: Calendar
-    override lateinit var todayCalendar: Calendar
-    override lateinit var todayLuna: String
-    override var vita: Vita? = null
-    override var luna: String? = null
-
+    override lateinit var vita: Vita
     override val stored by lazy { File(filesDir, getString(R.string.export_file)) }
     override val backup by lazy { File(filesDir, getString(R.string.backup_file)) }
+    override lateinit var calendar: Calendar
+    override lateinit var luna: String
+    override lateinit var todayCalendar: Calendar
+    override lateinit var todayLuna: String
+
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
@@ -73,12 +75,25 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 
     override fun onCreate() {
         super.onCreate()
+
+        // prepare the Vita
+        calendar = calType.create()
+        luna = calendar.toKey()
         vita = Vita(this)
+        if (luna !in vita) vita[todayLuna] =
+            Luna(calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+
+        updateToday()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         TodayWidget.externalUpdate(this)
+    }
+
+    override fun updateToday() {
+        todayCalendar = calType.create().resetHours()
+        todayLuna = todayCalendar.toKey()
     }
 
     override fun getMonthLength(year: Int, month: Int): Int {
@@ -102,5 +117,5 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 
 /* TODO:
   * A new icon
-  * Trim memory
+  * Index Vita
 */

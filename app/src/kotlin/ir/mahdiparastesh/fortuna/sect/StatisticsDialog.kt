@@ -42,7 +42,7 @@ class StatisticsDialog : Kit.BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()
-        if (c.c.vita != null) for ((key, luna) in c.c.vita!!) {
+        for ((key, luna) in c.c.vita) {
             val lunaScores = arrayListOf<Float>()
             val cal = c.c.lunaToCalendar(key).resetHours()
             val maxima = c.maximaForStats(cal, key) ?: continue

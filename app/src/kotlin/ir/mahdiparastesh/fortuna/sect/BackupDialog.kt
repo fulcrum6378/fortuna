@@ -42,7 +42,7 @@ class BackupDialog : Kit.BaseDialogue() {
             c.c.backupVita()
             b.updateStatus()
 
-            CoroutineScope(Dispatchers.IO).launch {
+            if (c.dropbox!!.isAuthenticated()) CoroutineScope(Dispatchers.IO).launch {
                 val res = c.dropbox!!.backup()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -59,7 +59,7 @@ class BackupDialog : Kit.BaseDialogue() {
                     c.resources.getString(R.string.backupRestoreSure, lastBackup())
                 )
                 setPositiveButton(R.string.yes) { _, _ ->
-                    c.c.vita = Vita(c.c, c.c.backup)
+                    c.c.vita = Vita(c.c, file = c.c.backup)
                         .also { vita -> vita.save() }
                     c.updateGrid()
                     Toast.makeText(c, R.string.done, Toast.LENGTH_LONG).show()
