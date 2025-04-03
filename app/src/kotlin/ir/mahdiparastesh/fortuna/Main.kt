@@ -78,7 +78,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val m: Model by viewModels()
     var dropbox: Dropbox? = null
 
-    private var rollingLuna = true // "true" in order to trick onItemSelected
+    private var rollingLuna = true  // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
     private var rollingAnnusItself = false
 
@@ -86,7 +86,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
-        const val HANDLE_SEXBOOK_LOADED = 1
         var handler: Handler? = null
     }
 
@@ -198,19 +197,6 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         c.updateToday()
                         updateGrid()
                     }
-                    HANDLE_SEXBOOK_LOADED -> {
-                        m.sexbook = msg.obj as Sexbook.Data
-                        (b.grid.adapter as? Grid)?.apply {
-                            sexbook = cacheSexbook()
-                            m.changingVar?.also { i ->
-                                cvTvSexbook?.appendCrushDates(
-                                    i.toShort(),
-                                    dailyCalendar(i)[Calendar.YEAR].toShort()
-                                )
-                                cvTvSexbook?.appendSexReports(i)
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -233,17 +219,38 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             (b.grid.adapter as? Grid)?.detailDate(it, c.calendar)
         }
 
+        // background IO tasks
+        CoroutineScope(Dispatchers.IO).launch {
+
+            // load all emojis for input text filtering
+            m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
+                .use { it.readText().split(' ') }
+
+            // Sexbook integration
+            if (m.sexbook == null &&
+                try {
+                    packageManager.getPackageInfo(SEXBOOK, 0)
+                    true
+                } catch (_: PackageManager.NameNotFoundException) {
+                    false
+                }
+            ) Sexbook(c).load { data ->
+                m.sexbook = data
+                (b.grid.adapter as? Grid)?.apply {
+                    sexbook = cacheSexbook()
+                    m.changingVar?.also { i ->
+                        cvTvSexbook?.appendCrushDates(
+                            i.toShort(),
+                            dailyCalendar(i)[Calendar.YEAR].toShort()
+                        )
+                        cvTvSexbook?.appendSexReports(i)
+                    }
+                }
+            }
+        }
+
         // miscellaneous
         addOnNewIntentListener { resolveIntent(it) }
-        m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
-            .use { it.readText().split(' ') }
-        if (try {
-                packageManager.getPackageInfo(SEXBOOK, 0)
-                true
-            } catch (_: PackageManager.NameNotFoundException) {
-                false
-            } && m.sexbook == null
-        ) Sexbook(c).start()
     }
 
     override fun onResume() {
@@ -466,10 +473,10 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         updateGrid()
     }
 
-    /** Proper implementation of vibration in across different supported APIs. */
+    /** Proper implementation of vibration in across different supported APIs */
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {
-        (if (Build.VERSION.SDK_INT >= 31)
+        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         else getSystemService(VIBRATOR_SERVICE) as Vibrator)
             .vibrate(VibrationEffect.createOneShot(dur, 100))

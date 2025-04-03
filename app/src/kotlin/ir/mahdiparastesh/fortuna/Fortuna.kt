@@ -125,7 +125,6 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 
 /* TODO:
   * A new icon
-  * Reading Vita doesn't seem to be a heavy process! There's something else...
   * Turn changeVar() and detailDate() into standalone DialogFragments
   * Automatically scrolls to the bottom (Android 8 & 8.1)
 */

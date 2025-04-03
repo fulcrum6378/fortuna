@@ -1,6 +1,6 @@
 <resources>
 
-    <!-- Dimensions -->
+    <!-- dimensions -->
     <dimen name="gridItemHeight">100dp</dimen>
     <dimen name="gridAdditionalHeight">66dp</dimen>
     <dimen name="smallCornerSize">6dp</dimen>

@@ -27,7 +27,7 @@ import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 
-/** Static fields and methods used everywhere. */
+/** Static fields and methods used everywhere */
 object Kit {
     const val A_DAY = 86400000L
     const val SEXBOOK = "ir.mahdiparastesh.sexbook"

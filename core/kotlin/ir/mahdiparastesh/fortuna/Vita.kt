@@ -27,7 +27,11 @@ class Vita(
         }
     }
 
-    /** Loads Vita data from a given string. */
+    /**
+     * Loads Vita data from a given string.
+     *
+     * Takes 100~140 milliseconds to load 286 KBs.
+     */
     private fun load(text: String) {
         var key: String? = null
         var dies = 0

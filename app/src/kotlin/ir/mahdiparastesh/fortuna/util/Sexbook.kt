@@ -5,20 +5,23 @@ import android.icu.util.GregorianCalendar
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.util.Kit.create
 import ir.mahdiparastesh.fortuna.util.Kit.iterate
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
  * The data includes orgasm times and crushes' birthdays.
  *
- * @see <a href="https://github.com/fulcrum6378/sexbook">The Sexbook repository</a>
+ * @see <a href="https://codeberg.org/fulcrum6378/sexbook">Sexbook repo in Codeberg</a>
+ * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repo in GitHub</a>
  */
-class Sexbook(private val c: Fortuna) : Thread() {
+class Sexbook(private val c: Fortuna) {
 
-    override fun run() {
+    @Throws(SecurityException::class)
+    suspend fun load(listener: suspend (Data) -> Unit) {
         val places = hashMapOf<Long, String>()
         val reports = arrayListOf<Report>()
         val crushes = arrayListOf<Crush>()
@@ -30,7 +33,6 @@ class Sexbook(private val c: Fortuna) : Thread() {
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
-            interrupt()
             return
         }
 
@@ -69,9 +71,9 @@ class Sexbook(private val c: Fortuna) : Thread() {
             )
         }
 
-        Main.handler?.obtainMessage(
-            Main.HANDLE_SEXBOOK_LOADED, Data(reports.toList(), crushes.toList())
-        )?.sendToTarget()
+        withContext(Dispatchers.Main) {
+            listener(Data(reports, crushes))
+        }
     }
 
     /**
