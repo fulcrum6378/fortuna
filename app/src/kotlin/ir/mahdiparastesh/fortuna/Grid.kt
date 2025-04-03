@@ -38,7 +38,7 @@ import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK_PACKAGE
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.compareByDays
 import ir.mahdiparastesh.fortuna.util.Kit.create
@@ -421,8 +421,8 @@ class Grid(private val c: Main) : ListAdapter {
         setOnLongClickListener {
             try {
                 c.startActivity(
-                    Intent("$SEXBOOK.ACTION_VIEW")
-                        .setComponent(ComponentName(SEXBOOK, "$SEXBOOK.Main"))
+                    Intent("$SEXBOOK_PACKAGE.ACTION_VIEW")
+                        .setComponent(ComponentName(SEXBOOK_PACKAGE, "$SEXBOOK_PACKAGE.Main"))
                         .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true

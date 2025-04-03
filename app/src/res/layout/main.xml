@@ -78,6 +78,7 @@
                         android:id="@+id/prev"
                         style="@style/hArrow"
                         android:rotation="90"
+                        app:layout_constraintEnd_toStartOf="@id/luna"
                         app:layout_constraintStart_toStartOf="parent" />
 
                     <Spinner
@@ -143,7 +144,8 @@
                         android:id="@+id/next"
                         style="@style/hArrow"
                         android:rotation="-90"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/defVar" />
 
                     <TextView
                         android:id="@+id/lunaMean"

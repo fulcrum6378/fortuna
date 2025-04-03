@@ -30,8 +30,8 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 /** Static fields and methods used everywhere */
 object Kit {
     const val A_DAY = 86400000L
-    const val SEXBOOK = "ir.mahdiparastesh.sexbook"
     const val VITA_MIME_TYPE = "application/octet-stream"
+    const val SEXBOOK_PACKAGE = "ir.mahdiparastesh.sexbook"
 
     /* Keys of the Shared Preferences */
     const val SP_NUMERAL_TYPE = "numeral_type"

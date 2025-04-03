@@ -50,7 +50,7 @@ import ir.mahdiparastesh.fortuna.sect.StatisticsDialog
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.Kit
-import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.Kit.SEXBOOK_PACKAGE
 import ir.mahdiparastesh.fortuna.util.Kit.blur
 import ir.mahdiparastesh.fortuna.util.Kit.color
 import ir.mahdiparastesh.fortuna.util.Kit.create
@@ -64,6 +64,7 @@ import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Sexbook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -202,11 +203,11 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
 
         // Nyx
-        c.requiredPermissions.forEach {
-            if (ActivityCompat.checkSelfPermission(c, it) != PackageManager.PERMISSION_GRANTED)
-                reqPermLauncher.launch(it)
-        }
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
+        for (perm in c.requiredPermissions)
+            if (ActivityCompat.checkSelfPermission(c, perm) != PackageManager.PERMISSION_GRANTED)
+                reqPermLauncher.launch(perm)
+        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
+            .cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
         // restore saved states (null-safe)
@@ -229,7 +230,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             // Sexbook integration
             if (m.sexbook == null &&
                 try {
-                    packageManager.getPackageInfo(SEXBOOK, 0)
+                    packageManager.getPackageInfo(SEXBOOK_PACKAGE, 0)
                     true
                 } catch (_: PackageManager.NameNotFoundException) {
                     false
@@ -245,6 +246,14 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         )
                         cvTvSexbook?.appendSexReports(i)
                     }
+                }
+            }
+
+            // scroll to top on older devices
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                delay(500)
+                withContext(Dispatchers.Main) {
+                    b.scroller.scrollTo(0, 0)
                 }
             }
         }

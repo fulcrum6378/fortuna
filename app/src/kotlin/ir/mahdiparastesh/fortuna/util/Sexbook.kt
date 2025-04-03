@@ -29,7 +29,7 @@ class Sexbook(private val c: Fortuna) {
         // get a list of all Places
         try {
             c.contentResolver.query(
-                "content://${Kit.SEXBOOK}/place".toUri(),
+                "content://${Kit.SEXBOOK_PACKAGE}/place".toUri(),
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
@@ -38,7 +38,7 @@ class Sexbook(private val c: Fortuna) {
 
         // now get a list of all sex Reports
         c.contentResolver.query(
-            "content://${Kit.SEXBOOK}/report".toUri(),
+            "content://${Kit.SEXBOOK_PACKAGE}/report".toUri(),
             null, null, null, "time ASC" // DESC
         ).iterate {
             val cal = c.calType.create()
@@ -58,7 +58,7 @@ class Sexbook(private val c: Fortuna) {
 
         // also load Crushes
         c.contentResolver.query(
-            "content://${Kit.SEXBOOK}/crush".toUri(), arrayOf(
+            "content://${Kit.SEXBOOK_PACKAGE}/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
         ).iterate {
