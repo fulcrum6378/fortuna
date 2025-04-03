@@ -51,7 +51,7 @@ class Fortuna : Application(), FortunaContext<PersianDate> {
     override fun getMonthLength(year: Int, month: Int): Int =
         PersianDate.of(year - 5000, month, 1).lengthOfMonth()
 
-    override fun maximaForStats(cal: PersianDate): Int? =
+    override fun maximaForStats(cal: PersianDate, key: String): Int? =
         if (cal == todayCalendar) // this month
             todayCalendar.dayOfMonth
         else if (cal.isBefore(todayCalendar)) // past months

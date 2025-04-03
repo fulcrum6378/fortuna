@@ -101,60 +101,67 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
-        ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
-            val score: Float? =
-                if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
-            val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
+    override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
+        val b = ItemGridBinding.inflate(c.layoutInflater, parent, false)
 
-            dies.text = numeral.write(i + 1)
-            val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
-            if (enlarge) dies.textSize =
-                (dies.textSize / c.resources.displayMetrics.density) * 1.75f
-            variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
+        // calculation
+        val score: Float? =
+            if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
+        val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
 
-            (luna.verba[i]?.isNotBlank() == true).also { show ->
-                verbumIcon.isVisible = show
-                if (show) verbumIcon.setImageResource(R.drawable.verbum)
-                else verbumIcon.setImageDrawable(null)
-            }
-            val emj = luna.emojis.getOrNull(i)
-            emoji.text = emj
-            emoji.isVisible = emj != null
+        // numbers
+        b.dies.text = numeral.write(i + 1)
+        val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
+        if (enlarge) b.dies.textSize =
+            (b.dies.textSize / c.resources.displayMetrics.density) * 1.75f
+        b.variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
 
-            root.setBackgroundColor(
-                when {
-                    score != null && score > 0f -> {
-                        dies.setTextColor(cpo)
-                        variabilis.setTextColor(cpo)
-                        verbumIcon.setColorFilter(cpo)
-                        Color.valueOf(
-                            cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
-                            score / Vita.MAX_RANGE
-                        ).toArgb()
-                    }
-                    score != null && score < 0f -> {
-                        dies.setTextColor(cso)
-                        variabilis.setTextColor(cso)
-                        verbumIcon.setColorFilter(cso)
-                        Color.valueOf(
-                            cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
-                            -score / Vita.MAX_RANGE
-                        ).toArgb()
-                    }
-                    else -> {
-                        dies.setTextColor(tc)
-                        variabilis.setTextColor(tc)
-                        verbumIcon.setColorFilter(tc)
-                        Color.TRANSPARENT
-                    }
+        // icons
+        (luna.verba[i]?.isNotBlank() == true).also { show ->
+            b.verbumIcon.isVisible = show
+            if (show) b.verbumIcon.setImageResource(R.drawable.verbum)
+            else b.verbumIcon.setImageDrawable(null)
+        }
+        val emj = luna.emojis.getOrNull(i)
+        b.emoji.text = emj
+        b.emoji.isVisible = emj != null
+
+        // background colour
+        b.root.setBackgroundColor(
+            when {
+                score != null && score > 0f -> {
+                    b.dies.setTextColor(cpo)
+                    b.variabilis.setTextColor(cpo)
+                    b.verbumIcon.setColorFilter(cpo)
+                    Color.valueOf(
+                        cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
+                        score / Vita.MAX_RANGE
+                    ).toArgb()
                 }
-            )
-            root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
-            root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
-            if (c.c.luna == c.c.todayLuna && c.c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
-                root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
-        }.root
+                score != null && score < 0f -> {
+                    b.dies.setTextColor(cso)
+                    b.variabilis.setTextColor(cso)
+                    b.verbumIcon.setColorFilter(cso)
+                    Color.valueOf(
+                        cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
+                        -score / Vita.MAX_RANGE
+                    ).toArgb()
+                }
+                else -> {
+                    b.dies.setTextColor(tc)
+                    b.variabilis.setTextColor(tc)
+                    b.verbumIcon.setColorFilter(tc)
+                    Color.TRANSPARENT
+                }
+            }
+        )
+        b.root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
+        b.root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
+        if (c.c.luna == c.c.todayLuna && c.c.todayCalendar[Calendar.DAY_OF_MONTH] == i + 1)
+            b.root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
+
+        return b.root
+    }
 
     /** Invoked via [Main.updateGrid] */
     fun onRefresh() {
@@ -164,7 +171,7 @@ class Grid(private val c: Main) : ListAdapter {
         numType = c.c.sp.getString(Kit.SP_NUMERAL_TYPE, Kit.SP_NUMERAL_TYPE_DEF)
             .let { if (it == Kit.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.c.maximaForStats(c.c.calendar)
+        maximumStats = c.c.maximaForStats(c.c.calendar, c.c.luna)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */

@@ -38,7 +38,7 @@ interface FortunaContext<Calendar> {
      * Calculates the maximum date for getting a mean value for statistics, ignores the future.
      * @return null if the given month is the future
      */
-    fun maximaForStats(cal: Calendar): Int?
+    fun maximaForStats(cal: Calendar, key: String): Int?
 
 
     /** Copies data from [stored] into [backup]. */

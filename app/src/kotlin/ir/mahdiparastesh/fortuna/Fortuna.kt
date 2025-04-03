@@ -58,7 +58,7 @@ class Fortuna : Application(), FortunaContext<Calendar> {
         android.icu.util.CopticCalendar::class.java,
     ).filter { it != calType }
 
-    val locale: Locale = Locale.UK // never ever use SimpleDateFormat
+    val locale: Locale = Locale.UK  // never ever use SimpleDateFormat
 
     /**
      * List of all the required permissions.
@@ -102,8 +102,8 @@ class Fortuna : Application(), FortunaContext<Calendar> {
         return calendarForCalculation.getActualMaximum(Calendar.DAY_OF_MONTH)
     }
 
-    override fun maximaForStats(cal: Calendar): Int? =
-        if (cal.timeInMillis == todayCalendar.timeInMillis) // this month
+    override fun maximaForStats(cal: Calendar, key: String): Int? =
+        if (key == todayLuna) // this month
             todayCalendar[Calendar.DAY_OF_MONTH]
         else if (cal.timeInMillis < todayCalendar.timeInMillis) // past months
             cal.lunaMaxima()
@@ -126,4 +126,6 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 /* TODO:
   * A new icon
   * Reading Vita doesn't seem to be a heavy process! There's something else...
+  * Turn changeVar() and detailDate() into standalone DialogFragments
+  * Automatically scrolls to the bottom
 */
