@@ -8,7 +8,7 @@ import android.widget.EditText
 import android.widget.NumberPicker
 import ir.mahdiparastesh.fortuna.R
 
-/** Improved version of NumberPicker with a customised font. */
+/** Improved version of NumberPicker with a customised font */
 class Variabilis(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
     NumberPicker(context, attrs, defStyleAttr, defStyleRes) {
 
