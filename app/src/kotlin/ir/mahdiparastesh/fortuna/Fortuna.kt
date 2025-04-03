@@ -103,13 +103,14 @@ class Fortuna : Application(), FortunaContext<Calendar> {
     }
 
     override fun maximaForStats(cal: Calendar, key: String): Int? =
-        if (key == todayLuna) // this month
+        if (key == todayLuna)  // this month
             todayCalendar[Calendar.DAY_OF_MONTH]
-        else if (cal.timeInMillis < todayCalendar.timeInMillis) // past months
+        else if (cal.timeInMillis < todayCalendar.timeInMillis)  // past months
             cal.lunaMaxima()
-        else // future months
+        else  // future months
             null
 
+    /** Converts a [Luna] key to a [Calendar] instance. */
     fun lunaToCalendar(luna: String): Calendar {
         val spl = luna.split(".")
         return calType.create().apply {

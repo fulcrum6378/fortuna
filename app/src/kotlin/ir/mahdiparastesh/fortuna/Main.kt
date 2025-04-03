@@ -423,24 +423,24 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Refreshes the [Grid] and adjusts its size. */
     @SuppressLint("SetTextI18n")
     fun updateGrid() {
-        if (b.grid.adapter == null) b.grid.adapter = Grid(this)
+        if (b.grid.adapter == null)
+            b.grid.adapter = Grid(this)
         else {
             b.grid.invalidateViews()
             (b.grid.adapter as Grid).onRefresh()
         }
-        (b.grid.adapter as Grid).also {
-            b.defVar.text = it.luna.default.showScore()
-            b.lunaMean.text = "x̄: " + it.luna.mean(it.maximumStats ?: 0).groupDigits(6)
-            b.lunaSize.text = Kit.showBytes(this@Main, it.luna.size)
-            b.lunaSize.isInvisible = it.luna.size == 0L
-            b.verbumIcon.isVisible = it.luna.verbum?.isNotBlank() == true
-            b.emoji.text = it.luna.emoji
-            b.emoji.isVisible = it.luna.emoji?.isNotBlank() == true
+        (b.grid.adapter as Grid).also { grid ->
+            b.defVar.text = grid.luna.default.showScore()
+            b.lunaMean.text = "x̄: " + grid.luna.mean(grid.maximumStats ?: 0).groupDigits(6)
+            b.lunaSize.text = Kit.showBytes(this@Main, grid.luna.size)
+            b.lunaSize.isInvisible = grid.luna.size == 0L
+            b.verbumIcon.isVisible = grid.luna.verbum?.isNotBlank() == true
+            b.emoji.text = grid.luna.emoji
+            b.emoji.isVisible = grid.luna.emoji?.isNotBlank() == true
         }
         b.grid.layoutParams.apply {
             height = ((resources.getDimension(R.dimen.gridItemHeight) *
-                    ceil(c.calendar.lunaMaxima().toFloat() / 5f)) +
-                    resources.getDimension(R.dimen.gridAdditionalHeight)).toInt()
+                    ceil(c.calendar.lunaMaxima().toFloat() / 5f))).toInt()
         }
     }
 
