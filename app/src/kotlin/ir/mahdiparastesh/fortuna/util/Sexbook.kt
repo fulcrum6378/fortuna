@@ -3,22 +3,24 @@ package ir.mahdiparastesh.fortuna.util
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Grid
-import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.util.UiTools.iterate
-import java.lang.reflect.Modifier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.time.Instant
 import java.time.LocalDate
-import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 
 /**
  * Imports data from the Sexbook app in a separate thread, if the app is installed.
  * The data includes orgasm times and crushes' birthdays.
  *
- * @see <a href="https://github.com/fulcrum6378/sexbook">The Sexbook repository</a>
+ * @see <a href="https://codeberg.org/fulcrum6378/sexbook">Sexbook repo in Codeberg</a>
+ * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repo in GitHub</a>
  */
-class Sexbook(private val c: Fortuna) : Thread() {
+class Sexbook(private val c: Fortuna) {
 
-    override fun run() {
+    @Throws(SecurityException::class)
+    suspend fun load(listener: suspend (Data) -> Unit) {
         val places = hashMapOf<Long, String>()
         val reports = arrayListOf<Report>()
         val crushes = arrayListOf<Crush>()
@@ -26,20 +28,19 @@ class Sexbook(private val c: Fortuna) : Thread() {
         // get a list of all Places
         try {
             c.contentResolver.query(
-                "content://${UiTools.SEXBOOK}/place".toUri(),
+                "content://${UiTools.SEXBOOK_PACKAGE}/place".toUri(),
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
-            interrupt()
             return
         }
 
         // now get a list of all sex Reports
         c.contentResolver.query(
-            "content://${UiTools.SEXBOOK}/report".toUri(),
+            "content://${UiTools.SEXBOOK_PACKAGE}/report".toUri(),
             null, null, null, "time ASC" // DESC
         ).iterate {
-            val cal = c.createDateTime(getLong(0))
+            val cal = c.chronology.date(Instant.ofEpochMilli(getLong(0)))
             reports.add(
                 Report(
                     getLong(6),
@@ -58,7 +59,7 @@ class Sexbook(private val c: Fortuna) : Thread() {
 
         // also load Crushes
         c.contentResolver.query(
-            "content://${UiTools.SEXBOOK}/crush".toUri(), arrayOf(
+            "content://${UiTools.SEXBOOK_PACKAGE}/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
         ).iterate {
@@ -71,9 +72,9 @@ class Sexbook(private val c: Fortuna) : Thread() {
             )
         }
 
-        Main.handler?.obtainMessage(
-            Main.HANDLE_SEXBOOK_LOADED, Data(reports.toList(), crushes.toList())
-        )?.sendToTarget()
+        withContext(Dispatchers.Main) {
+            listener(Data(reports, crushes))
+        }
     }
 
     /**
@@ -177,12 +178,8 @@ class Sexbook(private val c: Fortuna) : Thread() {
                 yb = spl[0].toInt()
                 mb = spl[1].toInt() - 1
                 db = spl[2].toInt()
-                if (c.calType.first != LocalDate::class.java) {
-
-                    val cal = c.calType.first.methods.find {
-                        it.name == "fromGregorian" && it.parameterCount == 1 &&
-                                Modifier.isStatic(it.modifiers)
-                    }!!.invoke(null, LocalDate.of(yb, mb, db)) as ChronoLocalDate
+                if (c.chronology.calendarType != "iso8601") {
+                    val cal = c.chronology.dateEpochDay(LocalDate.of(yb, mb, db).toEpochDay())
                     yb = cal[ChronoField.YEAR]
                     mb = cal[ChronoField.MONTH_OF_YEAR]
                     db = cal[ChronoField.DAY_OF_MONTH]

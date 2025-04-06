@@ -7,9 +7,7 @@ import android.content.Intent
 import android.database.DataSetObserver
 import android.graphics.Color
 import android.icu.text.DateFormatSymbols
-import android.icu.util.Calendar
 import android.os.Build
-import android.provider.CalendarContract
 import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
@@ -46,7 +44,7 @@ import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
 import ir.mahdiparastesh.fortuna.util.Sexbook
 import ir.mahdiparastesh.fortuna.util.UiTools
-import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK
+import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK_PACKAGE
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import java.time.DateTimeException
 import java.time.chrono.ChronoLocalDate
@@ -56,7 +54,7 @@ import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
-/** Main table of our calendar grid which lists days of a month. */
+/** Main table of our calendar grid which lists days of a month */
 @SuppressLint("SetTextI18n")
 class Grid(private val c: Main) : ListAdapter {
     lateinit var luna: Luna
@@ -69,7 +67,7 @@ class Grid(private val c: Main) : ListAdapter {
         onRefresh()
     }
 
-    /** Reference to the [TextView] inside the dialogue of [changeVar]. */
+    /** Reference to the [TextView] inside the dialogue of [changeVar] */
     var cvTvSexbook: TextView? = null
 
     private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
@@ -100,76 +98,81 @@ class Grid(private val c: Main) : ListAdapter {
     }
 
     @SuppressLint("ViewHolder")
-    override fun getView(i: Int, convertView: View?, parent: ViewGroup): View =
-        ItemGridBinding.inflate(c.layoutInflater, parent, false).apply {
-            val score: Float? =
-                if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
-            val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
+    override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
+        val b = ItemGridBinding.inflate(c.layoutInflater, parent, false)
 
-            dies.text = numeral.write(i + 1)
-            val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
-            if (enlarge) dies.textSize =
-                (dies.textSize / c.resources.displayMetrics.density) * 1.75f
-            variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
+        // calculation
+        val score: Float? =
+            if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
+        val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
 
-            (luna.verba[i]?.isNotBlank() == true).also { show ->
-                verbumIcon.isVisible = show
-                if (show) verbumIcon.setImageResource(R.drawable.verbum)
-                else verbumIcon.setImageDrawable(null)
-            }
-            val emj = luna.emojis.getOrNull(i)
-            emoji.text = emj
-            emoji.isVisible = emj != null
+        // numbers
+        b.dies.text = numeral.write(i + 1)
+        val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
+        if (enlarge) b.dies.textSize =
+            (b.dies.textSize / c.resources.displayMetrics.density) * 1.75f
+        b.variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
 
-            root.setBackgroundColor(
-                when {
-                    score != null && score > 0f -> {
-                        dies.setTextColor(cpo)
-                        variabilis.setTextColor(cpo)
-                        verbumIcon.setColorFilter(cpo)
-                        Color.valueOf(
-                            cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
-                            score / Vita.MAX_RANGE
-                        ).toArgb()
-                    }
-                    score != null && score < 0f -> {
-                        dies.setTextColor(cso)
-                        variabilis.setTextColor(cso)
-                        verbumIcon.setColorFilter(cso)
-                        Color.valueOf(
-                            cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
-                            -score / Vita.MAX_RANGE
-                        ).toArgb()
-                    }
-                    else -> {
-                        dies.setTextColor(tc)
-                        variabilis.setTextColor(tc)
-                        verbumIcon.setColorFilter(tc)
-                        Color.TRANSPARENT
-                    }
+        // icons
+        (luna.verba[i]?.isNotBlank() == true).also { show ->
+            b.verbumIcon.isVisible = show
+            if (show) b.verbumIcon.setImageResource(R.drawable.verbum)
+            else b.verbumIcon.setImageDrawable(null)
+        }
+        val emj = luna.emojis.getOrNull(i)
+        b.emoji.text = emj
+        b.emoji.isVisible = emj != null
+
+        // background colour
+        b.root.setBackgroundColor(
+            when {
+                score != null && score > 0f -> {
+                    b.dies.setTextColor(cpo)
+                    b.variabilis.setTextColor(cpo)
+                    b.verbumIcon.setColorFilter(cpo)
+                    Color.valueOf(
+                        cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
+                        score / Vita.MAX_RANGE
+                    ).toArgb()
                 }
-            )
-            root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
-            root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
-            if (c.c.luna == c.c.todayLuna &&
-                c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1
-            )
-                root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
-        }.root
+                score != null && score < 0f -> {
+                    b.dies.setTextColor(cso)
+                    b.variabilis.setTextColor(cso)
+                    b.verbumIcon.setColorFilter(cso)
+                    Color.valueOf(
+                        cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
+                        -score / Vita.MAX_RANGE
+                    ).toArgb()
+                }
+                else -> {
+                    b.dies.setTextColor(tc)
+                    b.variabilis.setTextColor(tc)
+                    b.verbumIcon.setColorFilter(tc)
+                    Color.TRANSPARENT
+                }
+            }
+        )
+        b.root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
+        b.root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
+        if (c.c.luna == c.c.todayLuna && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
+            b.root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
 
-    /** Invoked via [Main.updateGrid] */
+        return b.root
+    }
+
+    /** Invoked via [Main.updateGrid]. */
     fun onRefresh() {
-        luna = c.c.vita?.find(c.c.luna!!) ?: Luna(c.c.date.lengthOfMonth())
+        luna = c.c.vita.find(c.c.luna) ?: Luna(c.c.date.lengthOfMonth())
         sexbook = cacheSexbook()
         numType = c.c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
             .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
-        maximumStats = c.maximaForStats(c.c.date, c.c.luna!!)
+        maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
     }
 
     /** Returns a filtered version of the Sexbook data [Main.Model.sexbook] to be stored as cache. */
     fun cacheSexbook() = c.m.sexbook?.let {
-        val spl = c.c.luna!!.split(".")
+        val spl = c.c.luna.split(".")
         val yr = spl[0].toShort()
         val mo = (spl[1].toInt() - 1).toShort()
         Sexbook.Data(
@@ -194,7 +197,7 @@ class Grid(private val c: Main) : ListAdapter {
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
     fun changeVar(i: Int, cal: ChronoLocalDate = c.c.date) {
-        if (c.m.changingVar != null && !c.firstResume) return
+        if (c.m.changingVar != null) return
         c.m.changingVar = i
         val bv = VariabilisBinding.inflate(c.layoutInflater)
         var dialogue: AlertDialog? = null
@@ -265,13 +268,12 @@ class Grid(private val c: Main) : ListAdapter {
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                if (i != -1) "${c.c.luna!!}.${z(i + 1)}"
+                if (i != -1) "${c.c.luna}.${z(i + 1)}"
                 else c.getString(R.string.defValue)
             )
             setView(bv.root)
             setNegativeButton(R.string.cancel, null)
             setPositiveButton(R.string.save) { _, _ ->
-                if (c.c.vita == null) return@setPositiveButton
                 c.saveDies(
                     luna, i, bv.picker.value.toScore(),
                     bv.emoji.text.toString(), bv.verbum.text.toString()
@@ -317,7 +319,6 @@ class Grid(private val c: Main) : ListAdapter {
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
             setOnClickListener(LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
-                if (c.c.vita == null) return@setOnLongClickListener true
                 c.saveDies(luna, i, null, null, null)
                 c.shake()
                 dialogue?.dismiss(); true
@@ -415,8 +416,8 @@ class Grid(private val c: Main) : ListAdapter {
         setOnLongClickListener {
             try {
                 c.startActivity(
-                    Intent("$SEXBOOK.ACTION_VIEW")
-                        .setComponent(ComponentName(SEXBOOK, "$SEXBOOK.Main"))
+                    Intent("$SEXBOOK_PACKAGE.ACTION_VIEW")
+                        .setComponent(ComponentName(SEXBOOK_PACKAGE, "$SEXBOOK_PACKAGE.Main"))
                         .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true
@@ -434,11 +435,11 @@ class Grid(private val c: Main) : ListAdapter {
      * @param cal the calendar indicating that day
      */
     fun detailDate(i: Int, cal: ChronoLocalDate) {
-        if (c.m.showingDate != null && !c.firstResume) return
+        if (c.m.showingDate != null) return
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.c.luna!!}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
+                "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
                     .weekdays[cal[ChronoField.DAY_OF_WEEK]]
             )
             /*TODO setMessage(StringBuilder().apply {
@@ -457,7 +458,7 @@ class Grid(private val c: Main) : ListAdapter {
                     override fun afterTextChanged(s: Editable?) {
                         result.text = try {
                             result.isVisible = true
-                            val dat = c.c.createDate(
+                            val dat = c.c.chronology.date(
                                 y.text.toString().toInt(),
                                 (m.text.toString().toInt()),
                                 d.text.toString().toInt()

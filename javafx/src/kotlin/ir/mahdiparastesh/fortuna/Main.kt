@@ -1,5 +1,8 @@
 package ir.mahdiparastesh.fortuna
 
+import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.util.Numeral
+import ir.mahdiparastesh.fortuna.util.RomanNumeral
 import javafx.collections.FXCollections
 import javafx.fxml.FXML
 import javafx.geometry.Pos
@@ -10,14 +13,18 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
+import java.time.temporal.ChronoField
 
 class Main {
     private lateinit var c: Fortuna
-
+    private lateinit var luna: Luna
+    private var numeral: Numeral = RomanNumeral()
+    private var maximumStats: Int? = null
     private val gridMaxCols = 5
 
     @FXML
-    private lateinit var luna: ComboBox<String>
+    private lateinit var lunaBox: ComboBox<String>
 
     @FXML
     private lateinit var annus: TextField
@@ -34,10 +41,17 @@ class Main {
         this.c = c
         setupPanel()
         setupGrid()
+        update()
+    }
+
+    fun update() {
+        luna = c.vita[c.luna]!!
+        updatePanel()
+        updateGrid()
     }
 
     private fun setupPanel() {
-        luna.items = FXCollections.observableArrayList<String>(
+        lunaBox.items = FXCollections.observableArrayList<String>(
             listOf(
                 "Farvardin", "Ordibehesht", "Khordad",
                 "Tir", "Mordad", "Shahrivar",
@@ -45,8 +59,11 @@ class Main {
                 "Dey", "Bahman", "Esfand"
             )
         )
-        luna.selectionModel.select(c.calendar.monthValue - 1)
-        annus.text = c.calendar.year.toString()
+    }
+
+    private fun updatePanel() {
+        lunaBox.selectionModel.select(c.date[ChronoField.MONTH_OF_YEAR] - 1)
+        annus.text = c.date[ChronoField.YEAR].toString()
     }
 
     private fun setupGrid() {
@@ -56,28 +73,41 @@ class Main {
             columnConstraints.hgrow = Priority.ALWAYS
             grid.columnConstraints.add(columnConstraints)
         }
-        populateGrid()
     }
 
-    private fun populateGrid() {
+    private fun updateGrid() {
         grid.children.clear()
-        for (i in 0..(c.calendar.month.length(c.calendar.isLeapYear) - 1)) grid.add(
+        for (i in 0..(c.date.lengthOfMonth() - 1)) grid.add(
             createGridItem(i),
             i % gridMaxCols,
             i / gridMaxCols
         )
     }
 
-    private fun createGridItem(i: Int): AnchorPane =
-        AnchorPane(
-            Label((i + 1).toString()).apply {
-                alignment = Pos.CENTER
+    private fun createGridItem(i: Int): AnchorPane {
+        val score: Float? =
+            if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
+        val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
+
+        return AnchorPane(
+            VBox(
+                Label(numeral.output(i + 1)),
+                Label((if (isEstimated) "c. " else "") + score.showScore()),
+            ).apply {
                 AnchorPane.setTopAnchor(this, 0.0)
                 AnchorPane.setRightAnchor(this, 0.0)
                 AnchorPane.setBottomAnchor(this, 0.0)
                 AnchorPane.setLeftAnchor(this, 0.0)
+                alignment = Pos.CENTER
             }
         ).apply {
-            styleClass.add(listOf("pleasant", "mediocre", "painful").random())
+            styleClass.add(
+                when {
+                    score != null && score > 0f -> "pleasant"
+                    score != null && score < 0f -> "painful"
+                    else -> "mediocre"
+                }
+            )
         }
+    }
 }

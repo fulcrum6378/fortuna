@@ -24,23 +24,24 @@
 #grid > AnchorPane {
     -fx-cursor: hand;
     -fx-pref-height: 100px;
+    -fx-text-align: center;
 }
-#grid > AnchorPane > Label {
+#grid > AnchorPane > VBox > Label {
     -fx-font-size: 18px;
 }
 #grid > .pleasant {
     -fx-background-color: -fx-cp;
 }
-#grid > .pleasant > Label {
+#grid > .pleasant Label {
     -fx-text-fill: -fx-cop;
 }
 #grid > .mediocre {
 }
-#grid > .mediocre > Label {
+#grid > .mediocre Label {
 }
 #grid > .painful {
     -fx-background-color: -fx-cs;
 }
-#grid > .painful > Label {
+#grid > .painful Label {
     -fx-text-fill: -fx-cop;
 }

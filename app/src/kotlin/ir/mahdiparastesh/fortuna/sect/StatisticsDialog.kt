@@ -42,10 +42,10 @@ class StatisticsDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val scores = arrayListOf<Float>()
         val keyMeanMap = hashMapOf<String, Float>()
-        if (c.c.vita != null) for ((key, luna) in c.c.vita!!) {
+        for ((key, luna) in c.c.vita) {
             val lunaScores = arrayListOf<Float>()
             val cal = c.c.lunaToDate(key)
-            val maxima = c.maximaForStats(cal, key) ?: continue
+            val maxima = c.c.maximaForStats(cal, key) ?: continue
             for (v in 0 until maxima)
                 (luna[v] ?: luna.default)?.also { lunaScores.add(it) }
             scores.addAll(lunaScores)
@@ -113,8 +113,8 @@ class StatisticsDialog : BaseDialogue() {
                                 }"
                             setOnClickListener(object : DoubleClickListener() {
                                 override fun onDoubleClick() {
-                                    c.c.date = c.c.createDate(year, month, 1)
-                                    c.onCalendarChanged()
+                                    c.c.date = c.c.chronology.date(year, month, 1)
+                                    c.onDateChanged()
                                     dialogue?.cancel()
                                     c.closeDrawer()
                                 }

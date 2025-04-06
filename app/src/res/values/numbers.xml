@@ -1,9 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Dimensions -->
+    <!-- dimensions -->
     <dimen name="gridItemHeight">100dp</dimen>
-    <dimen name="gridAdditionalHeight">66dp</dimen>
     <dimen name="smallCornerSize">6dp</dimen>
     <dimen name="mediumCornerSize">10dp</dimen>
     <dimen name="largeCornerSize">14dp</dimen>

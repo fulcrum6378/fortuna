@@ -66,6 +66,7 @@ object NumberUtils {
     /** Converts a hexadecimal colour integer into a Float of range 0..1. */
     fun Int.hexToValue() = toFloat() / 256f
 
+    /** Explains bytes for humans. */
     fun showBytes(units: Array<String>, length: Long): String {
         var unit = 0
         var nominalSize = length.toDouble()

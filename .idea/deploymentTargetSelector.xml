@@ -4,6 +4,27 @@
     <selectionStates>
       <SelectionState runConfigName="Launch">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-04-04T00:05:18.146761600Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="Default" identifier="serial=192.168.1.20:34603;connection=85e6e48e" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection>
+          <targets>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="Default" identifier="serial=192.168.1.20:34603;connection=b2636119" />
+              </handle>
+            </Target>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fulcr\.android\avd\Pixel_XL.avd" />
+              </handle>
+            </Target>
+          </targets>
+        </DialogSelection>
       </SelectionState>
     </selectionStates>
   </component>

@@ -32,7 +32,7 @@ class TodayWidget : AppWidgetProvider() {
 
     companion object {
         fun update(c: Fortuna) = RemoteViews(c.packageName, R.layout.today_widget).apply {
-            val cal = c.createDate()
+            val cal = c.chronology.dateNow()
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(

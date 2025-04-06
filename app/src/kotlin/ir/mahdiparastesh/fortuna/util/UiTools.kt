@@ -28,16 +28,16 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 
-/** Static fields and methods for handling the UI. */
+/** Static fields and methods for handling the UI */
 object UiTools {
-    const val SEXBOOK = "ir.mahdiparastesh.sexbook" // todo move
-    const val VITA_MIME_TYPE = "application/octet-stream" // todo move
+    const val SEXBOOK_PACKAGE = "ir.mahdiparastesh.sexbook"  // todo move
+    const val VITA_MIME_TYPE = "application/octet-stream"  // todo move
 
     /* Keys of the Shared Preferences */
-    const val SP_NUMERAL_TYPE = "numeral_type" // todo move
-    const val SP_NUMERAL_TYPE_DEF = "0" // defaults to Arabic // todo move
-    const val SP_SEARCH_INCLUSIVE = "search_inclusive" // todo move
-    const val SP_DROPBOX_CREDENTIAL = "dropbox_credential" // todo move
+    const val SP_NUMERAL_TYPE = "numeral_type"  // todo move
+    const val SP_NUMERAL_TYPE_DEF = "0"  // defaults to Arabic // todo move
+    const val SP_SEARCH_INCLUSIVE = "search_inclusive"  // todo move
+    const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"  // todo move
 
 
     /** @return the colour value of this attribute resource from the theme. */

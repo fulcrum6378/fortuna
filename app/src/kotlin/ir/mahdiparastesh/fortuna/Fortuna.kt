@@ -5,49 +5,48 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Build
+import ir.mahdiparastesh.chrono.IranianChronology
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
-import ir.mahdiparastesh.fortuna.time.PersianDate
-import ir.mahdiparastesh.fortuna.time.PersianDateTime
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.io.File
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.chrono.ChronoLocalDate
+import java.time.chrono.Chronology
+import java.time.chrono.HijrahChronology
+import java.time.chrono.IsoChronology
+import java.time.chrono.JapaneseChronology
+import java.time.temporal.ChronoField
 import java.util.Locale
 
 class Fortuna : Application(), FortunaContext {
 
-    override lateinit var date: ChronoLocalDate
-    override lateinit var todayDate: ChronoLocalDate
-    override lateinit var todayLuna: String
-    override var vita: Vita? = null
-    override var luna: String? = null
-
+    override lateinit var vita: Vita
     override val stored by lazy { File(filesDir, getString(R.string.export_file)) }
     override val backup by lazy { File(filesDir, getString(R.string.backup_file)) }
+    override lateinit var date: ChronoLocalDate
+    override lateinit var luna: String
+    override lateinit var todayDate: ChronoLocalDate
+    override lateinit var todayLuna: String
+
 
     @Suppress("KotlinConstantConditions")
-    override val calType = when (BuildConfig.FLAVOR) {
-        "iranian" -> Pair(PersianDate::class.java, PersianDateTime::class.java)
-        "gregorian" -> Pair(LocalDate::class.java, LocalDateTime::class.java)
-        else -> throw Exception("Unknown calendar type!")
+    override val chronology: Chronology = when (BuildConfig.FLAVOR) {
+        "iranian" -> IranianChronology.INSTANCE
+        "gregorian" -> IsoChronology.INSTANCE
+        else -> throw IllegalStateException("Unknown chronology type!")
     }
 
-    override val otherCalendars = arrayOf(
-        PersianDate::class.java,
-        // Todo GregorianCalendar does not show a negative number in BCE, which is correct!
-        LocalDate::class.java,
-        /*android.icu.util.IndianCalendar::class.java,
-        android.icu.util.ChineseCalendar::class.java,
-        android.icu.util.IslamicCalendar::class.java,
-        android.icu.util.HebrewCalendar::class.java,
-        android.icu.util.CopticCalendar::class.java,*/
-    ).filter { it != calType.first }
+    override val otherCalendars: List<Chronology> = arrayOf(
+        IranianChronology.INSTANCE,
+        IsoChronology.INSTANCE,
+        HijrahChronology.INSTANCE,
+        JapaneseChronology.INSTANCE,
+    ).filter { it != chronology }
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
 
-    val locale: Locale = Locale.UK // never ever use SimpleDateFormat
+    val locale: Locale = Locale.UK  // never ever use SimpleDateFormat
 
     /**
      * List of all the required permissions.
@@ -62,7 +61,14 @@ class Fortuna : Application(), FortunaContext {
 
     override fun onCreate() {
         super.onCreate()
+
+        // prepare the Vita
+        date = chronology.dateNow()
+        luna = date.toKey()
         vita = Vita(this)
+        updateToday()
+        if (luna !in vita)
+            vita[todayLuna] = Luna(date.lengthOfMonth())
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -76,5 +82,5 @@ class Fortuna : Application(), FortunaContext {
 
 /* TODO:
   * A new icon
-  * Trim memory
+  * New screenshots at /screenshots/
 */

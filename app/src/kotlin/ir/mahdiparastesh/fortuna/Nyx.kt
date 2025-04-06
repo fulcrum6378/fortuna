@@ -64,7 +64,7 @@ class Nyx : BroadcastReceiver() {
         Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
         // remind the user to score the recent day if already has not
-        val cal = c.createDate().minus(1, ChronoUnit.DAYS)
+        val cal = c.chronology.dateNow().minus(1, ChronoUnit.DAYS)
         val score = Vita(c).getOrDefault(cal.toKey(), null) // FIXME heavy operation
             ?.get(cal[ChronoField.DAY_OF_MONTH] - 1)
         if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||

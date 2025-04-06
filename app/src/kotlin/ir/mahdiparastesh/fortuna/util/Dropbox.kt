@@ -57,7 +57,9 @@ class Dropbox(private val c: Fortuna) {
 
     fun client() = DbxClientV2(requestConfig(), credential())
 
+    /** @return true if the backup was successful */
     suspend fun backup(): Boolean {
+        if (!isAuthenticated()) return false
         val fis = FileInputStream(c.stored)
         val success = try {
             client()
