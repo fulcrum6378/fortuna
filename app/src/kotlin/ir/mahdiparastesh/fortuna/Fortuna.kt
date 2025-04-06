@@ -126,4 +126,5 @@ class Fortuna : Application(), FortunaContext<Calendar> {
 
 /* TODO:
   * A new icon
+  * New screenshots at /screenshots/
 */
