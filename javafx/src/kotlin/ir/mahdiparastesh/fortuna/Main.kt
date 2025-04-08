@@ -45,7 +45,7 @@ class Main {
     }
 
     fun update() {
-        luna = c.vita[c.luna]!!
+        luna = c.vita[c.luna]
         updatePanel()
         updateGrid()
     }

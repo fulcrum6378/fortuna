@@ -1,8 +1,7 @@
 # Fortuna
 
-An open-source philosophical application based on
-the [**Pleasure Principle**](https://en.wikipedia.org/wiki/Pleasure_principle_(psychology)) and
-the [**Hedonist philosophy**](https://en.wikipedia.org/wiki/Hedonism).
+A free and open-source application based on the philosophy of
+[**Axiological Hedonism**](https://en.wikipedia.org/wiki/Hedonism#Axiological_hedonism).
 
 This app simply lets you record a mean amount of pleasure and pain you feel everyday in a scale
 between -3 up to +3 for each day in your desired calendar system (Gregorian or etc).
@@ -22,18 +21,6 @@ so you'll know exactly when what happened.
   <img src="about/Screenshot_20230120-044823_Fortuna.jpg" alt="screenshot-2" width="32%" />
   <img src="about/Screenshot_20230120-044843_Fortuna.jpg" alt="screenshot-3" width="32%" />
 </p>
-
-## Download & Install
-
-Currently only two calendars are supported, but this app can be adapted to new calendars so easily
-by adding new product flavours.
-
-- In Gregorian calendar:
-  [Install from APK Pure](https://apkpure.com/p/ir.mahdiparastesh.fortuna.gregorian)
-- In Iranian calendar: [Contact me](mailto:fulcrum1378@gmail.com)
-- In any other calendar:
-  Either [contact me](mailto:fulcrum1378@gmail.com)
-  or [implement it yourself](#add-your-own-calendar).
 
 ## VITA Markup Language
 
@@ -83,7 +70,7 @@ Here is a complete example:
 - [**Main.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Main.kt) :
   the main and only Activity instance in this app
 
-- [**Vita.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) :
+- [**Vita.kt**](core/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) :
   reads and writes Vita files and all related utilities
 
 - [**Grid.kt**](app/src/kotlin/ir/mahdiparastesh/fortuna/Grid.kt) :
@@ -104,14 +91,10 @@ Here is a complete example:
 
 ### Add your own Calendar
 
-If you don't use the Gregorian calendar, you can use Fortuna in your regional calendar system.
-Fortuna needs a subclass of [android.icu.util.Calendar](
-https://developer.android.com/reference/android/icu/util/Calendar) to work based on it.
-Google has already developed implementations of some different calendars,
-if you don't find your calendar in the [**android.icu.util**](
-https://android.googlesource.com/platform/external/icu/+/refs/heads/master/android_icu4j/src/main/java/android/icu/util/)
-package, you should develop it yourself. In Fortuna,
-[build flavours](https://developer.android.com/build/build-variants)
+If you don't wanna use the Gregorian calendar, you can use Fortuna in your regional calendar system.
+Fortuna requires [a subclass of java.time.chrono.Chronology](
+https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/time/chrono/package-summary.html).
+In Fortuna, [build flavours](https://developer.android.com/build/build-variants)
 represent calendar systems, so all you need to do is to:
 
 1. Add a new build flavour for Gradle
@@ -119,7 +102,7 @@ represent calendar systems, so all you need to do is to:
     - *drawable/today_widget_preview.png* : a preview
       for [TodayWidget](app/src/kotlin/ir/mahdiparastesh/fortuna/sect/TodayWidget.kt)
     - *values/strings.xml* : month names as *<string-array name="luna"/>*
-3. Attribute that build flavour to your Calendar class in Kit.kt.
+3. Attribute that build flavour to your Calendar class in Fortuna.kt.
 
 #### **[build.gradle.kts](app/build.gradle.kts)**
 
@@ -138,12 +121,15 @@ android {
 }
 ```
 
-#### **[Fortuna.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=val%20calType)**
+#### *
+
+*[Fortuna.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=override%20val%20chronology)
+**
 
 ```kotlin
-val calType = when (BuildConfig.FLAVOR) {
+override val chronology: Chronology = when (BuildConfig.FLAVOR) {
     //...
-    "indian" -> android.icu.util.IndianCalendar::class.java
+    "indian" -> IndianChronology.INSTANCE
     //...
 }
 ```
@@ -153,27 +139,22 @@ val calType = when (BuildConfig.FLAVOR) {
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="luna">
-        <item>Chaitra</item>
-        <item>Vaisakha</item>
-        <item>Jyeshtha</item>
-        <item>Ashadha</item>
-        <item>Shravana</item>
-        <item>Bhadra</item>
-        <item>Ashvin</item>
-        <item>Kartika</item>
-        <item>Agrahayana</item>
-        <item>Pausha</item>
-        <item>Magha</item>
-        <item>Phalguna</item>
-    </string-array>
+  <string-array name="luna">
+    <item>Chaitra</item>
+    <item>Vaisakha</item>
+    <item>Jyeshtha</item>
+    <item>Ashadha</item>
+    <item>Shravana</item>
+    <item>Bhadra</item>
+    <item>Ashvin</item>
+    <item>Kartika</item>
+    <item>Agrahayana</item>
+    <item>Pausha</item>
+    <item>Magha</item>
+    <item>Phalguna</item>
+  </string-array>
 </resources>
 ```
-
-> :warning: **Do NOT implement [Lunisolar](https://en.wikipedia.org/wiki/Lunisolar_calendar)
-> calendars**; their structure is so irregular in *android.icu.util*
-> and they also get problematic with *Vita*
-> structure!
 
 ## License
 
