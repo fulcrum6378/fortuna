@@ -12,6 +12,8 @@ public class IranianChronology extends AbstractChronology {
 
     public static final IranianChronology INSTANCE = new IranianChronology();
 
+    private static final double LEAP_THRESHOLD = 0.24219858156028368;
+
     @Override
     public String getId() {
         return "Iranian";
@@ -44,10 +46,7 @@ public class IranianChronology extends AbstractChronology {
 
     @Override
     public boolean isLeapYear(long prolepticYear) {
-        while (prolepticYear < 0) prolepticYear += 2820L;
-        long periodicYear = (prolepticYear - 5474L) % 2820L;
-        long test = ((periodicYear + 38L) * 682L) % 2816L;
-        return test < 682;
+        return ((prolepticYear - 2654) * LEAP_THRESHOLD % 1) < LEAP_THRESHOLD;
     }
 
     @Override
