@@ -38,7 +38,7 @@ interface FortunaContext {
     var todayLuna: String
 
     /** Other supported calendar types */
-    val otherCalendars: List<Chronology>
+    val otherChronologies: List<Chronology>
 
 
     fun lunaToDate(luna: String): ChronoLocalDate {

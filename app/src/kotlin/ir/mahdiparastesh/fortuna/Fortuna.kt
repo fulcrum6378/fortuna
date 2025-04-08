@@ -34,12 +34,14 @@ class Fortuna : Application(), FortunaContext {
         else -> throw IllegalStateException("Unknown chronology type!")
     }
 
-    override val otherCalendars: List<Chronology> = arrayOf(
-        IranianChronology.INSTANCE,
-        IsoChronology.INSTANCE,
-        HijrahChronology.INSTANCE,
-        JapaneseChronology.INSTANCE,
-    ).filter { it != chronology }
+    override val otherChronologies: List<Chronology> by lazy {
+        arrayOf(
+            IranianChronology.INSTANCE,
+            IsoChronology.INSTANCE,
+            HijrahChronology.INSTANCE,
+            JapaneseChronology.INSTANCE,
+        ).filter { it != chronology }
+    }
 
 
     /** @return the main shared preferences instance; <code>settings.xml</code>. */
@@ -52,10 +54,11 @@ class Fortuna : Application(), FortunaContext {
      *
      * Note: Change [Main.reqPermLauncher] to RequestMultiplePermissions() if you wanna add more.
      */
-    val requiredPermissions =
+    val requiredPermissions: Array<String> by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             arrayOf(Manifest.permission.POST_NOTIFICATIONS)
         else arrayOf()
+    }
 
 
     override fun onCreate() {

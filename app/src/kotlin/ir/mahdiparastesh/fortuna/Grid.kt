@@ -448,7 +448,7 @@ class Grid(private val c: Main) : ListAdapter {
             )
             setMessage(StringBuilder().apply {
                 val epochDay = cal.toEpochDay()
-                for (oc in c.c.otherCalendars) {
+                for (oc in c.c.otherChronologies) {
                     val d = oc.dateEpochDay(epochDay)
                     append("${oc::class.simpleName!!.substringBefore("Chronology")}: ")
                     append("${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")

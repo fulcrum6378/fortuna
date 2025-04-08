@@ -27,12 +27,14 @@ class Fortuna : Application(), FortunaContext {
     override val chronology: Chronology =
         IranianChronology.INSTANCE
 
-    override val otherCalendars: List<Chronology> = arrayOf(
-        IranianChronology.INSTANCE,
-        IsoChronology.INSTANCE,
-        HijrahChronology.INSTANCE,
-        JapaneseChronology.INSTANCE,
-    ).filter { it != chronology }
+    override val otherChronologies: List<Chronology> by lazy {
+        arrayOf(
+            IranianChronology.INSTANCE,
+            IsoChronology.INSTANCE,
+            HijrahChronology.INSTANCE,
+            JapaneseChronology.INSTANCE,
+        ).filter { it != chronology }
+    }
 
 
     override fun start(stage: Stage) {
