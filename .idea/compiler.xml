@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="22">
+      <module name="Fortuna.android" target="23" />
       <module name="Fortuna.app" target="23" />
       <module name="Fortuna.core" target="23" />
       <module name="Fortuna.core.main" target="23" />

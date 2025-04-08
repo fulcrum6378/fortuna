@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.NumberPicker
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.util.Kit.color
+import ir.mahdiparastesh.fortuna.util.UiTools.color
 
 /** An improved version of [NumberPicker] with a customised font */
 class Variabilis(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
