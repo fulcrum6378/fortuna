@@ -60,7 +60,7 @@ class StatisticsDialog : BaseDialogue() {
         )
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
-            val maxMonths = c.c.date.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1
+            val maxMonths = c.c.date.range(ChronoField.MONTH_OF_YEAR).maximum.toInt()
             val meanMap = SparseArray<Array<Float?>>()
             keyMeanMap.forEach { (key, mean) ->
                 val spl = key.split(".")

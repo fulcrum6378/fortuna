@@ -14,7 +14,6 @@ import java.time.chrono.Chronology
 import java.time.chrono.HijrahChronology
 import java.time.chrono.IsoChronology
 import java.time.chrono.JapaneseChronology
-import java.time.temporal.ChronoField
 import java.util.Locale
 
 class Fortuna : Application(), FortunaContext {
@@ -67,8 +66,7 @@ class Fortuna : Application(), FortunaContext {
         luna = date.toKey()
         vita = Vita(this)
         updateToday()
-        if (luna !in vita)
-            vita[todayLuna] = Luna(date.lengthOfMonth())
+        //vita[todayLuna]  // automatically creates a node if it doesn't exist
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

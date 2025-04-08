@@ -13,6 +13,7 @@ import android.os.Message
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -216,7 +217,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 .use { it.readText().split(' ') }
 
             // Sexbook integration
-            if (m.sexbook == null &&
+            /*todo if (m.sexbook == null &&
                 try {
                     packageManager.getPackageInfo(UiTools.SEXBOOK_PACKAGE, 0)
                     true
@@ -235,7 +236,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         cvTvSexbook?.appendSexReports(i)
                     }
                 }
-            }
+            }*/
 
             // scroll to top on older devices
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
@@ -403,7 +404,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     @SuppressLint("SetTextI18n")
     private fun updatePanel() {
         b.annus.setText(c.date[ChronoField.YEAR].toString())
-        b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR])
+        b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR] - 1)
     }
 
     /** Refreshes the [Grid] and adjusts its size. */

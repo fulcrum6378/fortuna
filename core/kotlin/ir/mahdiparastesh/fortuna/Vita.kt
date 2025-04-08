@@ -5,8 +5,6 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.StringReader
-import java.time.chrono.ChronoLocalDate
-import java.time.temporal.ChronoField
 
 /**
  * Representation of the VITA file type as [HashMap]<String, [Luna]>
@@ -35,7 +33,6 @@ class Vita(
      * Takes 100~140 milliseconds to load 286 KBs.
      */
     private fun load(text: String) {
-        var cal: ChronoLocalDate = c.chronology.dateNow()
         var key: String? = null
         var dies = 0
         for (ln in StringReader(text).readLines()) try {
@@ -45,10 +42,8 @@ class Vita(
                 val s = sn[0].split("~")
                 key = s[0].substring(1)
                 val splitKey = key.split(".")
-                cal = cal.with(ChronoField.YEAR, splitKey[0].toLong())
-                cal = cal.with(ChronoField.MONTH_OF_YEAR, splitKey[1].toLong())
                 this[key] = Luna(
-                    cal.lengthOfMonth(),
+                    c.chronology.date(splitKey[0].toInt(), splitKey[1].toInt(), 1).lengthOfMonth(),
                     s.getOrNull(1)?.toFloat(),
                     sn.getOrNull(1)?.ifBlank { null },
                     sn.getOrNull(2)?.loadVitaText(),
@@ -62,10 +57,10 @@ class Vita(
                 val sn = ln.split(";", limit = 3)
                 val s = sn[0].split(":")
                 if (s.size == 2) dies = s[0].toInt() - 1
-                this[key]!!.diebus[dies] = (s.getOrNull(1) ?: s[0]).toFloat()
-                this[key]!!.emojis[dies] = sn.getOrNull(1)?.ifBlank { null }
-                this[key]!!.verba[dies] = sn.getOrNull(2)?.loadVitaText()
-                this[key]!!.size += ln.length + 1L
+                this[key].diebus[dies] = (s.getOrNull(1) ?: s[0]).toFloat()
+                this[key].emojis[dies] = sn.getOrNull(1)?.ifBlank { null }
+                this[key].verba[dies] = sn.getOrNull(2)?.loadVitaText()
+                this[key].size += ln.length + 1L
                 dies++
             }
         } catch (e: Exception) {
@@ -115,7 +110,11 @@ class Vita(
         }
     }.toString()
 
-    fun find(key: String): Luna? = getOrElse(key) { null }
+    override operator fun get(key: String): Luna {
+        if (!containsKey(key))
+            this[key] = Luna(c.lunaToDate(key).lengthOfMonth())
+        return super.get(key)!!
+    }
 
     fun save() {
         reform()
@@ -134,7 +133,7 @@ class Vita(
     fun reform() {
         val removal = arrayListOf<String>()
         for ((key, luna) in this) {
-            if (luna.isEmpty() && key != c.todayLuna)
+            if (luna.isEmpty() && key != c.luna)
                 removal.add(key)
         }
         for (r in removal) remove(r)

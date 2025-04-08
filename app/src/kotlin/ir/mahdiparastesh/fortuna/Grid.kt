@@ -162,7 +162,7 @@ class Grid(private val c: Main) : ListAdapter {
 
     /** Invoked via [Main.updateGrid]. */
     fun onRefresh() {
-        luna = c.c.vita.find(c.c.luna) ?: Luna(c.c.date.lengthOfMonth())
+        luna = c.c.vita[c.c.luna]
         sexbook = cacheSexbook()
         numType = c.c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
             .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }

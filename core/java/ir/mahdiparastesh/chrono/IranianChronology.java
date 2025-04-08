@@ -9,7 +9,6 @@ import java.time.temporal.ValueRange;
 import java.util.List;
 
 public class IranianChronology extends AbstractChronology {
-    // TODO implements Serializable
 
     public static final IranianChronology INSTANCE = new IranianChronology();
 
