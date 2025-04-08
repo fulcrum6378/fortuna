@@ -10,7 +10,7 @@ import java.time.temporal.ChronoField
 
 interface FortunaContext {
 
-    /** Main [Vita] used across the application */
+    /** Main [Vita] object used across a Fortuna application */
     var vita: Vita
 
     /** Default Vita file */
@@ -20,9 +20,7 @@ interface FortunaContext {
     val backup: File
 
 
-    /**
-     * Default calendar Type
-     */
+    /** Default calendar type used across a Fortuna application */
     val chronology: Chronology
 
     /** A calendar used for navigating at main pages */
@@ -31,25 +29,34 @@ interface FortunaContext {
     /** A [Luna] key for navigating at main pages */
     var luna: String
 
-    /** A calendar that indicates today. */
+    /** A calendar that indicates today */
     var todayDate: ChronoLocalDate
 
-    /** A [Luna] key that indicates today */
+    /** A [Luna] key that indicates this month */
     var todayLuna: String
 
-    /** Other supported calendar types */
+    /** Other calendar types used for elaboration */
     val otherChronologies: List<Chronology>
 
 
-    fun lunaToDate(luna: String): ChronoLocalDate {
-        val spl = luna.split(".")
-        return chronology.date(spl[0].toInt(), spl[1].toInt(), 1)
+    /** Prepares calendars and the [Vita]. */
+    fun onCreate() {
+        date = chronology.dateNow()
+        luna = date.toKey()
+        vita = Vita(this)
+        updateToday()
     }
 
-    /** Updates [todayDate] and [todayLuna] */
+    /** Updates [todayDate] and [todayLuna]. */
     fun updateToday() {
         todayDate = chronology.dateNow()
         todayLuna = todayDate.toKey()
+    }
+
+    /** Creates a ChronoLocalDate out of a [Luna] key. */
+    fun lunaToDate(luna: String): ChronoLocalDate {
+        val spl = luna.split(".")
+        return chronology.date(spl[0].toInt(), spl[1].toInt(), 1)
     }
 
     /**

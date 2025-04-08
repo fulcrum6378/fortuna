@@ -46,7 +46,6 @@ import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Numerals.write
 import ir.mahdiparastesh.fortuna.util.Sexbook
 import ir.mahdiparastesh.fortuna.util.UiTools
-import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK_PACKAGE
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import java.time.DateTimeException
 import java.time.LocalTime
@@ -168,8 +167,8 @@ class Grid(private val c: Main) : ListAdapter {
     fun onRefresh() {
         luna = c.c.vita[c.c.luna]
         sexbook = cacheSexbook()
-        numType = c.c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
-            .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }
+        numType = c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
+            .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
         numeral = Numerals.build(numType)
         maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
     }
@@ -420,8 +419,8 @@ class Grid(private val c: Main) : ListAdapter {
         setOnLongClickListener {
             try {
                 c.startActivity(
-                    Intent("$SEXBOOK_PACKAGE.ACTION_VIEW")
-                        .setComponent(ComponentName(SEXBOOK_PACKAGE, "$SEXBOOK_PACKAGE.Main"))
+                    Intent("${Sexbook.PACKAGE}.ACTION_VIEW")
+                        .setComponent(ComponentName(Sexbook.PACKAGE, "${Sexbook.PACKAGE}.Main"))
                         .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true
@@ -450,7 +449,7 @@ class Grid(private val c: Main) : ListAdapter {
                 val epochDay = cal.toEpochDay()
                 for (oc in c.c.otherChronologies) {
                     val d = oc.dateEpochDay(epochDay)
-                    append("${oc::class.simpleName!!.substringBefore("Chronology")}: ")
+                    append("${oc::class.simpleName!!.substringBefore("Chronology")}: ")  // TODO
                     append("${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
                 }
             }.toString())

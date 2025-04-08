@@ -28,25 +28,16 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 
-/** Static fields and methods for handling the UI */
+/** Static UI-related functions used everywhere */
 object UiTools {
-    const val SEXBOOK_PACKAGE = "ir.mahdiparastesh.sexbook"  // todo move
-    const val VITA_MIME_TYPE = "application/octet-stream"  // todo move
 
-    /* Keys of the Shared Preferences */
-    const val SP_NUMERAL_TYPE = "numeral_type"  // todo move
-    const val SP_NUMERAL_TYPE_DEF = "0"  // defaults to Arabic // todo move
-    const val SP_SEARCH_INCLUSIVE = "search_inclusive"  // todo move
-    const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"  // todo move
-
-
-    /** @return the colour value of this attribute resource from the theme. */
+    /** @return the colour value of this attribute resource from the theme */
     @ColorInt
     fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
         theme.resolveAttribute(attr, this, true)
     }.data
 
-    /** @return the colour filter instance of this colour with the given PorterDuff.Mode. */
+    /** @return the colour filter instance of this colour with the given [PorterDuff.Mode] */
     fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
         PorterDuffColorFilter(color, mode)
 
@@ -60,14 +51,14 @@ object UiTools {
                 PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         ) // A unique request code protects the PendingIntent from being recycled!
 
-    /** Helper function for copying a text to clipboard. */
+    /** Helper function for copying a text to clipboard */
     fun copyToClipboard(c: Context, text: CharSequence, label: CharSequence?) {
         (c.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
             ?.setPrimaryClip(ClipData.newPlainText(label, text))
         Toast.makeText(c, R.string.copied, Toast.LENGTH_SHORT).show()
     }
 
-    /** Clears focus from an EditText. */
+    /** Clears focus from an [EditText]. */
     fun EditText.blur(c: Context) {
         (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
             ?.hideSoftInputFromWindow(windowToken, 0)
@@ -94,7 +85,7 @@ abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickL
     abstract fun onDoubleClick()
 }
 
-/** Subclass of [View.OnClickListener] which shows one Toast at a time. */
+/** Subclass of [View.OnClickListener] which shows one [Toast] at a time */
 class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int) :
     View.OnClickListener {
     private var last = 0L
@@ -106,10 +97,10 @@ class LimitedToastAlert(private val c: Context, @StringRes private val msg: Int)
     }
 }
 
-/** Helper class for implementing RecyclerView.ViewHolder. */
+/** Helper class for implementing [RecyclerView.ViewHolder] */
 open class AnyViewHolder<B>(val b: B) : RecyclerView.ViewHolder(b.root) where B : ViewBinding
 
-/** Base class for DialogFragment instances in this app. */
+/** Base class for [DialogFragment] instances in this app */
 abstract class BaseDialogue : DialogFragment() {
     protected val c: Main by lazy { activity as Main }
 }

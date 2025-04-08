@@ -1,7 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
 import ir.mahdiparastesh.chrono.IranianChronology
-import ir.mahdiparastesh.fortuna.util.Kit.toKey
 import javafx.application.Application
 import javafx.fxml.FXMLLoader
 import javafx.scene.Parent
@@ -42,12 +41,7 @@ class Fortuna : Application(), FortunaContext {
         val root = fxmlLoader.load<Parent>()
 
         // prepare the Vita
-        date = chronology.dateNow()
-        luna = date.toKey()
-        vita = Vita(this)
-        updateToday()
-        if (luna !in vita) vita[todayLuna] = Luna(date.lengthOfMonth())
-        vita.save()
+        onCreate()
 
         // prepare the controller
         val main = fxmlLoader.getController<Main>()

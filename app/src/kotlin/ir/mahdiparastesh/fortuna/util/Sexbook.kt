@@ -20,6 +20,10 @@ import java.time.temporal.ChronoField
  */
 class Sexbook(private val c: Fortuna) {
 
+    companion object {
+        const val PACKAGE = "ir.mahdiparastesh.sexbook"
+    }
+
     @Throws(SecurityException::class)
     suspend fun load(listener: suspend (Data) -> Unit) {
         val places = hashMapOf<Long, String>()
@@ -29,7 +33,7 @@ class Sexbook(private val c: Fortuna) {
         // get a list of all Places
         try {
             c.contentResolver.query(
-                "content://${UiTools.SEXBOOK_PACKAGE}/place".toUri(),
+                "content://$PACKAGE/place".toUri(),
                 null, null, null, null
             ).iterate { places[getLong(0)] = getString(1) }
         } catch (_: SecurityException) {
@@ -38,7 +42,7 @@ class Sexbook(private val c: Fortuna) {
 
         // now get a list of all sex Reports
         c.contentResolver.query(
-            "content://${UiTools.SEXBOOK_PACKAGE}/report".toUri(),
+            "content://$PACKAGE/report".toUri(),
             null, null, null, "time ASC"  // DESC
         ).iterate {
             val dateTime = Instant.ofEpochMilli(getLong(1)).atOffset(OffsetDateTime.now().offset)
@@ -61,7 +65,7 @@ class Sexbook(private val c: Fortuna) {
 
         // also load Crushes
         c.contentResolver.query(
-            "content://${UiTools.SEXBOOK_PACKAGE}/crush".toUri(), arrayOf(
+            "content://$PACKAGE/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
             ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
         ).iterate {

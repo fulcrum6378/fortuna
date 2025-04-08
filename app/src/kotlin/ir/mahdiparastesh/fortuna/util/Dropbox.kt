@@ -20,7 +20,9 @@ import java.io.FileInputStream
  */
 @Suppress("RedundantSuspendModifier")
 class Dropbox(private val c: Fortuna) {
+
     private var awaitingLogin: (() -> Unit)? = null
+
 
     fun requestConfig() = DbxRequestConfig("db-${BuildConfig.DROPBOX_APP_KEY}")
 
@@ -35,7 +37,10 @@ class Dropbox(private val c: Fortuna) {
         if (awaitingLogin == null) return
         Auth.getDbxCredential()?.also { credential ->
             c.sp.edit {
-                putString(UiTools.SP_DROPBOX_CREDENTIAL, DbxCredential.Writer.writeToString(credential))
+                putString(
+                    Fortuna.SP_DROPBOX_CREDENTIAL,
+                    DbxCredential.Writer.writeToString(credential)
+                )
             }
         }
         awaitingLogin!!()
@@ -43,7 +48,8 @@ class Dropbox(private val c: Fortuna) {
     }
 
     fun credential(): DbxCredential? = try {
-        c.sp.getString(UiTools.SP_DROPBOX_CREDENTIAL, null)?.let { DbxCredential.Reader.readFully(it) }
+        c.sp.getString(Fortuna.SP_DROPBOX_CREDENTIAL, null)
+            ?.let { DbxCredential.Reader.readFully(it) }
     } catch (_: Exception) {
         removeCredential()
         null
@@ -52,7 +58,7 @@ class Dropbox(private val c: Fortuna) {
     fun isAuthenticated() = credential() != null
 
     fun removeCredential() {
-        c.sp.edit { remove(UiTools.SP_DROPBOX_CREDENTIAL) }
+        c.sp.edit { remove(Fortuna.SP_DROPBOX_CREDENTIAL) }
     }
 
     fun client() = DbxClientV2(requestConfig(), credential())

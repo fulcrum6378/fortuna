@@ -1,7 +1,7 @@
 # Fortuna
 
 A free and open-source application based on the philosophy of
-[**Axiological Hedonism**](https://en.wikipedia.org/wiki/Hedonism#Axiological_hedonism).
+[**Evaluative Hedonism**](https://en.wikipedia.org/wiki/Hedonism#Axiological_hedonism).
 
 This app simply lets you record a mean amount of pleasure and pain you feel everyday in a scale
 between -3 up to +3 for each day in your desired calendar system (Gregorian or etc).
@@ -121,10 +121,7 @@ android {
 }
 ```
 
-#### *
-
-*[Fortuna.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=override%20val%20chronology)
-**
+#### **[Fortuna.kt](app/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=val%20chronology)**
 
 ```kotlin
 override val chronology: Chronology = when (BuildConfig.FLAVOR) {

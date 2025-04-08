@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
@@ -25,7 +26,6 @@ import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
 import ir.mahdiparastesh.fortuna.util.AnyViewHolder
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
-import ir.mahdiparastesh.fortuna.util.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,7 +34,7 @@ import java.time.temporal.ChronoField
 import kotlin.math.max
 import kotlin.math.min
 
-/** A dialogue for searching in [Vita]. */
+/** A dialogue for searching in [Vita] */
 class SearchDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -47,9 +47,9 @@ class SearchDialog : BaseDialogue() {
                         (list.adapter as SearchAdapter).search(v.text)
                     return@setOnEditorActionListener true
                 }
-                inclusivity.isChecked = c.c.sp.getBoolean(UiTools.SP_SEARCH_INCLUSIVE, false)
+                inclusivity.isChecked = c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
                 inclusivity.setOnCheckedChangeListener { _, bb ->
-                    c.c.sp.edit { putBoolean(UiTools.SP_SEARCH_INCLUSIVE, bb) }
+                    c.c.sp.edit { putBoolean(Fortuna.SP_SEARCH_INCLUSIVE, bb) }
                     (list.adapter as SearchAdapter).search(field.text, true)
                 }
                 list.adapter = SearchAdapter(c, this@SearchDialog)
@@ -126,7 +126,7 @@ class SearchAdapter(
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
         private val qEmojis = mutableSetOf<String>()
         private val qWords = mutableSetOf<String>()
-        private val exclusive = !c.c.sp.getBoolean(UiTools.SP_SEARCH_INCLUSIVE, false)
+        private val exclusive = !c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
 
         init {
             CoroutineScope(Dispatchers.IO).launch {

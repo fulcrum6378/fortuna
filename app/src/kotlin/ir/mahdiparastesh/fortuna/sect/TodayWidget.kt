@@ -45,8 +45,8 @@ class TodayWidget : AppWidgetProvider() {
             setOnClickPendingIntent(R.id.root, UiTools.openInDate(c, cal, 1))
             setTextViewText(
                 R.id.dies, Numerals.build(
-                    c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF)
-                        .let { if (it == UiTools.SP_NUMERAL_TYPE_DEF) null else it }
+                    c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
+                        .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
                 ).write(cal[ChronoField.DAY_OF_MONTH])
             )
             val month = c.resources.getStringArray(R.array.luna)[cal[ChronoField.MONTH_OF_YEAR]]

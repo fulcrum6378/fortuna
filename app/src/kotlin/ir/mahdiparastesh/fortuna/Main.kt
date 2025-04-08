@@ -122,8 +122,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
-                isChecked = c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF) ==
-                        (nt.jClass?.simpleName ?: UiTools.SP_NUMERAL_TYPE_DEF)
+                isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
+                        (nt.jClass?.simpleName ?: Fortuna.SP_NUMERAL_TYPE_DEF)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -131,9 +131,9 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         b.toolbar.setOnMenuItemClickListener { mItem ->
             c.sp.edit {
                 putString(
-                    UiTools.SP_NUMERAL_TYPE,
+                    Fortuna.SP_NUMERAL_TYPE,
                     Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
-                        ?: UiTools.SP_NUMERAL_TYPE_DEF
+                        ?: Fortuna.SP_NUMERAL_TYPE_DEF
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
@@ -218,7 +218,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             // Sexbook integration
             if (m.sexbook == null &&
                 try {
-                    packageManager.getPackageInfo(UiTools.SEXBOOK_PACKAGE, 0)
+                    packageManager.getPackageInfo(Sexbook.PACKAGE, 0)
                     true
                 } catch (_: PackageManager.NameNotFoundException) {
                     false
@@ -284,7 +284,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 if (c.vita.hasData()
                 ) exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = UiTools.VITA_MIME_TYPE
+                    type = Fortuna.VITA_MIME_TYPE
                     putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
                 })
                 else Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
@@ -292,7 +292,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             R.id.navImport ->
                 importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
-                    type = UiTools.VITA_MIME_TYPE
+                    type = Fortuna.VITA_MIME_TYPE
                 })
 
             R.id.navSend ->
@@ -387,7 +387,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }.onSuccess {
                 withContext(Dispatchers.Main) {
                     Intent(Intent.ACTION_SEND).apply {
-                        type = UiTools.VITA_MIME_TYPE
+                        type = Fortuna.VITA_MIME_TYPE
                         putExtra(
                             Intent.EXTRA_STREAM,
                             FileProvider.getUriForFile(c, packageName, exported)
@@ -433,8 +433,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = c.sp.getString(UiTools.SP_NUMERAL_TYPE, UiTools.SP_NUMERAL_TYPE_DEF) ==
-                    (Numerals.all[i].jClass?.simpleName ?: UiTools.SP_NUMERAL_TYPE_DEF)
+            item.isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
+                    (Numerals.all[i].jClass?.simpleName ?: Fortuna.SP_NUMERAL_TYPE_DEF)
         }
     }
 
