@@ -13,7 +13,6 @@ import android.os.Message
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -217,7 +216,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                 .use { it.readText().split(' ') }
 
             // Sexbook integration
-            /*todo if (m.sexbook == null &&
+            if (m.sexbook == null &&
                 try {
                     packageManager.getPackageInfo(UiTools.SEXBOOK_PACKAGE, 0)
                     true
@@ -236,7 +235,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                         cvTvSexbook?.appendSexReports(i)
                     }
                 }
-            }*/
+            }
 
             // scroll to top on older devices
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {

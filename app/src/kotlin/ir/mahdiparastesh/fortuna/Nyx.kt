@@ -20,7 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.OffsetDateTime
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 
@@ -38,7 +38,7 @@ class Nyx : BroadcastReceiver() {
                     .withHour(0)
                     .withMinute(0)
                     .withSecond(0)
-                    .toInstant(ZoneOffset.UTC)
+                    .toInstant(OffsetDateTime.now().offset)
                     .toEpochMilli(),
                 NumberUtils.A_DAY, broadcast(c)
             )

@@ -66,7 +66,6 @@ class Fortuna : Application(), FortunaContext {
         luna = date.toKey()
         vita = Vita(this)
         updateToday()
-        //vita[todayLuna]  // automatically creates a node if it doesn't exist
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {

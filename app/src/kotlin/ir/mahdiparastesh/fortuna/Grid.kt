@@ -8,6 +8,7 @@ import android.database.DataSetObserver
 import android.graphics.Color
 import android.icu.text.DateFormatSymbols
 import android.os.Build
+import android.provider.CalendarContract
 import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
@@ -38,6 +39,7 @@ import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
@@ -47,6 +49,8 @@ import ir.mahdiparastesh.fortuna.util.UiTools
 import ir.mahdiparastesh.fortuna.util.UiTools.SEXBOOK_PACKAGE
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import java.time.DateTimeException
+import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
@@ -174,7 +178,7 @@ class Grid(private val c: Main) : ListAdapter {
     fun cacheSexbook() = c.m.sexbook?.let {
         val spl = c.c.luna.split(".")
         val yr = spl[0].toShort()
-        val mo = (spl[1].toInt() - 1).toShort()
+        val mo = spl[1].toInt().toShort()
         Sexbook.Data(
             it.reports.filter { x -> x.year == yr && x.month == mo },
             it.crushes.filter { x ->
@@ -440,16 +444,16 @@ class Grid(private val c: Main) : ListAdapter {
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
-                    .weekdays[cal[ChronoField.DAY_OF_WEEK]]
+                    .weekdays[cal[ChronoField.DAY_OF_WEEK] - 1]
             )
-            /*TODO setMessage(StringBuilder().apply {
+            setMessage(StringBuilder().apply {
+                val epochDay = cal.toEpochDay()
                 for (oc in c.c.otherCalendars) {
-                    val d = oc.create()
-                    d.timeInMillis = cal.timeInMillis
-                    append("${oc.simpleName.substringBefore("Calendar")}: ")
-                    append("${d.toKey()}.${z(d[Calendar.DAY_OF_MONTH])}\n")
+                    val d = oc.dateEpochDay(epochDay)
+                    append("${oc::class.simpleName!!.substringBefore("Chronology")}: ")
+                    append("${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
                 }
-            }.toString())*/
+            }.toString())
             setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
                 dat.background = varFieldBg
                 val watcher = object : TextWatcher {
@@ -485,13 +489,18 @@ class Grid(private val c: Main) : ListAdapter {
             }.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.viewInCalendar) { _, _ ->
-                /*TODO c.startActivity(
+                c.startActivity(
                     Intent(Intent.ACTION_VIEW).setData(
                         CalendarContract.CONTENT_URI.buildUpon()
                             .appendPath("time")
-                            .appendEncodedPath(cal.timeInMillis.toString()).build()
+                            .appendEncodedPath(
+                                (cal.atTime(LocalTime.of(0, 0, 0))
+                                    .toEpochSecond(OffsetDateTime.now().offset) * 1000L)
+                                    .toString()
+                            )
+                            .build()
                     ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )*/
+                )
             }
             setOnDismissListener { c.m.showingDate = null }
         }.show()
@@ -519,18 +528,21 @@ class Grid(private val c: Main) : ListAdapter {
             }
         )
         if (abs(dif) > dat.lengthOfMonth()) {
-            val expDif = explainDatesDif(dat, dit, dif > 0)
-            if (expDif[0] != 0 || expDif[1] != 0) {
+            val expDif = dat.until(dit)
+            val years = abs(expDif[ChronoUnit.YEARS].toInt())
+            val months = abs(expDif[ChronoUnit.MONTHS].toInt())
+            val days = abs(expDif[ChronoUnit.DAYS].toInt())
+            if (years != 0 || months != 0) {
                 sb.append(" (")
                 val sep = c.getString(R.string.difSep)
-                if (expDif[0] != 0)
-                    sb.append(c.resources.getQuantityString(R.plurals.year, expDif[0], expDif[0]))
+                if (years != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.year, years, years))
                         .append(sep)
-                if (expDif[1] != 0)
-                    sb.append(c.resources.getQuantityString(R.plurals.month, expDif[1], expDif[1]))
+                if (months != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.month, months, months))
                         .append(sep)
-                if (expDif[2] != 0)
-                    sb.append(c.resources.getQuantityString(R.plurals.day, expDif[2], expDif[2]))
+                if (days != 0)
+                    sb.append(c.resources.getQuantityString(R.plurals.day, days, days))
                         .append(sep)
                 sb.deleteRange(sb.length - sep.length, sb.length)
                 sb.append(")")
@@ -539,40 +551,6 @@ class Grid(private val c: Main) : ListAdapter {
         return sb.toString()
     }
 
-    /** Explains the difference of the [ChronoLocalDate] instances in years, months and days */
-    private fun explainDatesDif(
-        main: ChronoLocalDate, other: ChronoLocalDate, isFuture: Boolean
-    ): IntArray {
-        val arr = IntArray(3)
-        arr[0] = other[ChronoField.YEAR] - main[ChronoField.YEAR]
-        arr[1] = other[ChronoField.MONTH_OF_YEAR] - main[ChronoField.MONTH_OF_YEAR]
-        arr[2] = other[ChronoField.DAY_OF_MONTH] - main[ChronoField.DAY_OF_MONTH]
-        if (isFuture) {
-            /* the first part of the month always starts with 1,
-             * but the second part of the month ends with changeable numbers;
-             * therefore we need to use the previous month's maximum when explaining the future! */
-            val prev = other.minus(1L, ChronoUnit.MONTHS)
-            if (arr[2] < 0) {
-                arr[2] += prev.lengthOfMonth()
-                arr[1]--
-            }
-            if (arr[1] < 0) {
-                arr[1] += prev.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1
-                arr[0]--
-            }
-        } else {
-            if (arr[2] > 0) {
-                arr[2] = other.lengthOfMonth() - arr[2]
-                arr[1]++
-            } else arr[2] = abs(arr[2])
-            if (arr[1] > 0) {
-                arr[1] = (other.range(ChronoField.MONTH_OF_YEAR).maximum.toInt() + 1) - arr[1]
-                arr[0]++
-            } else arr[1] = abs(arr[1])
-            arr[0] = abs(arr[0])
-        }
-        return arr
-    }
 
     inner class EmojiFilter(private val field: EditText) : InputFilter {
         override fun filter(

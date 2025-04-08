@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.temporal.ChronoField
 
 /**
@@ -38,21 +39,22 @@ class Sexbook(private val c: Fortuna) {
         // now get a list of all sex Reports
         c.contentResolver.query(
             "content://${UiTools.SEXBOOK_PACKAGE}/report".toUri(),
-            null, null, null, "time ASC" // DESC
+            null, null, null, "time ASC"  // DESC
         ).iterate {
-            val cal = c.chronology.date(Instant.ofEpochMilli(getLong(0)))
+            val dateTime = Instant.ofEpochMilli(getLong(1)).atOffset(OffsetDateTime.now().offset)
+            val cal = c.chronology.date(dateTime)
             reports.add(
                 Report(
-                    getLong(6),
+                    getLong(0),
                     cal[ChronoField.YEAR].toShort(),
                     cal[ChronoField.MONTH_OF_YEAR].toShort(),
                     cal[ChronoField.DAY_OF_MONTH].toShort(),
-                    cal[ChronoField.HOUR_OF_DAY].toByte(),
-                    cal[ChronoField.MINUTE_OF_HOUR].toByte(),
-                    cal[ChronoField.SECOND_OF_MINUTE].toByte(),
-                    getString(1), getShort(2).toByte(),
-                    getString(3), getInt(4) == 1,
-                    places[getLong(5)]
+                    dateTime[ChronoField.HOUR_OF_DAY].toByte(),
+                    dateTime[ChronoField.MINUTE_OF_HOUR].toByte(),
+                    dateTime[ChronoField.SECOND_OF_MINUTE].toByte(),
+                    getString(2), getShort(3).toByte(),
+                    getString(4), getInt(5) == 1,
+                    places[getLong(6)]
                 )
             )
         }
@@ -176,7 +178,7 @@ class Sexbook(private val c: Fortuna) {
             val spl = date.split("/")
             try {
                 yb = spl[0].toInt()
-                mb = spl[1].toInt() - 1
+                mb = spl[1].toInt()
                 db = spl[2].toInt()
                 if (c.chronology.calendarType != "iso8601") {
                     val cal = c.chronology.dateEpochDay(LocalDate.of(yb, mb, db).toEpochDay())
