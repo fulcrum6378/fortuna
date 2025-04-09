@@ -17,9 +17,9 @@ This app is also equipped with advanced searching and navigating tools
 so you'll know exactly when what happened.
 
 <p>
-  <img src="about/Screenshot_20230120-044811_Fortuna.jpg" alt="screenshot-1" width="32%" />
-  <img src="about/Screenshot_20230120-044823_Fortuna.jpg" alt="screenshot-2" width="32%" />
-  <img src="about/Screenshot_20230120-044843_Fortuna.jpg" alt="screenshot-3" width="32%" />
+  <img src="screenshots/Screenshot_20230120-044811_Fortuna.jpg" alt="screenshot-1" width="32%" />
+  <img src="screenshots/Screenshot_20230120-044823_Fortuna.jpg" alt="screenshot-2" width="32%" />
+  <img src="screenshots/Screenshot_20230120-044843_Fortuna.jpg" alt="screenshot-3" width="32%" />
 </p>
 
 ## VITA Markup Language
@@ -63,7 +63,7 @@ Here is a complete example:
 
 ## Structure of the Source Code
 
-#### Main Classes
+#### Main classes
 
 - [**Fortuna.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt) :
   the Application subclass
@@ -91,7 +91,7 @@ Here is a complete example:
 - [**util**](android/src/kotlin/ir/mahdiparastesh/fortuna/util) :
   general-purpose utilities
 
-### Add your own Calendar
+### Add your own calendar
 
 If you don't wanna use the Gregorian calendar, you can use Fortuna in your regional calendar system.
 Fortuna requires [a subclass of java.time.chrono.Chronology](

@@ -69,5 +69,4 @@ class Fortuna : Application(), FortunaContext {
 
 /* TODO:
   * A new icon
-  * New screenshots at /screenshots/
 */
