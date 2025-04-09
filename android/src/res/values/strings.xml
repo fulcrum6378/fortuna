@@ -1,10 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Fortuna</string>
+
+    <!-- file paths -->
     <string name="export_file" translatable="false">fortuna.vita</string>
     <string name="backup_file" translatable="false">fortuna_backup.vita</string>
     <string name="shared_prefs" translatable="false">settings.xml</string>
 
+    <!-- Panel -->
+    <string name="year">Year</string>
+    <string name="emojiHint" translatable="false">😃</string>
+    <string name="notesHint" translatable="false">.....</string>
+    <string name="defValue">DEFAULT</string>
+    <string name="viewInCalendar">Calendar</string>
+    <string name="holdLonger">Hold a little longer&#8230;</string>
+    <string name="scoreFuture">You don\'t know your future!!!</string>
+
+    <!-- calendar -->
+    <string name="calIranian">Humanist Iranian</string>
+    <string name="calGregorian">Gregorian</string>
+    <string name="calIslamic">Islamic</string>
+    <string name="calJapanese">Japanese</string>
     <plurals name="day">
         <item quantity="one">%s day</item>
         <item quantity="other">%s days</item>
@@ -17,15 +33,15 @@
         <item quantity="one">%s year</item>
         <item quantity="other">%s years</item>
     </plurals>
-
-    <!-- Panel -->
-    <string name="year">Year</string>
-    <string name="emojiHint" translatable="false">😃</string>
-    <string name="notesHint" translatable="false">.....</string>
-    <string name="defValue">DEFAULT</string>
-    <string name="viewInCalendar">Calendar</string>
-    <string name="holdLonger">Hold a little longer&#8230;</string>
-    <string name="scoreFuture">You don\'t know your future!!!</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="difAgo">%s ago</string>
+    <string name="difLater">%s later</string>
+    <string name="sameDay">Same day</string>
+    <string name="difBefore">%s before that time</string>
+    <string name="difAfter">%s after that time</string>
+    <string name="difSep" translatable="false">,&#160;</string>
 
     <!-- Numerals -->
     <string name="numerals">Numerals</string>
@@ -37,7 +53,7 @@
     <string name="numBrahmi">Brahmi</string>
     <string name="numHieroglyph">Hieroglyph</string>
 
-    <!-- Drawer -->
+    <!-- drawer -->
     <string name="navOpen">Open</string>
     <string name="navClose">Close</string>
     <string name="navSearch">Search</string>
@@ -81,7 +97,7 @@
         \nNote: this app does not believe in weeks!!
     </string>
 
-    <!-- Backup -->
+    <!-- backup -->
     <string name="backupDesc">
         Your data is automatically backed up every night in a separate file in your own device
         and also another copy on the cloud (if you enable it).
@@ -112,28 +128,7 @@
         Are you sure you want to log out of your Dropbox account?
     </string>
 
-    <!-- Dif -->
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
-    <string name="tomorrow">Tomorrow</string>
-    <string name="difAgo">%s ago</string>
-    <string name="difLater">%s later</string>
-    <string name="sameDay">Same day</string>
-    <string name="difBefore">%s before that time</string>
-    <string name="difAfter">%s after that time</string>
-    <string name="difSep" translatable="false">,&#160;</string>
-
-    <!-- Nyx -->
-    <string name="ntfReminderTitle">Daily Reminder</string>
-    <string name="ntfReminderDesc">
-        Notifies you when you everyday to record your well-being status.
-    </string>
-    <string name="ntfReminder">How was your day?</string>
-
-    <!-- TodayWidget -->
-    <string name="widTodayDesc">Shows current date like a calendar app.</string>
-
-    <!-- Dialogues -->
+    <!-- dialogues -->
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="ok">OK</string>
@@ -144,4 +139,14 @@
     <string name="done">Done!</string>
     <string name="failed">Failed!</string>
     <string name="copied">Copied to clipboard.</string>
+
+    <!-- Nyx -->
+    <string name="ntfReminderTitle">Daily Reminder</string>
+    <string name="ntfReminderDesc">
+        Notifies you when you everyday to record your well-being status.
+    </string>
+    <string name="ntfReminder">How was your day?</string>
+
+    <!-- TodayWidget -->
+    <string name="widTodayDesc">Shows current date like a calendar app.</string>
 </resources>

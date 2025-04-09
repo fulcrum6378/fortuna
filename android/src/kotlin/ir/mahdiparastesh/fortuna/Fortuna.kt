@@ -1,10 +1,8 @@
 package ir.mahdiparastesh.fortuna
 
-import android.Manifest
 import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.os.Build
 import ir.mahdiparastesh.chrono.IranianChronology
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import java.io.File
@@ -13,7 +11,6 @@ import java.time.chrono.Chronology
 import java.time.chrono.HijrahChronology
 import java.time.chrono.IsoChronology
 import java.time.chrono.JapaneseChronology
-import java.util.Locale
 
 class Fortuna : Application(), FortunaContext {
 
@@ -41,22 +38,8 @@ class Fortuna : Application(), FortunaContext {
         ).filter { it != chronology }
     }
 
-
-    /** @return the main shared preferences instance; <code>settings.xml</code>. */
+    /** Main settings of this application (<code>settings.xml</code>) */
     val sp: SharedPreferences by lazy { getSharedPreferences("settings", MODE_PRIVATE) }
-
-    val locale: Locale = Locale.UK  // never ever use SimpleDateFormat
-
-    /**
-     * List of all the required permissions.
-     *
-     * Note: Change [Main.reqPermLauncher] to RequestMultiplePermissions() if you wanna add more.
-     */
-    val requiredPermissions: Array<String> by lazy {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS)
-        else arrayOf()
-    }
 
 
     override fun onCreate() {
@@ -76,7 +59,7 @@ class Fortuna : Application(), FortunaContext {
     companion object {
         const val VITA_MIME_TYPE = "application/octet-stream"
 
-        /* --- Keys of all shared preferences --- */
+        /* ----- keys of all shared preferences ----- */
         const val SP_NUMERAL_TYPE = "numeral_type"
         const val SP_NUMERAL_TYPE_DEF = "0"  // defaults to Arabic
         const val SP_SEARCH_INCLUSIVE = "search_inclusive"

@@ -32,6 +32,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import ir.mahdiparastesh.chrono.IranianChronology
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
@@ -51,6 +52,9 @@ import java.time.DateTimeException
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.chrono.ChronoLocalDate
+import java.time.chrono.HijrahChronology
+import java.time.chrono.IsoChronology
+import java.time.chrono.JapaneseChronology
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -442,15 +446,29 @@ class Grid(private val c: Main) : ListAdapter {
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(c.c.locale)
+                "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Locale.UK)
                     .weekdays[cal[ChronoField.DAY_OF_WEEK] - 1]
             )
             setMessage(StringBuilder().apply {
                 val epochDay = cal.toEpochDay()
                 for (oc in c.c.otherChronologies) {
-                    val d = oc.dateEpochDay(epochDay)
-                    append("${oc::class.simpleName!!.substringBefore("Chronology")}: ")  // TODO
-                    append("${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
+                    val d = try {
+                        oc.dateEpochDay(epochDay)
+                    } catch (_: DateTimeException) {
+                        continue  // some calendar do not support ancient dates
+                    }
+                    val visualName = c.getString(
+                        when (oc) {
+                            is IranianChronology -> R.string.calIranian
+                            is IsoChronology -> R.string.calGregorian
+                            is HijrahChronology -> R.string.calIslamic
+                            is JapaneseChronology -> R.string.calJapanese
+                            else -> throw IllegalStateException(
+                                "Please add a string resource for this new Chronology."
+                            )
+                        }
+                    )
+                    append("$visualName: ${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
                 }
             }.toString())
             setView(DateComparisonBinding.inflate(c.layoutInflater).apply {

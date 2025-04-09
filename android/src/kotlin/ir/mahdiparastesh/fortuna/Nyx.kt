@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.core.app.ActivityCompat
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.NumberUtils
@@ -19,7 +18,7 @@ import ir.mahdiparastesh.fortuna.util.UiTools
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
@@ -33,11 +32,10 @@ class Nyx : BroadcastReceiver() {
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
                 AlarmManager.RTC,
-                LocalDateTime.now()
+                LocalDate
+                    .now()
                     .plus(1, ChronoUnit.DAYS)
-                    .withHour(0)
-                    .withMinute(0)
-                    .withSecond(0)
+                    .atTime(0, 0, 0)
                     .toInstant(OffsetDateTime.now().offset)
                     .toEpochMilli(),
                 NumberUtils.A_DAY, broadcast(c)
@@ -64,21 +62,24 @@ class Nyx : BroadcastReceiver() {
         Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
         // remind the user to score the recent day if already has not
-        val cal = c.chronology.dateNow().minus(1, ChronoUnit.DAYS)
-        val score = Vita(c).getOrDefault(cal.toKey(), null) // FIXME heavy operation
-            ?.get(cal[ChronoField.DAY_OF_MONTH] - 1)
-        if (score == null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                    ActivityCompat.checkSelfPermission(c, Manifest.permission.POST_NOTIFICATIONS)
-                    == PackageManager.PERMISSION_GRANTED)
-        ) (c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).notify(
-            CHANNEL, Notification.Builder(c, REMIND)
-                .setSmallIcon(R.drawable.notification)
-                .setContentTitle(c.getString(R.string.ntfReminder))
-                .setContentIntent(UiTools.openInDate(c, cal, 0))
-                .setAutoCancel(true)
-                .setShowWhen(false)
-                .build()
-        )
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+            c.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            val cal = c.chronology.dateNow().minus(1, ChronoUnit.DAYS)
+            val score = Vita(c).getOrDefault(cal.toKey(), null)
+                ?.get(cal[ChronoField.DAY_OF_MONTH] - 1)
+            val ntfManager = c.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (score == null) ntfManager.notify(
+                CHANNEL, Notification.Builder(c, REMIND)
+                    .setSmallIcon(R.drawable.notification)
+                    .setContentTitle(c.getString(R.string.ntfReminder))
+                    .setContentIntent(UiTools.openInDate(c, cal, 0))
+                    .setAutoCancel(true)
+                    .setShowWhen(false)
+                    .build()
+            )
+        }
 
         // backup
         c.backupVita()

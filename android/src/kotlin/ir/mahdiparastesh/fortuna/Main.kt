@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -26,7 +27,6 @@ import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.ActionMenuView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
@@ -200,11 +200,19 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             }
         }
 
-        // Nyx
-        c.requiredPermissions.forEach {
-            if (ActivityCompat.checkSelfPermission(c, it) != PackageManager.PERMISSION_GRANTED)
-                reqPermLauncher.launch(it)
+        // runtime permission(s)
+        val requiredPermissions =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+            else
+                arrayOf()
+        // note: change reqPermLauncher to RequestMultiplePermissions() if you wanna add more.
+        for (prm in requiredPermissions) {
+            if (checkSelfPermission(prm) != PackageManager.PERMISSION_GRANTED)
+                reqPermLauncher.launch(prm)
         }
+
+        // Nyx
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
         Nyx.alarm(c) // Nyx.test(c)
 
