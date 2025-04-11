@@ -8,9 +8,7 @@ import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import java.io.File
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.Chronology
-import java.time.chrono.HijrahChronology
 import java.time.chrono.IsoChronology
-import java.time.chrono.JapaneseChronology
 
 class Fortuna : Application(), FortunaContext {
 
@@ -27,15 +25,6 @@ class Fortuna : Application(), FortunaContext {
         "iranian" -> IranianChronology.INSTANCE
         "gregorian" -> IsoChronology.INSTANCE
         else -> throw IllegalStateException("Unknown chronology type!")
-    }
-
-    override val otherChronologies: List<Chronology> by lazy {
-        arrayOf(
-            IranianChronology.INSTANCE,
-            IsoChronology.INSTANCE,
-            HijrahChronology.INSTANCE,
-            JapaneseChronology.INSTANCE,
-        ).filter { it != chronology }
     }
 
     /** Main settings of this application (<code>settings.xml</code>) */

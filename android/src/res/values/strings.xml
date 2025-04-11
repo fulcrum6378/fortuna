@@ -20,7 +20,6 @@
     <string name="calIranian">Humanist Iranian</string>
     <string name="calGregorian">Gregorian</string>
     <string name="calIslamic">Islamic</string>
-    <string name="calJapanese">Japanese</string>
     <plurals name="day">
         <item quantity="one">%s day</item>
         <item quantity="other">%s days</item>

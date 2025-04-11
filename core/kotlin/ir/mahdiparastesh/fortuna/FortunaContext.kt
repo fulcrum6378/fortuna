@@ -1,11 +1,14 @@
 package ir.mahdiparastesh.fortuna
 
+import ir.mahdiparastesh.chrono.IranianChronology
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.Chronology
+import java.time.chrono.HijrahChronology
+import java.time.chrono.IsoChronology
 import java.time.temporal.ChronoField
 
 interface FortunaContext {
@@ -34,9 +37,6 @@ interface FortunaContext {
 
     /** A [Luna] key that indicates this month */
     var todayLuna: String
-
-    /** Other calendar types used for elaboration */
-    val otherChronologies: List<Chronology>
 
 
     /** Prepares calendars and the [Vita]. */
@@ -71,11 +71,32 @@ interface FortunaContext {
         else  // future months
             null
 
-
     /** Copies data from [stored] into [backup]. */
     fun backupVita() {
         FileOutputStream(backup).use { fos ->
             fos.write(FileInputStream(stored).use { it.readBytes() })
         }
     }
+
+    /**
+     * Other calendar types used for elaboration
+     *
+     * All supported calendar types are:
+     * - Humanist Iranian calendar ([IranianChronology])
+     * - Gregorian calendar ([IsoChronology])
+     * - Islamic Hijri calendar ([HijrahChronology])
+     *
+     * JapaneseChronology is apparently faulty!
+     * MinguoChronology and ThaiBuddhistChronology are the same as Gregorian;
+     * except that their year numbering is different.
+     * Anyway Buddha was ascetic and an opponent of Hedonism; so he has no place in Fortuna!
+     * Islam and Arabs are more hedonistic than the Indian philosophers and Christianity!
+     *
+     * @return a list of the supported chronology instances except the one being used ([chronology])
+     */
+    fun otherChronologies(): List<Chronology> = arrayOf(
+        IranianChronology.INSTANCE,
+        IsoChronology.INSTANCE,
+        HijrahChronology.INSTANCE,
+    ).filter { it != chronology }
 }

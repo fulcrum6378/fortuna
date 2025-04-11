@@ -54,7 +54,6 @@ import java.time.OffsetDateTime
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.HijrahChronology
 import java.time.chrono.IsoChronology
-import java.time.chrono.JapaneseChronology
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -451,7 +450,7 @@ class Grid(private val c: Main) : ListAdapter {
             )
             setMessage(StringBuilder().apply {
                 val epochDay = cal.toEpochDay()
-                for (oc in c.c.otherChronologies) {
+                for (oc in c.c.otherChronologies()) {
                     val d = try {
                         oc.dateEpochDay(epochDay)
                     } catch (_: DateTimeException) {
@@ -462,7 +461,6 @@ class Grid(private val c: Main) : ListAdapter {
                             is IranianChronology -> R.string.calIranian
                             is IsoChronology -> R.string.calGregorian
                             is HijrahChronology -> R.string.calIslamic
-                            is JapaneseChronology -> R.string.calJapanese
                             else -> throw IllegalStateException(
                                 "Please add a string resource for this new Chronology."
                             )

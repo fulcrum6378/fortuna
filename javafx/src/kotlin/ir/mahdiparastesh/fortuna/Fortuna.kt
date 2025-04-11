@@ -9,9 +9,6 @@ import javafx.stage.Stage
 import java.io.File
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.Chronology
-import java.time.chrono.HijrahChronology
-import java.time.chrono.IsoChronology
-import java.time.chrono.JapaneseChronology
 
 class Fortuna : Application(), FortunaContext {
 
@@ -25,15 +22,6 @@ class Fortuna : Application(), FortunaContext {
 
     override val chronology: Chronology =
         IranianChronology.INSTANCE
-
-    override val otherChronologies: List<Chronology> by lazy {
-        arrayOf(
-            IranianChronology.INSTANCE,
-            IsoChronology.INSTANCE,
-            HijrahChronology.INSTANCE,
-            JapaneseChronology.INSTANCE,
-        ).filter { it != chronology }
-    }
 
 
     override fun start(stage: Stage) {
