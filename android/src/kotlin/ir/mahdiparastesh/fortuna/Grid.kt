@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
@@ -82,6 +83,11 @@ class Grid(private val c: Main) : ListAdapter {
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
+    /** Helper array for animating cell colours */
+    private val cellColours: Array<Int> = Array<Int>(
+        c.c.chronology.range(ChronoField.DAY_OF_MONTH).maximum.toInt()
+    ) { Color.TRANSPARENT }
+
     override fun getCount(): Int = c.c.date.lengthOfMonth()
     override fun isEmpty(): Boolean = false
     override fun getItem(i: Int): Any = 0f
@@ -130,34 +136,44 @@ class Grid(private val c: Main) : ListAdapter {
         b.emoji.isVisible = emj != null
 
         // background colour
-        b.root.setBackgroundColor(
-            when {
-                score != null && score > 0f -> {
-                    b.dies.setTextColor(cpo)
-                    b.variabilis.setTextColor(cpo)
-                    b.verbumIcon.setColorFilter(cpo)
-                    Color.valueOf(
-                        cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
-                        score / Vita.MAX_RANGE
-                    ).toArgb()
-                }
-                score != null && score < 0f -> {
-                    b.dies.setTextColor(cso)
-                    b.variabilis.setTextColor(cso)
-                    b.verbumIcon.setColorFilter(cso)
-                    Color.valueOf(
-                        cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
-                        -score / Vita.MAX_RANGE
-                    ).toArgb()
-                }
-                else -> {
-                    b.dies.setTextColor(tc)
-                    b.variabilis.setTextColor(tc)
-                    b.verbumIcon.setColorFilter(tc)
-                    Color.TRANSPARENT
-                }
+        val targetColour = when {
+            score != null && score > 0f -> {
+                b.dies.setTextColor(cpo)
+                b.variabilis.setTextColor(cpo)
+                b.verbumIcon.setColorFilter(cpo)
+                Color.valueOf(
+                    cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
+                    score / Vita.MAX_RANGE
+                ).toArgb()
             }
-        )
+            score != null && score < 0f -> {
+                b.dies.setTextColor(cso)
+                b.variabilis.setTextColor(cso)
+                b.verbumIcon.setColorFilter(cso)
+                Color.valueOf(
+                    cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
+                    -score / Vita.MAX_RANGE
+                ).toArgb()
+            }
+            else -> {
+                b.dies.setTextColor(tc)
+                b.variabilis.setTextColor(tc)
+                b.verbumIcon.setColorFilter(tc)
+                Color.TRANSPARENT
+            }
+        }
+        @Suppress("KotlinConstantConditions")
+        if (BuildConfig.ANIMATE) {
+            ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
+                addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
+                duration = 135L
+                start()
+            }
+            cellColours[i] = targetColour
+        } else
+            b.root.setBackgroundColor(targetColour)
+
+        // clicks
         b.root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
         b.root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
         if (c.c.luna == c.c.todayLuna && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)

@@ -21,7 +21,7 @@ class Fortuna : Application(), FortunaContext {
     override lateinit var todayLuna: String
 
     @Suppress("KotlinConstantConditions")
-    override val chronology: Chronology = when (BuildConfig.FLAVOR) {
+    override val chronology: Chronology = when (BuildConfig.FLAVOR_calendar) {
         "iranian" -> IranianChronology.INSTANCE
         "gregorian" -> IsoChronology.INSTANCE
         else -> throw IllegalStateException("Unknown chronology type!")
@@ -55,7 +55,3 @@ class Fortuna : Application(), FortunaContext {
         const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"
     }
 }
-
-/* TODO:
-  * A new icon
-*/

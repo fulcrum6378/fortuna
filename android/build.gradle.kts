@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 15
-        versionName = "13.1.0"
+        versionName = "13.2.0"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -21,18 +21,39 @@ android {
         manifestPlaceholders.put("dropboxKey", dropboxKey)
     }
 
+    setFlavorDimensions(listOf("calendar", "animatio"))
+    productFlavors {
+        create("iranian") {
+            dimension = "calendar"
+            isDefault = true
+        }
+        create("gregorian") {
+            dimension = "calendar"
+            applicationIdSuffix = ".gregorian"
+        }
+
+        create("animatum") {
+            dimension = "animatio"
+            isDefault = true
+            buildConfigField("boolean", "ANIMATE", "true")
+        }
+        create("inanimatum") {
+            dimension = "animatio"
+            versionNameSuffix = "-static"
+            buildConfigField("boolean", "ANIMATE", "false")
+        }
+    }
+
     sourceSets.getByName("main") {
         manifest.srcFile("src/AndroidManifest.xml")
         kotlin.srcDirs("src/kotlin")
     }
-    setFlavorDimensions(listOf("calendar"))
-    productFlavors {
-        all { dimension = "calendar" }
-        create("iranian") { isDefault = true }
-        create("gregorian") { applicationIdSuffix = ".gregorian" }
+    sourceSets.getByName("iranian") {
+        res.setSrcDirs(listOf("src/res", "src/res_iranian"))
     }
-    sourceSets.getByName("iranian") { res.setSrcDirs(listOf("src/res", "src/res_iranian")) }
-    sourceSets.getByName("gregorian") { res.setSrcDirs(listOf("src/res", "src/res_gregorian")) }
+    sourceSets.getByName("gregorian") {
+        res.setSrcDirs(listOf("src/res", "src/res_gregorian"))
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_23
