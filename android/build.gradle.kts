@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 15
-        versionName = "13.2.2"
+        versionName = "13.2.4"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -39,7 +39,7 @@ android {
         }
         create("inanimatum") {
             dimension = "animatio"
-            versionNameSuffix = "-static"
+            versionNameSuffix = "-inanimatum"
             buildConfigField("boolean", "ANIMATE", "false")
         }
     }

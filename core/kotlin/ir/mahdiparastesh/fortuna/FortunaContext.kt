@@ -5,6 +5,9 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalTime
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.Chronology
 import java.time.chrono.HijrahChronology
@@ -99,4 +102,13 @@ interface FortunaContext {
         IsoChronology.INSTANCE,
         HijrahChronology.INSTANCE,
     ).filter { it != chronology }
+
+    fun dateTimeFromTimestamp(millis: Long): Pair<ChronoLocalDate, LocalTime> {
+        val clock = Clock.systemDefaultZone()
+        val dateTime = Instant
+            .ofEpochMilli(millis)
+            .atOffset(clock.zone.rules.getOffset(clock.instant()))
+        val date = chronology.date(dateTime)
+        return Pair(date, dateTime.toLocalTime())
+    }
 }

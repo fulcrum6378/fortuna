@@ -6,9 +6,7 @@ import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.util.UiTools.iterate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.Instant
 import java.time.LocalDate
-import java.time.OffsetDateTime
 import java.time.temporal.ChronoField
 
 /**
@@ -45,17 +43,18 @@ class Sexbook(private val c: Fortuna) {
             "content://$PACKAGE/report".toUri(),
             null, null, null, "time ASC"  // DESC
         ).iterate {
-            val dateTime = Instant.ofEpochMilli(getLong(1)).atOffset(OffsetDateTime.now().offset)
-            val cal = c.chronology.date(dateTime)
+            val dt = c.dateTimeFromTimestamp(getLong(1))
+            val date = dt.first
+            val time = dt.second
             reports.add(
                 Report(
                     getLong(0),
-                    cal[ChronoField.YEAR].toShort(),
-                    cal[ChronoField.MONTH_OF_YEAR].toShort(),
-                    cal[ChronoField.DAY_OF_MONTH].toShort(),
-                    dateTime[ChronoField.HOUR_OF_DAY].toByte(),
-                    dateTime[ChronoField.MINUTE_OF_HOUR].toByte(),
-                    dateTime[ChronoField.SECOND_OF_MINUTE].toByte(),
+                    date[ChronoField.YEAR].toShort(),
+                    date[ChronoField.MONTH_OF_YEAR].toShort(),
+                    date[ChronoField.DAY_OF_MONTH].toShort(),
+                    time[ChronoField.HOUR_OF_DAY].toByte(),
+                    time[ChronoField.MINUTE_OF_HOUR].toByte(),
+                    time[ChronoField.SECOND_OF_MINUTE].toByte(),
                     getString(2), getShort(3).toByte(),
                     getString(4), getInt(5) == 1,
                     places[getLong(6)]

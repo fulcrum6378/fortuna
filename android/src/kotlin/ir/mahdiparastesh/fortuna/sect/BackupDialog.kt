@@ -24,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.FileInputStream
-import java.time.Instant
 import java.time.temporal.ChronoField
 
 /**
@@ -102,10 +101,12 @@ class BackupDialog : BaseDialogue() {
     /** @return the human-readable modification date of the backup. */
     private fun lastBackup(): String {
         if (!c.c.backup.exists()) return getString(R.string.never)
-        val d = c.c.chronology.date(Instant.ofEpochMilli(c.c.backup.lastModified()))
+        val dt = c.c.dateTimeFromTimestamp(c.c.backup.lastModified())
+        val d = dt.first
+        val t = dt.second
         return "${z(d[ChronoField.YEAR], 4)}.${z(d[ChronoField.MONTH_OF_YEAR] + 1)}." +
-                "${z(d[ChronoField.DAY_OF_MONTH])} - ${z(d[ChronoField.HOUR_OF_DAY])}:" +
-                "${z(d[ChronoField.MINUTE_OF_HOUR])}:${z(d[ChronoField.SECOND_OF_MINUTE])}"
+                "${z(d[ChronoField.DAY_OF_MONTH])} - ${z(t[ChronoField.HOUR_OF_DAY])}:" +
+                "${z(t[ChronoField.MINUTE_OF_HOUR])}:${z(t[ChronoField.SECOND_OF_MINUTE])}"
     }
 
     /** Updates the modification date of the backup file. */
