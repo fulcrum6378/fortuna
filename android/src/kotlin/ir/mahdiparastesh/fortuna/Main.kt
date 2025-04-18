@@ -427,8 +427,8 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         if (b.grid.adapter == null)
             b.grid.adapter = Grid(this)
         else {
-            b.grid.invalidateViews()
             (b.grid.adapter as Grid).onRefresh()
+            b.grid.invalidateViews()
         }
         (b.grid.adapter as Grid).also { grid ->
             b.defVar.text = grid.luna.default.showScore()

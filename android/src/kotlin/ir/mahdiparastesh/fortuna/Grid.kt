@@ -109,9 +109,10 @@ class Grid(private val c: Main) : ListAdapter {
         ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
     }
 
-    @SuppressLint("ViewHolder")
+    @SuppressLint("ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
-        val b = ItemGridBinding.inflate(c.layoutInflater, parent, false)
+        val b = convertView?.let { ItemGridBinding.bind(it) }
+            ?: ItemGridBinding.inflate(c.layoutInflater, parent, false)
 
         // calculation
         val score: Float? =
@@ -166,7 +167,7 @@ class Grid(private val c: Main) : ListAdapter {
         if (BuildConfig.ANIMATE) {
             ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
                 addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
-                duration = 135L
+                duration = 100L
                 start()
             }
             cellColours[i] = targetColour
@@ -176,8 +177,12 @@ class Grid(private val c: Main) : ListAdapter {
         // clicks
         b.root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
         b.root.setOnLongClickListener { detailDate(i, dailyCalendar(i)); true }
+
+        // highlight the cell if it indicates today
         if (c.c.luna == c.c.todayLuna && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
             b.root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
+        else
+            b.root.foreground = c.resources.getDrawable(R.drawable.dies, c.theme)
 
         return b.root
     }
