@@ -77,10 +77,10 @@
     </style>
 
     <style name="Widget.Fortuna.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="android:textColor">?android:colorControlNormal
+        <item name="android:textColor">?android:attr/colorControlNormal
         </item><!--avoid ?android:attr/textColor-->
-        <item name="buttonTint">?colorPrimary</item><!--avoid ?android:attr/textColor-->
-        <item name="buttonIconTint">?colorOnPrimary</item><!--avoid transparent-->
+        <item name="buttonTint">?attr/colorPrimary</item><!--avoid ?android:attr/textColor-->
+        <item name="buttonIconTint">?attr/colorOnPrimary</item><!--avoid transparent-->
     </style>
 
     <!--<style name="Widget.Fortuna.Tooltip" parent="Widget.Material3.Tooltip"></style>-->

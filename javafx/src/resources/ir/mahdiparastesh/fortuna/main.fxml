@@ -11,26 +11,26 @@
     fx:controller="ir.mahdiparastesh.fortuna.Main"
     fx:id="root">
 
-  <AnchorPane fx:id="panel">
+    <AnchorPane fx:id="panel">
 
-    <HBox
-        AnchorPane.bottomAnchor="0.0"
-        AnchorPane.leftAnchor="0.0"
-        AnchorPane.rightAnchor="0.0"
-        AnchorPane.topAnchor="0.0"
-        alignment="CENTER"
-        spacing="50"
-        fx:id="panelFields">
+        <HBox
+            AnchorPane.bottomAnchor="0.0"
+            AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0"
+            AnchorPane.topAnchor="0.0"
+            alignment="CENTER"
+            spacing="50"
+            fx:id="panelFields">
 
-      <ComboBox fx:id="lunaBox" />
+            <ComboBox fx:id="lunaBox" />
 
-      <TextField
-          promptText="Year"
-          fx:id="annus" />
-    </HBox>
-  </AnchorPane>
+            <TextField
+                promptText="Year"
+                fx:id="annus" />
+        </HBox>
+    </AnchorPane>
 
-  <GridPane
-      maxWidth="Infinity"
-      fx:id="grid" />
+    <GridPane
+        maxWidth="Infinity"
+        fx:id="grid" />
 </VBox>

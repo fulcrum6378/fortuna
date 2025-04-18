@@ -440,8 +440,10 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             b.emoji.isVisible = grid.luna.emoji?.isNotBlank() == true
         }
         b.grid.layoutParams.apply {
-            height = ((resources.getDimension(R.dimen.gridItemHeight) *
-                    ceil(c.date.lengthOfMonth().toFloat() / 5f))).toInt()
+            height = (resources.getDimension(R.dimen.gridItemHeight) * ceil(
+                c.date.lengthOfMonth().toFloat() / resources.getInteger(R.integer.gridColumns)
+                    .toFloat()
+            )).toInt()
         }
     }
 

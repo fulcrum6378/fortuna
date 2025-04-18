@@ -1,5 +1,8 @@
 <resources>
 
+    <!-- integers -->
+    <integer name="gridColumns">5</integer>
+
     <!-- dimensions -->
     <dimen name="gridItemHeight">100dp</dimen>
     <dimen name="smallCornerSize">6dp</dimen>

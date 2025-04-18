@@ -1,0 +1,5 @@
+<resources>
+
+    <!-- integers -->
+    <integer name="gridColumns">10</integer>
+</resources>
