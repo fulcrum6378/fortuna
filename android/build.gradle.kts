@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 15
-        versionName = "13.2.7"
+        versionName = "13.2.9"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -21,7 +21,7 @@ android {
         manifestPlaceholders.put("dropboxKey", dropboxKey)
     }
 
-    setFlavorDimensions(listOf("calendar", "animatio"))
+    setFlavorDimensions(listOf("calendar"))
     productFlavors {
         create("iranian") {
             dimension = "calendar"
@@ -30,17 +30,6 @@ android {
         create("gregorian") {
             dimension = "calendar"
             applicationIdSuffix = ".gregorian"
-        }
-
-        create("animatum") {
-            dimension = "animatio"
-            isDefault = true
-            buildConfigField("boolean", "ANIMATE", "true")
-        }
-        create("inanimatum") {
-            dimension = "animatio"
-            versionNameSuffix = "-inanimatum"
-            buildConfigField("boolean", "ANIMATE", "false")
         }
     }
 

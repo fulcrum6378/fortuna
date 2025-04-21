@@ -409,14 +409,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
 
     /** Updates year and month inputs of the top panel. */
     @SuppressLint("SetTextI18n")
-    private fun updatePanel(rolled: Boolean = false) {
-
-        // animate the process if allowed
-        @Suppress("KotlinConstantConditions")
-        if (BuildConfig.ANIMATE && rolled) {
-            // TODO
-        }
-
+    private fun updatePanel() {
         b.annus.setText(c.date[ChronoField.YEAR].toString())
         b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR] - 1)
     }
@@ -460,15 +453,15 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         c.date =
             if (forward) c.date.plus(nTimes, ChronoUnit.MONTHS)
             else c.date.minus(nTimes, ChronoUnit.MONTHS)
-        onDateChanged(true)
+        onDateChanged()
     }
 
     /** Updates everything whenever the calendar changes. */
-    fun onDateChanged(rolled: Boolean = false) {
+    fun onDateChanged() {
         c.luna = c.date.toKey()
         rollingLunaWithAnnus = true
         rollingLuna = true
-        updatePanel(rolled)
+        updatePanel()
         updateGrid()
         b.annus.blur(c)
     }

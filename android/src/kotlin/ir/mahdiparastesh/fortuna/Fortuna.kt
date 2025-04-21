@@ -21,7 +21,7 @@ class Fortuna : Application(), FortunaContext {
     override lateinit var todayLuna: String
 
     @Suppress("KotlinConstantConditions")
-    override val chronology: Chronology = when (BuildConfig.FLAVOR_calendar) {
+    override val chronology: Chronology = when (BuildConfig.FLAVOR) {
         "iranian" -> IranianChronology.INSTANCE
         "gregorian" -> IsoChronology.INSTANCE
         else -> throw IllegalStateException("Unknown chronology type!")

@@ -3,11 +3,11 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="Launch">
-        <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2025-04-18T17:54:13.187196300Z">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-04-19T06:04:59.626532300Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fulcr\.android\avd\Medium_Tablet.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fulcr\.android\avd\Wear_OS_Rectangular.avd" />
             </handle>
           </Target>
         </DropdownSelection>

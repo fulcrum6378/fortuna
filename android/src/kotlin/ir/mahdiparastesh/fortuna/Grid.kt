@@ -147,6 +147,7 @@ class Grid(private val c: Main) : ListAdapter {
                     score / Vita.MAX_RANGE
                 ).toArgb()
             }
+
             score != null && score < 0f -> {
                 b.dies.setTextColor(cso)
                 b.variabilis.setTextColor(cso)
@@ -156,6 +157,7 @@ class Grid(private val c: Main) : ListAdapter {
                     -score / Vita.MAX_RANGE
                 ).toArgb()
             }
+
             else -> {
                 b.dies.setTextColor(tc)
                 b.variabilis.setTextColor(tc)
@@ -163,16 +165,12 @@ class Grid(private val c: Main) : ListAdapter {
                 Color.TRANSPARENT
             }
         }
-        @Suppress("KotlinConstantConditions")
-        if (BuildConfig.ANIMATE) {
-            ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
-                addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
-                duration = 100L
-                start()
-            }
-            cellColours[i] = targetColour
-        } else
-            b.root.setBackgroundColor(targetColour)
+        ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
+            addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
+            duration = 100L
+            start()
+        }
+        cellColours[i] = targetColour
 
         // clicks
         b.root.setOnClickListener { changeVar(i, dailyCalendar(i)) }
@@ -556,10 +554,12 @@ class Grid(private val c: Main) : ListAdapter {
                         R.plurals.day, dif.absoluteValue, dif.absoluteValue.groupDigits()
                     )
                 )
+
                 dif > 0 -> c.getString(
                     if (basedOnToday) R.string.difLater else R.string.difAfter,
                     c.resources.getQuantityString(R.plurals.day, dif, dif.groupDigits())
                 )
+
                 else -> c.getString(if (basedOnToday) R.string.today else R.string.sameDay)
             }
         )

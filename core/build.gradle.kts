@@ -9,5 +9,5 @@ sourceSets.getByName("main") {
 }
 
 dependencies {
-    api(files("libs/iranian-chronology-1.0.jar"))
+    api(files("libs/iranian-chronology-1.1.jar"))
 }
