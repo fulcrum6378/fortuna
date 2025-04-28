@@ -11,8 +11,8 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numerals
-import ir.mahdiparastesh.fortuna.util.Numerals.write
 import ir.mahdiparastesh.fortuna.util.UiTools
 import java.time.temporal.ChronoField
 

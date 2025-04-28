@@ -5,6 +5,7 @@
     <option name="MAIN_CLASS_NAME" value="ir.mahdiparastesh.fortuna.FortunaKt" />
     <module name="Fortuna.javafx.main" />
     <option name="VM_PARAMETERS" value="--module-path &quot;D:\Programming\JavaFX\javafx-sdk-23.0.2\lib&quot;; --add-modules javafx.controls,javafx.fxml" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/javafx" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

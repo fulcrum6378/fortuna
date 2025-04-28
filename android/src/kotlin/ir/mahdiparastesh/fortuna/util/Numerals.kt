@@ -44,8 +44,6 @@ object Numerals {
             }
         }
         ?.getDeclaredConstructor()?.newInstance() as Numeral?
-
-    fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
 }
 
 /**

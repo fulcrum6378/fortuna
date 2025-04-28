@@ -11,9 +11,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import androidx.core.util.containsKey
 import androidx.core.util.forEach
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,7 +20,6 @@ import ir.mahdiparastesh.fortuna.databinding.WholeBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.DoubleClickListener
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
-import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
 import ir.mahdiparastesh.fortuna.util.UiTools
 import java.time.temporal.ChronoField
 
@@ -71,8 +67,9 @@ class StatisticsDialog : BaseDialogue() {
             }
             val bw = WholeBinding.inflate(layoutInflater)
 
-            val cp = c.getColor(R.color.CP)
-            val cs = c.getColor(R.color.CS)
+            //val cp = c.getColor(R.color.CP)
+            //val cs = c.getColor(R.color.CS)
+            //cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
             val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
             val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
             val monthNames = resources.getStringArray(R.array.luna)
@@ -92,17 +89,13 @@ class StatisticsDialog : BaseDialogue() {
                             setBackgroundColor(
                                 when {
                                     score != null && score > 0f -> Color.valueOf(
-                                        cp.red.hexToValue(),
-                                        cp.green.hexToValue(),
-                                        cp.blue.hexToValue(),
-                                        score / Vita.MAX_RANGE
+                                        76f, 175f, 80f, score / Vita.MAX_RANGE
                                     ).toArgb()
+
                                     score != null && score < 0f -> Color.valueOf(
-                                        cs.red.hexToValue(),
-                                        cs.green.hexToValue(),
-                                        cs.blue.hexToValue(),
-                                        -score / Vita.MAX_RANGE
+                                        244f, 67f, 54f - score / Vita.MAX_RANGE
                                     ).toArgb()
+
                                     score != null -> Color.TRANSPARENT
                                     else -> nullCellColour
                                 }

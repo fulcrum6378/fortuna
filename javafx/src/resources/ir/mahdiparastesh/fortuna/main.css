@@ -15,22 +15,49 @@
 #panel {
 }
 #panelFields {
-    -fx-padding: 50px 0;
+    -fx-padding: 40px 0;
 }
 #panelFields > ComboBox {
     -fx-cursor: hand;
 }
+#lunaBox {
+    -fx-background-color: transparent;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 4px 8px;
+}
+#lunaBox .list-view .list-cell {
+    -fx-cursor: hand;
+    -fx-padding: 3px 16px;
+    -fx-font-weight: normal;
+}
+#lunaBox .list-view .list-cell:selected {
+    -fx-font-weight: bold;
+}
+#lunaBox .list-view .list-cell:selected, #lunaBox .list-view .list-cell:hover {
+    -fx-text-fill: -fx-cop;
+}
+#annus {
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 16px;
+    -fx-pref-width: 5em;
+}
 
 #grid > AnchorPane {
+    -fx-border-color: -fx-bg;
+    -fx-border-width: 0.5px;
     -fx-cursor: hand;
     -fx-pref-height: 100px;
     -fx-text-align: center;
 }
 #grid > AnchorPane > VBox > Label {
-    -fx-font-size: 18px;
+    -fx-font-size: 17px;
 }
 #grid > .pleasant {
-    -fx-background-color: -fx-cp;
+    /*-fx-background-color: -fx-cp;*/
 }
 #grid > .pleasant Label {
     -fx-text-fill: -fx-cop;
@@ -40,7 +67,7 @@
 #grid > .mediocre Label {
 }
 #grid > .painful {
-    -fx-background-color: -fx-cs;
+    /*-fx-background-color: -fx-cs;*/
 }
 #grid > .painful Label {
     -fx-text-fill: -fx-cop;

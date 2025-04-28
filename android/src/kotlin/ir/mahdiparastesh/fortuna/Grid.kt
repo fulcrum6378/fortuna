@@ -22,9 +22,6 @@ import android.widget.ListAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.blue
-import androidx.core.graphics.green
-import androidx.core.graphics.red
 import androidx.core.net.toUri
 import androidx.core.view.get
 import androidx.core.view.isVisible
@@ -40,12 +37,11 @@ import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
-import ir.mahdiparastesh.fortuna.util.NumberUtils.hexToValue
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
-import ir.mahdiparastesh.fortuna.util.Numerals.write
 import ir.mahdiparastesh.fortuna.util.Sexbook
 import ir.mahdiparastesh.fortuna.util.UiTools
 import ir.mahdiparastesh.fortuna.util.UiTools.color
@@ -77,8 +73,9 @@ class Grid(private val c: Main) : ListAdapter {
     /** Reference to the [TextView] inside the dialogue of [changeVar] */
     var cvTvSexbook: TextView? = null
 
-    private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
-    private val cs: Int by lazy { c.color(com.google.android.material.R.attr.colorSecondary) }
+    //private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
+    //private val cs: Int by lazy { c.color(com.google.android.material.R.attr.colorSecondary) }
+    //cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
@@ -142,20 +139,14 @@ class Grid(private val c: Main) : ListAdapter {
                 b.dies.setTextColor(cpo)
                 b.variabilis.setTextColor(cpo)
                 b.verbumIcon.setColorFilter(cpo)
-                Color.valueOf(
-                    cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
-                    score / Vita.MAX_RANGE
-                ).toArgb()
+                Color.valueOf(76f, 175f, 80f, score / Vita.MAX_RANGE).toArgb()
             }
 
             score != null && score < 0f -> {
                 b.dies.setTextColor(cso)
                 b.variabilis.setTextColor(cso)
                 b.verbumIcon.setColorFilter(cso)
-                Color.valueOf(
-                    cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
-                    -score / Vita.MAX_RANGE
-                ).toArgb()
+                Color.valueOf(244f, 67f, 54f, -score / Vita.MAX_RANGE).toArgb()
             }
 
             else -> {

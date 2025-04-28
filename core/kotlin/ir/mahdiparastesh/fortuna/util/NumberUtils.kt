@@ -26,6 +26,8 @@ object NumberUtils {
     fun ChronoLocalDate.toKey(): String =
         "${z(get(ChronoField.YEAR), 4)}.${z(get(ChronoField.MONTH_OF_YEAR))}"
 
+    fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
+
     /**
      * Groups the digits of a number triply (both integral and fractional ones).
      * e.g. 6401 -> 6,401 or 1234.5678 -> 1,234.567,8
@@ -63,8 +65,8 @@ object NumberUtils {
         return "$ret"
     }
 
-    /** Converts a hexadecimal colour integer into a Float of range 0..1. */
-    fun Int.hexToValue() = toFloat() / 256f
+    /* Converts a hexadecimal colour integer into a Float of range 0..1. */
+    //fun Int.hexToValue() = toFloat() / 256f
 
     /** Explains bytes for humans. */
     fun showBytes(units: Array<String>, length: Long): String {

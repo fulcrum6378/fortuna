@@ -147,21 +147,25 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             override fun onNothingSelected(parent: AdapterView<*>) {}
             override fun onItemSelected(parent: AdapterView<*>, view: View?, i: Int, id: Long) {
                 if (rollingLuna) {
-                    rollingLuna = false; return; }
+                    rollingLuna = false
+                    return; }
                 if (m.changingConfigForLunaSpinner) {
-                    m.changingConfigForLunaSpinner = false; return; }
+                    m.changingConfigForLunaSpinner = false
+                    return; }
+
                 c.luna = "${z(b.annus.text, 4)}.${z(i + 1)}"
                 c.date = c.lunaToDate(c.luna)
                 updateGrid()
             }
         } // setOnItemClickListener cannot be used with a spinner
         b.annus.addTextChangedListener {
-            if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself) {
-                rollingAnnusItself = false; return@addTextChangedListener; }
+            if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself)
+                return@addTextChangedListener
             if (rollingLunaWithAnnus) {
-                rollingLunaWithAnnus = false; return@addTextChangedListener; }
-            if (c.luna.split(".")[0] == it.toString())
-                return@addTextChangedListener // don't move this before rollingLunaWithAnnus
+                rollingLunaWithAnnus = false
+                return@addTextChangedListener; }
+            if (c.date[ChronoField.YEAR] == it.toString().toInt())
+                return@addTextChangedListener // don't move this condition before rollingLunaWithAnnus
 
             c.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
             c.date = c.lunaToDate(c.luna)
@@ -286,6 +290,7 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
                     onDateChanged(); }
                 closeDrawer()
             }
+
             R.id.navSearch -> SearchDialog().show(supportFragmentManager, "srch")
             R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
             R.id.navExport ->

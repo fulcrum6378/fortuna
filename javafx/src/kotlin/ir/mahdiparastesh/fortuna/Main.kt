@@ -1,27 +1,34 @@
 package ir.mahdiparastesh.fortuna
 
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.RomanNumeral
 import javafx.collections.FXCollections
 import javafx.fxml.FXML
+import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import javafx.scene.control.TextFormatter
 import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.Background
+import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.ColumnConstraints
+import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
+import javafx.util.converter.IntegerStringConverter
 import java.time.temporal.ChronoField
+import java.util.function.UnaryOperator
 
 class Main {
     private lateinit var c: Fortuna
     private lateinit var luna: Luna
-    private var numeral: Numeral = RomanNumeral()
-    private var maximumStats: Int? = null
-    private val gridMaxCols = 5
 
     @FXML
     private lateinit var lunaBox: ComboBox<String>
@@ -32,6 +39,7 @@ class Main {
     @FXML
     private lateinit var grid: GridPane
 
+
     /** Called when FXMLLoader.load() is invoked. */
     @Suppress("unused")
     fun initialize() {
@@ -41,14 +49,13 @@ class Main {
         this.c = c
         setupPanel()
         setupGrid()
-        update()
-    }
-
-    fun update() {
-        luna = c.vita[c.luna]
         updatePanel()
         updateGrid()
     }
+
+    /* ---------------------------------PANEL---------------------------------- */
+
+    private var rollingLuna = true  // "true" in order to trick the valueProperty listener
 
     private fun setupPanel() {
         lunaBox.items = FXCollections.observableArrayList<String>(
@@ -57,7 +64,30 @@ class Main {
                 "Tir", "Mordad", "Shahrivar",
                 "Mehr", "Aban", "Azar",
                 "Dey", "Bahman", "Esfand"
-            )
+            )  // TODO localise
+        )
+        lunaBox.valueProperty().addListener {
+            if (rollingLuna) {
+                rollingLuna = false
+                return@addListener; }
+
+            c.luna = "${z(annus.text, 4)}.${z(lunaBox.selectionModel.selectedIndex + 1)}"
+            c.date = c.lunaToDate(c.luna)
+            updateGrid()
+        }
+        annus.textProperty().addListener { observable, oldText, newText ->
+            if (newText.length != 4) return@addListener
+            c.luna = "${z(newText, 4)}.${z(c.date[ChronoField.MONTH_OF_YEAR])}"
+            c.date = c.lunaToDate(c.luna)
+            updateGrid()
+        }
+        annus.textFormatter = TextFormatter<Int?>(
+            IntegerStringConverter(), 0, UnaryOperator { change: TextFormatter.Change? ->
+                val newText = change!!.controlNewText
+                if (newText.length <= 4 && newText.matches("\\d*".toRegex()))
+                    return@UnaryOperator change
+                null
+            }
         )
     }
 
@@ -65,6 +95,12 @@ class Main {
         lunaBox.selectionModel.select(c.date[ChronoField.MONTH_OF_YEAR] - 1)
         annus.text = c.date[ChronoField.YEAR].toString()
     }
+
+    /* ----------------------------------GRID---------------------------------- */
+
+    private var numeral: Numeral? = null
+    private var maximumStats: Int? = null
+    private val gridMaxCols = 5
 
     private fun setupGrid() {
         (0 until gridMaxCols).forEach {
@@ -76,6 +112,10 @@ class Main {
     }
 
     private fun updateGrid() {
+        luna = c.vita[c.luna]
+        numeral = RomanNumeral()  // TODO determine using settings
+        maximumStats = c.maximaForStats(c.date, c.luna)
+
         grid.children.clear()
         for (i in 0..(c.date.lengthOfMonth() - 1)) grid.add(
             createGridItem(i),
@@ -91,7 +131,7 @@ class Main {
 
         return AnchorPane(
             VBox(
-                Label(numeral.output(i + 1)),
+                Label(numeral.write(i + 1)),
                 Label((if (isEstimated) "c. " else "") + score.showScore()),
             ).apply {
                 AnchorPane.setTopAnchor(this, 0.0)
@@ -101,13 +141,26 @@ class Main {
                 alignment = Pos.CENTER
             }
         ).apply {
-            styleClass.add(
-                when {
-                    score != null && score > 0f -> "pleasant"
-                    score != null && score < 0f -> "painful"
-                    else -> "mediocre"
+            val cssClass: String
+            val bgColour: Color
+            when {
+                score != null && score > 0f -> {
+                    cssClass = "pleasant"
+                    bgColour = Color.rgb(76, 175, 80, (score / Vita.MAX_RANGE).toDouble())
                 }
-            )
+
+                score != null && score < 0f -> {
+                    cssClass = "painful"
+                    bgColour = Color.rgb(244, 67, 54, (-score / Vita.MAX_RANGE).toDouble())
+                }
+
+                else -> {
+                    cssClass = "mediocre"
+                    bgColour = Color.TRANSPARENT
+                }
+            }
+            styleClass.add(cssClass)
+            background = Background(BackgroundFill(bgColour, CornerRadii.EMPTY, Insets.EMPTY))
         }
     }
 }
