@@ -205,7 +205,7 @@ class Grid(private val c: Main) : ListAdapter {
         c.c.date.with(ChronoField.DAY_OF_MONTH, i + 1L)
 
     /**
-     * Open an AlertDialog in order to let the user change the score of this day.
+     * Open an [AlertDialog] in order to let the user change the score of this day.
      *
      * @param i day (starting from 0)
      * @param cal the calendar indicating that day
@@ -263,7 +263,7 @@ class Grid(private val c: Main) : ListAdapter {
                 c.m.changingVarVerbum = it.toString()
                 dialogue?.setCancelable(false)
             }
-            setOnTouchListener { v, event -> // scroll inside ScrollView
+            setOnTouchListener { v, event ->  // scroll inside ScrollView
                 var ret = false
                 v.parent.requestDisallowInterceptTouchEvent(true)
                 if ((event.action and MotionEvent.ACTION_MASK) == MotionEvent.ACTION_SCROLL) {

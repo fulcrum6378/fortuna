@@ -15,7 +15,7 @@
 #panel {
 }
 #panelFields {
-    -fx-padding: 40px 0;
+    -fx-padding: 30px 0;
 }
 #panelFields > ComboBox {
     -fx-cursor: hand;
@@ -45,12 +45,27 @@
     -fx-padding: 10px 16px;
     -fx-pref-width: 5em;
 }
+#prev, #next {
+    -fx-background-color: -fx-tc;
+    -fx-background-insets: 10 10 9 10, 0;  /* bottom was initially -1 */
+    -fx-cursor: hand;
+    -fx-min-width: 26px;
+    -fx-max-width: 26px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
+    -fx-shape: "M 0 -3.5 v 7 l 4 -3.5 z";
+}
+#prev {
+    -fx-rotate: 180deg;
+}
+#next {
+}
 
 #grid > AnchorPane {
-    -fx-border-color: -fx-bg;
+    -fx-border-color: #F0F0F0;  /* #252525 in night mode */
     -fx-border-width: 0.5px;
     -fx-cursor: hand;
-    -fx-pref-height: 100px;
+    -fx-min-height: 90px;
     -fx-text-align: center;
 }
 #grid > AnchorPane > VBox > Label {
@@ -71,4 +86,8 @@
 }
 #grid > .painful Label {
     -fx-text-fill: -fx-cop;
+}
+#grid > .today {
+    -fx-border-color: #00000044;  /* #FFFFFF44 in night mode */
+    -fx-border-width: 5px;
 }

@@ -104,10 +104,10 @@ class Main {
 
     private fun setupGrid() {
         (0 until gridMaxCols).forEach {
-            val columnConstraints = ColumnConstraints()
-            columnConstraints.percentWidth = 100.0 / gridMaxCols
-            columnConstraints.hgrow = Priority.ALWAYS
-            grid.columnConstraints.add(columnConstraints)
+            grid.columnConstraints.add(ColumnConstraints().apply {
+                percentWidth = 100.0 / gridMaxCols
+                hgrow = Priority.ALWAYS
+            })
         }
     }
 
@@ -161,6 +161,10 @@ class Main {
             }
             styleClass.add(cssClass)
             background = Background(BackgroundFill(bgColour, CornerRadii.EMPTY, Insets.EMPTY))
+
+            // highlight the cell if it indicates today
+            if (c.luna == c.todayLuna && c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
+                styleClass.add("today")
         }
     }
 }
