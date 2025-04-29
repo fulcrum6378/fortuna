@@ -6,6 +6,7 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.RomanNumeral
 import javafx.collections.FXCollections
+import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.geometry.Insets
 import javafx.geometry.Pos
@@ -13,6 +14,7 @@ import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
@@ -20,21 +22,28 @@ import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.CornerRadii
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.util.converter.IntegerStringConverter
 import java.time.temporal.ChronoField
 import java.util.function.UnaryOperator
 
-class Main {
-    private lateinit var c: Fortuna
+class Main : MainPage {
+    override lateinit var c: Fortuna
     private lateinit var luna: Luna
+
+    @FXML
+    private lateinit var prev: Region
 
     @FXML
     private lateinit var lunaBox: ComboBox<String>
 
     @FXML
     private lateinit var annus: TextField
+
+    @FXML
+    private lateinit var next: Region
 
     @FXML
     private lateinit var grid: GridPane
@@ -58,6 +67,8 @@ class Main {
     private var rollingLuna = true  // "true" in order to trick the valueProperty listener
 
     private fun setupPanel() {
+
+        // lunaBox
         lunaBox.items = FXCollections.observableArrayList<String>(
             listOf(
                 "Farvardin", "Ordibehesht", "Khordad",
@@ -75,6 +86,8 @@ class Main {
             c.date = c.lunaToDate(c.luna)
             updateGrid()
         }
+
+        // annus
         annus.textProperty().addListener { observable, oldText, newText ->
             if (newText.length != 4) return@addListener
             c.luna = "${z(newText, 4)}.${z(c.date[ChronoField.MONTH_OF_YEAR])}"
@@ -89,11 +102,25 @@ class Main {
                 null
             }
         )
+
+        // calendar rollers
+        prev.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(false) }
+        next.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(true) }
+        // TODO create long click handlers
     }
 
-    private fun updatePanel() {
+    override fun updatePanel() {
         lunaBox.selectionModel.select(c.date[ChronoField.MONTH_OF_YEAR] - 1)
         annus.text = c.date[ChronoField.YEAR].toString()
+    }
+
+    override fun moveInYears(to: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDateChanged() {
+        rollingLuna = true
+        super.onDateChanged()
     }
 
     /* ----------------------------------GRID---------------------------------- */
@@ -111,7 +138,7 @@ class Main {
         }
     }
 
-    private fun updateGrid() {
+    override fun updateGrid() {
         luna = c.vita[c.luna]
         numeral = RomanNumeral()  // TODO determine using settings
         maximumStats = c.maximaForStats(c.date, c.luna)

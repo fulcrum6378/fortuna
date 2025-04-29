@@ -69,11 +69,11 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
-import java.time.temporal.ChronoUnit
 import kotlin.math.ceil
 
-class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener {
-    val c: Fortuna by lazy { applicationContext as Fortuna }
+class Main : FragmentActivity(), MainPage,
+    NavigationView.OnNavigationItemSelectedListener {
+    override val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
     var dropbox: Dropbox? = null
@@ -195,14 +195,14 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
             b.annus.blur(c)
             return@setOnEditorActionListener true
         }
-        b.annusUp.setOnClickListener { rollAnnus(1) }
-        b.annusDown.setOnClickListener { rollAnnus(-1) }
-        b.annusUp.setOnLongClickListener { rollAnnus(5); true }
-        b.annusDown.setOnLongClickListener { rollAnnus(-5); true }
-        b.next.setOnClickListener { rollCalendar(true) }
-        b.prev.setOnClickListener { rollCalendar(false) }
-        b.next.setOnLongClickListener { rollCalendar(true, 6); true }
-        b.prev.setOnLongClickListener { rollCalendar(false, 6); true }
+        b.annusUp.setOnClickListener { moveInYears(1) }
+        b.annusDown.setOnClickListener { moveInYears(-1) }
+        b.annusUp.setOnLongClickListener { moveInYears(5); true }
+        b.annusDown.setOnLongClickListener { moveInYears(-5); true }
+        b.next.setOnClickListener { moveInMonths(true) }
+        b.prev.setOnClickListener { moveInMonths(false) }
+        b.next.setOnLongClickListener { moveInMonths(true, 6); true }
+        b.prev.setOnLongClickListener { moveInMonths(false, 6); true }
         b.defVar.setOnClickListener { (b.grid.adapter as? Grid)?.changeVar(-1) }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
@@ -426,16 +426,14 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    /** Updates year and month inputs of the top panel. */
     @SuppressLint("SetTextI18n")
-    private fun updatePanel() {
+    override fun updatePanel() {
         b.annus.setText(c.date[ChronoField.YEAR].toString())
         b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR] - 1)
     }
 
-    /** Refreshes the [Grid] and adjusts its size. */
     @SuppressLint("SetTextI18n")
-    fun updateGrid() {
+    override fun updateGrid() {
         if (b.grid.adapter == null)
             b.grid.adapter = Grid(this)
         else {
@@ -467,27 +465,15 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
         }
     }
 
-    /** Moves the calendar in months for N times. */
-    private fun rollCalendar(forward: Boolean, nTimes: Long = 1L) {
-        c.date =
-            if (forward) c.date.plus(nTimes, ChronoUnit.MONTHS)
-            else c.date.minus(nTimes, ChronoUnit.MONTHS)
-        onDateChanged()
-    }
-
-    /** Updates everything whenever the calendar changes. */
-    fun onDateChanged() {
-        c.luna = c.date.toKey()
+    override fun onDateChanged() {
         rollingLunaWithAnnus = true
         rollingLuna = true
-        updatePanel()
-        updateGrid()
+        super.onDateChanged()
         b.annus.blur(c)
     }
 
-    /** Moves the calendar into a different year. */
     @SuppressLint("SetTextI18n")
-    private fun rollAnnus(to: Int) {
+    override fun moveInYears(to: Int) {
         rollingAnnusItself = true
         b.annus.setText((b.annus.text.toString().toInt() + to).toString())
         b.annus.blur(c)
