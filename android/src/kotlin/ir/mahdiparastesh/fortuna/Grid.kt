@@ -73,9 +73,6 @@ class Grid(private val c: Main) : ListAdapter {
     /** Reference to the [TextView] inside the dialogue of [changeVar] */
     var cvTvSexbook: TextView? = null
 
-    //private val cp: Int by lazy { c.color(com.google.android.material.R.attr.colorPrimary) }
-    //private val cs: Int by lazy { c.color(com.google.android.material.R.attr.colorSecondary) }
-    //cs.red.hexToValue(), cs.green.hexToValue(), cs.blue.hexToValue(),
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
@@ -139,14 +136,14 @@ class Grid(private val c: Main) : ListAdapter {
                 b.dies.setTextColor(cpo)
                 b.variabilis.setTextColor(cpo)
                 b.verbumIcon.setColorFilter(cpo)
-                Color.valueOf(76f, 175f, 80f, score / Vita.MAX_RANGE).toArgb()
+                Color.valueOf(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE).toArgb()
             }
 
             score != null && score < 0f -> {
                 b.dies.setTextColor(cso)
                 b.variabilis.setTextColor(cso)
                 b.verbumIcon.setColorFilter(cso)
-                Color.valueOf(244f, 67f, 54f, -score / Vita.MAX_RANGE).toArgb()
+                Color.valueOf(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE).toArgb()
             }
 
             else -> {

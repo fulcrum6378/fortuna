@@ -24,7 +24,7 @@ import ir.mahdiparastesh.fortuna.util.UiTools
 import java.time.temporal.ChronoField
 
 /**
- * A dialogue doing some statistics.
+ * A dialogue doing some statistics
  *
  * Making statistics in a way that it'll show every year since the minimum scored days till the
  * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
@@ -67,9 +67,6 @@ class StatisticsDialog : BaseDialogue() {
             }
             val bw = WholeBinding.inflate(layoutInflater)
 
-            //val cp = c.getColor(R.color.CP)
-            //val cs = c.getColor(R.color.CS)
-            //cp.red.hexToValue(), cp.green.hexToValue(), cp.blue.hexToValue(),
             val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
             val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
             val monthNames = resources.getStringArray(R.array.luna)
@@ -89,11 +86,11 @@ class StatisticsDialog : BaseDialogue() {
                             setBackgroundColor(
                                 when {
                                     score != null && score > 0f -> Color.valueOf(
-                                        76f, 175f, 80f, score / Vita.MAX_RANGE
+                                        c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE
                                     ).toArgb()
 
                                     score != null && score < 0f -> Color.valueOf(
-                                        244f, 67f, 54f - score / Vita.MAX_RANGE
+                                        c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE
                                     ).toArgb()
 
                                     score != null -> Color.TRANSPARENT

@@ -9,6 +9,13 @@
 
     <!-- Panel -->
     <string name="year">Year</string>
+    <string name="prevDesc">Move to the previous month</string>
+    <string name="nextDesc">Move to the next month</string>
+    <string name="annusUpDesc">Move to the next year</string>
+    <string name="annusDownDesc">Move to the previous year</string>
+    <string name="verbumDesc">Contains descriptions</string>
+
+    <!-- changeVar() -->
     <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
@@ -16,7 +23,7 @@
     <string name="holdLonger">Hold a little longer&#8230;</string>
     <string name="scoreFuture">You don\'t know your future!!!</string>
 
-    <!-- calendar -->
+    <!-- detailDate() -->
     <string name="calIranian">Humanist Iranian</string>
     <string name="calGregorian">Gregorian</string>
     <string name="calIslamic">Islamic</string>
@@ -53,8 +60,8 @@
     <string name="numHieroglyph">Hieroglyph</string>
 
     <!-- drawer -->
-    <string name="navOpen">Open</string>
-    <string name="navClose">Close</string>
+    <string name="navOpen">Open menu</string>
+    <string name="navClose">Close menu</string>
     <string name="navSearch">Search</string>
     <string name="searchInclusive">Inclusive Search</string>
     <string name="foundNothing">Nothing was found!</string>

@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/gridItemHeight"
-    tools:ignore="ContentDescription,MissingConstraints">
+    tools:ignore="MissingConstraints">
 
     <ImageView
         android:id="@+id/verbumIcon"
         style="@style/parentConstraint"
         android:layout_width="@dimen/verbumIconSize"
         android:layout_height="@dimen/verbumIconSize"
+        android:contentDescription="@string/verbumDesc"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.9"
         app:layout_constraintVertical_bias="0.1" />

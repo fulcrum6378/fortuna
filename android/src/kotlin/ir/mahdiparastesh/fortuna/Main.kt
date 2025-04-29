@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -76,6 +77,19 @@ class Main : FragmentActivity(), NavigationView.OnNavigationItemSelectedListener
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
     var dropbox: Dropbox? = null
+
+    val night: Boolean by lazy {
+        resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+    val cp: FloatArray by lazy {
+        if (!night) floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
+        else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
+    }
+    val cs: FloatArray by lazy {
+        if (!night) floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
+        else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
+    }
 
     private var rollingLuna = true  // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false

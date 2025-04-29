@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Main"
-    tools:ignore="ContentDescription,MissingConstraints"
+    tools:ignore="MissingConstraints"
     tools:openDrawer="start">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,6 +70,7 @@
                             android:layout_width="@dimen/verbumIconSize"
                             android:layout_height="@dimen/verbumIconSize"
                             android:layout_marginEnd="10dp"
+                            android:contentDescription="@string/verbumDesc"
                             android:src="@drawable/verbum"
                             android:visibility="gone" />
                     </LinearLayout>
@@ -77,6 +78,7 @@
                     <ImageView
                         android:id="@+id/prev"
                         style="@style/hArrow"
+                        android:contentDescription="@string/prevDesc"
                         android:rotation="90"
                         app:layout_constraintEnd_toStartOf="@id/luna"
                         app:layout_constraintStart_toStartOf="parent" />
@@ -94,6 +96,7 @@
                     <ImageView
                         android:id="@+id/annusUp"
                         style="@style/vArrow"
+                        android:contentDescription="@string/annusUpDesc"
                         android:rotation="180"
                         app:layout_constraintBottom_toTopOf="@id/annus" />
 
@@ -124,6 +127,7 @@
                     <ImageView
                         android:id="@+id/annusDown"
                         style="@style/vArrow"
+                        android:contentDescription="@string/annusDownDesc"
                         app:layout_constraintTop_toBottomOf="@id/annus" />
 
                     <TextView
@@ -143,6 +147,7 @@
                     <ImageView
                         android:id="@+id/next"
                         style="@style/hArrow"
+                        android:contentDescription="@string/nextDesc"
                         android:rotation="-90"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/defVar" />
