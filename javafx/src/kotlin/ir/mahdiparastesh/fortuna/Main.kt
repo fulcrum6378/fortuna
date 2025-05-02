@@ -10,7 +10,9 @@ import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.ButtonType
 import javafx.scene.control.ComboBox
+import javafx.scene.control.Dialog
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
@@ -200,6 +202,14 @@ class Main : MainPage {
             // highlight the cell if it indicates today
             if (c.luna == c.todayLuna && c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
                 styleClass.add("today")
+
+            // clicks
+            onMouseClicked = EventHandler<MouseEvent> { event ->
+                val dialog = Dialog<Variabilis>()
+                dialog.showAndWait()
+                    .filter { it == ButtonType.OK }
+                    .ifPresent { formatSystem() }
+            }
         }
     }
 }
