@@ -34,6 +34,9 @@ class Main : MainPage {
     private lateinit var luna: Luna
 
     @FXML
+    private lateinit var annusUp: Region
+
+    @FXML
     private lateinit var prev: Region
 
     @FXML
@@ -44,6 +47,9 @@ class Main : MainPage {
 
     @FXML
     private lateinit var next: Region
+
+    @FXML
+    private lateinit var annusDown: Region
 
     @FXML
     private lateinit var grid: GridPane
@@ -106,6 +112,8 @@ class Main : MainPage {
         // calendar rollers
         prev.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(false) }
         next.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(true) }
+        annusUp.onMouseClicked = EventHandler<MouseEvent> { event -> moveInYears(1) }
+        annusDown.onMouseClicked = EventHandler<MouseEvent> { event -> moveInYears(-1) }
         // TODO create long click handlers
     }
 
@@ -115,7 +123,7 @@ class Main : MainPage {
     }
 
     override fun moveInYears(to: Int) {
-        TODO("Not yet implemented")
+        annus.text = (annus.text.toInt() + to).toString()
     }
 
     override fun onDateChanged() {

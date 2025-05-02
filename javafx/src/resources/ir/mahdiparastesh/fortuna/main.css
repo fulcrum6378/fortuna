@@ -14,8 +14,14 @@
 
 #panel {
 }
+#panelTop {
+    -fx-padding: 10px 0;
+}
 #panelFields {
-    -fx-padding: 30px 0;
+    -fx-padding: 10px 0;
+}
+#panelBottom {
+    -fx-padding: 10px 0;
 }
 #panelFields > ComboBox {
     -fx-cursor: hand;
@@ -45,7 +51,7 @@
     -fx-padding: 10px 16px;
     -fx-pref-width: 5em;
 }
-#prev, #next {
+#prev, #next, #annusUp, #annusDown {
     -fx-background-color: -fx-tc;
     -fx-background-insets: 10 10 9 10, 0;  /* bottom was initially -1 */
     -fx-cursor: hand;
@@ -59,6 +65,15 @@
     -fx-rotate: 180deg;
 }
 #next {
+}
+.annusNavBias {
+    -fx-pref-width: 19.5em;
+}
+#annusUp {
+    -fx-rotate: -90deg;
+}
+#annusDown {
+    -fx-rotate: 90deg;
 }
 
 #grid > AnchorPane {
