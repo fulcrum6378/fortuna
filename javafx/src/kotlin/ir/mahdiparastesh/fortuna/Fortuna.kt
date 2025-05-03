@@ -25,7 +25,7 @@ class Fortuna : Application(), FortunaContext {
 
 
     override fun start(stage: Stage) {
-        val fxmlLoader = FXMLLoader(Fortuna::class.java.getResource("main.fxml"))
+        val fxmlLoader = FXMLLoader(Main::class.java.getResource("main.fxml"))
         val root = fxmlLoader.load<Parent>()
 
         // prepare the Vita
@@ -37,7 +37,7 @@ class Fortuna : Application(), FortunaContext {
 
         // setup the scene
         val scene = Scene(root, 800.0, 600.0)
-        scene.stylesheets.add(Fortuna::class.java.getResource("main.css")!!.toExternalForm())
+        scene.stylesheets.add(Main::class.java.getResource("main.css")!!.toExternalForm())
         stage.title = "Fortuna"
         stage.scene = scene
         stage.show()

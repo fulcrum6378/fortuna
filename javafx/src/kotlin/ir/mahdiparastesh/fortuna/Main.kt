@@ -8,11 +8,12 @@ import ir.mahdiparastesh.fortuna.util.RomanNumeral
 import javafx.collections.FXCollections
 import javafx.event.EventHandler
 import javafx.fxml.FXML
+import javafx.fxml.FXMLLoader
 import javafx.geometry.Insets
 import javafx.geometry.Pos
-import javafx.scene.control.ButtonType
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Dialog
+import javafx.scene.control.DialogPane
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.control.TextFormatter
@@ -204,12 +205,26 @@ class Main : MainPage {
                 styleClass.add("today")
 
             // clicks
-            onMouseClicked = EventHandler<MouseEvent> { event ->
-                val dialog = Dialog<Variabilis>()
-                dialog.showAndWait()
-                    .filter { it == ButtonType.OK }
-                    .ifPresent { formatSystem() }
-            }
+            onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(i + 1) }
         }
+    }
+
+    fun changeVar(day: Int) {
+        val dialog = Dialog<Variabilis>()
+        dialog.title = "Variabilis"
+
+        val fxmlLoader = FXMLLoader(Variabilis::class.java.getResource("variabilis.fxml"))
+        val root = fxmlLoader.load<DialogPane>()
+        root.stylesheets.add(
+            Variabilis::class.java.getResource("variabilis.css")!!.toExternalForm()
+        )
+
+        dialog.dialogPane = root
+        dialog.headerText =  // set this after setting the DialogPane
+            if (day != -1) "${c.luna}.${z(day)}" else "DEFAULT"
+
+        dialog.showAndWait()
+        /*.filter { it == ButtonType.OK }
+        .ifPresent { formatSystem() }*/
     }
 }

@@ -1,0 +1,18 @@
+#varPicker {
+    -fx-cursor: hand;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-max-width: 9em;
+    -fx-min-width: 9em;
+    -fx-max-height: 3em;
+    -fx-min-height: 3em;
+    -fx-padding: 5px 0;
+}
+#varPicker .list-view .list-cell {
+    -fx-cursor: hand;
+    -fx-text-fill: #777;
+}
+
+/*ButtonBar {
+      cursor: hand;
+  }*/

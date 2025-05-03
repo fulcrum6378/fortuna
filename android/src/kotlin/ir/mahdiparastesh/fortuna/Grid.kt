@@ -202,14 +202,14 @@ class Grid(private val c: Main) : ListAdapter {
         c.c.date.with(ChronoField.DAY_OF_MONTH, i + 1L)
 
     /**
-     * Open an [AlertDialog] in order to let the user change the score of this day.
+     * Opens an [AlertDialog] in order to let the user change the score of this day.
      *
      * @param i day (starting from 0)
-     * @param cal the calendar indicating that day
+     * @param date the calendar indicating that day
      */
     @SuppressLint("ClickableViewAccessibility")
     @Suppress("KotlinConstantConditions")
-    fun changeVar(i: Int, cal: ChronoLocalDate = c.c.date) {
+    fun changeVar(i: Int, date: ChronoLocalDate = c.c.date) {
         if (c.m.changingVar != null) return
         c.m.changingVar = i
         val bv = VariabilisBinding.inflate(c.layoutInflater)
@@ -275,7 +275,7 @@ class Grid(private val c: Main) : ListAdapter {
         // Sexbook records for this day
         cvTvSexbook = bv.sexbook
         if (i != -1) {
-            bv.sexbook.appendCrushDates(i.toShort(), cal[ChronoField.YEAR].toShort())
+            bv.sexbook.appendCrushDates(i.toShort(), date[ChronoField.YEAR].toShort())
             bv.sexbook.appendSexReports(i)
         }
 
@@ -306,10 +306,10 @@ class Grid(private val c: Main) : ListAdapter {
         }.show()
 
         if (i > -1) {
-            val isPast = cal.isBefore(c.c.todayDate) &&
-                    c.c.todayDate.until(cal, ChronoUnit.DAYS) >= 6
-            val isFuture = cal.isAfter(c.c.todayDate) &&
-                    c.c.todayDate.until(cal, ChronoUnit.DAYS) >= 1
+            val isPast = date.isBefore(c.c.todayDate) &&
+                    c.c.todayDate.until(date, ChronoUnit.DAYS) >= 6
+            val isFuture = date.isAfter(c.c.todayDate) &&
+                    c.c.todayDate.until(date, ChronoUnit.DAYS) >= 1
             if ((isPast && luna.diebus[i] != null) || isFuture) {
                 bv.picker.isEnabled = false
                 bv.picker.alpha = 0.4f

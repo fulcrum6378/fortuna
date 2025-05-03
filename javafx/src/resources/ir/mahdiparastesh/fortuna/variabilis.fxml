@@ -2,21 +2,26 @@
 
 <?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ButtonType?>
-<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
 
 <DialogPane
     xmlns:fx="http://javafx.com/fxml"
     fx:controller="ir.mahdiparastesh.fortuna.Variabilis">
 
-    <headerText>Variabilis</headerText>
-
     <content>
-        <GridPane hgap="10" vgap="10">
+        <StackPane>
+
+            <ComboBox
+                StackPane.alignment="BOTTOM_RIGHT"
+                fx:id="varPicker" />
+        </StackPane>
+
+        <!--<GridPane hgap="10" vgap="10">
             <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="Number:" />
             <Spinner GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="numberPicker" />
 
@@ -25,11 +30,13 @@
 
             <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="Small Field:" />
             <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="smallTextField" />
-        </GridPane>
+        </GridPane>-->
     </content>
 
     <buttonTypes>
-        <ButtonType buttonData="OK_DONE" text="OK" />
+        <ButtonType buttonData="LEFT" text="Clear" />
+
         <ButtonType buttonData="CANCEL_CLOSE" text="Cancel" />
+        <ButtonType buttonData="APPLY" text="Save" />
     </buttonTypes>
 </DialogPane>
