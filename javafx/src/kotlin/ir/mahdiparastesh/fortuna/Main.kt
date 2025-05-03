@@ -53,6 +53,9 @@ class Main : MainPage {
     private lateinit var annus: TextField
 
     @FXML
+    private lateinit var defVar: Label
+
+    @FXML
     private lateinit var next: Region
 
     @FXML
@@ -116,6 +119,9 @@ class Main : MainPage {
             }
         )
 
+        // default variabilis for the entire luna
+        defVar.onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(-1) }
+
         // calendar rollers
         prev.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(false) }
         next.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(true) }
@@ -158,6 +164,10 @@ class Main : MainPage {
         numeral = RomanNumeral()  // TODO determine using settings
         maximumStats = c.maximaForStats(c.date, c.luna)
 
+        // update headers in Panel
+        defVar.text = luna.default.showScore()
+
+        // update Grid itself
         grid.children.clear()
         for (i in 0..(c.date.lengthOfMonth() - 1)) grid.add(
             createGridItem(i),
@@ -213,6 +223,11 @@ class Main : MainPage {
         }
     }
 
+    /**
+     * Opens a [Dialog] in order to let the user change the score of this day.
+     *
+     * @param i day (starting from 0)
+     */
     fun changeVar(i: Int) {
         val dialog = Dialog<Variabilis.Result>()
         dialog.title = "Variabilis"

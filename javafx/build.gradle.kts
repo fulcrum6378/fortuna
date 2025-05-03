@@ -7,7 +7,7 @@ plugins {
 kotlin { jvmToolchain(23) }
 
 group = "ir.mahdiparastesh"
-version = "0.9.5"
+version = "1.0.0"
 
 sourceSets.getByName("main") {
     kotlin.srcDirs("src/kotlin")

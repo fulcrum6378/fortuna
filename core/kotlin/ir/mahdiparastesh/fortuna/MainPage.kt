@@ -11,10 +11,10 @@ import java.time.temporal.ChronoUnit
 interface MainPage {
     val c: FortunaContext
 
-    /** Updates the year and month inputs of Panel. */
+    /** Updates only the year and month inputs of Panel. */
     fun updatePanel()
 
-    /** Refreshes Grid and adjusts its size. */
+    /** Refreshes Grid and its header contents which reside in Panel. ALso adjusts Grid's size. */
     fun updateGrid()
 
     /** Adds N months to or subtracts them from the [FortunaContext.date]. */

@@ -3,12 +3,12 @@
 #panel {
 }
 #panelTop {
-    -fx-padding: 10px 0;
+    -fx-padding: 9px 0;
 }
 #panelFields {
 }
 #panelBottom {
-    -fx-padding: 10px 0;
+    -fx-padding: 9px 0;
 }
 #lunaBox {
     -fx-font-size: 18px;
@@ -26,6 +26,14 @@
     -fx-padding: 10px 16px;
     -fx-pref-width: 5em;
 }
+#defVar {
+    -fx-alignment: center;
+    -fx-cursor: hand;
+    -fx-font-size: 18px;
+    -fx-min-width: 56px;
+    -fx-max-width: 56px;
+    -fx-padding: 10px;
+}
 #prev, #next, #annusUp, #annusDown {
     -fx-background-color: -fx-tc;
     -fx-background-insets: 10 10 9 10, 0;  /* bottom was initially -1 */
@@ -42,7 +50,7 @@
 #next {
 }
 .annusNavBias {
-    -fx-pref-width: 19.5em;
+    -fx-pref-width: 10.8em;
 }
 #annusUp {
     -fx-rotate: -90deg;

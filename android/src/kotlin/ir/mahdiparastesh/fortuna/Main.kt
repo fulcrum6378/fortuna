@@ -71,8 +71,8 @@ import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 import kotlin.math.ceil
 
-class Main : FragmentActivity(), MainPage,
-    NavigationView.OnNavigationItemSelectedListener {
+class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelectedListener {
+
     override val c: Fortuna by lazy { applicationContext as Fortuna }
     val b: MainBinding by lazy { MainBinding.inflate(layoutInflater) }
     val m: Model by viewModels()
