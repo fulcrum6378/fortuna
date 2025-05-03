@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.fortuna
 
 import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toVariabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
@@ -11,6 +12,8 @@ import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
 import javafx.geometry.Insets
 import javafx.geometry.Pos
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.ButtonType
 import javafx.scene.control.ComboBox
 import javafx.scene.control.Dialog
 import javafx.scene.control.DialogPane
@@ -28,6 +31,7 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import javafx.util.Callback
 import javafx.util.converter.IntegerStringConverter
 import java.time.temporal.ChronoField
 import java.util.function.UnaryOperator
@@ -205,26 +209,45 @@ class Main : MainPage {
                 styleClass.add("today")
 
             // clicks
-            onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(i + 1) }
+            onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(i) }
         }
     }
 
-    fun changeVar(day: Int) {
-        val dialog = Dialog<Variabilis>()
+    fun changeVar(i: Int) {
+        val dialog = Dialog<Variabilis.Result>()
         dialog.title = "Variabilis"
 
+        // load the layout and apply its CSS on it
         val fxmlLoader = FXMLLoader(Variabilis::class.java.getResource("variabilis.fxml"))
         val root = fxmlLoader.load<DialogPane>()
         root.stylesheets.add(
             Variabilis::class.java.getResource("variabilis.css")!!.toExternalForm()
         )
 
+        // prepare the controller
+        val variabilis = fxmlLoader.getController<Variabilis>()
+        variabilis.prepare(
+            (if (i != -1) luna[i]?.toVariabilis() else null) ?: luna.default?.toVariabilis() ?: 6,
+            (if (i != -1) luna.emojis[i] else luna.emoji)?.toString() ?: "",
+            (if (i != -1) luna.verba[i] else luna.verbum) ?: ""
+        )
+
+        // attach the layout to the dialog
         dialog.dialogPane = root
         dialog.headerText =  // set this after setting the DialogPane
-            if (day != -1) "${c.luna}.${z(day)}" else "DEFAULT"
+            if (i != -1) "${c.luna}.${z(i + 1)}" else "DEFAULT"
 
-        dialog.showAndWait()
-        /*.filter { it == ButtonType.OK }
-        .ifPresent { formatSystem() }*/
+        // display the dialog and handle its result
+        dialog.resultConverter = Callback<ButtonType, Variabilis.Result> { buttonType ->
+            if (buttonType.buttonData != ButtonBar.ButtonData.CANCEL_CLOSE)
+                variabilis.result(buttonType.buttonData == ButtonBar.ButtonData.APPLY)
+            else null
+        }
+        dialog.showAndWait().ifPresent { result ->
+            if (result.saveOrDelete)
+                saveDies(luna, i, result.score.toFloat(), result.emoji, result.verbum)
+            else
+                saveDies(luna, i, null, null, null)
+        }
     }
 }

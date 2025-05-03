@@ -1,0 +1,30 @@
+* {
+    -fx-cp: #4CAF50;
+    -fx-cs: #F44336;
+    -fx-cop: #FFF;
+    -fx-bg: #FFF;
+    -fx-tc: #777;
+
+    -fx-text-fill: -fx-tc;
+}
+
+#root {
+    -fx-background-color: -fx-bg;
+}
+
+.flat {
+    -fx-background-color: transparent;
+}
+
+ComboBox {
+    -fx-cursor: hand;
+}
+ComboBox .list-view .list-cell {
+    -fx-cursor: hand;
+}
+ComboBox .list-view .list-cell:selected {
+    -fx-font-weight: bold;
+}
+ComboBox .list-view .list-cell:selected, ComboBox .list-view .list-cell:hover {
+    -fx-text-fill: -fx-cop;
+}

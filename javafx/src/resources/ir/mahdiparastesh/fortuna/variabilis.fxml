@@ -8,29 +8,43 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
 <DialogPane
     xmlns:fx="http://javafx.com/fxml"
-    fx:controller="ir.mahdiparastesh.fortuna.Variabilis">
+    fx:controller="ir.mahdiparastesh.fortuna.Variabilis"
+    fx:id="root">
 
     <content>
-        <StackPane>
+        <VBox>
 
-            <ComboBox
-                StackPane.alignment="BOTTOM_RIGHT"
-                fx:id="varPicker" />
-        </StackPane>
+            <StackPane>
 
-        <!--<GridPane hgap="10" vgap="10">
-            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="Number:" />
-            <Spinner GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="numberPicker" />
+                <VBox
+                    StackPane.alignment="CENTER"
+                    alignment="CENTER"
+                    fx:id="varPickerContainer">
 
-            <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="Description:" />
-            <TextArea GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="descriptionField" />
+                    <ComboBox
+                        styleClass="flat"
+                        fx:id="varPicker" />
+                </VBox>
 
-            <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="Small Field:" />
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="smallTextField" />
-        </GridPane>-->
+                <TextField
+                    StackPane.alignment="BOTTOM_LEFT"
+                    promptText="😃"
+                    styleClass="flat"
+                    fx:id="emoji" />
+            </StackPane>
+
+            <VBox alignment="CENTER">
+
+                <TextArea
+                    prefRowCount="5"
+                    wrapText="true"
+                    fx:id="verbum" />
+            </VBox>
+        </VBox>
     </content>
 
     <buttonTypes>

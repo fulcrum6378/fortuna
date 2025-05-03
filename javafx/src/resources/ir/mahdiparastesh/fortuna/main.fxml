@@ -42,10 +42,13 @@
 
                     <Region fx:id="prev" />
 
-                    <ComboBox fx:id="lunaBox" />
+                    <ComboBox
+                        styleClass="flat"
+                        fx:id="lunaBox" />
 
                     <TextField
                         promptText="Year"
+                        styleClass="flat"
                         fx:id="annus" />
 
                     <Region fx:id="next" />

@@ -1,16 +1,4 @@
-* {
-    -fx-cp: #4CAF50;
-    -fx-cs: #F44336;
-    -fx-cop: #FFF;
-    -fx-bg: #FFF;
-    -fx-tc: #777;
-
-    -fx-text-fill: -fx-tc;
-}
-
-#root {
-    -fx-background-color: -fx-bg;
-}
+@import "global.css";
 
 #panel {
 }
@@ -18,34 +6,21 @@
     -fx-padding: 10px 0;
 }
 #panelFields {
-    -fx-padding: 5px 0;
 }
 #panelBottom {
     -fx-padding: 10px 0;
 }
-#panelFields > ComboBox {
-    -fx-cursor: hand;
-}
 #lunaBox {
-    -fx-background-color: transparent;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-padding: 4px 8px;
 }
 #lunaBox .list-view .list-cell {
-    -fx-cursor: hand;
     -fx-padding: 3px 16px;
     -fx-font-weight: normal;
 }
-#lunaBox .list-view .list-cell:selected {
-    -fx-font-weight: bold;
-}
-#lunaBox .list-view .list-cell:selected, #lunaBox .list-view .list-cell:hover {
-    -fx-text-fill: -fx-cop;
-}
 #annus {
     -fx-alignment: center;
-    -fx-background-color: transparent;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
     -fx-padding: 10px 16px;

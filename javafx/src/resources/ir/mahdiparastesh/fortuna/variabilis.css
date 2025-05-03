@@ -1,16 +1,33 @@
+@import "global.css";
+
+#varPickerContainer {
+    -fx-padding: 2em 0 2em 3.85em;
+}
 #varPicker {
     -fx-cursor: hand;
-    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-max-width: 9em;
-    -fx-min-width: 9em;
+    -fx-font-size: 22px;
+    -fx-max-width: 6em;
+    -fx-min-width: 6em;
     -fx-max-height: 3em;
     -fx-min-height: 3em;
-    -fx-padding: 5px 0;
+}
+/*#varPicker > .list-cell {
+    -fx-font-weight: bold;
+}*/
+#varPicker .list-cell {
+    -fx-alignment: center;
 }
 #varPicker .list-view .list-cell {
-    -fx-cursor: hand;
-    -fx-text-fill: #777;
+    -fx-font-size: 18px;
+}
+#emoji {
+    -fx-font-size: 21px;
+    -fx-max-width: 3em;
+}
+#verbum {
+    -fx-max-width: 21em;
+    /*-fx-padding: 2em 2em;*/
 }
 
 /*ButtonBar {

@@ -479,12 +479,6 @@ class Main : FragmentActivity(), MainPage,
         b.annus.blur(c)
     }
 
-    fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {
-        luna.set(i, score, emoji, verbum)
-        c.vita.save()
-        updateGrid()
-    }
-
     /** Proper implementation of vibration in across different supported APIs */
     @Suppress("DEPRECATION")
     fun shake(dur: Long = 40L) {

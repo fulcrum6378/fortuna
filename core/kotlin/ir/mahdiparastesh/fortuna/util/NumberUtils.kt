@@ -28,6 +28,12 @@ object NumberUtils {
 
     fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
 
+    /** Converts a number picker integer into a Fortuna score. */
+    fun Int.toScore() = -(toFloat() - 6f) / 2f
+
+    /** Converts a Fortuna score into a number picker integer. */
+    fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
+
     /**
      * Groups the digits of a number triply (both integral and fractional ones).
      * e.g. 6401 -> 6,401 or 1234.5678 -> 1,234.567,8

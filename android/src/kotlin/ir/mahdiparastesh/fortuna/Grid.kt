@@ -38,6 +38,8 @@ import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toVariabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
@@ -338,12 +340,6 @@ class Grid(private val c: Main) : ListAdapter {
             }
         }
     }
-
-    /** Converts a NumberPicker integer into a Fortuna score. */
-    private fun Int.toScore() = -(toFloat() - 6f) / 2f
-
-    /** Converts a Fortuna score into a NumberPicker integer. */
-    private fun Float.toVariabilis() = (-(this * 2f) + 6f).toInt()
 
     /**
      * Elaborates birthdays and other special dates related to crushes imported from the Sexbook app
