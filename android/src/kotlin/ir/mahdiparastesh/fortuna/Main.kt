@@ -40,7 +40,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
-import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
@@ -49,6 +48,7 @@ import ir.mahdiparastesh.fortuna.sect.SearchDialog
 import ir.mahdiparastesh.fortuna.sect.StatisticsDialog
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.Dropbox
+import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
@@ -441,7 +441,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             b.grid.invalidateViews()
         }
         (b.grid.adapter as Grid).also { grid ->
-            b.defVar.text = grid.luna.default.showScore()
+            b.defVar.text = grid.luna.default.displayScore(true)
             b.lunaMean.text = "x̄: " + grid.luna.mean(grid.maximumStats ?: 0).groupDigits(6)
             b.lunaSize.text = UiTools.showBytes(this@Main, grid.luna.size)
             b.lunaSize.isInvisible = grid.luna.size == 0L

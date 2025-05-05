@@ -1,6 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
-import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toVariabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
@@ -165,7 +165,7 @@ class Main : MainPage {
         maximumStats = c.maximaForStats(c.date, c.luna)
 
         // update headers in Panel
-        defVar.text = luna.default.showScore()
+        defVar.text = luna.default.displayScore(true)
 
         // update Grid itself
         grid.children.clear()
@@ -184,7 +184,7 @@ class Main : MainPage {
         return AnchorPane(
             VBox(
                 Label(numeral.write(i + 1)),
-                Label((if (isEstimated) "c. " else "") + score.showScore()),
+                Label((if (isEstimated) "c. " else "") + score.displayScore(false)),
             ).apply {
                 AnchorPane.setTopAnchor(this, 0.0)
                 AnchorPane.setRightAnchor(this, 0.0)

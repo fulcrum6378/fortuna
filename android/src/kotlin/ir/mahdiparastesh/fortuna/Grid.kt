@@ -7,7 +7,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.database.DataSetObserver
 import android.graphics.Color
-import android.icu.text.DateFormatSymbols
 import android.os.Build
 import android.provider.CalendarContract
 import android.text.Editable
@@ -31,11 +30,11 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.chrono.IranianChronology
-import ir.mahdiparastesh.fortuna.Vita.Companion.showScore
 import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
+import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toScore
@@ -120,7 +119,7 @@ class Grid(private val c: Main) : ListAdapter {
         val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
         if (enlarge) b.dies.textSize =
             (b.dies.textSize / c.resources.displayMetrics.density) * 1.75f
-        b.variabilis.text = (if (isEstimated) "c. " else "") + score.showScore()
+        b.variabilis.text = (if (isEstimated) "c. " else "") + score.displayScore(false)
 
         // icons
         (luna.verba[i]?.isNotBlank() == true).also { show ->
@@ -227,7 +226,7 @@ class Grid(private val c: Main) : ListAdapter {
                 ?: (if (i != -1) luna[i]?.toVariabilis() else null)
                         ?: luna.default?.toVariabilis() ?: 6
             wrapSelectorWheel = false
-            setFormatter { it.toScore().showScore() }
+            setFormatter { it.toScore().displayScore(false) }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 textColor = c.color(android.R.attr.textColor)
                 textSize = c.resources.displayMetrics.density * 25f
@@ -309,7 +308,7 @@ class Grid(private val c: Main) : ListAdapter {
 
         if (i > -1) {
             val isPast = date.isBefore(c.c.todayDate) &&
-                    c.c.todayDate.until(date, ChronoUnit.DAYS) >= 6
+                    c.c.todayDate.until(date, ChronoUnit.DAYS) < -7
             val isFuture = date.isAfter(c.c.todayDate) &&
                     c.c.todayDate.until(date, ChronoUnit.DAYS) >= 1
             if ((isPast && luna.diebus[i] != null) || isFuture) {
@@ -318,7 +317,7 @@ class Grid(private val c: Main) : ListAdapter {
                 bv.lock.isVisible = true
                 if (isFuture)
                     bv.lock.setOnClickListener(LimitedToastAlert(c, R.string.scoreFuture))
-                else { // obviously is past
+                else {  // is the past
                     bv.lock.setOnClickListener(LimitedToastAlert(c, R.string.holdLonger))
                     bv.lock.setOnLongClickListener {
                         bv.lock.isVisible = false
@@ -441,18 +440,19 @@ class Grid(private val c: Main) : ListAdapter {
      * difference from today inside an AlertDialog.
      *
      * @param i day
-     * @param cal the calendar indicating that day
+     * @param date the calendar indicating that day
      */
-    fun detailDate(i: Int, cal: ChronoLocalDate) {
+    fun detailDate(i: Int, date: ChronoLocalDate) {
         if (c.m.showingDate != null) return
         c.m.showingDate = i
         MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                "${c.c.luna}.${z(i + 1)} - " + DateFormatSymbols.getInstance(Locale.UK)
-                    .weekdays[cal[ChronoField.DAY_OF_WEEK] - 1]
+                "${c.c.luna}.${z(i + 1)} - " +
+                        c.resources.getStringArray(R.array.weekDays)[
+                            date[ChronoField.DAY_OF_WEEK] - 1]
             )
             setMessage(StringBuilder().apply {
-                val epochDay = cal.toEpochDay()
+                val epochDay = date.toEpochDay()
                 for (oc in c.c.otherChronologies()) {
                     val d = try {
                         oc.dateEpochDay(epochDay)
@@ -486,7 +486,7 @@ class Grid(private val c: Main) : ListAdapter {
                                 d.text.toString().toInt()
                             )
                             c.m.compareDatesWith = dat
-                            dateComparison(cal, dat)
+                            dateComparison(date, dat)
                         } catch (_: DateTimeException) {
                             result.isVisible = false
                             ""
@@ -512,7 +512,7 @@ class Grid(private val c: Main) : ListAdapter {
                         CalendarContract.CONTENT_URI.buildUpon()
                             .appendPath("time")
                             .appendEncodedPath(
-                                (cal.atTime(LocalTime.of(0, 0, 0))
+                                (date.atTime(LocalTime.of(0, 0, 0))
                                     .toEpochSecond(OffsetDateTime.now().offset) * 1000L)
                                     .toString()
                             )

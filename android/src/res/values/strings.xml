@@ -15,7 +15,7 @@
     <string name="annusDownDesc">Move to the previous year</string>
     <string name="verbumDesc">Contains descriptions</string>
 
-    <!-- changeVar() -->
+    <!-- Variabilis -->
     <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
@@ -48,6 +48,15 @@
     <string name="difBefore">%s before that time</string>
     <string name="difAfter">%s after that time</string>
     <string name="difSep" translatable="false">,&#160;</string>
+    <string-array name="weekDays">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
 
     <!-- Numerals -->
     <string name="numerals">Numerals</string>

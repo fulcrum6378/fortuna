@@ -6,6 +6,9 @@ import java.time.temporal.ChronoField
 object NumberUtils {
     const val A_DAY = 86400000L
 
+    fun Float?.displayScore(isMean: Boolean): String =
+        if (this != 0f) (this?.toString() ?: (if (!isMean) "?" else "_")) else "0"
+
     /**
      * Fills a String with a number and zeroes before it. (e.g. 2 -> "02")
      *

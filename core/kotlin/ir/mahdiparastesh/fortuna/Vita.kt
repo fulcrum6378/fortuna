@@ -151,16 +151,14 @@ class Vita(
     companion object {
         const val MAX_RANGE = 3f
 
-        // String Extensions
-        private fun String.loadVitaText() = replace("\\n", "\n")
+        private fun String.loadVitaText() =
+            replace("\\n", "\n")
 
-        fun String.saveVitaText() = replace("\n", "\\n")
+        private fun String.saveVitaText() =
+            replace("\n", "\\n")
 
-
-        // Float Extensions
-        fun Float?.showScore(): String = if (this != 0f) (this?.toString() ?: "_") else "0"
-
-        fun Float.writeScore(): String = if (this % 1f == 0f) toInt().toString() else toString()
+        private fun Float.writeScore(): String =
+            if (this % 1f == 0f) toInt().toString() else toString()
     }
 }
 
