@@ -1,0 +1,3 @@
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/rota_fortunae"
+    android:inset="23%" />

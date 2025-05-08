@@ -20,7 +20,7 @@
     <style name="Theme.Fortuna" parent="Theme.Fortuna.Base">
         <item name="colorPrimary">@color/CP</item>
         <item name="colorPrimaryVariant">#444CAF50</item>
-        <item name="colorOnPrimary">#FFF</item>
+        <item name="colorOnPrimary">@color/BG</item>
         <item name="colorSecondary">@color/CS</item>
         <item name="colorSecondaryVariant">#44F44336</item>
         <item name="colorOnSecondary">?attr/colorOnPrimary</item>
@@ -89,6 +89,7 @@
     <style name="ShapeAppearance_Fortuna_Nav">
         <item name="cornerFamilyBottomRight">cut</item>
         <item name="cornerFamilyTopRight">cut</item>
+        <item name="shapeCornerFamily">cut</item>
         <item name="cornerSizeBottomRight">@dimen/largeCornerSize</item>
         <item name="cornerSizeTopRight">@dimen/largeCornerSize</item>
     </style>
