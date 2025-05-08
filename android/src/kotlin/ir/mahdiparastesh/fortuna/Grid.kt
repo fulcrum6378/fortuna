@@ -120,6 +120,7 @@ class Grid(private val c: Main) : ListAdapter {
         if (enlarge) b.dies.textSize =
             (b.dies.textSize / c.resources.displayMetrics.density) * 1.75f
         b.variabilis.text = (if (isEstimated) "c. " else "") + score.displayScore(false)
+        b.variabilis.alpha = if (score != null) 1f else .6f
 
         // icons
         (luna.verba[i]?.isNotBlank() == true).also { show ->
