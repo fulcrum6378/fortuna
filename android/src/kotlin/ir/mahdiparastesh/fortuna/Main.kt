@@ -2,8 +2,6 @@ package ir.mahdiparastesh.fortuna
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -231,10 +229,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         }
 
         // Nyx
-        (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(Nyx.CHANNEL)
-        Nyx.alarm(c) // Nyx.test(c)
+        Nyx.cancelNotification(c)
+        Nyx.alarm(c)
+        //Nyx.test(c)
 
-        // background IO tasks
+        // miscellaneous background IO tasks
         CoroutineScope(Dispatchers.IO).launch {
 
             // load all emojis for input text filtering
@@ -272,7 +271,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
 
-        // miscellaneous
+        // resolve new intents
         addOnNewIntentListener { resolveIntent(it) }
     }
 
@@ -335,20 +334,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     /** Requests all the required permissions. (currently only for notifications in Android 13+) */
-    private val reqPermLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (!isGranted) return@registerForActivityResult
-        (c.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).apply {
-            cancel(Nyx.CHANNEL)
-            createNotificationChannel(
-                NotificationChannel(
-                    Nyx.REMIND, c.getString(R.string.ntfReminderTitle),
-                    NotificationManager.IMPORTANCE_LOW
-                ).apply { description = getString(R.string.ntfReminderDesc) }
-            )
-        }
-    }
+    private val reqPermLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     /** Invoked when a file is ready to be exported. */
     private val exportLauncher: ActivityResultLauncher<Intent> =
