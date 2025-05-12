@@ -5,182 +5,181 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Main"
-    tools:ignore="MissingConstraints"
-    tools:openDrawer="start">
+    tools:ignore="MissingConstraints">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/body"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroller"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_constraintTop_toTopOf="parent"
-            app:menu="@menu/empty"
-            app:title="@string/app_name"
-            app:titleTextAppearance="@style/TextAppearance.Fortuna.Toolbar"
-            app:titleTextColor="?attr/colorOnPrimary" />
+            android:layout_height="wrap_content">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scroller"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toolbar">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="88dp"
+                android:paddingTop="24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:menu="@menu/empty"
+                app:title="@string/app_name"
+                app:titleTextAppearance="@style/TextAppearance.Fortuna.Toolbar"
+                app:titleTextColor="?android:attr/textColor" />
 
-            <LinearLayout
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/shadow"
+                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/panel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="9dp"
+                app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/panel"
-                    android:layout_width="match_parent"
+                <!--<View
+                    style="@style/tbShadow"
+                    app:layout_constraintTop_toTopOf="parent" />-->
+
+                <LinearLayout
+                    android:id="@+id/icons"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="9dp">
-
-                    <LinearLayout
-                        android:id="@+id/icons"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginEnd="20dp"
-                        android:orientation="horizontal"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:ignore="UseCompoundDrawables">
-
-                        <TextView
-                            android:id="@+id/emoji"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="10dp"
-                            android:textSize="@dimen/emojiOutputTextSize"
-                            android:visibility="gone"
-                            tools:ignore="SpUsage" />
-
-                        <ImageView
-                            android:id="@+id/verbumIcon"
-                            android:layout_width="@dimen/verbumIconSize"
-                            android:layout_height="@dimen/verbumIconSize"
-                            android:layout_marginEnd="10dp"
-                            android:contentDescription="@string/verbumDesc"
-                            android:src="@drawable/verbum"
-                            android:visibility="gone" />
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/prev"
-                        style="@style/hArrow"
-                        android:contentDescription="@string/prevDesc"
-                        android:rotation="90"
-                        app:layout_constraintEnd_toStartOf="@id/luna"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <Spinner
-                        android:id="@+id/luna"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/annus"
-                        app:layout_constraintHorizontal_chainStyle="spread"
-                        app:layout_constraintStart_toEndOf="@id/prev"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <ImageView
-                        android:id="@+id/annusUp"
-                        style="@style/vArrow"
-                        android:contentDescription="@string/annusUpDesc"
-                        android:rotation="180"
-                        app:layout_constraintBottom_toTopOf="@id/annus" />
-
-                    <EditText
-                        android:id="@+id/annus"
-                        android:layout_width="61sp"
-                        android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:focusedByDefault="false"
-                        android:gravity="center"
-                        android:hint="@string/year"
-                        android:imeOptions="actionGo"
-                        android:importantForAutofill="no"
-                        android:inputType="number|numberSigned"
-                        android:maxLength="5"
-                        android:paddingVertical="10dp"
-                        android:textColor="?android:attr/textColor"
-                        android:textSize="19sp"
-                        android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/defVar"
-                        app:layout_constraintStart_toEndOf="@id/luna"
-                        app:layout_constraintTop_toTopOf="parent" />
-                    <!-- I wonder why android:textColor="?android:attr/textColor" is necessary?!? -->
-                    <!-- "ems" means "as long as <N> "M" characters wide"; which is the widest character. -->
-                    <!-- android:maxEms="5" android:minEms="4" -->
-
-                    <ImageView
-                        android:id="@+id/annusDown"
-                        style="@style/vArrow"
-                        android:contentDescription="@string/annusDownDesc"
-                        app:layout_constraintTop_toBottomOf="@id/annus" />
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="UseCompoundDrawables">
 
                     <TextView
-                        android:id="@+id/defVar"
-                        android:layout_width="56sp"
+                        android:id="@+id/emoji"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/button_small"
-                        android:gravity="center_horizontal"
-                        android:padding="10sp"
-                        android:textAlignment="center"
-                        android:textSize="18sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/next"
-                        app:layout_constraintStart_toEndOf="@id/annus"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:layout_marginEnd="10dp"
+                        android:textSize="@dimen/emojiOutputTextSize"
+                        android:visibility="gone"
+                        tools:ignore="SpUsage" />
 
                     <ImageView
-                        android:id="@+id/next"
-                        style="@style/hArrow"
-                        android:contentDescription="@string/nextDesc"
-                        android:rotation="-90"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/defVar" />
+                        android:id="@+id/verbumIcon"
+                        android:layout_width="@dimen/verbumIconSize"
+                        android:layout_height="@dimen/verbumIconSize"
+                        android:layout_marginEnd="10dp"
+                        android:contentDescription="@string/verbumDesc"
+                        android:src="@drawable/verbum"
+                        android:visibility="gone" />
+                </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/lunaMean"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:textSize="14sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
+                <ImageView
+                    android:id="@+id/prev"
+                    style="@style/hArrow"
+                    android:contentDescription="@string/prevDesc"
+                    android:rotation="90"
+                    app:layout_constraintEnd_toStartOf="@id/luna"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <TextView
-                        android:id="@+id/lunaSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:textSize="14sp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                <Spinner
+                    android:id="@+id/luna"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/annus"
+                    app:layout_constraintHorizontal_chainStyle="spread"
+                    app:layout_constraintStart_toEndOf="@id/prev"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <GridView
-                    android:id="@+id/grid"
-                    android:layout_width="match_parent"
-                    android:layout_height="766dp"
-                    android:nestedScrollingEnabled="false"
-                    android:numColumns="@integer/gridColumns" />
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                <ImageView
+                    android:id="@+id/annusUp"
+                    style="@style/vArrow"
+                    android:contentDescription="@string/annusUpDesc"
+                    android:rotation="180"
+                    app:layout_constraintBottom_toTopOf="@id/annus" />
 
-        <View style="@style/tbShadow" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <EditText
+                    android:id="@+id/annus"
+                    android:layout_width="61sp"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:focusedByDefault="false"
+                    android:gravity="center"
+                    android:hint="@string/year"
+                    android:imeOptions="actionGo"
+                    android:importantForAutofill="no"
+                    android:inputType="number|numberSigned"
+                    android:maxLength="5"
+                    android:paddingVertical="10dp"
+                    android:textColor="?android:attr/textColor"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/defVar"
+                    app:layout_constraintStart_toEndOf="@id/luna"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <!-- I wonder why android:textColor="?android:attr/textColor" is necessary?!? -->
+                <!-- "ems" means "as long as <N> "M" characters wide"; which is the widest character. -->
+                <!-- android:maxEms="5" android:minEms="4" -->
+
+                <ImageView
+                    android:id="@+id/annusDown"
+                    style="@style/vArrow"
+                    android:contentDescription="@string/annusDownDesc"
+                    app:layout_constraintTop_toBottomOf="@id/annus" />
+
+                <TextView
+                    android:id="@+id/defVar"
+                    android:layout_width="56sp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_small"
+                    android:gravity="center_horizontal"
+                    android:padding="10sp"
+                    android:textAlignment="center"
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/next"
+                    app:layout_constraintStart_toEndOf="@id/annus"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/next"
+                    style="@style/hArrow"
+                    android:contentDescription="@string/nextDesc"
+                    android:rotation="-90"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/defVar" />
+
+                <TextView
+                    android:id="@+id/lunaMean"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <TextView
+                    android:id="@+id/lunaSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <GridView
+                android:id="@+id/grid"
+                android:layout_width="match_parent"
+                android:layout_height="766dp"
+                android:nestedScrollingEnabled="false"
+                android:numColumns="@integer/gridColumns"
+                app:layout_constraintTop_toBottomOf="@id/panel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav"

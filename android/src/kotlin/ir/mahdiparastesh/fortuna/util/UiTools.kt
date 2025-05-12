@@ -6,8 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.SystemClock
 import android.util.TypedValue
@@ -36,10 +34,6 @@ object UiTools {
     fun ContextThemeWrapper.color(@AttrRes attr: Int) = TypedValue().apply {
         theme.resolveAttribute(attr, this, true)
     }.data
-
-    /** @return the colour filter instance of this colour with the given [PorterDuff.Mode] */
-    fun pdcf(@ColorInt color: Int, mode: PorterDuff.Mode = PorterDuff.Mode.SRC_IN) =
-        PorterDuffColorFilter(color, mode)
 
     /** Opens the specified date in the device's default calendar app. */
     fun openInDate(c: Context, cal: ChronoLocalDate, req: Int): PendingIntent =

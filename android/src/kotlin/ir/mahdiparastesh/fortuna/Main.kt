@@ -5,6 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -20,6 +23,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -55,7 +60,6 @@ import ir.mahdiparastesh.fortuna.util.Sexbook
 import ir.mahdiparastesh.fortuna.util.UiTools
 import ir.mahdiparastesh.fortuna.util.UiTools.blur
 import ir.mahdiparastesh.fortuna.util.UiTools.color
-import ir.mahdiparastesh.fortuna.util.UiTools.pdcf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -115,9 +119,12 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
         setContentView(b.root)
-        updateGrid()
 
         // Toolbar & Navigation
         ActionBarDrawerToggle(
@@ -128,8 +135,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             syncState()
         }
         b.nav.setNavigationItemSelectedListener(this)
-        b.toolbar.navigationIcon?.colorFilter =
-            pdcf(color(com.google.android.material.R.attr.colorOnPrimary))
         for (n in Numerals.all.indices) {
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
@@ -149,6 +154,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 )
             }; updateGrid(); updateOverflow(); shake(); true
         }
+
+        updateGrid()  // a theme should be applied after ActionBarDrawerToggle is created.
 
         // Panel
         b.luna.adapter = ArrayAdapter(
@@ -427,9 +434,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             (b.grid.adapter as Grid).onRefresh()
             b.grid.invalidateViews()
         }
+        val mean: Float
         (b.grid.adapter as Grid).also { grid ->
             b.defVar.text = grid.luna.default.displayScore(true)
-            b.lunaMean.text = "x̄: " + grid.luna.mean(grid.maximumStats ?: 0).groupDigits(6)
+            mean = grid.luna.mean(grid.maximumStats ?: 0)
+            b.lunaMean.text = "x̄: " + mean.groupDigits(6)
             b.lunaSize.text = UiTools.showBytes(this@Main, grid.luna.size)
             b.lunaSize.isInvisible = grid.luna.size == 0L
             b.verbumIcon.isVisible = grid.luna.verbum?.isNotBlank() == true
@@ -442,6 +451,26 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                     .toFloat()
             )).toInt()
         }
+
+        val bgColor: Int
+        val fgColor: Int
+        if (mean == 0f) {  // empty or mediocre
+            bgColor = Color.TRANSPARENT
+            fgColor = color(android.R.attr.textColor)
+        } else {
+            if (mean > 0f) {  // pleasant
+                bgColor = color(com.google.android.material.R.attr.colorPrimary)
+                fgColor = color(com.google.android.material.R.attr.colorOnPrimary)
+            } else /*mean < 0f*/ {  // painful
+                bgColor = color(com.google.android.material.R.attr.colorSecondary)
+                fgColor = color(com.google.android.material.R.attr.colorOnSecondary)
+            }
+        }
+        b.toolbar.setBackgroundColor(bgColor)
+        b.toolbar.navigationIcon?.colorFilter =  // a tint color will never work!
+            PorterDuffColorFilter(fgColor, PorterDuff.Mode.SRC_IN)
+        b.toolbar.setTitleTextColor(fgColor)
+        b.toolbar.overflowIcon?.setTint(fgColor)
     }
 
     /** Updates the overflow menu after the numeral system is changed. */
