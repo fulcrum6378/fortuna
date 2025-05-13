@@ -6,7 +6,8 @@
         <item name="android:colorControlNormal">?android:textColor</item>
         <item name="android:colorControlHighlight">?android:textColor</item>
         <item name="android:colorControlActivated">?android:textColor</item>
-        <item name="android:statusBarColor">?colorSurface</item><!-- appears while loading -->
+        <item name="android:statusBarColor">?colorSurface</item><!-- appears only while loading -->
+        <item name="android:navigationBarColor">?colorSurface</item><!-- only while loading -->
         <item name="android:layoutDirection">ltr</item>
         <item name="android:fontFamily">@font/quattrocento</item>
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
