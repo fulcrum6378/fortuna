@@ -1,11 +1,11 @@
 <resources>
 
     <style name="Theme.Fortuna.Base" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorAccent">?attr/colorPrimary</item>
+        <item name="colorAccent">?colorPrimary</item>
         <item name="android:textColor">@color/textColor</item>
-        <item name="android:colorControlNormal">?android:attr/textColor</item>
-        <item name="android:colorControlHighlight">?android:attr/textColor</item>
-        <item name="android:colorControlActivated">?android:attr/textColor</item>
+        <item name="android:colorControlNormal">?android:textColor</item>
+        <item name="android:colorControlHighlight">?android:textColor</item>
+        <item name="android:colorControlActivated">?android:textColor</item>
         <item name="android:layoutDirection">ltr</item>
         <item name="android:fontFamily">@font/quattrocento</item>
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
@@ -21,7 +21,7 @@
         <item name="colorOnPrimary">@color/BG</item>
         <item name="colorSecondary">@color/CS</item>
         <item name="colorSecondaryVariant">#44F44336</item>
-        <item name="colorOnSecondary">?attr/colorOnPrimary</item>
+        <item name="colorOnSecondary">?colorOnPrimary</item>
         <item name="colorSecondaryContainer">#33000000</item><!--nav checked item-->
         <item name="colorSurfaceContainer">#F0F5EF</item><!--PopupMenu-->
         <item name="colorSurfaceContainerHigh">#ECF1EB</item><!--Dialog-->
@@ -29,11 +29,11 @@
     </style>
 
     <style name="Widget.Fortuna.NavigationView" parent="Widget.Material3.NavigationView">
-        <item name="itemIconTint">?attr/colorOnPrimary</item>
+        <item name="itemIconTint">?colorOnPrimary</item>
         <item name="shapeAppearance">@style/ShapeAppearance_Fortuna_Nav</item>
         <item name="itemRippleColor">@color/weakWhite</item>
         <item name="itemTextAppearance">@style/TextAppearance.Fortuna.Navigation</item>
-        <item name="itemTextColor">?attr/colorOnPrimary</item>
+        <item name="itemTextColor">?colorOnPrimary</item>
     </style>
 
     <style name="ThemeOverlay.Fortuna.Dialogue" parent="ThemeOverlay.Material3.MaterialAlertDialog">
@@ -75,10 +75,10 @@
     </style>
 
     <style name="Widget.Fortuna.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
-        <item name="android:textColor">?android:attr/colorControlNormal
-        </item><!--avoid ?android:attr/textColor-->
-        <item name="buttonTint">?attr/colorPrimary</item><!--avoid ?android:attr/textColor-->
-        <item name="buttonIconTint">?attr/colorOnPrimary</item><!--avoid transparent-->
+        <item name="android:textColor">?android:colorControlNormal
+        </item><!--avoid ?android:textColor-->
+        <item name="buttonTint">?colorPrimary</item><!--avoid ?android:textColor-->
+        <item name="buttonIconTint">?colorOnPrimary</item><!--avoid transparent-->
     </style>
 
     <!--<style name="Widget.Fortuna.Tooltip" parent="Widget.Material3.Tooltip"></style>-->

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -30,7 +29,7 @@
         android:gravity="center"
         android:paddingBottom="36dp"
         android:textAlignment="center"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="?colorOnPrimary"
         android:textSize="19sp"
         android:textStyle="bold" />
 
@@ -53,7 +52,7 @@
             android:autoSizeMinTextSize="10sp"
             android:autoSizeTextType="uniform"
             android:textAlignment="center"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="?colorOnPrimary"
             tools:ignore="SmallSp" />
 
         <TextView
@@ -61,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="?colorOnPrimary"
             android:textSize="11sp"
             tools:ignore="InconsistentLayout" />
     </LinearLayout>
