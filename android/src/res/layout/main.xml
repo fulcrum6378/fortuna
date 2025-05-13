@@ -66,8 +66,8 @@
 
                     <ImageView
                         android:id="@+id/verbumIcon"
-                        android:layout_width="@dimen/verbumIconSize"
-                        android:layout_height="@dimen/verbumIconSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
                         android:contentDescription="@string/verbumDesc"
                         android:src="@drawable/verbum"
@@ -187,6 +187,7 @@
         android:layout_gravity="start"
         android:background="?colorPrimary"
         android:paddingTop="10dp"
+        android:theme="@style/ThemeOverlay.Fortuna.Nav"
         app:menu="@menu/nav" />
     <!--app:itemShapeAppearance="@style/ShapeAppearance.Fortuna.Small"-->
 </androidx.drawerlayout.widget.DrawerLayout>

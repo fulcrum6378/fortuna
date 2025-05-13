@@ -1,34 +1,45 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/navToday"
-        android:icon="@drawable/today"
-        android:title="@string/today" />
-    <item
-        android:id="@+id/navSearch"
-        android:icon="@drawable/search"
-        android:title="@string/navSearch" />
-    <item
-        android:id="@+id/navStat"
-        android:icon="@drawable/calculate"
-        android:title="@string/navStat" />
-    <item
-        android:id="@+id/navExport"
-        android:icon="@drawable/data_export"
-        android:title="@string/navExport" />
-    <item
-        android:id="@+id/navImport"
-        android:icon="@drawable/data_import"
-        android:title="@string/navImport" />
-    <item
-        android:id="@+id/navSend"
-        android:icon="@drawable/data_send"
-        android:title="@string/navSend" />
-    <item
-        android:id="@+id/navBackup"
-        android:icon="@drawable/backup"
-        android:title="@string/backup" />
-    <item
-        android:id="@+id/navHelp"
-        android:icon="@drawable/help"
-        android:title="@string/navHelp" />
+
+    <group android:id="@+id/navigation">
+        <item
+            android:id="@+id/navToday"
+            android:icon="@drawable/today"
+            android:title="@string/today" />
+        <item
+            android:id="@+id/navSearch"
+            android:icon="@drawable/search"
+            android:title="@string/navSearch" />
+        <item
+            android:id="@+id/navStat"
+            android:icon="@drawable/statistics"
+            android:title="@string/navStat" />
+    </group>
+
+    <group android:id="@+id/data">
+        <item
+            android:id="@+id/navExport"
+            android:icon="@drawable/data_export"
+            android:title="@string/navExport" />
+        <item
+            android:id="@+id/navImport"
+            android:icon="@drawable/data_import"
+            android:title="@string/navImport" />
+        <item
+            android:id="@+id/navSend"
+            android:icon="@drawable/data_send"
+            android:title="@string/navSend" />
+        <item
+            android:id="@+id/navBackup"
+            android:icon="@drawable/backup"
+            android:title="@string/backup" />
+    </group>
+
+    <group android:id="@+id/misc">
+        <item
+            android:id="@+id/navHelp"
+            android:icon="@drawable/verbum"
+            android:title="@string/navHelp" />
+    </group>
+
+    <!-- Without IDs groups won't be visually divided (by divider lines)! -->
 </menu>

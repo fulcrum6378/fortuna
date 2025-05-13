@@ -8,8 +8,8 @@
     <ImageView
         android:id="@+id/verbumIcon"
         style="@style/parentConstraint"
-        android:layout_width="@dimen/verbumIconSize"
-        android:layout_height="@dimen/verbumIconSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/verbumDesc"
         android:visibility="gone"
         app:layout_constraintHorizontal_bias="0.9"

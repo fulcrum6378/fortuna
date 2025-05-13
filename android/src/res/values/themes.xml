@@ -6,6 +6,7 @@
         <item name="android:colorControlNormal">?android:textColor</item>
         <item name="android:colorControlHighlight">?android:textColor</item>
         <item name="android:colorControlActivated">?android:textColor</item>
+        <item name="android:statusBarColor">?colorSurface</item><!-- appears while loading -->
         <item name="android:layoutDirection">ltr</item>
         <item name="android:fontFamily">@font/quattrocento</item>
         <item name="android:actionOverflowButtonStyle">@style/Widget.Fortuna.OverflowButton</item>
@@ -34,6 +35,10 @@
         <item name="itemRippleColor">@color/weakWhite</item>
         <item name="itemTextAppearance">@style/TextAppearance.Fortuna.Navigation</item>
         <item name="itemTextColor">?colorOnPrimary</item>
+    </style>
+
+    <style name="ThemeOverlay.Fortuna.Nav" parent="">
+        <item name="android:listDivider">@color/navDivider</item>
     </style>
 
     <style name="ThemeOverlay.Fortuna.Dialogue" parent="ThemeOverlay.Material3.MaterialAlertDialog">
