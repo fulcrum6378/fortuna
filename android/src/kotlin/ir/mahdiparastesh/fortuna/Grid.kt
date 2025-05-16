@@ -157,6 +157,7 @@ class Grid(private val c: Main) : ListAdapter {
         }
         ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
             addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
+            // startDelay = 10L * i
             duration = 100L
             start()
         }

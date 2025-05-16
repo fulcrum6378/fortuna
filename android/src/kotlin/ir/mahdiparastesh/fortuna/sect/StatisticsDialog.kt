@@ -86,11 +86,11 @@ class StatisticsDialog : BaseDialogue() {
                             setBackgroundColor(
                                 when {
                                     score != null && score > 0f -> Color.valueOf(
-                                        c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE
+                                        c.cpl[0], c.cpl[1], c.cpl[2], score / Vita.MAX_RANGE
                                     ).toArgb()
 
                                     score != null && score < 0f -> Color.valueOf(
-                                        c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE
+                                        c.csl[0], c.csl[1], c.csl[2], -score / Vita.MAX_RANGE
                                     ).toArgb()
 
                                     score != null -> Color.TRANSPARENT
@@ -120,6 +120,7 @@ class StatisticsDialog : BaseDialogue() {
                 )
             }
 
+            setIcon(R.drawable.statistics)
             setTitle(R.string.navStat)
             setMessage(text)
             setView(bw.root)

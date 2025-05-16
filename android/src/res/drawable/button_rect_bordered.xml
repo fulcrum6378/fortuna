@@ -12,7 +12,7 @@
         <shape android:shape="rectangle">
             <stroke
                 android:width="0.5dp"
-                android:color="#38000000" />
+                android:color="@color/backupActionStroke" />
         </shape>
     </item>
 </layer-list>

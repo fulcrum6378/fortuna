@@ -5,4 +5,5 @@
     <color name="diesBorderToday">#44FFFFFF</color>
     <color name="varField">#313133</color><!--#4E4E51-->
     <color name="statCell">#333</color>
+    <color name="backupActionStroke">#38FFFFFF</color>
 </resources>

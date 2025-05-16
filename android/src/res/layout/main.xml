@@ -18,8 +18,8 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="88dp"
-                android:paddingTop="24dp"
+                android:layout_height="96dp"
+                android:paddingTop="30dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:menu="@menu/empty"
                 app:title="@string/app_name"

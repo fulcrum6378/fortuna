@@ -12,4 +12,10 @@
         <item name="colorSurfaceContainerHigh">#191F1B</item><!--Dialog-->
         <item name="android:textColorHighlight">#66FFFFFF</item>
     </style>
+
+    <style name="Widget.Fortuna.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="android:textColor">?android:colorControlNormal</item>
+        <item name="buttonTint">?colorOnPrimary</item>
+        <item name="buttonIconTint">?colorSurfaceContainer</item>
+    </style>
 </resources>

@@ -9,6 +9,7 @@
     <color name="diesBorderToday">#44000000</color>
     <color name="varField">#AAFFFFFF</color><!--#EFEFF0-->
     <color name="statCell">#E0E0E0</color>
+    <color name="backupActionStroke">#38000000</color>
     <color name="todayWidget">#AA034C06</color>
     <color name="navDivider">#60FFFFFF</color>
 </resources>

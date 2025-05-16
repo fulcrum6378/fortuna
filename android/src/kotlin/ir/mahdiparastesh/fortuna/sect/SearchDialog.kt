@@ -39,6 +39,7 @@ class SearchDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
+            setIcon(R.drawable.search)
             setTitle(R.string.navSearch)
             setView(SearchBinding.inflate(layoutInflater).apply {
                 field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }

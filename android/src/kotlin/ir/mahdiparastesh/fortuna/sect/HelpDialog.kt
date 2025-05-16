@@ -10,6 +10,7 @@ import ir.mahdiparastesh.fortuna.util.BaseDialogue
 class HelpDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
+            setIcon(R.drawable.verbum)
             setTitle(R.string.navHelp)
             setMessage(R.string.help)
             setPositiveButton(R.string.ok, null)

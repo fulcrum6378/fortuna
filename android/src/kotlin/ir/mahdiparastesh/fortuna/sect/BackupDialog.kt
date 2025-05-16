@@ -90,6 +90,7 @@ class BackupDialog : BaseDialogue() {
         )
 
         return MaterialAlertDialogBuilder(c).apply {
+            setIcon(R.drawable.backup)
             setTitle(R.string.backup)
             setMessage(R.string.backupDesc)
             setView(b.root)

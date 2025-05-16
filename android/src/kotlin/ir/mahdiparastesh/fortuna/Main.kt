@@ -34,6 +34,7 @@ import androidx.appcompat.widget.ActionMenuView
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.forEachIndexed
 import androidx.core.view.get
 import androidx.core.view.isInvisible
@@ -84,13 +85,13 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
+    val cpl: FloatArray = floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
     val cp: FloatArray by lazy {
-        if (!night) floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
-        else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
+        if (!night) cpl else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
     }
+    val csl: FloatArray = floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
     val cs: FloatArray by lazy {
-        if (!night) floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
-        else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
+        if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
     }
 
     private var rollingLuna = true  // "true" in order to trick onItemSelected
@@ -121,7 +122,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+            //SystemBarStyle.dark(Color.TRANSPARENT),
+            navigationBarStyle =  // do NOT use SystemBarStyle.auto()
+                if (!night) SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                else SystemBarStyle.dark(Color.TRANSPARENT)
         )
         super.onCreate(savedInstanceState)
         setContentView(b.root)
@@ -471,6 +475,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             PorterDuffColorFilter(fgColor, PorterDuff.Mode.SRC_IN)
         b.toolbar.setTitleTextColor(fgColor)
         b.toolbar.overflowIcon?.setTint(fgColor)
+
+        if (!night) WindowCompat.getInsetsController(window, window.decorView)
+            .isAppearanceLightStatusBars = mean == 0f
     }
 
     /** Updates the overflow menu after the numeral system is changed. */
