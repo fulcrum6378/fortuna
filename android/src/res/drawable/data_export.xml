@@ -1,8 +1,10 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="36dp"
     android:height="36dp"
+    android:tint="?android:textColor"
     android:viewportWidth="16.75"
     android:viewportHeight="16.75">
+    <!--https://www.svgrepo.com/svg/525330/export-->
     <path
         android:fillColor="#000"
         android:fillType="evenOdd"

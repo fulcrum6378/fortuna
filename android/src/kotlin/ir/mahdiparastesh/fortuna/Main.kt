@@ -392,6 +392,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 ).show(); return@registerForActivityResult
             }
             MaterialAlertDialogBuilder(this@Main).apply {
+                setIcon(R.drawable.data_import)
                 setTitle(c.resources.getString(R.string.navImport))
                 setMessage(c.resources.getString(R.string.askImport))
                 setPositiveButton(R.string.yes) { _, _ ->
