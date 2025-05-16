@@ -37,7 +37,7 @@
     <group android:id="@+id/misc">
         <item
             android:id="@+id/navHelp"
-            android:icon="@drawable/help"
+            android:icon="@drawable/verbum"
             android:title="@string/navHelp" />
     </group>
 

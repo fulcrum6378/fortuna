@@ -6,7 +6,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 
-/** A dialogue containing the guide for this app. */
+/** A dialogue containing a guide text for this application */
 class HelpDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
