@@ -43,7 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
-        android:background="@drawable/button_rect"
         android:paddingHorizontal="20dp"
-        android:paddingVertical="10dp" />
+        android:paddingVertical="10dp"
+        android:textIsSelectable="true" />
 </LinearLayout>

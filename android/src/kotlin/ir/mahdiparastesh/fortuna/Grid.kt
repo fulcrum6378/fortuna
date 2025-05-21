@@ -44,7 +44,6 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.Sexbook
-import ir.mahdiparastesh.fortuna.util.UiTools
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import java.time.DateTimeException
 import java.time.LocalTime
@@ -502,10 +501,6 @@ class Grid(private val c: Main) : ListAdapter {
                 m.addTextChangedListener(watcher)
                 d.addTextChangedListener(watcher)
                 d.setText(z(dit[ChronoField.DAY_OF_MONTH]))
-
-                result.setOnLongClickListener {
-                    UiTools.copyToClipboard(c.c, result.text, null); true
-                }
             }.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.viewInCalendar) { _, _ ->

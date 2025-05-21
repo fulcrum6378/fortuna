@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.core.content.edit
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Fortuna
@@ -38,11 +37,12 @@ import kotlin.math.min
 class SearchDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        isCancelable = true
         return MaterialAlertDialogBuilder(c).apply {
             setIcon(R.drawable.search)
             setTitle(R.string.navSearch)
             setView(SearchBinding.inflate(layoutInflater).apply {
-                field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
+                //field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
                 field.setOnEditorActionListener { v, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_GO)
                         (list.adapter as SearchAdapter).search(v.text)
@@ -55,7 +55,7 @@ class SearchDialog : BaseDialogue() {
                 }
                 list.adapter = SearchAdapter(c, this@SearchDialog)
             }.root)
-            setNegativeButton(R.string.cancel, null)
+            //setNegativeButton(R.string.cancel, null)
         }.create()
     }
 

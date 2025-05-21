@@ -11,6 +11,7 @@
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHeight_max="@dimen/statGridMaxHeight"
@@ -21,7 +22,6 @@
             android:id="@+id/body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="8dp"
             android:paddingStart="3dp">
 
             <LinearLayout

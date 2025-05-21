@@ -13,7 +13,6 @@ class HelpDialog : BaseDialogue() {
             setIcon(R.drawable.verbum)
             setTitle(R.string.navHelp)
             setMessage(R.string.help)
-            setPositiveButton(R.string.ok, null)
         }.create()
     }
 }

@@ -198,7 +198,8 @@ class Luna(
     fun mean(maxDays: Int): Float {
         if (maxDays == 0) return 0f
         val scores = arrayListOf<Float>()
-        for (v in 0 until maxDays) (this[v] ?: default)?.let { scores.add(it) }
+        for (v in 0 until maxDays)
+            (this[v] ?: default)?.let { scores.add(it) }
         return if (scores.isEmpty()) 0f else scores.sum() / scores.size
     }
 }

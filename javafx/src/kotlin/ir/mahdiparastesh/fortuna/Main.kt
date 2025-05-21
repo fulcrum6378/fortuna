@@ -182,6 +182,13 @@ class Main : MainPage {
         val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
 
         return AnchorPane(
+            Region().apply {
+                styleClass.add("verbum")
+                AnchorPane.setTopAnchor(this, 0.0)
+                AnchorPane.setRightAnchor(this, 0.0)
+                AnchorPane.setBottomAnchor(this, 0.0)
+                AnchorPane.setLeftAnchor(this, 0.0)
+            },
             VBox(
                 Label(numeral.write(i + 1)),
                 Label((if (isEstimated) "c. " else "") + score.displayScore(false)),
@@ -191,7 +198,7 @@ class Main : MainPage {
                 AnchorPane.setBottomAnchor(this, 0.0)
                 AnchorPane.setLeftAnchor(this, 0.0)
                 alignment = Pos.CENTER
-            }
+            },
         ).apply {
             val cssClass: String
             val bgColour: Color

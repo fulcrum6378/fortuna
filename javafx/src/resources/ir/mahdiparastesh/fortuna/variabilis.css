@@ -26,6 +26,7 @@
     -fx-max-width: 3em;
 }
 #verbum {
+    -fx-font-size: 17px;
     -fx-max-width: 21em;
     /*-fx-padding: 2em 2em;*/
 }

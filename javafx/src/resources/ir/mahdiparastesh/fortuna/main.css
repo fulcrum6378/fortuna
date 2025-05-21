@@ -72,7 +72,7 @@
 #grid > .pleasant {
     /*-fx-background-color: -fx-cp;*/
 }
-#grid > .pleasant Label {
+#grid > .pleasant Label, #grid > .painful Label {
     -fx-text-fill: -fx-cop;
 }
 #grid > .mediocre {
@@ -82,10 +82,13 @@
 #grid > .painful {
     /*-fx-background-color: -fx-cs;*/
 }
-#grid > .painful Label {
-    -fx-text-fill: -fx-cop;
-}
 #grid > .today {
     -fx-border-color: #00000044;  /* #FFFFFF44 in night mode */
     -fx-border-width: 5px;
+}
+#grid .verbum {
+    -fx-min-width: 26px;
+    -fx-max-width: 26px;
+    -fx-min-height: 32px;
+    -fx-max-height: 32px;
 }

@@ -28,3 +28,9 @@ ComboBox .list-view .list-cell:selected {
 ComboBox .list-view .list-cell:selected, ComboBox .list-view .list-cell:hover {
     -fx-text-fill: -fx-cop;
 }
+
+.verbum {
+    /*-fx-shape: "M22,2L2.01,2L2,22l4,-4h16L22,2zM6,9h12v2L6,11L6,9zM14,14L6,14v-2h8v2zM18,8L6,8L6,6h12v2z";*/
+    -fx-shape: "M 0 -3.5 v 7 l 4 -3.5 z";
+    /* TODO Why doesn't this work?!?  */
+}
