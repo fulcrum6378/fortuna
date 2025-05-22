@@ -32,7 +32,7 @@ interface MainPage {
      * Opens the Variabilis dialogue.
      * @param day starting from 0
      */
-    fun changeVar(day: Int)
+    fun variabilis(day: Int)
 
     /** Updates everything whenever the calendar changes. */
     fun onDateChanged() {
@@ -41,6 +41,7 @@ interface MainPage {
         updateGrid()
     }
 
+    /** Saves data of a day cell in the [Vita]. */
     fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {
         luna.set(i, score, emoji, verbum)
         c.vita.save()

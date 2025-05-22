@@ -12,7 +12,7 @@
 
 <DialogPane
     xmlns:fx="http://javafx.com/fxml"
-    fx:controller="ir.mahdiparastesh.fortuna.Variabilis"
+    fx:controller="ir.mahdiparastesh.fortuna.sect.Variabilis"
     fx:id="root">
 
     <content>

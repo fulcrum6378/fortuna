@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import ir.mahdiparastesh.fortuna.sect.Variabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toVariabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
@@ -120,7 +121,7 @@ class Main : MainPage {
         )
 
         // default variabilis for the entire luna
-        defVar.onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(-1) }
+        defVar.onMouseClicked = EventHandler<MouseEvent> { event -> variabilis(-1) }
 
         // calendar rollers
         prev.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(false) }
@@ -226,11 +227,11 @@ class Main : MainPage {
                 styleClass.add("today")
 
             // clicks
-            onMouseClicked = EventHandler<MouseEvent> { event -> changeVar(i) }
+            onMouseClicked = EventHandler<MouseEvent> { event -> variabilis(i) }
         }
     }
 
-    override fun changeVar(day: Int) {
+    override fun variabilis(day: Int) {
         val dialog = Dialog<Variabilis.Result>()
         dialog.title = "Variabilis"
 

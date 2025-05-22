@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 15
-        versionName = "14.1.5"
+        versionName = "14.2.0"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")

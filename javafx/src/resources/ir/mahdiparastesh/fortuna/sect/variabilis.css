@@ -1,4 +1,4 @@
-@import "global.css";
+@import "../global.css";
 
 #varPickerContainer {
     -fx-padding: 2em 0 2em 3.85em;

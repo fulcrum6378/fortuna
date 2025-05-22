@@ -50,6 +50,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
+import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
 import ir.mahdiparastesh.fortuna.sect.SearchAdapter
 import ir.mahdiparastesh.fortuna.sect.SearchDialog
@@ -99,7 +100,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
     }
 
-    /** Improved drawable for the fields in [VariabilisDialog] and [detailDate] FIXME */
+    /** Improved drawable for the fields in [VariabilisDialog] and [ChronometerDialog] */
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
             ShapeAppearanceModel.Builder()
@@ -127,7 +128,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         var variabilisVerbum: String? = null
         var lastSearchQuery: String? = null
         var searchResults = ArrayList<SearchAdapter.Result>()
-        var showingDate: Int? = null
         var compareDatesWith: ChronoLocalDate? = null
         var changingConfigForLunaSpinner = false
     }
@@ -225,7 +225,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.prev.setOnClickListener { moveInMonths(false) }
         b.next.setOnLongClickListener { moveInMonths(true, 6); true }
         b.prev.setOnLongClickListener { moveInMonths(false, 6); true }
-        b.defVar.setOnClickListener { changeVar(-1) }
+        b.defVar.setOnClickListener { variabilis(-1) }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Handler
@@ -285,11 +285,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
 
-        // restore saved states (null-safe)
-        m.showingDate?.also {
-            (b.grid.adapter as? Grid)?.detailDate(it, c.date)
-        }
-
         // resolve new intents
         addOnNewIntentListener { resolveIntent(it) }
     }
@@ -307,7 +302,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             updateGrid()
         }
         if (intent.hasExtra(EXTRA_DIES))
-            changeVar(intent.getIntExtra(EXTRA_DIES, 1) - 1)
+            variabilis(intent.getIntExtra(EXTRA_DIES, 1) - 1)
     }
 
     override fun onRestart() {
@@ -498,7 +493,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         }
     }
 
-    override fun changeVar(day: Int) {
+    override fun variabilis(day: Int) {
         VariabilisDialog.newInstance(day).show(supportFragmentManager, VariabilisDialog.TAG)
     }
 

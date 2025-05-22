@@ -51,11 +51,7 @@ class VariabilisDialog : BaseDialogue() {
         const val TAG = "variabilis"
         const val ARG_DAY = "day"
 
-        /**
-         * @param c the Main activity
-         * @param day starting from 0
-         * @param date the calendar indicating that day
-         */
+        /** @param day starting from 0 */
         fun newInstance(day: Int): VariabilisDialog {
             return VariabilisDialog().apply {
                 arguments = Bundle().apply {
@@ -67,7 +63,6 @@ class VariabilisDialog : BaseDialogue() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         requireArguments().also { args ->
             i = args.getInt(ARG_DAY)
         }
@@ -221,9 +216,7 @@ class VariabilisDialog : BaseDialogue() {
             ?.sortedBy { it.birthTime }
             ?.sortedBy { it.birthDay }
         val firstMet = c.m.sexbook.value?.crushes
-            ?.filter { x ->
-                x.firstMetYear == yr && x.firstMetMonth == mo && x.firstMetDay == day
-            }
+            ?.filter { x -> x.firstMetYear == yr && x.firstMetMonth == mo && x.firstMetDay == day }
             ?.sortedBy { it.firstMetTime }
             ?.sortedBy { it.firstMetDay }
         if (birth.isNullOrEmpty() && firstMet.isNullOrEmpty()) return

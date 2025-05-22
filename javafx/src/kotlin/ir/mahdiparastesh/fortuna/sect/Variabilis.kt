@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.sect
 
 import javafx.collections.FXCollections
 import javafx.fxml.FXML

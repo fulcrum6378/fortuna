@@ -115,7 +115,7 @@ class SearchAdapter(
         h.b.root.setOnClickListener {
             c.c.date = c.c.lunaToDate(c.m.searchResults[h.layoutPosition].luna)
             c.onDateChanged()
-            c.changeVar(c.m.searchResults[h.layoutPosition].dies.toInt())
+            c.variabilis(c.m.searchResults[h.layoutPosition].dies.toInt())
         }
     }
 
