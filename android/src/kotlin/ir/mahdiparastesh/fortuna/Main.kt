@@ -282,13 +282,22 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
 
+        // restore saved states (null-safe)
+        m.changingVar?.also {
+            (b.grid.adapter as? Grid)?.changeVar(
+                it, c.date.with(ChronoField.DAY_OF_MONTH, it.toLong())
+            )
+        }
+        m.showingDate?.also {
+            (b.grid.adapter as? Grid)?.detailDate(it, c.date)
+        }
+
         // resolve new intents
         addOnNewIntentListener { resolveIntent(it) }
     }
 
     override fun onResume() {
         super.onResume()
-        c.updateToday()
         dropbox?.onResume()
     }
 
@@ -304,6 +313,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             (b.grid.adapter as? Grid)
                 ?.changeVar(it - 1, c.date.with(ChronoField.DAY_OF_MONTH, it.toLong()))
         }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        c.updateToday()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

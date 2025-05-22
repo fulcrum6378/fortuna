@@ -115,8 +115,9 @@ class SearchAdapter(
             c.onDateChanged()
             val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
 
-            (c.b.grid.adapter as? Grid)
-                ?.changeVar(dies, c.c.date.with(ChronoField.DAY_OF_MONTH, dies + 1L))
+            (c.b.grid.adapter as? Grid)?.changeVar(
+                dies, c.c.date.with(ChronoField.DAY_OF_MONTH, if (dies != -1) dies + 1L else 1)
+            )
         }
     }
 
