@@ -12,9 +12,14 @@ import android.widget.NumberPicker
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 
-/** An improved version of [NumberPicker] with a customised font */
-class Variabilis(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
-    NumberPicker(context, attrs, defStyleAttr, defStyleRes) {
+/**
+ * An improved version of [NumberPicker] with a customised font
+ *
+ * When I tried to make it a nested class of VariabilisDialog, the XML parser raised a stupid error!
+ */
+class VariabilisPicker(
+    context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int
+) : NumberPicker(context, attrs, defStyleAttr, defStyleRes) {
 
     constructor(context: Context) : this(context, null)
 

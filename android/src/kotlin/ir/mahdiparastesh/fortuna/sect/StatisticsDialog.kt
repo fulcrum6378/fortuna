@@ -23,7 +23,7 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import java.time.temporal.ChronoField
 
 /**
- * A dialogue for displaying statistics based on the user's Vita
+ * A dialog box for displaying statistics based on a user's Vita
  *
  * Making statistics in a way that it'll show every year since the minimum scored days till the
  * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
@@ -32,6 +32,10 @@ import java.time.temporal.ChronoField
 class StatisticsDialog : BaseDialogue() {
     private var dialogue: AlertDialog? = null
     private lateinit var text: String
+
+    companion object {
+        const val TAG = "statistics"
+    }
 
     @SuppressLint("SetTextI18n")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

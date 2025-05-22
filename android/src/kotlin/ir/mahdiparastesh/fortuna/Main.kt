@@ -41,9 +41,13 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
@@ -51,6 +55,7 @@ import ir.mahdiparastesh.fortuna.sect.SearchAdapter
 import ir.mahdiparastesh.fortuna.sect.SearchDialog
 import ir.mahdiparastesh.fortuna.sect.StatisticsDialog
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
+import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
@@ -94,6 +99,15 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
     }
 
+    /** Improved drawable for the fields in [VariabilisDialog] and [detailDate] FIXME */
+    val varFieldBg: MaterialShapeDrawable by lazy {
+        MaterialShapeDrawable(
+            ShapeAppearanceModel.Builder()
+                .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
+                .build()
+        ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
+    }
+
     private var rollingLuna = true  // "true" in order to trick onItemSelected
     private var rollingLunaWithAnnus = false
     private var rollingAnnusItself = false
@@ -106,12 +120,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     class Model : ViewModel() {
-        var sexbook: Sexbook.Data? = null
+        var sexbook: MutableLiveData<Sexbook.Data?> = MutableLiveData(null)
         var emojis = listOf<String>()
-        var changingVar: Int? = null
-        var changingVarScore: Int? = null
-        var changingVarEmoji: String? = null
-        var changingVarVerbum: String? = null
+        var variabilisScore: Int? = null
+        var variabilisEmoji: String? = null
+        var variabilisVerbum: String? = null
         var lastSearchQuery: String? = null
         var searchResults = ArrayList<SearchAdapter.Result>()
         var showingDate: Int? = null
@@ -212,7 +225,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.prev.setOnClickListener { moveInMonths(false) }
         b.next.setOnLongClickListener { moveInMonths(true, 6); true }
         b.prev.setOnLongClickListener { moveInMonths(false, 6); true }
-        b.defVar.setOnClickListener { (b.grid.adapter as? Grid)?.changeVar(-1) }
+        b.defVar.setOnClickListener { changeVar(-1) }
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Handler
@@ -252,7 +265,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 .use { it.readText().split(' ') }
 
             // Sexbook integration
-            if (m.sexbook == null &&
+            if (m.sexbook.value == null &&
                 try {
                     packageManager.getPackageInfo(Sexbook.PACKAGE, 0)
                     true
@@ -260,17 +273,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                     false
                 }
             ) Sexbook(c).load { data ->
-                m.sexbook = data
-                (b.grid.adapter as? Grid)?.apply {
-                    sexbook = cacheSexbook()
-                    m.changingVar?.also { i ->
-                        cvTvSexbook?.appendCrushDates(
-                            i.toShort(),
-                            dailyCalendar(i)[ChronoField.YEAR].toShort()
-                        )
-                        cvTvSexbook?.appendSexReports(i)
-                    }
-                }
+                m.sexbook.value = data
             }
 
             // scroll to top on older devices
@@ -283,11 +286,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         }
 
         // restore saved states (null-safe)
-        m.changingVar?.also {
-            (b.grid.adapter as? Grid)?.changeVar(
-                it, c.date.with(ChronoField.DAY_OF_MONTH, it.toLong())
-            )
-        }
         m.showingDate?.also {
             (b.grid.adapter as? Grid)?.detailDate(it, c.date)
         }
@@ -302,17 +300,14 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     private fun resolveIntent(intent: Intent) {
-        if (m.changingVar != null) return
         intent.getStringExtra(EXTRA_LUNA)?.also { extraLuna ->
             c.luna = extraLuna
             c.date = c.chronology.dateNow()
             updatePanel()
             updateGrid()
         }
-        if (intent.hasExtra(EXTRA_DIES)) intent.getIntExtra(EXTRA_DIES, 1).also {
-            (b.grid.adapter as? Grid)
-                ?.changeVar(it - 1, c.date.with(ChronoField.DAY_OF_MONTH, it.toLong()))
-        }
+        if (intent.hasExtra(EXTRA_DIES))
+            changeVar(intent.getIntExtra(EXTRA_DIES, 1) - 1)
     }
 
     override fun onRestart() {
@@ -329,8 +324,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 closeDrawer()
             }
 
-            R.id.navSearch -> SearchDialog().show(supportFragmentManager, "srch")
-            R.id.navStat -> StatisticsDialog().show(supportFragmentManager, "stat")
+            R.id.navSearch -> SearchDialog().show(supportFragmentManager, SearchDialog.TAG)
+            R.id.navStat -> StatisticsDialog().show(supportFragmentManager, StatisticsDialog.TAG)
             R.id.navExport ->
                 if (c.vita.hasData()
                 ) exportLauncher.launch(Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
@@ -352,8 +347,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 else
                     Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
 
-            R.id.navBackup -> BackupDialog().show(supportFragmentManager, "back")
-            R.id.navHelp -> HelpDialog().show(supportFragmentManager, "help")
+            R.id.navBackup -> BackupDialog().show(supportFragmentManager, BackupDialog.TAG)
+            R.id.navHelp -> HelpDialog().show(supportFragmentManager, HelpDialog.TAG)
         }
         return true
     }
@@ -501,6 +496,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             item.isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
                     (Numerals.all[i].jClass?.simpleName ?: Fortuna.SP_NUMERAL_TYPE_DEF)
         }
+    }
+
+    override fun changeVar(day: Int) {
+        VariabilisDialog.newInstance(day).show(supportFragmentManager, VariabilisDialog.TAG)
     }
 
     override fun onDateChanged() {

@@ -230,12 +230,7 @@ class Main : MainPage {
         }
     }
 
-    /**
-     * Opens a [Dialog] in order to let the user change the score of this day.
-     *
-     * @param i day (starting from 0)
-     */
-    fun changeVar(i: Int) {
+    override fun changeVar(day: Int) {
         val dialog = Dialog<Variabilis.Result>()
         dialog.title = "Variabilis"
 
@@ -249,15 +244,16 @@ class Main : MainPage {
         // prepare the controller
         val variabilis = fxmlLoader.getController<Variabilis>()
         variabilis.prepare(
-            (if (i != -1) luna[i]?.toVariabilis() else null) ?: luna.default?.toVariabilis() ?: 6,
-            (if (i != -1) luna.emojis[i] else luna.emoji)?.toString() ?: "",
-            (if (i != -1) luna.verba[i] else luna.verbum) ?: ""
+            (if (day != -1) luna[day]?.toVariabilis() else null)
+                ?: luna.default?.toVariabilis() ?: 6,
+            (if (day != -1) luna.emojis[day] else luna.emoji)?.toString() ?: "",
+            (if (day != -1) luna.verba[day] else luna.verbum) ?: ""
         )
 
         // attach the layout to the dialog
         dialog.dialogPane = root
         dialog.headerText =  // set this after setting the DialogPane
-            if (i != -1) "${c.luna}.${z(i + 1)}" else "DEFAULT"
+            if (day != -1) "${c.luna}.${z(day + 1)}" else "DEFAULT"
 
         // display the dialog and handle its result
         dialog.resultConverter = Callback<ButtonType, Variabilis.Result> { buttonType ->
@@ -267,9 +263,9 @@ class Main : MainPage {
         }
         dialog.showAndWait().ifPresent { result ->
             if (result.saveOrDelete)
-                saveDies(luna, i, result.score.toFloat(), result.emoji, result.verbum)
+                saveDies(luna, day, result.score.toFloat(), result.emoji, result.verbum)
             else
-                saveDies(luna, i, null, null, null)
+                saveDies(luna, day, null, null, null)
         }
     }
 }

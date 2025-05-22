@@ -16,7 +16,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Fortuna
-import ir.mahdiparastesh.fortuna.Grid
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
@@ -29,12 +28,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.time.temporal.ChronoField
 import kotlin.math.max
 import kotlin.math.min
 
-/** A dialogue for searching in [Vita] */
+/** A dialog box for searching in [Vita] verbum descriptions */
 class SearchDialog : BaseDialogue() {
+
+    companion object {
+        const val TAG = "search"
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         isCancelable = true
@@ -113,11 +115,7 @@ class SearchAdapter(
         h.b.root.setOnClickListener {
             c.c.date = c.c.lunaToDate(c.m.searchResults[h.layoutPosition].luna)
             c.onDateChanged()
-            val dies = c.m.searchResults[h.layoutPosition].dies.toInt()
-
-            (c.b.grid.adapter as? Grid)?.changeVar(
-                dies, c.c.date.with(ChronoField.DAY_OF_MONTH, if (dies != -1) dies + 1L else 1)
-            )
+            c.changeVar(c.m.searchResults[h.layoutPosition].dies.toInt())
         }
     }
 

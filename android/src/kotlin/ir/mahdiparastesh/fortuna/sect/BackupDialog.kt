@@ -27,12 +27,20 @@ import java.io.FileInputStream
 import java.time.temporal.ChronoField
 
 /**
- * Shows the status of the automatically backed-up file with 3 action buttons:<br />
- * - Backup: manually backs up the data.<br />
- * - Restore: overwrites the backup file on the main file.<br />
+ * A dialog box which shows statuses of the automatic daily backed-up file
+ * and lets the user control it with 3 primary action buttons:
+ *
+ * - Backup: manually backs up the data.
+ * - Restore: overwrites the backup file on the main file.
  * - Export: exports the backup file.
+ *
+ * Plus a switch button for enabling/disabling automatic [Dropbox] backups
  */
 class BackupDialog : BaseDialogue() {
+
+    companion object {
+        const val TAG = "backup"
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val b = BackupBinding.inflate(layoutInflater)
