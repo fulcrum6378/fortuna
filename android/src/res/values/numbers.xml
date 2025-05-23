@@ -21,5 +21,6 @@
     <item name="numAttic" type="id" />
     <item name="numOldPersian" type="id" />
     <item name="numBrahmi" type="id" />
+    <item name="numBabylonian" type="id" />
     <item name="numHieroglyph" type="id" />
 </resources>

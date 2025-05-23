@@ -3,7 +3,7 @@ package ir.mahdiparastesh.fortuna.util
 import kotlin.math.pow
 
 /**
- * Base class for Ancient Numeral Systems
+ * Base class for implementing ancient numeral systems
  *
  * @see <a href="https://en.wikipedia.org/wiki/List_of_numeral_systems">More on Wikipedia</a>
  */
@@ -12,7 +12,6 @@ abstract class Numeral(
 ) {
     abstract val chars: Array<String>
     open val defaultStr: String = "NaN"
-    protected abstract fun convert(num: Int): String
 
     fun output(num: Int): String =
         if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
@@ -20,9 +19,13 @@ abstract class Numeral(
         } catch (_: Exception) {
             defaultStr
         } else defaultStr
+
+    protected abstract fun convert(num: Int): String
 }
 
-/** Base class for systems which resemble the Attic system, like Roman and Etruscan. */
+/**
+ * Base class for systems which resemble the Attic system, like Roman and Etruscan
+ */
 abstract class AtticBasedNumeral : Numeral() {
     abstract val subtract4th: Boolean
     open val rtl: Boolean = false
@@ -38,10 +41,13 @@ abstract class AtticBasedNumeral : Numeral() {
             when {
                 i in 0..3 || (subtract4th && i == 4) ->
                     s.append(base.repeat(i))
+
                 !subtract4th && i == 4 ->
                     s.append(base + half)
+
                 i in 5..8 || (subtract4th && i == 9) ->
                     s.append(half + (base.repeat(i - 5)))
+
                 !subtract4th && i == 9 ->
                     s.append(base + chars[(((ln - ii) - 1) * 2) + 2])
             }
@@ -87,7 +93,8 @@ class RomanNumeral : AtticBasedNumeral() {
 
 
 /**
- * Base class for systems which resemble Gematria.
+ * Base class for systems which resemble Gematria
+ *
  * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria, Wikipedia</a>
  */
 abstract class GematriaLikeNumeral : Numeral() {
@@ -145,28 +152,64 @@ class BrahmiNumeral : GematriaLikeNumeral() {
     // Presumably they used Brahmi numerals or maybe Kharosthi.
 }
 
+/**
+ * The desired cuneiform characters specified in the main Wikipedia page are scattered across
+ * multiple unicode regions!
+ *
+ * IMPORTANT NOTE: I replaced the actual `20` character with double `10` characters;
+ * because the actual character is not supported by many devices (neither my laptop nor my phone)!
+ * REPLACE IT with the actual character in the FUTURE.....
+ *
+ * I also replaced the `2` character with double `1` characters; because there is no `2` character
+ * in the DISH group of the unicode. Nonetheless there is another group called "GESH2" which contain
+ * the both characters `1` and `2` in a sequential order, but they look nothing like the picture
+ * in Wikipedia. The `2` character in GESH2 was `\uD809\uDC16`.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Babylonian_cuneiform_numerals">
+ *     Babylonian cuneiform numerals - Wikipedia</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Cuneiform_Numbers_and_Punctuation">
+ *     Cuneiform Numbers and Punctuation - Wikipedia</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Cuneiform_(Unicode_block)">
+ *     Cuneiform (Unicode block) - Wikipedia</a>
+ *
+ * @see <a href="https://unicode.org/charts/PDF/U12400.pdf">
+ *     Cuneiform Numbers and Punctuation - Range: 12400–1247F - The Unicode Standard</a>
+ * @see <a href="https://unicode.org/charts/PDF/U12000.pdf">
+ *     Cuneiform - Range: 12000–123FF - The Unicode Standard</a>
+ */
+class BabylonianNumeral : GematriaLikeNumeral() {
+    override val chars = arrayOf(
+        // 1..9
+        "\uD808\uDC79", "\uD808\uDC79\uD808\uDC79", "\uD809\uDC08",
+        "\uD809\uDC3C", "\uD809\uDC0A", "\uD809\uDC0A",
+        "\uD809\uDC42", "\uD809\uDC44", "\uD809\uDC46",
+        // 10..90
+        "\uD808\uDF0B", "\uD808\uDF0B\uD808\uDF0B", /* actual 20: \uD808\uDF99 */ "\uD808\uDF0D",
+        "\uD809\uDC69", "\uD809\uDC6A", "\uD809\uDC6B",
+        "\uD809\uDC6C", "\uD809\uDC6D", "\uD809\uDC6E",
+    )
+}
+
 
 /**
- * Old Persian numbers written in cuneiform
+ * Old Persian cuneiform numbers
  *
- * Babylonian cuneiform symbols weren't available in unicode!
+ * Apparently in some dialects, 6 and 7 (but not 8) are written like six-pack abs: 𒐚 (\uD809\uDC1A)
+ * But we skipped it for the ease of both the writer and the reader!
  *
- * @see <a href="https://en.wikipedia.org/wiki/Old_Persian_cuneiform#Signs">Wikipedia</a>
- * @see <a href="https://unicode-table.com/en/blocks/old-persian/">Unicode-Table.com</a>
+ * @see <a href="https://www.heritageinstitute.com/zoroastrianism/languages/oldPersian.htm">
+ *     Heritage Institute - Old Persian</a>
+ * @see <a href="https://www.omniglot.com/writing/opcuneiform.htm">
+ *     Omniglot - Old Persian Cuneiform</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Old_Persian_(Unicode_block)">
+ *     Old Persian (Unicode block) - Wikipedia</a>
  */
 class OldPersianNumeral : Numeral() {
     override val chars = arrayOf(
-        "\uD800\uDFD1", "\uD800\uDFD2", // 1, 2
-        "\uD800\uDFD3", "\uD800\uDFD4", // 10, 20
-        "\uD800\uDFD5" // 100
+        "\uD800\uDFD1", "\uD800\uDFD2",  // 1, 2
+        "\uD800\uDFD3", "\uD800\uDFD4",  // 10, 20
+        "\uD800\uDFD5"  // 100
     )
-
-    private fun charToInt(i: Int): Int {
-        var ii = i.toDouble()
-        if (i % 2 == 1) ii -= 1.0
-        ii /= 2
-        return 10.0.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
-    }
 
     override fun convert(num: Int): String {
         val s = StringBuilder()
@@ -184,5 +227,12 @@ class OldPersianNumeral : Numeral() {
             s.append(chars[subChar])
         }
         return s.toString()
+    }
+
+    private fun charToInt(i: Int): Int {
+        var ii = i.toDouble()
+        if (i % 2 == 1) ii -= 1.0
+        ii /= 2
+        return 10.0.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
     }
 }

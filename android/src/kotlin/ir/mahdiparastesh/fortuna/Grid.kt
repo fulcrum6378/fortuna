@@ -62,7 +62,7 @@ class Grid(private val c: Main) : ListAdapter {
 
         // numbers
         b.dies.text = numeral.write(i + 1)
-        val enlarge = Numerals.all.find { it.jClass?.simpleName == numType }?.enlarge == true
+        val enlarge = Numerals.all.find { it.name() == numType }?.enlarge == true
         if (enlarge) b.dies.textSize =
             (b.dies.textSize / c.resources.displayMetrics.density) * 1.75f
         b.variabilis.text = (if (isEstimated) "c. " else "") + score.displayScore(false)

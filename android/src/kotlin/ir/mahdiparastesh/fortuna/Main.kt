@@ -157,7 +157,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
                 isCheckable = true
                 isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
-                        (nt.jClass?.simpleName ?: Fortuna.SP_NUMERAL_TYPE_DEF)
+                        (nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -166,7 +166,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             c.sp.edit {
                 putString(
                     Fortuna.SP_NUMERAL_TYPE,
-                    Numerals.all.find { it.id == mItem.itemId }?.jClass?.simpleName
+                    Numerals.all.find { it.id == mItem.itemId }?.name()
                         ?: Fortuna.SP_NUMERAL_TYPE_DEF
                 )
             }; updateGrid(); updateOverflow(); shake(); true
@@ -489,7 +489,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
             item.isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
-                    (Numerals.all[i].jClass?.simpleName ?: Fortuna.SP_NUMERAL_TYPE_DEF)
+                    (Numerals.all[i].name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
         }
     }
 

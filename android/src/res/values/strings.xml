@@ -66,6 +66,7 @@
     <string name="numAttic">Attic</string>
     <string name="numOldPersian">Old Persian</string>
     <string name="numBrahmi">Brahmi</string>
+    <string name="numBabylonian">Babylonian</string>
     <string name="numHieroglyph">Hieroglyph</string>
 
     <!-- drawer -->

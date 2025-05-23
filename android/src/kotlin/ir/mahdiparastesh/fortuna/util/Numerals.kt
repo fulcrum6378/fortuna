@@ -3,6 +3,7 @@ package ir.mahdiparastesh.fortuna.util
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import ir.mahdiparastesh.fortuna.R
+import kotlin.reflect.KClass
 
 /**
  * Ancient Numeral Systems
@@ -11,27 +12,30 @@ import ir.mahdiparastesh.fortuna.R
  */
 object Numerals {
 
-    /** List of all the supported ancient numeral systems */
+    /** List of all the supported numeral systems */
     val all = arrayOf(
         NumeralType(null, R.string.numArabic, R.id.numArabic),
         NumeralType(
-            RomanNumeral::class.java, R.string.numRoman, R.id.numRoman
-        ), // -~0..+1400 preceded Arabic (sources claiming -900 mistake/mix it with Etruscan)
+            RomanNumeral::class, R.string.numRoman, R.id.numRoman
+        ),  // -~0..+1400 preceded Arabic (sources claiming -900 mistake/mix it with Etruscan)
         NumeralType(
-            BrahmiNumeral::class.java, R.string.numBrahmi, R.id.numBrahmi
-        ), // -300..+500 preceded Gupta script.
+            BrahmiNumeral::class, R.string.numBrahmi, R.id.numBrahmi
+        ),  // -300..+500 preceded Gupta script.
         NumeralType(
-            OldPersianNumeral::class.java, R.string.numOldPersian, R.id.numOldPersian
-        ), // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
+            OldPersianNumeral::class, R.string.numOldPersian, R.id.numOldPersian
+        ),  // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
         NumeralType(
-            EtruscanNumeral::class.java, R.string.numEtruscan, R.id.numEtruscan
-        ), // -700..+50 inspired and was replaced by Roman numerals.
+            EtruscanNumeral::class, R.string.numEtruscan, R.id.numEtruscan
+        ),  // -700..+50 inspired and was replaced by Roman numerals.
         NumeralType(
-            AtticNumeral::class.java, R.string.numAttic, R.id.numAttic
-        ), // -700..-300 preceded Greek numerals.
+            AtticNumeral::class, R.string.numAttic, R.id.numAttic
+        ),  // -700..-300 preceded Greek numerals.
         NumeralType(
-            HieroglyphNumeral::class.java, R.string.numHieroglyph, R.id.numHieroglyph, true
-        ), // -3200..+400 preceded Coptic script.
+            BabylonianNumeral::class, R.string.numBabylonian, R.id.numBabylonian,
+        ),  // -2000~: first appeared.
+        NumeralType(
+            HieroglyphNumeral::class, R.string.numHieroglyph, R.id.numHieroglyph, true
+        ),  // -3200..+400 preceded Coptic script.
     )
 
     /** Convert a modern number into ancient numerals! */
@@ -49,12 +53,14 @@ object Numerals {
 /**
  * Data class containing information about a Numeral type
  *
- * @param jClass Java class
+ * @param kClass Kotlin class
  * @param name string resource for its visible name
  * @param id its unique ID resource used in various places
  * @param enlarge Are its characters complicated and require enlarging, like the hieroglyphs?
  */
 data class NumeralType(
-    val jClass: Class<*>?, @StringRes val name: Int, @IdRes val id: Int,
+    val kClass: KClass<*>?, @StringRes val name: Int, @IdRes val id: Int,
     val enlarge: Boolean = false
-)
+) {
+    fun name(): String? = kClass?.java?.simpleName
+}
