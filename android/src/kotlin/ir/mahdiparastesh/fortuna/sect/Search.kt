@@ -11,8 +11,10 @@ import android.text.style.StyleSpan
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Fortuna
@@ -34,31 +36,48 @@ import kotlin.math.min
 /** A dialog box for searching in [Vita] verbum descriptions */
 class SearchDialog : BaseDialogue() {
 
+    private lateinit var dialogue: AlertDialog
+    private val b: SearchBinding by lazy { SearchBinding.inflate(layoutInflater) }
+
     companion object {
         const val TAG = "search"
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        isCancelable = true
-        return MaterialAlertDialogBuilder(c).apply {
+
+        b.field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
+        b.field.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_GO)
+                (b.list.adapter as SearchAdapter).search(v.text)
+            return@setOnEditorActionListener true
+        }
+        b.inclusivity.isChecked = c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
+        b.inclusivity.setOnCheckedChangeListener { _, bb ->
+            c.c.sp.edit { putBoolean(Fortuna.SP_SEARCH_INCLUSIVE, bb) }
+            (b.list.adapter as SearchAdapter).search(b.field.text, true)
+        }
+
+        b.list.adapter = SearchAdapter(c, this)
+
+        isCancelable = false
+        dialogue = MaterialAlertDialogBuilder(c).apply {
             setIcon(R.drawable.search)
             setTitle(R.string.navSearch)
-            setView(SearchBinding.inflate(layoutInflater).apply {
-                //field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
-                field.setOnEditorActionListener { v, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_GO)
-                        (list.adapter as SearchAdapter).search(v.text)
-                    return@setOnEditorActionListener true
-                }
-                inclusivity.isChecked = c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
-                inclusivity.setOnCheckedChangeListener { _, bb ->
-                    c.c.sp.edit { putBoolean(Fortuna.SP_SEARCH_INCLUSIVE, bb) }
-                    (list.adapter as SearchAdapter).search(field.text, true)
-                }
-                list.adapter = SearchAdapter(c, this@SearchDialog)
-            }.root)
-            //setNegativeButton(R.string.cancel, null)
+            setView(b.root)
         }.create()
+        return dialogue
+    }
+
+    override fun onResume() {
+        super.onResume()
+        dialogue.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == android.view.KeyEvent.KEYCODE_BACK &&
+                event.action == android.view.KeyEvent.ACTION_UP &&
+                !isCancelable
+            ) {
+                dismiss(); true
+            } else false
+        }
     }
 
     override fun onDismiss(dialog: DialogInterface) {

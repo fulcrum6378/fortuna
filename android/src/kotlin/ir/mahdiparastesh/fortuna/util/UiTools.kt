@@ -43,13 +43,6 @@ object UiTools {
                 PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )  // A unique request code protects the PendingIntent from being recycled!
 
-    /* Helper function for copying a text to clipboard */
-    /*fun copyToClipboard(c: Context, text: CharSequence, label: CharSequence?) {
-        (c.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)
-            ?.setPrimaryClip(ClipData.newPlainText(label, text))
-        Toast.makeText(c, R.string.copied, Toast.LENGTH_SHORT).show()
-    }*/
-
     /** Clears focus from an [EditText]. */
     fun EditText.blur(c: Context) {
         (c.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)
