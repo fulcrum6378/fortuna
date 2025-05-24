@@ -12,9 +12,18 @@ import java.time.chrono.Chronology
 
 class Fortuna : Application(), FortunaContext {
 
+    private val osName: String = System.getProperty("os.name")
+    val appDir: File = File(
+        System.getProperty("user.home") + when {
+            osName.startsWith("Windows") -> "\\AppData\\Roaming\\Fortuna"
+            osName.startsWith("Mac OS") -> "/Library/Application Support/Fortuna"
+            else -> "/.config/Fortuna"  // "Linux", "FreeBSD", "SunOS"
+        }
+    )
+
     override lateinit var vita: Vita
-    override val stored: File by lazy { File("fortuna.vita") }
-    override val backup: File by lazy { File("fortuna_backup.vita") }
+    override val stored: File = File(appDir, "fortuna.vita")
+    override val backup: File = File(appDir, "fortuna_backup.vita")
     override lateinit var date: ChronoLocalDate
     override lateinit var luna: String
     override lateinit var todayDate: ChronoLocalDate
@@ -29,6 +38,7 @@ class Fortuna : Application(), FortunaContext {
         val root = fxmlLoader.load<Parent>()
 
         // prepare the Vita
+        if (!appDir.exists()) appDir.mkdirs()
         onCreate()
 
         // prepare the controller
