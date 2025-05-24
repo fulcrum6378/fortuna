@@ -22,6 +22,9 @@ object Numerals {
             BrahmiNumeral::class, R.string.numBrahmi, R.id.numBrahmi
         ),  // -300..+500 preceded Gupta script.
         NumeralType(
+            KharosthiNumeral::class, R.string.numKharosthi, R.id.numKharosthi
+        ),  // -400..+300 preceded Brahmi script.
+        NumeralType(
             OldPersianNumeral::class, R.string.numOldPersian, R.id.numOldPersian
         ),  // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
         NumeralType(
@@ -32,7 +35,7 @@ object Numerals {
         ),  // -700..-300 preceded Greek numerals.
         NumeralType(
             BabylonianNumeral::class, R.string.numBabylonian, R.id.numBabylonian,
-        ),  // -2000~: first appeared.
+        ),  // -2000 first appeared.
         NumeralType(
             HieroglyphNumeral::class, R.string.numHieroglyph, R.id.numHieroglyph, true
         ),  // -3200..+400 preceded Coptic script.

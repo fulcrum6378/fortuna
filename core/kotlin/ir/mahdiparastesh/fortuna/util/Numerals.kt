@@ -7,60 +7,64 @@ import kotlin.math.pow
  *
  * @see <a href="https://en.wikipedia.org/wiki/List_of_numeral_systems">More on Wikipedia</a>
  */
-abstract class Numeral(
-    private val zero: String? = null, private val minus: String? = null
-) {
+abstract class Numeral {
+
     abstract val chars: Array<String>
+    open val isRtl: Boolean = false
     open val defaultStr: String = "NaN"
+    open val zero: String? = null
+    open val minus: String? = null
+
+    private val sb = StringBuilder()
 
     fun output(num: Int): String =
         if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
+            sb.clear()
             convert(num)
+            sb.toString().let { if (!isRtl) it else it.reversed() }
         } catch (_: Exception) {
             defaultStr
         } else defaultStr
 
-    protected abstract fun convert(num: Int): String
+    /** Converts a number into an ancient numeral sequence and writes them using [write]. */
+    protected abstract fun convert(num: Int)
+
+    protected fun write(s: String) {
+        sb.append(s)
+    }
 }
 
 /**
  * Base class for systems which resemble the Attic system, like Roman and Etruscan
  */
-abstract class AtticBasedNumeral : Numeral() {
-    abstract val subtract4th: Boolean
-    open val rtl: Boolean = false
+abstract class AtticBasedNumeral(private val subtract4th: Boolean) : Numeral() {
 
-    override fun convert(num: Int): String {
+    override fun convert(num: Int) {
         val n: String = num.toString()
         val ln = n.length
-        val s = StringBuilder()
         for (ii in n.indices) {
             val i = n[ii].digitToInt()
             val base = chars[((ln - ii) - 1) * 2]
             val half = chars[(((ln - ii) - 1) * 2) + 1]
             when {
                 i in 0..3 || (subtract4th && i == 4) ->
-                    s.append(base.repeat(i))
+                    write(base.repeat(i))
 
                 !subtract4th && i == 4 ->
-                    s.append(base + half)
+                    write(base + half)
 
                 i in 5..8 || (subtract4th && i == 9) ->
-                    s.append(half + (base.repeat(i - 5)))
+                    write(half + (base.repeat(i - 5)))
 
                 !subtract4th && i == 9 ->
-                    s.append(base + chars[(((ln - ii) - 1) * 2) + 2])
+                    write(base + chars[(((ln - ii) - 1) * 2) + 2])
             }
         }
-        var ret = s.toString()
-        if (rtl) ret = ret.reversed()
-        return ret
     }
 }
 
 /** @see <a href="https://en.wikipedia.org/wiki/Attic_numerals">Wikipedia</a> */
-class AtticNumeral : AtticBasedNumeral() {
-    override val subtract4th = true
+class AtticNumeral : AtticBasedNumeral(true) {
     override val chars = arrayOf(
         "I", "\ud800\udd43", // 1, 5
         "Δ", "\ud800\udd44", // 10, 50
@@ -73,17 +77,15 @@ class AtticNumeral : AtticBasedNumeral() {
 }
 
 /** @see <a href="https://en.wikipedia.org/wiki/Etruscan_numerals">Wikipedia</a> */
-class EtruscanNumeral : AtticBasedNumeral() {
-    override val subtract4th = true
-    override val rtl = true
+class EtruscanNumeral : AtticBasedNumeral(true) {
+    override val isRtl = true
     override val chars = arrayOf(
         "\uD800\udf20", "\uD800\uDF21", "\uD800\uDF22", "\uD800\uDF23", "\uD800\uDF1F"
     )
 }
 
 /** @see <a href="https://en.wikipedia.org/wiki/Roman_numerals">Wikipedia</a> */
-class RomanNumeral : AtticBasedNumeral() {
-    override val subtract4th = false
+class RomanNumeral : AtticBasedNumeral(false) {
     override val chars = arrayOf(
         "I", "V", "X", "L", "C", "D", "M",
         "I\u0305", "V\u0305", "X\u0305", "L\u0305", "C\u0305", "D\u0305", "M\u0305"
@@ -97,17 +99,15 @@ class RomanNumeral : AtticBasedNumeral() {
  *
  * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria, Wikipedia</a>
  */
-abstract class GematriaLikeNumeral : Numeral() {
-    override fun convert(num: Int): String {
+abstract class GematriaLikeNumeral() : Numeral() {
+    override fun convert(num: Int) {
         val n: String = num.toString()
         val ln = n.length
-        val s = StringBuilder()
         for (ii in n.indices) {
             val i = n[ii].digitToInt()
             if (i == 0) continue
-            s.append(chars[((((ln - ii) - 1) * 9) - 1) + i])
+            write(chars[((((ln - ii) - 1) * 9) - 1) + i])
         }
-        return s.toString()
     }
 }
 
@@ -194,7 +194,7 @@ class BabylonianNumeral : GematriaLikeNumeral() {
 /**
  * Old Persian cuneiform numbers
  *
- * Apparently in some dialects, 6 and 7 (but not 8) are written like six-pack abs: 𒐚 (\uD809\uDC1A)
+ * Apparently in some dialects, 6 and 7 (but not 8) are written like six-pack abs: \uD809\uDC1A
  * But we skipped it for the ease of both the writer and the reader!
  *
  * @see <a href="https://www.heritageinstitute.com/zoroastrianism/languages/oldPersian.htm">
@@ -211,8 +211,7 @@ class OldPersianNumeral : Numeral() {
         "\uD800\uDFD5"  // 100
     )
 
-    override fun convert(num: Int): String {
-        val s = StringBuilder()
+    override fun convert(num: Int) {
         var n = num
         while (n > 0) {
             var subVal = 0
@@ -224,9 +223,8 @@ class OldPersianNumeral : Numeral() {
                 subVal = charVal
             }
             n -= subVal
-            s.append(chars[subChar])
+            write(chars[subChar])
         }
-        return s.toString()
     }
 
     private fun charToInt(i: Int): Int {
@@ -236,3 +234,90 @@ class OldPersianNumeral : Numeral() {
         return 10.0.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
     }
 }
+
+
+/** @see <a href="https://en.wikipedia.org/wiki/Kharosthi">Kharosthi - Wikipedia</a> */
+class KharosthiNumeral : Numeral() {
+    override val chars = arrayOf(
+        // 1..4
+        "\uD802\uDE40", "\uD802\uDE41", "\uD802\uDE42", "\uD802\uDE43",
+        // 10, 20
+        "\uD802\uDE44", "\uD802\uDE45",
+        // 100
+        "\uD802\uDE46",
+        // 1000
+        "\uD802\uDE47"
+    )
+    //override val isRtl = true  // it will become RTL automatically!!
+
+    override fun convert(num: Int) {
+        var n = num
+        if (n >= 1000) describeSuperKiloNumber(n / 1000)
+        if (n > 0) describeSubKiloNumber(n % 1000)
+    }
+
+    private fun describeSuperKiloNumber(n: Int) {
+        if (n >= 1000) {
+            describeSuperKiloNumber(n / 1000)
+            write(chars[7])
+        } else
+            describeSubKiloNumber(n)
+    }
+
+    /** @param n must be less than 1000 */
+    private fun describeSubKiloNumber(n: Int) {
+        if (n >= 1000) throw IllegalArgumentException("Sub-kilo numbers must be less than 1000.")
+        var nn = n
+
+        // solve hundreds (with preceding ones)
+        if (nn >= 100) {
+            if (nn >= 200) describeOnes(nn / 100)
+            write(chars[6])
+            nn %= 100
+        }
+
+        // solve tens (with repeating themselves)
+        if (nn >= 10) {
+            describeTens(nn / 10)
+            nn %= 10
+        }
+
+        describeOnes(nn)
+    }
+
+    private fun describeTens(n: Int) {
+        if (n >= 100) throw IllegalArgumentException("Tens must be less than 100.")
+        var nn = n
+        while (nn > 0) {
+            val subtract = when {
+                nn >= 2 -> 2
+                else /*nn == 1*/ -> 1
+            }
+            write(chars[subtract + 3])
+            nn -= subtract
+        }
+    }
+
+    /** @param n must be less than 10 */
+    private fun describeOnes(n: Int) {
+        if (n >= 10) throw IllegalArgumentException("Ones must be less than 10.")
+        var nn = n
+        while (nn > 0) {
+            val subtract = when {
+                nn >= 4 -> 4
+                nn == 3 -> 3
+                nn == 2 -> 2
+                else /*nn == 1*/ -> 1
+            }
+            write(chars[subtract - 1])
+            nn -= subtract
+        }
+    }
+}
+
+
+/*
+ * Numerals to add in the future when the newer unicode versions are applied:
+ * - Chinese Rod Numerals (so interesting!): https://en.wikipedia.org/wiki/Counting_rods
+ * - Maya Numerals: https://en.wikipedia.org/wiki/Maya_numerals
+ */

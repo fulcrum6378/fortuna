@@ -62,10 +62,11 @@
     <string name="numerals">Numerals</string>
     <string name="numArabic">Arabic</string>
     <string name="numRoman">Roman</string>
+    <string name="numBrahmi">Brahmi</string>
+    <string name="numKharosthi">Kharosthi</string>
+    <string name="numOldPersian">Old Persian</string>
     <string name="numEtruscan">Etruscan</string>
     <string name="numAttic">Attic</string>
-    <string name="numOldPersian">Old Persian</string>
-    <string name="numBrahmi">Brahmi</string>
     <string name="numBabylonian">Babylonian</string>
     <string name="numHieroglyph">Hieroglyph</string>
 
