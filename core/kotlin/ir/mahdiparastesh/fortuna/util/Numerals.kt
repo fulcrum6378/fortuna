@@ -240,8 +240,7 @@ class OldPersianNumeral : Numeral() {
 /**
  * Kharosthi is an RTL alphabet and Android will make it RTL automatically.
  *
- * - Minimum supported number: 1
- * - Maximum supported number: -unlimited-
+ * Number support range: 1 .. UNLIMITED
  *
  * @see <a href="https://en.wikipedia.org/wiki/Kharosthi">Kharosthi - Wikipedia</a>
  */
@@ -259,7 +258,7 @@ class KharosthiNumeral : Numeral() {
 
     override fun convert(num: Int) {
         var n = num
-        if (n >= 1000) describeSuperKiloNumber(n / 1000, 1)
+        if (n >= 1000) describeSuperKiloNumber(n / 1000, 0)
         if (n > 0) describeSubKiloNumber(n % 1000)
     }
 
@@ -268,12 +267,16 @@ class KharosthiNumeral : Numeral() {
         var nn = n
         if (nn >= 1000) {
             describeSuperKiloNumber(nn / 1000, step + 1)
-            nn %= 1000
-            //if (nn > 0) write(chars[7])
+            nn /= 1000
+        } else {
+            if (nn > 1) describeSubKiloNumber(nn)
+            (0..step).forEach { write(chars[7]) }
         }
-        describeSubKiloNumber(nn)
-        //write(chars[7])
-        (0..step).forEach { write(chars[7]) }  // FIXME
+        val remainder = n % 1000
+        if (n >= 1000 && remainder > 0) {
+            describeSubKiloNumber(remainder)
+            (0..step).forEach { write(chars[7]) }
+        }
     }
 
     /** @param n must be less than 1000 */
