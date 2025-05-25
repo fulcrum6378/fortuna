@@ -98,6 +98,11 @@
         <item name="cornerSizeTopRight">@dimen/largeCornerSize</item>
     </style>
 
+    <!--<style name="ShapeAppearance.Fortuna.Large" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">@dimen/largeCornerSize</item>
+    </style>-->
+
     <style name="ShapeAppearance.Fortuna.Medium" parent="ShapeAppearance.Material3.MediumComponent">
         <item name="cornerFamily">cut</item><!--rounded|cut-->
         <item name="cornerSize">@dimen/mediumCornerSize</item>

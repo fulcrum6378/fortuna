@@ -10,7 +10,7 @@ import kotlin.math.pow
 abstract class Numeral {
 
     abstract val chars: Array<String>
-    open val isRtl: Boolean = false
+    open val forceRtl: Boolean = false
     open val defaultStr: String = "NaN"
     open val zero: String? = null
     open val minus: String? = null
@@ -21,7 +21,7 @@ abstract class Numeral {
         if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
             sb.clear()
             convert(num)
-            sb.toString().let { if (!isRtl) it else it.reversed() }
+            sb.toString().let { if (!forceRtl) it else it.reversed() }
         } catch (_: Exception) {
             defaultStr
         } else defaultStr
@@ -78,7 +78,7 @@ class AtticNumeral : AtticBasedNumeral(true) {
 
 /** @see <a href="https://en.wikipedia.org/wiki/Etruscan_numerals">Wikipedia</a> */
 class EtruscanNumeral : AtticBasedNumeral(true) {
-    override val isRtl = true
+    override val forceRtl = true
     override val chars = arrayOf(
         "\uD800\udf20", "\uD800\uDF21", "\uD800\uDF22", "\uD800\uDF23", "\uD800\uDF1F"
     )
@@ -112,6 +112,7 @@ abstract class GematriaLikeNumeral() : Numeral() {
 }
 
 /** @see <a href="https://en.wikipedia.org/wiki/Egyptian_numerals">Wikipedia</a> */
+@Suppress("unused")
 class HieroglyphNumeral : GematriaLikeNumeral() {
     override val chars = arrayOf(
         // 1..9
@@ -181,7 +182,7 @@ class BabylonianNumeral : GematriaLikeNumeral() {
     override val chars = arrayOf(
         // 1..9
         "\uD808\uDC79", "\uD808\uDC79\uD808\uDC79", "\uD809\uDC08",
-        "\uD809\uDC3C", "\uD809\uDC0A", "\uD809\uDC0A",
+        "\uD809\uDC3C", "\uD809\uDC0A", "\uD809\uDC0B",
         "\uD809\uDC42", "\uD809\uDC44", "\uD809\uDC46",
         // 10..90
         "\uD808\uDF0B", "\uD808\uDF0B\uD808\uDF0B", /* actual 20: \uD808\uDF99 */ "\uD808\uDF0D",
@@ -236,7 +237,14 @@ class OldPersianNumeral : Numeral() {
 }
 
 
-/** @see <a href="https://en.wikipedia.org/wiki/Kharosthi">Kharosthi - Wikipedia</a> */
+/**
+ * Kharosthi is an RTL alphabet and Android will make it RTL automatically.
+ *
+ * - Minimum supported number: 1
+ * - Maximum supported number: -unlimited-
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Kharosthi">Kharosthi - Wikipedia</a>
+ */
 class KharosthiNumeral : Numeral() {
     override val chars = arrayOf(
         // 1..4
@@ -248,7 +256,6 @@ class KharosthiNumeral : Numeral() {
         // 1000
         "\uD802\uDE47"
     )
-    //override val isRtl = true  // it will become RTL automatically!!
 
     override fun convert(num: Int) {
         var n = num
@@ -256,6 +263,7 @@ class KharosthiNumeral : Numeral() {
         if (n > 0) describeSubKiloNumber(n % 1000)
     }
 
+    /** @param n must be greater than or equal to 1000 */
     private fun describeSuperKiloNumber(n: Int) {
         if (n >= 1000) {
             describeSuperKiloNumber(n / 1000)
@@ -285,6 +293,7 @@ class KharosthiNumeral : Numeral() {
         describeOnes(nn)
     }
 
+    /** @param n must be less than 100 */
     private fun describeTens(n: Int) {
         if (n >= 100) throw IllegalArgumentException("Tens must be less than 100.")
         var nn = n

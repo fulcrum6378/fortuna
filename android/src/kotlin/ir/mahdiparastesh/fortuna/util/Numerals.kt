@@ -36,9 +36,9 @@ object Numerals {
         NumeralType(
             BabylonianNumeral::class, R.string.numBabylonian, R.id.numBabylonian,
         ),  // -2000 first appeared.
-        NumeralType(
+        /*NumeralType(
             HieroglyphNumeral::class, R.string.numHieroglyph, R.id.numHieroglyph, true
-        ),  // -3200..+400 preceded Coptic script.
+        ),*/  // -3200..+400 preceded Coptic script.
     )
 
     /** Convert a modern number into ancient numerals! */
@@ -54,16 +54,16 @@ object Numerals {
 }
 
 /**
- * Data class containing information about a Numeral type
+ * Data class containing information about a [Numeral] type
  *
  * @param kClass Kotlin class
  * @param name string resource for its visible name
  * @param id its unique ID resource used in various places
- * @param enlarge Are its characters complicated and require enlarging, like the hieroglyphs?
  */
 data class NumeralType(
-    val kClass: KClass<*>?, @StringRes val name: Int, @IdRes val id: Int,
-    val enlarge: Boolean = false
+    val kClass: KClass<*>?,
+    @StringRes val name: Int,
+    @IdRes val id: Int,
 ) {
     fun name(): String? = kClass?.java?.simpleName
 }

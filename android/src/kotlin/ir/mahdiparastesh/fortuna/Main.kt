@@ -193,7 +193,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 c.date = c.lunaToDate(c.luna)
                 updateGrid()
             }
-        } // setOnItemClickListener cannot be used with a spinner
+        }  // setOnItemClickListener cannot be used with a spinner
         b.annus.addTextChangedListener {
             if (it.toString().length !=/*<*/ 4 && !rollingAnnusItself)
                 return@addTextChangedListener
