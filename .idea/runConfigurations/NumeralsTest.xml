@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="NumeralsTest" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="ir.mahdiparastesh.fortuna.util.NumeralsTestKt" />
+    <module name="Fortuna.core.test" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

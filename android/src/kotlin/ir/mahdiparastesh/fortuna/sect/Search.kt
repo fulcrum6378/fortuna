@@ -59,7 +59,7 @@ class SearchDialog : BaseDialogue() {
 
         b.list.adapter = SearchAdapter(c, this)
 
-        isCancelable = false
+        isCancelable = true
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setIcon(R.drawable.search)
             setTitle(R.string.navSearch)

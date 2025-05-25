@@ -259,17 +259,21 @@ class KharosthiNumeral : Numeral() {
 
     override fun convert(num: Int) {
         var n = num
-        if (n >= 1000) describeSuperKiloNumber(n / 1000)
+        if (n >= 1000) describeSuperKiloNumber(n / 1000, 1)
         if (n > 0) describeSubKiloNumber(n % 1000)
     }
 
     /** @param n must be greater than or equal to 1000 */
-    private fun describeSuperKiloNumber(n: Int) {
-        if (n >= 1000) {
-            describeSuperKiloNumber(n / 1000)
-            write(chars[7])
-        } else
-            describeSubKiloNumber(n)
+    private fun describeSuperKiloNumber(n: Int, step: Int) {
+        var nn = n
+        if (nn >= 1000) {
+            describeSuperKiloNumber(nn / 1000, step + 1)
+            nn %= 1000
+            //if (nn > 0) write(chars[7])
+        }
+        describeSubKiloNumber(nn)
+        //write(chars[7])
+        (0..step).forEach { write(chars[7]) }  // FIXME
     }
 
     /** @param n must be less than 1000 */
