@@ -4,8 +4,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 fun main() {
-    // FIXME OldPersianNumeral
-    val numeral = HieroglyphNumeral()
+    val numeral = RomanNumeral()
     val w = StringBuilder()
     w.appendLine(numeral::class.java.simpleName)
     for (subject in subjects)
@@ -33,7 +32,9 @@ val subjects: Array<Int> = arrayOf(
     999,
     1000,
     1001,
+    2025,
     6404,
+    // never try greater numbers on OldPersianNumeral; it'll make a mess!
     10002,
     100003,
     1000004,

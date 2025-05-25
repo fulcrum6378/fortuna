@@ -22,7 +22,7 @@ abstract class Numeral {
     open val maxSupport: Int = Int.MAX_VALUE
 
     /** Default string shown when an unsupported number is requested for conversion */
-    open val defaultStr: String = "NaN"
+    open val defaultStr: String = "undefined"
 
     /** Should the written string be reversed at the end? */
     open val forceRtl: Boolean = false
@@ -109,8 +109,7 @@ class EtruscanNumeral : AtticBasedNumeral(true) {
 class RomanNumeral : AtticBasedNumeral(false) {
     override val chars = arrayOf(
         "I", "V", "X", "L", "C", "D", "M",
-        // TODO an overline (\u0305) on a Roman numeral means you are multiplying that Roman numeral
-        //  by 1,000. Do not put an overline on `I`; it'd be equal to `M`!
+        // TODO an overline (\u0305) on a Roman numeral means you are multiplying it by 1,000.
     )
     override val maxSupport: Int = 4999
 }
@@ -233,6 +232,9 @@ class BabylonianNumeral : GematriaLikeNumeral() {
  * Apparently in some dialects, 6 and 7 (but not 8) are written like six-pack abs: \uD809\uDC1A
  * But we skipped it for the ease of both the writer and the reader!
  *
+ * Don't try numbers greater than 1000 on OldPersianNumeral; it supports unlimited positive numbers
+ * but its largest character has a value of 100! So the strings will grow too large if you do.
+ *
  * @see <a href="https://www.heritageinstitute.com/zoroastrianism/languages/oldPersian.htm">
  *     Heritage Institute - Old Persian</a>
  * @see <a href="https://www.omniglot.com/writing/opcuneiform.htm">
@@ -247,27 +249,28 @@ class OldPersianNumeral : Numeral() {
         "\uD800\uDFD5"  // 100
     )
 
-    override fun convert(num: Int) {
-        var n = num
-        while (n > 0) {
-            var subVal = 0
-            var subChar = 0
-            for (ch in chars.indices) {
-                val charVal = charToInt(ch)
-                if (charVal > n) break
-                subChar = ch
-                subVal = charVal
-            }
-            n -= subVal
-            write(chars[subChar])
-        }
+    private val values: List<Int> = chars.indices.map { charToInt(it) }
+
+    /** Converts the position of a character in [chars] into its value. */
+    private fun charToInt(i: Int): Int {
+        var ii = i.toFloat()
+        if (i % 2 == 1) ii -= 1f
+        ii /= 2
+        return 10f.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
     }
 
-    private fun charToInt(i: Int): Int {
-        var ii = i.toDouble()
-        if (i % 2 == 1) ii -= 1.0
-        ii /= 2
-        return 10.0.pow(ii).toInt() * (if (i % 2 == 0) 1 else 2)
+    override fun convert(num: Int) {
+        var n = num
+        var bufferNumeralPos = chars.size - 1
+        var subtractValue = 0
+        while (n > 0) {
+            subtractValue = values[bufferNumeralPos]
+            if (n >= subtractValue) {
+                n -= subtractValue
+                write(chars[bufferNumeralPos])
+            } else
+                bufferNumeralPos--
+        }
     }
 }
 
