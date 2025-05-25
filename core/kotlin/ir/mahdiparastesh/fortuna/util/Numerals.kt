@@ -3,32 +3,45 @@ package ir.mahdiparastesh.fortuna.util
 import kotlin.math.pow
 
 /**
- * Base class for implementing ancient numeral systems
+ * Base class for converting decimal numbers into Ancient Numerals
+ *
+ * Subclasses should implement the method [convert] inside which they must use the method [write]
+ * in order to append [chars] into the output string.
  *
  * @see <a href="https://en.wikipedia.org/wiki/List_of_numeral_systems">More on Wikipedia</a>
  */
 abstract class Numeral {
 
+    /** Special characters using as numerals */
     abstract val chars: Array<String>
-    open val forceRtl: Boolean = false
+
+    /** Smallest number supported by this numeral system */
+    open val minSupport: Int = 1
+
+    /** Largest number supported by this numeral system */
+    open val maxSupport: Int = Int.MAX_VALUE
+
+    /** Default string shown when an unsupported number is requested for conversion */
     open val defaultStr: String = "NaN"
-    open val zero: String? = null
-    open val minus: String? = null
 
+    /** Should the written string be reversed at the end? */
+    open val forceRtl: Boolean = false
+
+
+    fun of(num: Int): String {
+        if (num !in minSupport..maxSupport) return defaultStr
+        sb.clear()
+        convert(num)
+        return sb.toString().let { if (!forceRtl) it else it.reversed() }
+    }
+
+    /** The ink which will be returned as the output */
     private val sb = StringBuilder()
-
-    fun output(num: Int): String =
-        if ((num > 0 || zero != null) && (num >= 0 || minus != null)) try {
-            sb.clear()
-            convert(num)
-            sb.toString().let { if (!forceRtl) it else it.reversed() }
-        } catch (_: Exception) {
-            defaultStr
-        } else defaultStr
 
     /** Converts a number into an ancient numeral sequence and writes them using [write]. */
     protected abstract fun convert(num: Int)
 
+    /** Use this method to write [chars] into the output string. */
     protected fun write(s: String) {
         sb.append(s)
     }
@@ -45,16 +58,17 @@ abstract class AtticBasedNumeral(private val subtract4th: Boolean) : Numeral() {
         for (ii in n.indices) {
             val i = n[ii].digitToInt()
             val base = chars[((ln - ii) - 1) * 2]
-            val half = chars[(((ln - ii) - 1) * 2) + 1]
+            val half: String? = chars.getOrNull((((ln - ii) - 1) * 2) + 1)
+            // nullable because `chars` might end without a half value.
             when {
                 i in 0..3 || (subtract4th && i == 4) ->
                     write(base.repeat(i))
 
                 !subtract4th && i == 4 ->
-                    write(base + half)
+                    write(base + half!!)
 
                 i in 5..8 || (subtract4th && i == 9) ->
-                    write(half + (base.repeat(i - 5)))
+                    write(half!! + (base.repeat(i - 5)))
 
                 !subtract4th && i == 9 ->
                     write(base + chars[(((ln - ii) - 1) * 2) + 2])
@@ -63,7 +77,11 @@ abstract class AtticBasedNumeral(private val subtract4th: Boolean) : Numeral() {
     }
 }
 
-/** @see <a href="https://en.wikipedia.org/wiki/Attic_numerals">Wikipedia</a> */
+/**
+ * @see <a href="https://en.wikipedia.org/wiki/Attic_numerals">Attic numerals - Wikipedia</a>
+ * @see <a href="https://symbl.cc/en/unicode/blocks/ancient-greek-numbers/">
+ *     Ancient Greek Numbers - SYMBL</a>
+ */
 class AtticNumeral : AtticBasedNumeral(true) {
     override val chars = arrayOf(
         "I", "\ud800\udd43", // 1, 5
@@ -72,32 +90,36 @@ class AtticNumeral : AtticBasedNumeral(true) {
         "Χ", "\ud800\udd46", // 1,000, 5,000
         "M", "\ud800\udd47"  // 10,000, 50,000
     )
-    // https://charbase.com/10144-unicode-greek-acrophonic-attic-fifty
-    // https://unicode-table.com/en/blocks/ancient-greek-numbers/
+    override val maxSupport: Int = 99999
 }
 
-/** @see <a href="https://en.wikipedia.org/wiki/Etruscan_numerals">Wikipedia</a> */
+/**
+ * @see <a href="https://en.wikipedia.org/wiki/Etruscan_numerals">Etruscan numerals - Wikipedia</a>
+ */
 class EtruscanNumeral : AtticBasedNumeral(true) {
-    override val forceRtl = true
     override val chars = arrayOf(
+        // 1, 5, 10, 50, 100
         "\uD800\udf20", "\uD800\uDF21", "\uD800\uDF22", "\uD800\uDF23", "\uD800\uDF1F"
     )
+    override val maxSupport: Int = 499
+    override val forceRtl: Boolean = true
 }
 
-/** @see <a href="https://en.wikipedia.org/wiki/Roman_numerals">Wikipedia</a> */
+/** @see <a href="https://en.wikipedia.org/wiki/Roman_numerals">Roman numerals - Wikipedia</a> */
 class RomanNumeral : AtticBasedNumeral(false) {
     override val chars = arrayOf(
         "I", "V", "X", "L", "C", "D", "M",
-        "I\u0305", "V\u0305", "X\u0305", "L\u0305", "C\u0305", "D\u0305", "M\u0305"
-        // An over line on a Roman numeral means you are multiplying that Roman numeral by 1,000.
+        // TODO an overline (\u0305) on a Roman numeral means you are multiplying that Roman numeral
+        //  by 1,000. Do not put an overline on `I`; it'd be equal to `M`!
     )
+    override val maxSupport: Int = 4999
 }
 
 
 /**
- * Base class for systems which resemble Gematria
+ * Base class for numeral systems whose incrementation resembles that of Gematria
  *
- * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria, Wikipedia</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Gematria">Gematria - Wikipedia</a>
  */
 abstract class GematriaLikeNumeral() : Numeral() {
     override fun convert(num: Int) {
@@ -111,7 +133,11 @@ abstract class GematriaLikeNumeral() : Numeral() {
     }
 }
 
-/** @see <a href="https://en.wikipedia.org/wiki/Egyptian_numerals">Wikipedia</a> */
+/**
+ * @see <a href="https://en.wikipedia.org/wiki/Egyptian_numerals">Egyptian numerals - Wikipedia</a>
+ * @see <a href="https://symbl.cc/en/unicode/blocks/egyptian-hieroglyphs/">
+ *     Egyptian Hieroglyphs - SYMBL</a>
+ */
 @Suppress("unused")
 class HieroglyphNumeral : GematriaLikeNumeral() {
     override val chars = arrayOf(
@@ -131,11 +157,21 @@ class HieroglyphNumeral : GematriaLikeNumeral() {
         "\uD80C\uDCAD", "\uD80C\uDCAE", "\uD80C\uDCAF", "\uD80C\uDCB0", "\uD80C\uDCB1",
         "\uD80C\uDCB2", "\uD80C\uDCB3", "\uD80C\uDCB4", "\uD80C\uDCB5", "\uD80C\uDD90"
     )
-    override val defaultStr = "\uD80C\uDC4F"
-    // https://unicode-table.com/en/blocks/egyptian-hieroglyphs/
+
+    override fun convert(num: Int) {
+        if (num < 1000000)
+            super.convert(num)
+        else
+            write("\uD80C\uDC4F")
+    }
 }
 
-/** @see <a href="https://en.wikipedia.org/wiki/Brahmi_numerals">Wikipedia</a> */
+/**
+ * Number support range: 1 .. 199 (because of limited unicode support)
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Brahmi_numerals">Brahmi numerals - Wikipedia</a>
+ * @see <a href="https://symbl.cc/en/unicode/blocks/brahmi/">Brahmi - SYMBL</a>
+ */
 class BrahmiNumeral : GematriaLikeNumeral() {
     override val chars = arrayOf(
         // 1..9
@@ -148,9 +184,7 @@ class BrahmiNumeral : GematriaLikeNumeral() {
         "\uD804\uDC64"
         // except 1,000: "\uD804\uDC65" which is useless without the previous chars!
     )
-    // https://unicode-table.com/en/blocks/brahmi/
-    // Magadhi Prakrit was Mahavira and Buddha's language.
-    // Presumably they used Brahmi numerals or maybe Kharosthi.
+    override val maxSupport: Int = 199
 }
 
 /**
@@ -189,6 +223,7 @@ class BabylonianNumeral : GematriaLikeNumeral() {
         "\uD809\uDC69", "\uD809\uDC6A", "\uD809\uDC6B",
         "\uD809\uDC6C", "\uD809\uDC6D", "\uD809\uDC6E",
     )
+    override val maxSupport: Int = 99
 }
 
 
@@ -238,10 +273,7 @@ class OldPersianNumeral : Numeral() {
 
 
 /**
- * Kharosthi is an RTL alphabet and Android will make it RTL automatically.
- *
- * Number support range: 1 .. UNLIMITED
- *
+ * Note: Kharosthi is an RTL alphabet and Android will make it RTL automatically.
  * @see <a href="https://en.wikipedia.org/wiki/Kharosthi">Kharosthi - Wikipedia</a>
  */
 class KharosthiNumeral : Numeral() {

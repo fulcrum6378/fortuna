@@ -29,7 +29,7 @@ object NumberUtils {
     fun ChronoLocalDate.toKey(): String =
         "${z(get(ChronoField.YEAR), 4)}.${z(get(ChronoField.MONTH_OF_YEAR))}"
 
-    fun Numeral?.write(i: Int) = this?.output(i) ?: i.toString()
+    fun Numeral?.write(i: Int) = this?.of(i) ?: i.toString()
 
     /** Converts a number picker integer into a Fortuna score. */
     fun Int.toScore() = -(toFloat() - 6f) / 2f
