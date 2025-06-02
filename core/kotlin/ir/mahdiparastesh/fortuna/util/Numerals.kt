@@ -108,10 +108,10 @@ class EtruscanNumeral : AtticBasedNumeral(true) {
 /** @see <a href="https://en.wikipedia.org/wiki/Roman_numerals">Roman numerals - Wikipedia</a> */
 class RomanNumeral : AtticBasedNumeral(false) {
     override val chars = arrayOf(
+        // 1, 5, 10, 50, 100, 500, 1000
         "I", "V", "X", "L", "C", "D", "M",
-        // TODO an overline (\u0305) on a Roman numeral means you are multiplying it by 1,000.
     )
-    override val maxSupport: Int = 4999
+    override val maxSupport: Int = 3999  // 4000 would need a `5000` numeral.
 }
 
 

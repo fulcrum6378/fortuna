@@ -15,7 +15,7 @@ class HelpDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(c).apply {
-            setIcon(R.drawable.verbum)
+            setIcon(R.drawable.help)
             setTitle(R.string.navHelp)
             setMessage(R.string.help)
         }.create()
