@@ -1,13 +1,21 @@
+import org.gradle.kotlin.dsl.named
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.javafx)
     application
 }
 
-kotlin { jvmToolchain(23) }
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_24)
+    }
+}
 
 group = "ir.mahdiparastesh"
-version = "1.0.6"
+version = "1.0.8"
 
 sourceSets.getByName("main") {
     kotlin.srcDirs("src/kotlin")
@@ -19,7 +27,7 @@ application {
 }
 
 javafx {
-    version = "23.0.2"
+    version = "24.0.1"
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 

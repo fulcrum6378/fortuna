@@ -1,8 +1,16 @@
+import org.gradle.kotlin.dsl.named
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
-kotlin { jvmToolchain(23) }
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_24)
+    }
+}
 
 sourceSets.getByName("main") {
     kotlin.srcDirs("kotlin")

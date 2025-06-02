@@ -13,7 +13,7 @@
           <option value=":javafx:jar" />
         </list>
       </option>
-      <option name="vmOptions" value="--module-path &quot;D:\Programming\JavaFX\javafx-sdk-23.0.2\lib&quot;; --add-modules javafx.controls,javafx.fxml" />
+      <option name="vmOptions" value="--module-path &quot;D:\Programming\JavaFX\javafx-sdk-24.0.1\lib&quot;; --add-modules javafx.controls,javafx.fxml" />
     </ExternalSystemSettings>
     <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
     <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
