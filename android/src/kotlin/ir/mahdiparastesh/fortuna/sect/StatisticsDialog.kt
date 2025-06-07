@@ -23,7 +23,7 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import java.time.temporal.ChronoField
 
 /**
- * A dialog box for displaying statistics based on a user's Vita
+ * A dialog box for displaying statistics based on a user's [Vita]
  *
  * Making statistics in a way that it'll show every year since the minimum scored days till the
  * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if

@@ -59,7 +59,6 @@ import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
-import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numerals
@@ -78,6 +77,7 @@ import java.io.FileOutputStream
 import java.io.InputStreamReader
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
+import java.util.Locale
 import kotlin.math.ceil
 
 class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelectedListener {
@@ -435,7 +435,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.luna.setSelection(c.date[ChronoField.MONTH_OF_YEAR] - 1)
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "DefaultLocale")
     override fun updateGrid() {
         if (b.grid.adapter == null)
             b.grid.adapter = Grid(this)
@@ -446,8 +446,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         val mean: Float
         (b.grid.adapter as Grid).also { grid ->
             b.defVar.text = grid.luna.default.displayScore(true)
-            mean = grid.luna.mean(grid.maximumStats ?: 0)
-            b.lunaMean.text = "x̄: " + mean.groupDigits(6)
+            val scores = grid.luna.collectScores(grid.maximumStats ?: 0)
+            mean = grid.luna.mean(0, scores)
+            b.lunaMean.text = "∑ : " + grid.luna.sum(0, scores) +
+                    " - x̄: " + String.format(Locale.UK, "%.2f", mean)
             b.lunaSize.text = UiTools.showBytes(this@Main, grid.luna.size)
             b.lunaSize.isInvisible = grid.luna.size == 0L
             b.verbumIcon.isVisible = grid.luna.verbum?.isNotBlank() == true

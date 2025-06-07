@@ -195,11 +195,21 @@ class Luna(
 
     fun isEmpty() = diebus.all { it == null } && default == null
 
-    fun mean(maxDays: Int): Float {
-        if (maxDays == 0) return 0f
+    fun collectScores(maxDays: Int): ArrayList<Float>? {
+        if (maxDays == 0) return null
         val scores = arrayListOf<Float>()
         for (v in 0 until maxDays)
             (this[v] ?: default)?.let { scores.add(it) }
+        return scores
+    }
+
+    fun sum(maxDays: Int, scores: ArrayList<Float>? = collectScores(maxDays)): Float {
+        if (scores == null) return 0f
+        return if (scores.isEmpty()) 0f else scores.sum()
+    }
+
+    fun mean(maxDays: Int, scores: ArrayList<Float>? = collectScores(maxDays)): Float {
+        if (scores == null) return 0f
         return if (scores.isEmpty()) 0f else scores.sum() / scores.size
     }
 }

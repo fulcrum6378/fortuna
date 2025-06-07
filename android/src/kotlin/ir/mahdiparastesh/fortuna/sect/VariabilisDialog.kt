@@ -203,7 +203,7 @@ class VariabilisDialog : BaseDialogue() {
      * Unfortunately estimated dates cannot be imported because of the difference in the calendars!
      */
     @SuppressLint("SetTextI18n")
-    fun TextView.appendCrushDates(day: Short, year: Short) {
+    private fun TextView.appendCrushDates(day: Short, year: Short) {
         if (day == (-1).toShort()) return
         val yr = c.c.date[ChronoField.YEAR].toShort()
         val mo = c.c.date[ChronoField.MONTH_OF_YEAR].toShort()
@@ -257,7 +257,7 @@ class VariabilisDialog : BaseDialogue() {
      * @param i day
      */
     @SuppressLint("SetTextI18n")
-    fun TextView.appendSexReports(i: Int) {
+    private fun TextView.appendSexReports(i: Int) {
         if (i == -1) return
 
         val yr = c.c.date[ChronoField.YEAR].toShort()
