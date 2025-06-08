@@ -2,31 +2,13 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="Launch">
+      <SelectionState runConfigName="Android Compose">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-22T06:34:35.570415500Z">
-          <Target type="DEFAULT_BOOT">
-            <handle>
-              <DeviceId pluginId="Default" identifier="serial=192.168.1.20:37029;connection=7952312e" />
-            </handle>
-          </Target>
-        </DropdownSelection>
-        <DialogSelection>
-          <targets>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="Default" identifier="serial=192.168.1.20:44831;connection=ad95162a" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\fulcr\.android\avd\Medium_Phone.avd" />
-              </handle>
-            </Target>
-          </targets>
-        </DialogSelection>
       </SelectionState>
-      <SelectionState runConfigName="Install Silently">
+      <SelectionState runConfigName="Android View">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="Android View (silent)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

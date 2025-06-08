@@ -21,5 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fortuna"
 include(":core")
-include(":android")
+include(":android-compose")
+//include(":android-view")
 include(":javafx")
+
+// let there be only one Android module enabled in order not to confuse Android Studio.
