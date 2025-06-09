@@ -65,19 +65,19 @@ Here is a complete example:
 
 #### Main classes
 
-- [**Fortuna.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt) :
+- [**Fortuna.kt**](android-shared/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt) :
   the Application subclass
 
-- [**Main.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Main.kt) :
+- [**Main.kt**](android-view/src/kotlin/ir/mahdiparastesh/fortuna/Main.kt) :
   the main and only Activity instance in this app
 
 - [**Vita.kt**](core/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) :
   reads and writes Vita files and all related utilities
 
-- [**Grid.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Grid.kt) :
+- [**Grid.kt**](android-view/src/kotlin/ir/mahdiparastesh/fortuna/Grid.kt) :
   controls the calendar table and the dialogues that might pop up while interacting with it
 
-- [**Nyx.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Nyx.kt) :
+- [**Nyx.kt**](android-shared/kotlin/ir/mahdiparastesh/fortuna/Nyx.kt) :
   a BroadcastReceiver that performs a few tasks at 12 AM; including:
 
     1. Updating any available views according to the new date
@@ -86,9 +86,9 @@ Here is a complete example:
 
 #### Subpackages
 
-- [**sect**](android/src/kotlin/ir/mahdiparastesh/fortuna/sect) :
+- [**sect**](android-view/src/kotlin/ir/mahdiparastesh/fortuna/sect) :
   internal and external sections of this app
-- [**util**](android/src/kotlin/ir/mahdiparastesh/fortuna/util) :
+- [**util**](android-view/src/kotlin/ir/mahdiparastesh/fortuna/util) :
   general-purpose utilities
 
 ### Add your own calendar
@@ -102,11 +102,11 @@ represent calendar systems, so all you need to do is to:
 1. Add a new build flavour for Gradle
 2. Create "app/src/res_CALENDAR" (e.g. res_indian) and inside it:
     - *drawable/today_widget_preview.png* : a preview
-      for [TodayWidget](android/src/kotlin/ir/mahdiparastesh/fortuna/sect/TodayWidget.kt)
+      for [TodayWidget](android-view/src/kotlin/ir/mahdiparastesh/fortuna/sect/TodayWidget.kt)
     - *values/strings.xml* : month names as *<string-array name="luna"/>*
 3. Attribute that build flavour to your Calendar class in Fortuna.kt.
 
-#### [build.gradle.kts](android/build.gradle.kts)
+#### [build.gradle.kts](android-view/build.gradle.kts)
 
 ```kotlin
 android {
@@ -123,7 +123,7 @@ android {
 }
 ```
 
-#### [Fortuna.kt](android/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=val%20chronology)
+#### [Fortuna.kt](android-shared/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt#:~:text=val%20chronology)
 
 ```kotlin
 override val chronology: Chronology = when (BuildConfig.FLAVOR) {

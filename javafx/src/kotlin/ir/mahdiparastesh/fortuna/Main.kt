@@ -92,7 +92,7 @@ class Main : MainPage {
                 "Tir", "Mordad", "Shahrivar",
                 "Mehr", "Aban", "Azar",
                 "Dey", "Bahman", "Esfand"
-            )  // TODO localise
+            )  // TO-DO localise
         )
         lunaBox.valueProperty().addListener {
             if (rollingLuna) {
@@ -128,7 +128,7 @@ class Main : MainPage {
         next.onMouseClicked = EventHandler<MouseEvent> { event -> moveInMonths(true) }
         annusUp.onMouseClicked = EventHandler<MouseEvent> { event -> moveInYears(1) }
         annusDown.onMouseClicked = EventHandler<MouseEvent> { event -> moveInYears(-1) }
-        // TODO create long click handlers
+        // TO-DO create long click handlers
     }
 
     override fun updatePanel() {
@@ -162,7 +162,7 @@ class Main : MainPage {
 
     override fun updateGrid() {
         luna = c.vita[c.luna]
-        numeral = RomanNumeral()  // TODO determine using settings
+        numeral = RomanNumeral()  // TO-DO determine using settings
         maximumStats = c.maximaForStats(c.date, c.luna)
 
         // update headers in Panel
