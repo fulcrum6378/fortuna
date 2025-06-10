@@ -22,6 +22,8 @@ android {
             ?: logger.warn("Dropbox app key was not found!")
         buildConfigField("String", "DROPBOX_APP_KEY", "\"${dropboxKey}\"")
         manifestPlaceholders.put("dropboxKey", dropboxKey)
+
+        resValue("string", "app_name", "Fortuna (compose)")
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -68,7 +70,7 @@ android {
         compose = true
     }
     signingConfigs {
-        create("release") {
+        create("main") {
             storeFile = file(System.getenv("JKS_PATH"))
             storePassword = System.getenv("JKS_PASS")
             keyAlias = "fortuna"
@@ -77,16 +79,17 @@ android {
     }
     buildTypes {
         debug {
-            resValue("string", "app_name", "Fortuna (compose)")
+            signingConfig = signingConfigs.getByName("main")
         }
         release {
+            isDebuggable = true
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "$rootDir/android-shared/proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("main")
         }
     }
 }

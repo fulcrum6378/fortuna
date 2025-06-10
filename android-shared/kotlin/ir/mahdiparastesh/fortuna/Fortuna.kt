@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import ir.mahdiparastesh.chrono.IranianChronology
+import ir.mahdiparastesh.fortuna.base.FortunaContext
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import java.io.File
 import java.time.chrono.ChronoLocalDate

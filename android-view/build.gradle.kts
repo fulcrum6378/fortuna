@@ -15,7 +15,7 @@ android {
         minSdk = 26
         targetSdk = 36
         versionCode = 15
-        versionName = "14.6.2"
+        versionName = "14.6.4"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -67,7 +67,7 @@ android {
         viewBinding = true
     }
     signingConfigs {
-        create("release") {
+        create("main") {
             storeFile = file(System.getenv("JKS_PATH"))
             storePassword = System.getenv("JKS_PASS")
             keyAlias = "fortuna"
@@ -75,14 +75,16 @@ android {
         }
     }
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("main")
+        }
         release {
             isMinifyEnabled = true
-            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "$rootDir/android-shared/proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("main")
         }
     }
 }

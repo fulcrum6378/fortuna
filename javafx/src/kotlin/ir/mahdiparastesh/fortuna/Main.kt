@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import ir.mahdiparastesh.fortuna.base.MainPage
 import ir.mahdiparastesh.fortuna.sect.Variabilis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toVariabilis

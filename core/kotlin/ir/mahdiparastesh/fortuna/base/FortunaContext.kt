@@ -1,6 +1,7 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.base
 
 import ir.mahdiparastesh.chrono.IranianChronology
+import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.io.File
 import java.io.FileInputStream
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoField
 
 interface FortunaContext {
 
-    /** Main [Vita] object used across a Fortuna application */
+    /** Main [ir.mahdiparastesh.fortuna.Vita] object used across a Fortuna application */
     var vita: Vita
 
     /** Default Vita file */
@@ -32,13 +33,13 @@ interface FortunaContext {
     /** A calendar used for navigating at main pages */
     var date: ChronoLocalDate
 
-    /** A [Luna] key for navigating at main pages */
+    /** A [ir.mahdiparastesh.fortuna.Luna] key for navigating at main pages */
     var luna: String
 
     /** A calendar that indicates today */
     var todayDate: ChronoLocalDate
 
-    /** A [Luna] key that indicates this month */
+    /** A [ir.mahdiparastesh.fortuna.Luna] key that indicates this month */
     var todayLuna: String
 
 
@@ -56,7 +57,7 @@ interface FortunaContext {
         todayLuna = todayDate.toKey()
     }
 
-    /** Creates a ChronoLocalDate out of a [Luna] key. */
+    /** Creates a ChronoLocalDate out of a [ir.mahdiparastesh.fortuna.Luna] key. */
     fun lunaToDate(luna: String): ChronoLocalDate {
         val spl = luna.split(".")
         return chronology.date(spl[0].toInt(), spl[1].toInt(), 1)

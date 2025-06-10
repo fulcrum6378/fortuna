@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna
 
+import ir.mahdiparastesh.fortuna.base.FortunaContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream

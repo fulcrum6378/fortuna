@@ -1,5 +1,6 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.base
 
+import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.time.temporal.ChronoUnit
 
@@ -41,7 +42,7 @@ interface MainPage {
         updateGrid()
     }
 
-    /** Saves data of a day cell in the [Vita]. */
+    /** Saves data of a day cell in the [ir.mahdiparastesh.fortuna.Vita]. */
     fun saveDies(luna: Luna, i: Int, score: Float?, emoji: String?, verbum: String?) {
         luna.set(i, score, emoji, verbum)
         c.vita.save()

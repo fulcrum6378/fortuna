@@ -68,7 +68,7 @@
     <string name="numEtruscan">Etruscan</string>
     <string name="numAttic">Attic</string>
     <string name="numBabylonian">Babylonian</string>
-    <string name="numHieroglyph">Hieroglyph</string>
+    <!--<string name="numHieroglyph">Hieroglyph</string>-->
 
     <!-- drawer -->
     <string name="navOpen">Open menu</string>
@@ -77,7 +77,6 @@
     <string name="searchInclusive">Inclusive Search</string>
     <string name="foundNothing">Nothing was found!</string>
     <string name="navStat">Statistics</string>
-    <string name="fortunaStat">Fortuna Statistics</string>
     <string name="statText">Average of Total: %1$s\nSum: %2$s\nCovering %3$s.</string>
     <string name="navExport">Export data</string>
     <string name="emptyVita">Your vita is empty!</string>
@@ -154,7 +153,6 @@
     <string name="clear">Clear</string>
     <string name="done">Done!</string>
     <string name="failed">Failed!</string>
-    <string name="copied">Copied to clipboard.</string>
 
     <!-- Nyx -->
     <string name="ntfReminderTitle">Daily Reminder</string>
