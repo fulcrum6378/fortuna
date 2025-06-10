@@ -191,4 +191,10 @@
         android:theme="@style/ThemeOverlay.Fortuna.Nav"
         app:itemShapeAppearance="@style/ShapeAppearance.Fortuna.Medium"
         app:menu="@menu/nav" />
+
+    <!-- Unfixable Bugs:
+    - Drawer has wrong corner shadows (must be cut, but are round)
+    - A shadow of the status bar is placed at the wrong place in the landscape mode
+      where it should've appeared in portrait mode.
+    -->
 </androidx.drawerlayout.widget.DrawerLayout>
