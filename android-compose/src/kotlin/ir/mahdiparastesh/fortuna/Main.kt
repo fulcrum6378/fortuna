@@ -7,9 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
@@ -57,19 +63,51 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
+import ir.mahdiparastesh.fortuna.util.NumberUtils.z
+import ir.mahdiparastesh.fortuna.util.Numeral
+import ir.mahdiparastesh.fortuna.util.Numerals
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoField
 
-class Main : ComponentActivity() {
+class Main : ComponentActivity(), MainPage {
+    override val c: Fortuna get() = applicationContext as Fortuna
+    val m: Model by viewModels()
+
+    class Model : ViewModel() {
+        var annus by mutableStateOf<String?>(null)
+        var luna by mutableStateOf<Int?>(null)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        if (m.annus == null) m.annus = c.date[ChronoField.YEAR].toString()
+        if (m.luna == null) m.luna = c.date[ChronoField.MONTH_OF_YEAR] - 1
+
         setContent { FortunaTheme { Root() } }
+    }
+
+    override fun updatePanel() {
+        m.annus = c.date[ChronoField.YEAR].toString()
+        m.luna = c.date[ChronoField.MONTH_OF_YEAR] - 1
+    }
+
+    override fun updateGrid() {}
+
+    override fun moveInYears(to: Int) {
+        m.annus = (m.annus!!.toInt() + to).toString()
+    }
+
+    override fun variabilis(day: Int) {
+        TODO()
     }
 }
 
 @get:Composable
-val c: Fortuna get() = (LocalActivity.current as Main).applicationContext as Fortuna
+val c: Main get() = LocalActivity.current as Main
 
 @Composable
 fun Root() {
@@ -77,58 +115,7 @@ fun Root() {
     val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
-        drawerContent = {
-            ModalDrawerSheet(
-                drawerContainerColor = MaterialTheme.colorScheme.primary,
-                drawerContentColor = MaterialTheme.colorScheme.onPrimary,
-            ) {
-
-                @Composable
-                fun NavItem(
-                    @StringRes title: Int,
-                    @DrawableRes icon: Int,
-                ) {
-                    NavigationDrawerItem(
-                        label = {
-                            Text(
-                                text = stringResource(title),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        },
-                        selected = false,
-                        onClick = { /*TODO*/ },
-                        icon = {
-                            Icon(
-                                painterResource(icon),
-                                contentDescription = stringResource(title),
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        },
-                    )
-                }
-
-                @Composable
-                fun NavDivider() {
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .fillMaxWidth(0.8f),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-
-                NavItem(R.string.today, R.drawable.today)
-                NavItem(R.string.navSearch, R.drawable.search)
-                NavItem(R.string.navStat, R.drawable.statistics)
-                NavDivider()
-                NavItem(R.string.navExport, R.drawable.data_export)
-                NavItem(R.string.navImport, R.drawable.data_import)
-                NavItem(R.string.navSend, R.drawable.data_send)
-                NavItem(R.string.backup, R.drawable.backup)
-                NavDivider()
-                NavItem(R.string.navHelp, R.drawable.help)
-            }
-        }
+        drawerContent = { Drawer() },
     ) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -136,7 +123,9 @@ fun Root() {
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
                     navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } },  // FIXME
+                        ) {
                             Icon(
                                 Icons.Default.Menu,
                                 contentDescription = stringResource(R.string.navOpen),
@@ -162,24 +151,80 @@ fun Root() {
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 Panel()
-                //Grid()
+                Grid()
             }
         }
     }
 }
 
 @Composable
+fun Drawer() {
+    ModalDrawerSheet(
+        drawerContainerColor = MaterialTheme.colorScheme.primary,
+        drawerContentColor = MaterialTheme.colorScheme.onPrimary,
+    ) {
+
+        @Composable
+        fun NavItem(
+            @StringRes title: Int,
+            @DrawableRes icon: Int,
+        ) {
+            NavigationDrawerItem(
+                label = {
+                    Text(
+                        text = stringResource(title),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                },
+                selected = false,
+                onClick = { /*TODO*/ },
+                icon = {
+                    Icon(
+                        painterResource(icon),
+                        contentDescription = stringResource(title),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                },
+            )
+        }
+
+        @Composable
+        fun NavDivider() {
+            HorizontalDivider(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth(0.8f),
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+
+        NavItem(R.string.today, R.drawable.today)
+        NavItem(R.string.navSearch, R.drawable.search)
+        NavItem(R.string.navStat, R.drawable.statistics)
+        NavDivider()
+        NavItem(R.string.navExport, R.drawable.data_export)
+        NavItem(R.string.navImport, R.drawable.data_import)
+        NavItem(R.string.navSend, R.drawable.data_send)
+        NavItem(R.string.backup, R.drawable.backup)
+        NavDivider()
+        NavItem(R.string.navHelp, R.drawable.help)
+    }
+}
+
+@Composable
+fun Toolbar() {
+
+}
+
+@Composable
 fun Panel() {
     val c = c
     val months = stringArrayResource(R.array.luna)
-    var selectedLuna by rememberSaveable {
-        mutableStateOf(months[c.date[ChronoField.MONTH_OF_YEAR] - 1])
-    }
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
-    var annus by rememberSaveable { mutableStateOf(c.date[ChronoField.YEAR].toString()) }
 
     Box {
-        Box(  // a shadow for the TopAppBar
+        // a shadow beneath the TopAppBar
+        Box(
             Modifier
                 .fillMaxWidth()
                 .height(4.dp)
@@ -212,8 +257,8 @@ fun Panel() {
                 modifier = Modifier.width(200.dp),
             ) {
                 TextField(
-                    value = selectedLuna,
-                    onValueChange = {},
+                    value = months[c.m.luna!!],
+                    onValueChange = { c.m.luna = months.indexOf(it) },
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .width(200.dp),
@@ -227,11 +272,15 @@ fun Panel() {
                     expanded = lunaExpanded,
                     onDismissRequest = { lunaExpanded = false },
                 ) {
-                    months.forEach { option ->
+                    months.forEachIndexed { i, option ->
                         DropdownMenuItem(
-                            text = { Text(option) },
+                            text = {
+                                Text(option)
+                            },
                             onClick = {
-                                selectedLuna = option
+                                c.c.luna = "${z(c.m.annus!!, 4)}.${z(i + 1)}"
+                                c.c.date = c.c.lunaToDate(c.c.luna)
+                                c.m.luna = i
                                 lunaExpanded = false
                             }
                         )
@@ -241,14 +290,55 @@ fun Panel() {
 
             // year selector (annus)
             TextField(
-                value = annus,
-                onValueChange = { annus = it },
+                value = c.m.annus!!,
+                onValueChange = {
+                    c.c.luna = "${z(it, 4)}.${z(c.m.luna!! + 1)}"
+                    c.c.date = c.c.lunaToDate(c.c.luna)
+                    c.m.annus = it
+                },
                 modifier = Modifier.width(85.dp),
                 textStyle = TextStyle(textAlign = TextAlign.Center),
                 singleLine = true,
                 colors = textFieldColours,
             )
         }
+    }
+}
+
+@Composable
+fun Grid() {
+    val c = c
+    val numeral = Numerals.build(
+        c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
+            .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it })
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(5),  // TODO 10 if ...
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        items(c.c.date.lengthOfMonth()) { i -> Dies(i, numeral) }
+    }
+}
+
+@Composable
+fun Dies(i: Int, numeral: Numeral?) {
+    Box(
+        modifier = Modifier
+            .border(
+                BorderStroke(
+                    0.5.dp,
+                    Color(
+                        // TODO if today #44000000 night: #44FFFFFF
+                        if (!isSystemInDarkTheme()) 0xFFF0F0F0 else 0xFF252525
+                    )
+                )
+            ),  // TODO textColor
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = numeral.write(i + 1),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+        )
     }
 }
 
