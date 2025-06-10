@@ -12,11 +12,11 @@ android {
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     defaultConfig {
-        applicationId = "ir.mahdiparastesh.fortuna"
+        applicationId = "ir.mahdiparastesh.fortuna.compose"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
-        versionName = "0.5.2"
+        versionName = "0.5.7"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -77,7 +77,6 @@ android {
     }
     buildTypes {
         debug {
-            applicationIdSuffix = ".compose"
             resValue("string", "app_name", "Fortuna (compose)")
         }
         release {

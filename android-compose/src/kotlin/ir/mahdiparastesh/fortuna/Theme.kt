@@ -21,6 +21,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = Color(0xFFF44336),
     onPrimary = Color.White,
     onSecondary = Color.White,
+    onSurface = Color(0xFF777777),
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -28,6 +29,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = Color(0xFF670D06),
     onPrimary = Color.White,
     onSecondary = Color.White,
+    onSurface = Color.White,
 )
 
 // Set of Material typography styles to start with

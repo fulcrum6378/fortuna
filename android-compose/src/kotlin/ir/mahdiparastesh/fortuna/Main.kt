@@ -2,6 +2,7 @@
 
 package ir.mahdiparastesh.fortuna
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -26,12 +27,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,56 +54,79 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
-import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import kotlinx.coroutines.launch
+import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 
 class Main : ComponentActivity(), MainPage {
     override val c: Fortuna get() = applicationContext as Fortuna
     val m: Model by viewModels()
 
+    val night: Boolean by lazy {
+        resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+    val cpl: FloatArray = floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
+    val cp: FloatArray by lazy {
+        if (!night) cpl else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
+    }
+    val csl: FloatArray = floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
+    val cs: FloatArray by lazy {
+        if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
+    }
+
     class Model : ViewModel() {
-        var annus by mutableStateOf<String?>(null)
-        var luna by mutableStateOf<Int?>(null)
+        var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        if (m.annus == null) m.annus = c.date[ChronoField.YEAR].toString()
-        if (m.luna == null) m.luna = c.date[ChronoField.MONTH_OF_YEAR] - 1
-
+        if (m.date == null) m.date = c.date
         setContent { FortunaTheme { Root() } }
     }
 
-    override fun updatePanel() {
-        m.annus = c.date[ChronoField.YEAR].toString()
-        m.luna = c.date[ChronoField.MONTH_OF_YEAR] - 1
-    }
-
+    override fun updatePanel() {}
     override fun updateGrid() {}
 
+    fun setDate(field: ChronoField, value: Int) {
+        c.date = c.date.with(field, value.toLong())
+        onDateChanged()
+    }
+
     override fun moveInYears(to: Int) {
-        m.annus = (m.annus!!.toInt() + to).toString()
+        setDate(ChronoField.YEAR, c.date[ChronoField.YEAR] + to)
+        onDateChanged()
     }
 
     override fun variabilis(day: Int) {
         TODO()
+    }
+
+    override fun onDateChanged() {
+        c.luna = c.date.toKey()
+        m.date = c.date
     }
 }
 
@@ -111,6 +135,7 @@ val c: Main get() = LocalActivity.current as Main
 
 @Composable
 fun Root() {
+    //Log.d("YURIKO", "Root()")
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -159,6 +184,7 @@ fun Root() {
 
 @Composable
 fun Drawer() {
+    //Log.d("YURIKO", "Drawer()")
     ModalDrawerSheet(
         drawerContainerColor = MaterialTheme.colorScheme.primary,
         drawerContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -212,12 +238,8 @@ fun Drawer() {
 }
 
 @Composable
-fun Toolbar() {
-
-}
-
-@Composable
 fun Panel() {
+    //Log.d("YURIKO", "Panel()")
     val c = c
     val months = stringArrayResource(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
@@ -257,14 +279,23 @@ fun Panel() {
                 modifier = Modifier.width(200.dp),
             ) {
                 TextField(
-                    value = months[c.m.luna!!],
-                    onValueChange = { c.m.luna = months.indexOf(it) },
+                    value = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
+                    onValueChange = { /* unused */ },
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .width(200.dp),
                     readOnly = true,
+                    textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(lunaExpanded)
+                        Icon(
+                            imageVector = Icons.Filled.ArrowDropDown,
+                            contentDescription = null,
+                            modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     },
                     colors = textFieldColours,
                 )
@@ -278,9 +309,8 @@ fun Panel() {
                                 Text(option)
                             },
                             onClick = {
-                                c.c.luna = "${z(c.m.annus!!, 4)}.${z(i + 1)}"
-                                c.c.date = c.c.lunaToDate(c.c.luna)
-                                c.m.luna = i
+                                c.setDate(ChronoField.MONTH_OF_YEAR, i + 1)
+                                c.onDateChanged()
                                 lunaExpanded = false
                             }
                         )
@@ -290,14 +320,17 @@ fun Panel() {
 
             // year selector (annus)
             TextField(
-                value = c.m.annus!!,
+                value = c.m.date!![ChronoField.YEAR].toString(),
                 onValueChange = {
-                    c.c.luna = "${z(it, 4)}.${z(c.m.luna!! + 1)}"
-                    c.c.date = c.c.lunaToDate(c.c.luna)
-                    c.m.annus = it
+                    c.setDate(ChronoField.YEAR, it.toInt())
+                    c.onDateChanged()
                 },
                 modifier = Modifier.width(85.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center),
+                textStyle = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                ),
                 singleLine = true,
                 colors = textFieldColours,
             )
@@ -307,38 +340,81 @@ fun Panel() {
 
 @Composable
 fun Grid() {
+    //Log.d("YURIKO", "Grid()")
     val c = c
+    val luna = c.c.vita[c.m.date!!.toKey()]
     val numeral = Numerals.build(
         c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
             .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it })
+    val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(5),  // TODO 10 if ...
         modifier = Modifier.fillMaxSize(),
     ) {
-        items(c.c.date.lengthOfMonth()) { i -> Dies(i, numeral) }
+        items(c.m.date!!.lengthOfMonth()) { i ->
+            Dies(i, luna, numeral, maximumStats, c.c.luna == c.c.todayLuna)
+        }
     }
 }
 
 @Composable
-fun Dies(i: Int, numeral: Numeral?) {
+fun Dies(i: Int, luna: Luna, numeral: Numeral?, maximumStats: Int?, hasToday: Boolean) {
+    //Log.d("YURIKO", "Dies(${i + 1})")
+    val score: Float? =
+        if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
+    val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
+    val isToday = hasToday && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1
+
+    val textColor: Color
+    val targetColour = when {
+        score != null && score > 0f -> {
+            textColor = MaterialTheme.colorScheme.onPrimary
+            Color(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
+        }
+        score != null && score < 0f -> {
+            textColor = MaterialTheme.colorScheme.onSecondary
+            Color(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
+        }
+        else -> {
+            textColor = MaterialTheme.colorScheme.onSurface
+            Color.Transparent
+        }
+    }
+
     Box(
         modifier = Modifier
+            .background(targetColour)  // TODO animate
             .border(
                 BorderStroke(
-                    0.5.dp,
+                    if (isToday) 5.dp else 0.5.dp,
                     Color(
-                        // TODO if today #44000000 night: #44FFFFFF
-                        if (!isSystemInDarkTheme()) 0xFFF0F0F0 else 0xFF252525
-                    )
+                        if (isToday) {
+                            if (!isSystemInDarkTheme()) 0x44000000 else 0x44FFFFFF
+                        } else {
+                            if (!isSystemInDarkTheme()) 0xFFF0F0F0 else 0xFF252525
+                        }
+                    ),
                 )
-            ),  // TODO textColor
+            ),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = numeral.write(i + 1),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
-        )
+        Column(
+            modifier = Modifier.padding(vertical = 23.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = numeral.write(i + 1),
+                color = textColor,
+                fontSize = 18.sp,
+            )
+            Text(
+                text = (if (isEstimated) "c. " else "") + score.displayScore(false),
+                modifier = Modifier.alpha(if (score != null) 1f else .6f),
+                color = textColor,
+                fontSize = 13.sp,
+            )
+        }
     }
 }
 
