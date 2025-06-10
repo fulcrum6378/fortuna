@@ -18,7 +18,6 @@ import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
-import ir.mahdiparastesh.fortuna.util.UiTools
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,7 +113,7 @@ class BackupDialog : BaseDialogue() {
         val dt = c.c.dateTimeFromTimestamp(c.c.backup.lastModified())
         val d = dt.first
         val t = dt.second
-        return "${z(d[ChronoField.YEAR], 4)}.${z(d[ChronoField.MONTH_OF_YEAR] + 1)}." +
+        return "${z(d[ChronoField.YEAR], 4)}.${z(d[ChronoField.MONTH_OF_YEAR])}." +
                 "${z(d[ChronoField.DAY_OF_MONTH])} - ${z(t[ChronoField.HOUR_OF_DAY])}:" +
                 "${z(t[ChronoField.MINUTE_OF_HOUR])}:${z(t[ChronoField.SECOND_OF_MINUTE])}"
     }

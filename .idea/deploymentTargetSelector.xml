@@ -7,6 +7,14 @@
       </SelectionState>
       <SelectionState runConfigName="Android View">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-06-10T17:09:02.299292700Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="Default" identifier="serial=192.168.1.20:33563;connection=cce463ae" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="Android View (silent)">
         <option name="selectionMode" value="DROPDOWN" />
