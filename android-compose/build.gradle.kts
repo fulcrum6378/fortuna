@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna.compose"
-        minSdk = 30
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
-        versionName = "0.7.5"
+        versionName = "0.7.7"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")

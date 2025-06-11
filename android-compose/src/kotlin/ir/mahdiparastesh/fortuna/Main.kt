@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -164,9 +163,7 @@ fun Root() {
     val c = c
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val numeralState = remember {
-        mutableStateOf<String?>(
-            c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
-        )
+        mutableStateOf<String?>(c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null))
     }
 
     ModalNavigationDrawer(
@@ -194,6 +191,7 @@ fun Drawer() {
         drawerContainerColor = MaterialTheme.colorScheme.primary,
         drawerContentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
+        val hPad = 15.dp
 
         @Composable
         fun Item(
@@ -213,7 +211,7 @@ fun Drawer() {
                 onClick = onClick,
                 modifier = Modifier
                     .height(54.dp)
-                    .padding(horizontal = 15.dp, vertical = 2.dp),
+                    .padding(horizontal = hPad, vertical = 2.dp),
                 icon = {
                     Icon(
                         painterResource(icon),
@@ -229,7 +227,7 @@ fun Drawer() {
         fun Divider() {
             HorizontalDivider(
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
+                    .width(hPad)
                     .align(Alignment.CenterHorizontally),
                 color = Color(0x66FFFFFF),
             )
@@ -302,7 +300,7 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
             ) {
                 for (n in Numerals.all.indices) {
                     val nt = Numerals.all[n]
-                    val ntName = nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF
+                    val ntName: String? = nt.name()
 
                     DropdownMenuItem(
                         text = {
@@ -323,7 +321,12 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
                             }
                         },
                         onClick = {
-                            c.c.sp.edit { putString(Fortuna.SP_NUMERAL_TYPE, ntName) }
+                            c.c.sp.edit {
+                                putString(
+                                    Fortuna.SP_NUMERAL_TYPE,
+                                    ntName ?: Fortuna.SP_NUMERAL_TYPE_DEF
+                                )
+                            }
                             c.shake()
                             numeralState.value = ntName
                             numeralsExpanded = false
@@ -364,7 +367,7 @@ fun Panel() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 26.dp, bottom = 21.dp),
+                .padding(top = 30.dp, bottom = 24.dp),
             horizontalArrangement = Arrangement.Center,
         ) {
             val textFieldColours = TextFieldDefaults.colors(
@@ -443,13 +446,17 @@ fun Grid(numeralState: MutableState<String?>) {
     //Log.d("YURIKO", "Grid()")
     val c = c
     val luna = c.c.vita[c.m.date!!.toKey()]
-    val numeralType = Numerals.build(numeralState.value)
+    val numeralType = Numerals.build(
+        numeralState.value?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
+    )
     val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
     val config = LocalConfiguration.current
     val isWide = config.smallestScreenWidthDp >= 600
 
     FlowRow(
-        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 48.dp),
         maxItemsInEachRow = if (!isWide) 5 else 10,
     ) {
         for (i in 0 until c.m.date!!.lengthOfMonth())

@@ -21,12 +21,21 @@ import java.time.temporal.ChronoField
 /** Main table of our calendar grid which lists days of a month */
 class Grid(private val c: Main) : ListAdapter {
     lateinit var luna: Luna
-    private var numType: String? = null
     private var numeral: Numeral? = null
     var maximumStats: Int? = null
 
     init {
         onRefresh()
+    }
+
+    /** Invoked via [Main.updateGrid]. */
+    fun onRefresh() {
+        luna = c.c.vita[c.c.luna]
+        numeral = Numerals.build(
+            c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null)
+                ?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
+        )
+        maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
     }
 
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
@@ -120,14 +129,5 @@ class Grid(private val c: Main) : ListAdapter {
             b.root.foreground = c.resources.getDrawable(R.drawable.dies, c.theme)
 
         return b.root
-    }
-
-    /** Invoked via [Main.updateGrid]. */
-    fun onRefresh() {
-        luna = c.c.vita[c.c.luna]
-        numType = c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
-            .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
-        numeral = Numerals.build(numType)
-        maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
     }
 }

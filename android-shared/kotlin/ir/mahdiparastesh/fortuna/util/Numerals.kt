@@ -36,7 +36,7 @@ object Numerals {
             BabylonianNumeral::class, R.string.numBabylonian
         ),  // -2000 first appeared.
         /*NumeralType(
-            HieroglyphNumeral::class, R.string.numHieroglyph,
+            HieroglyphNumeral::class, R.string.numHieroglyph, true
         ),*/  // -3200..+400 preceded Coptic script.
     )
 

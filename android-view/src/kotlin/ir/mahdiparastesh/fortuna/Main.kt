@@ -149,7 +149,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.nav.setNavigationItemSelectedListener(this)
         for (n in Numerals.all.indices) {
             val nt = Numerals.all[n]
-            b.toolbar.menu.add(0, nt.id, n, nt.name).apply {
+            b.toolbar.menu.add(0, n, n, nt.name).apply {
                 isCheckable = true
                 isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
                         (nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
@@ -161,10 +161,13 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             c.sp.edit {
                 putString(
                     Fortuna.SP_NUMERAL_TYPE,
-                    Numerals.all.find { it.id == mItem.itemId }?.name()
-                        ?: Fortuna.SP_NUMERAL_TYPE_DEF
+                    Numerals.all[mItem.itemId].name() ?: Fortuna.SP_NUMERAL_TYPE_DEF
                 )
-            }; updateGrid(); updateOverflow(); shake(); true
+            }
+            updateGrid()
+            updateOverflow()
+            shake()
+            true
         }
 
         updateGrid()  // a theme should be applied after ActionBarDrawerToggle is created.

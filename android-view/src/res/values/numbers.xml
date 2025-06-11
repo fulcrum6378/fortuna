@@ -13,15 +13,4 @@
     <dimen name="statGridMaxHeight">600dp</dimen>
     <dimen name="statCellHeight">20dp</dimen>
     <dimen name="backupTextsPadH">25dp</dimen>
-
-    <!-- IDs -->
-    <item name="numArabic" type="id" />
-    <item name="numRoman" type="id" />
-    <item name="numBrahmi" type="id" />
-    <item name="numKharosthi" type="id" />
-    <item name="numOldPersian" type="id" />
-    <item name="numEtruscan" type="id" />
-    <item name="numAttic" type="id" />
-    <item name="numBabylonian" type="id" />
-    <item name="numHieroglyph" type="id" />
 </resources>
