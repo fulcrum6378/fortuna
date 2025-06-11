@@ -13,30 +13,30 @@ object Numerals {
 
     /** List of all the supported numeral systems */
     val all = arrayOf(
-        NumeralType(null, R.string.numArabic, 0),
+        NumeralType(null, R.string.numArabic),
         NumeralType(
-            RomanNumeral::class, R.string.numRoman, 1
+            RomanNumeral::class, R.string.numRoman
         ),  // -~0..+1400 preceded Arabic (sources claiming -900 mistake/mix it with Etruscan)
         NumeralType(
-            BrahmiNumeral::class, R.string.numBrahmi, 2
+            BrahmiNumeral::class, R.string.numBrahmi
         ),  // -300..+500 preceded Gupta script.
         NumeralType(
-            KharosthiNumeral::class, R.string.numKharosthi, 3
+            KharosthiNumeral::class, R.string.numKharosthi
         ),  // -400..+300 preceded Brahmi script.
         NumeralType(
-            OldPersianNumeral::class, R.string.numOldPersian, 4
+            OldPersianNumeral::class, R.string.numOldPersian
         ),  // -525..-330 annihilated! (presumably Avestan and Middle Persian had no numerals.)
         NumeralType(
-            EtruscanNumeral::class, R.string.numEtruscan, 5
+            EtruscanNumeral::class, R.string.numEtruscan
         ),  // -700..+50 inspired and was replaced by Roman numerals.
         NumeralType(
-            AtticNumeral::class, R.string.numAttic, 6
+            AtticNumeral::class, R.string.numAttic
         ),  // -700..-300 preceded Greek numerals.
         NumeralType(
-            BabylonianNumeral::class, R.string.numBabylonian, 7
+            BabylonianNumeral::class, R.string.numBabylonian
         ),  // -2000 first appeared.
         /*NumeralType(
-            HieroglyphNumeral::class, R.string.numHieroglyph, R.id.numHieroglyph, true
+            HieroglyphNumeral::class, R.string.numHieroglyph,
         ),*/  // -3200..+400 preceded Coptic script.
     )
 
@@ -57,12 +57,10 @@ object Numerals {
  *
  * @param kClass Kotlin class
  * @param name string resource for its visible name
- * @param id its unique ID resource used in various places
  */
 data class NumeralType(
     val kClass: KClass<*>?,
     @StringRes val name: Int,
-    val id: Int,
 ) {
     fun name(): String? = kClass?.java?.simpleName
 }

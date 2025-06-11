@@ -1,10 +1,15 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package ir.mahdiparastesh.fortuna
 
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,18 +23,24 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -41,7 +52,6 @@ import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -49,8 +59,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -61,6 +73,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -69,6 +82,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import ir.mahdiparastesh.fortuna.base.MainPage
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
@@ -103,7 +117,12 @@ class Main : ComponentActivity(), MainPage {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val tp = android.graphics.Color.TRANSPARENT
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(tp, tp),
+            navigationBarStyle =
+                if (!night) SystemBarStyle.light(tp, tp) else SystemBarStyle.dark(tp)
+        )
         if (m.date == null) m.date = c.date
         setContent { FortunaTheme { Root() } }
     }
@@ -129,6 +148,15 @@ class Main : ComponentActivity(), MainPage {
         c.luna = c.date.toKey()
         m.date = c.date
     }
+
+    /** Proper implementation of vibration in across different supported APIs */
+    @Suppress("DEPRECATION")
+    fun shake(dur: Long = 40L) {
+        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
+        else getSystemService(VIBRATOR_SERVICE) as Vibrator)
+            .vibrate(VibrationEffect.createOneShot(dur, 100))
+    }
 }
 
 @get:Composable
@@ -137,48 +165,26 @@ val c: Main get() = LocalActivity.current as Main
 @Composable
 fun Root() {
     //Log.d("YURIKO", "Root()")
+    val c = c
     val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
+    val numeralState = remember {
+        mutableStateOf<String?>(
+            c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
+        )
+    }
 
     ModalNavigationDrawer(
         drawerContent = { Drawer() },
+        drawerState = drawerState,
     ) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } },  // FIXME
-                        ) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = stringResource(R.string.navOpen),
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /* TODO Handle menu */ }) {
-                            Icon(
-                                painterResource(R.drawable.arabic_numerals),
-                                contentDescription = stringResource(R.string.numerals),
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                )
-            },
-        ) { innerPadding ->
-            Column(modifier = Modifier.padding(innerPadding)) {
-                Panel()
-                Grid()
-            }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Toolbar(drawerState, numeralState)
+            Panel()
+            Grid(numeralState)
         }
     }
 }
@@ -236,6 +242,75 @@ fun Drawer() {
         NavDivider()
         NavItem(R.string.navHelp, R.drawable.help)
     }
+}
+
+@Composable
+fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
+    val c = c
+    val coroutineScope = rememberCoroutineScope()
+    var numeralsExpanded by remember { mutableStateOf(false) }
+
+    TopAppBar(
+        title = { Text(stringResource(R.string.app_name)) },
+        navigationIcon = {
+            IconButton(
+                onClick = {
+                    coroutineScope.launch {
+                        drawerState.apply {
+                            if (isClosed) open() else close()
+                        }
+                    }
+                },
+            ) {
+                Icon(
+                    Icons.Default.Menu,
+                    contentDescription = stringResource(R.string.navOpen),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
+                Icon(
+                    painterResource(R.drawable.arabic_numerals),
+                    contentDescription = stringResource(R.string.numerals),
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+            }
+            DropdownMenu(
+                expanded = numeralsExpanded,
+                onDismissRequest = { numeralsExpanded = false }
+            ) {
+                for (n in Numerals.all.indices) {
+                    val nt = Numerals.all[n]
+                    val ntName = nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF
+
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = numeralState.value == ntName,
+                                    onCheckedChange = null,
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(nt.name))
+                            }
+                        },
+                        onClick = {
+                            c.c.sp.edit { putString(Fortuna.SP_NUMERAL_TYPE, ntName) }
+                            c.shake()
+                            numeralState.value = ntName
+                            numeralsExpanded = false
+                        },
+                    )
+                }
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+    )
 }
 
 @Composable
@@ -340,27 +415,35 @@ fun Panel() {
 }
 
 @Composable
-fun Grid() {
+fun Grid(numeralState: MutableState<String?>) {
     //Log.d("YURIKO", "Grid()")
     val c = c
     val luna = c.c.vita[c.m.date!!.toKey()]
-    val numeral = Numerals.build(
-        c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
-            .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it })
+    val numeralType = Numerals.build(numeralState.value)
     val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
+    val config = LocalConfiguration.current
+    val isWide = config.smallestScreenWidthDp >= 600
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(5),  // TODO 10 if ...
-        modifier = Modifier.fillMaxSize(),
+    FlowRow(
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+        maxItemsInEachRow = if (!isWide) 5 else 10,
     ) {
-        items(c.m.date!!.lengthOfMonth()) { i ->
-            Dies(i, luna, numeral, maximumStats, c.c.luna == c.c.todayLuna)
-        }
+        for (i in 0 until c.m.date!!.lengthOfMonth())
+            Dies(
+                i, luna, numeralType, maximumStats, c.c.luna == c.c.todayLuna, isWide
+            )
     }
 }
 
 @Composable
-fun Dies(i: Int, luna: Luna, numeral: Numeral?, maximumStats: Int?, hasToday: Boolean) {
+fun Dies(
+    i: Int,
+    luna: Luna,
+    numeral: Numeral?,
+    maximumStats: Int?,
+    hasToday: Boolean,
+    isWide: Boolean,
+) {
     //Log.d("YURIKO", "Dies(${i + 1})")
     val score: Float? =
         if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
@@ -373,10 +456,12 @@ fun Dies(i: Int, luna: Luna, numeral: Numeral?, maximumStats: Int?, hasToday: Bo
             textColor = MaterialTheme.colorScheme.onPrimary
             Color(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
         }
+
         score != null && score < 0f -> {
             textColor = MaterialTheme.colorScheme.onSecondary
             Color(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
         }
+
         else -> {
             textColor = MaterialTheme.colorScheme.onSurface
             Color.Transparent
@@ -385,6 +470,7 @@ fun Dies(i: Int, luna: Luna, numeral: Numeral?, maximumStats: Int?, hasToday: Bo
 
     Box(
         modifier = Modifier
+            .fillMaxWidth(fraction = if (!isWide) 0.2f else 0.1f)
             .background(targetColour)  // TODO animate
             .border(
                 BorderStroke(
@@ -418,11 +504,3 @@ fun Dies(i: Int, luna: Luna, numeral: Numeral?, maximumStats: Int?, hasToday: Bo
         }
     }
 }
-
-/*@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FortunaTheme {
-        Greeting("Android")
-    }
-}*/
