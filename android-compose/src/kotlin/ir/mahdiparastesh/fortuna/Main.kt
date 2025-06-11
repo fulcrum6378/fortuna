@@ -77,11 +77,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import ir.mahdiparastesh.fortuna.base.MainPage
@@ -193,24 +189,31 @@ fun Root() {
 fun Drawer() {
     //Log.d("YURIKO", "Drawer()")
     ModalDrawerSheet(
+        modifier = Modifier.width(280.dp),
+        drawerShape = MaterialTheme.shapes.large,
         drawerContainerColor = MaterialTheme.colorScheme.primary,
         drawerContentColor = MaterialTheme.colorScheme.onPrimary,
     ) {
 
         @Composable
-        fun NavItem(
+        fun Item(
             @StringRes title: Int,
             @DrawableRes icon: Int,
+            onClick: () -> Unit
         ) {
             NavigationDrawerItem(
                 label = {
                     Text(
                         text = stringResource(title),
                         color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.titleSmall,
                     )
                 },
                 selected = false,
-                onClick = { /*TODO*/ },
+                onClick = onClick,
+                modifier = Modifier
+                    .height(54.dp)
+                    .padding(horizontal = 15.dp, vertical = 2.dp),
                 icon = {
                     Icon(
                         painterResource(icon),
@@ -218,29 +221,40 @@ fun Drawer() {
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 },
+                shape = MaterialTheme.shapes.medium,
             )
         }
 
         @Composable
-        fun NavDivider() {
+        fun Divider() {
             HorizontalDivider(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .fillMaxWidth(0.8f),
-                color = MaterialTheme.colorScheme.onPrimary,
+                    .fillMaxWidth(0.8f)
+                    .align(Alignment.CenterHorizontally),
+                color = Color(0x66FFFFFF),
             )
         }
 
-        NavItem(R.string.today, R.drawable.today)
-        NavItem(R.string.navSearch, R.drawable.search)
-        NavItem(R.string.navStat, R.drawable.statistics)
-        NavDivider()
-        NavItem(R.string.navExport, R.drawable.data_export)
-        NavItem(R.string.navImport, R.drawable.data_import)
-        NavItem(R.string.navSend, R.drawable.data_send)
-        NavItem(R.string.backup, R.drawable.backup)
-        NavDivider()
-        NavItem(R.string.navHelp, R.drawable.help)
+        @Composable
+        fun Space() {
+            Spacer(Modifier.height(7.dp))
+        }
+
+        Space()
+        Item(R.string.today, R.drawable.today) {}
+        Item(R.string.navSearch, R.drawable.search) {}
+        Item(R.string.navStat, R.drawable.statistics) {}
+        Space()
+        Divider()
+        Space()
+        Item(R.string.navExport, R.drawable.data_export) {}
+        Item(R.string.navImport, R.drawable.data_import) {}
+        Item(R.string.navSend, R.drawable.data_send) {}
+        Item(R.string.backup, R.drawable.backup) {}
+        Space()
+        Divider()
+        Space()
+        Item(R.string.navHelp, R.drawable.help) {}
     }
 }
 
@@ -251,7 +265,12 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
     var numeralsExpanded by remember { mutableStateOf(false) }
 
     TopAppBar(
-        title = { Text(stringResource(R.string.app_name)) },
+        title = {
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.displayLarge,
+            )
+        },
         navigationIcon = {
             IconButton(
                 onClick = {
@@ -287,13 +306,20 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
 
                     DropdownMenuItem(
                         text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.padding(start = 5.dp, end = 18.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
                                 Checkbox(
                                     checked = numeralState.value == ntName,
                                     onCheckedChange = null,
+                                    colors = CheckboxColorScheme,
                                 )
-                                Spacer(Modifier.width(8.dp))
-                                Text(stringResource(nt.name))
+                                Spacer(Modifier.width(18.dp))
+                                Text(
+                                    text = stringResource(nt.name),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
                             }
                         },
                         onClick = {
@@ -338,7 +364,7 @@ fun Panel() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(top = 26.dp, bottom = 21.dp),
             horizontalArrangement = Arrangement.Center,
         ) {
             val textFieldColours = TextFieldDefaults.colors(
@@ -348,7 +374,7 @@ fun Panel() {
                 focusedIndicatorColor = Color.Transparent
             )
 
-            // month selector (luna)
+            // luna (month selector)
             ExposedDropdownMenuBox(
                 expanded = lunaExpanded,
                 onExpandedChange = { lunaExpanded = it },
@@ -361,10 +387,7 @@ fun Panel() {
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .width(200.dp),
                     readOnly = true,
-                    textStyle = TextStyle(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
+                    textStyle = MaterialTheme.typography.titleLarge,
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
@@ -378,23 +401,28 @@ fun Panel() {
                 ExposedDropdownMenu(
                     expanded = lunaExpanded,
                     onDismissRequest = { lunaExpanded = false },
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     months.forEachIndexed { i, option ->
                         DropdownMenuItem(
                             text = {
-                                Text(option)
+                                Text(
+                                    text = option,
+                                    modifier = Modifier.padding(horizontal = 5.dp),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
                             },
                             onClick = {
                                 c.setDate(ChronoField.MONTH_OF_YEAR, i + 1)
                                 c.onDateChanged()
                                 lunaExpanded = false
-                            }
+                            },
                         )
                     }
                 }
             }
 
-            // year selector (annus)
+            // annus (year field)
             TextField(
                 value = c.m.date!![ChronoField.YEAR].toString(),
                 onValueChange = {
@@ -402,11 +430,7 @@ fun Panel() {
                     c.onDateChanged()
                 },
                 modifier = Modifier.width(85.dp),
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                ),
+                textStyle = MaterialTheme.typography.titleSmall,
                 singleLine = true,
                 colors = textFieldColours,
             )
@@ -471,10 +495,11 @@ fun Dies(
     Box(
         modifier = Modifier
             .fillMaxWidth(fraction = if (!isWide) 0.2f else 0.1f)
+            .height(100.dp)
             .background(targetColour)  // TODO animate
             .border(
                 BorderStroke(
-                    if (isToday) 5.dp else 0.5.dp,
+                    if (isToday) 5.dp else 0.25.dp,
                     Color(
                         if (isToday) {
                             if (!isSystemInDarkTheme()) 0x44000000 else 0x44FFFFFF
@@ -487,19 +512,18 @@ fun Dies(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 23.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = numeral.write(i + 1),
                 color = textColor,
-                fontSize = 18.sp,
+                style = MaterialTheme.typography.bodyLarge,
             )
             Text(
                 text = (if (isEstimated) "c. " else "") + score.displayScore(false),
                 modifier = Modifier.alpha(if (score != null) 1f else .6f),
                 color = textColor,
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.labelSmall,
             )
         }
     }
