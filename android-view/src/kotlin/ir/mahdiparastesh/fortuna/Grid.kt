@@ -23,6 +23,7 @@ class Grid(private val c: Main) : ListAdapter {
     lateinit var luna: Luna
     private var numeral: Numeral? = null
     var maximumStats: Int? = null
+    private var refreshTimes = 0
 
     init {
         onRefresh()
@@ -36,6 +37,7 @@ class Grid(private val c: Main) : ListAdapter {
                 ?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
         )
         maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
+        refreshTimes++
     }
 
     private val tc: Int by lazy { c.color(android.R.attr.textColor) }
@@ -107,12 +109,15 @@ class Grid(private val c: Main) : ListAdapter {
                 Color.TRANSPARENT
             }
         }
-        ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
-            addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
-            // startDelay = 10L * i
-            duration = 100L
-            start()
-        }
+        if (refreshTimes != 1)
+            ValueAnimator.ofArgb(cellColours[i], targetColour).apply {
+                addUpdateListener { b.root.setBackgroundColor(it.animatedValue as Int) }
+                // startDelay = 10L * i
+                duration = 100L
+                start()
+            }
+        else
+            b.root.setBackgroundColor(targetColour)
         cellColours[i] = targetColour
 
         // clicks

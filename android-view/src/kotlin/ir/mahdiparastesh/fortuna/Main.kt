@@ -198,8 +198,14 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             if (rollingLunaWithAnnus) {
                 rollingLunaWithAnnus = false
                 return@addTextChangedListener; }
-            if (c.date[ChronoField.YEAR] == it.toString().toInt())
-                return@addTextChangedListener // don't move this condition before rollingLunaWithAnnus
+            val year: Int = try {
+                it.toString().toInt()
+            } catch (_: NumberFormatException) {
+                return@addTextChangedListener
+            }
+            if (c.date[ChronoField.YEAR] == year)
+            // don't move this condition before rollingLunaWithAnnus
+                return@addTextChangedListener
 
             c.luna = "${z(it, 4)}.${z(b.luna.selectedItemPosition + 1)}"
             c.date = c.lunaToDate(c.luna)
@@ -283,8 +289,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
 
-        // resolve new intents
+        // resolving intents
         addOnNewIntentListener { resolveIntent(it) }
+        resolveIntent(intent)
     }
 
     override fun onResume() {
