@@ -214,7 +214,7 @@ fun Drawer() {
                     .padding(horizontal = hPad, vertical = 2.dp),
                 icon = {
                     Icon(
-                        painterResource(icon),
+                        painter = painterResource(icon),
                         contentDescription = stringResource(title),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -280,7 +280,7 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
                 },
             ) {
                 Icon(
-                    Icons.Default.Menu,
+                    imageVector = Icons.Default.Menu,
                     contentDescription = stringResource(R.string.navOpen),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -289,7 +289,7 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
         actions = {
             IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
                 Icon(
-                    painterResource(R.drawable.arabic_numerals),
+                    painter = painterResource(R.drawable.arabic_numerals),
                     contentDescription = stringResource(R.string.numerals),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -499,6 +499,9 @@ fun Dies(
         }
     }
 
+    val emoji = luna.emojis.getOrNull(i)
+    val hasVerbum = luna.verba[i]?.isNotBlank() == true
+
     Box(
         modifier = Modifier
             .fillMaxWidth(fraction = if (!isWide) 0.2f else 0.1f)
@@ -516,16 +519,18 @@ fun Dies(
                     ),
                 )
             ),
-        contentAlignment = Alignment.Center
     ) {
         Column(
+            modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // day number
             Text(
                 text = numeral.write(i + 1),
                 color = textColor,
                 style = MaterialTheme.typography.bodyLarge,
             )
+            // score
             Text(
                 text = (if (isEstimated) "c. " else "") + score.displayScore(false),
                 modifier = Modifier.alpha(if (score != null) 1f else .6f),
@@ -533,5 +538,23 @@ fun Dies(
                 style = MaterialTheme.typography.labelSmall,
             )
         }
+
+        // emoji
+        if (emoji != null) Text(
+            text = emoji,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(7.dp),
+            style = MaterialTheme.typography.labelSmall,
+        )
+        // verbum
+        if (hasVerbum) Icon(
+            painter = painterResource(R.drawable.verbum),
+            contentDescription = stringResource(R.string.verbumDesc),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp),
+            tint = textColor,
+        )
     }
 }

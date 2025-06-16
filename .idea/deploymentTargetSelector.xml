@@ -4,6 +4,14 @@
     <selectionStates>
       <SelectionState runConfigName="Android Compose">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-06-11T10:50:13.990786800Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="Default" identifier="serial=192.168.1.20:41219;connection=edd34392" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="Android View">
         <option name="selectionMode" value="DROPDOWN" />
