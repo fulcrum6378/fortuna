@@ -500,7 +500,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         }
     }
 
-    override fun variabilis(day: Int) {
+    /**
+     * Opens [VariabilisDialog].
+     * @param day starting from 0
+     */
+    fun variabilis(day: Int) {
         VariabilisDialog.newInstance(day).show(supportFragmentManager, VariabilisDialog.TAG)
     }
 

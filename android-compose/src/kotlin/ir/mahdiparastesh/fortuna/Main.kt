@@ -19,6 +19,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -80,6 +81,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import ir.mahdiparastesh.fortuna.base.MainPage
+import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
@@ -108,6 +110,7 @@ class Main : ComponentActivity(), MainPage {
 
     class Model : ViewModel() {
         var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
+        var variabilis by mutableStateOf<Int?>(null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,10 +136,6 @@ class Main : ComponentActivity(), MainPage {
     override fun moveInYears(to: Int) {
         setDate(ChronoField.YEAR, c.date[ChronoField.YEAR] + to)
         onDateChanged()
-    }
-
-    override fun variabilis(day: Int) {
-        TODO()
     }
 
     override fun onDateChanged() {
@@ -180,6 +179,9 @@ fun Root() {
             Grid(numeralState)
         }
     }
+
+    if (c.m.variabilis != null)
+        VariabilisDialog(c)
 }
 
 @Composable
@@ -476,6 +478,8 @@ fun Dies(
     isWide: Boolean,
 ) {
     //Log.d("YURIKO", "Dies(${i + 1})")
+    val c = c
+
     val score: Float? =
         if (i < (maximumStats ?: 0)) luna[i] ?: luna.default else null
     val isEstimated = i < (maximumStats ?: 0) && luna[i] == null && luna.default != null
@@ -518,7 +522,9 @@ fun Dies(
                         }
                     ),
                 )
-            ),
+            ).clickable {
+                c.m.variabilis = i
+            },
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),

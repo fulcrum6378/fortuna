@@ -29,12 +29,6 @@ interface MainPage {
     /** Adds N years to or subtracts them from the [FortunaContext.date]. */
     fun moveInYears(to: Int)
 
-    /**
-     * Opens the Variabilis dialogue.
-     * @param day starting from 0
-     */
-    fun variabilis(day: Int)
-
     /** Updates everything whenever the calendar changes. */
     fun onDateChanged() {
         c.luna = c.date.toKey()

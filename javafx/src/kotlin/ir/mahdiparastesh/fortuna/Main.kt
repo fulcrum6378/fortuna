@@ -232,7 +232,11 @@ class Main : MainPage {
         }
     }
 
-    override fun variabilis(day: Int) {
+    /**
+     * Opens the [Variabilis] dialog.
+     * @param day starting from 0
+     */
+    fun variabilis(day: Int) {
         val dialog = Dialog<Variabilis.Result>()
         dialog.title = "Variabilis"
 
