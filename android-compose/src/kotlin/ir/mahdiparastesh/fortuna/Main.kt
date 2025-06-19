@@ -57,7 +57,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -111,6 +110,7 @@ class Main : ComponentActivity(), MainPage {
     class Model : ViewModel() {
         var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
         var variabilis by mutableStateOf<Int?>(null)
+        val drawerState = DrawerState(DrawerValue.Closed)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -160,21 +160,20 @@ val c: Main get() = LocalActivity.current as Main
 fun Root() {
     //Log.d("YURIKO", "Root()")
     val c = c
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val numeralState = remember {
         mutableStateOf<String?>(c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null))
     }
 
     ModalNavigationDrawer(
         drawerContent = { Drawer() },
-        drawerState = drawerState,
+        drawerState = c.m.drawerState,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
         ) {
-            Toolbar(drawerState, numeralState)
+            Toolbar(numeralState)
             Panel()
             Grid(numeralState)
         }
@@ -187,6 +186,9 @@ fun Root() {
 @Composable
 fun Drawer() {
     //Log.d("YURIKO", "Drawer()")
+    val c = c
+    val coroutineScope = rememberCoroutineScope()
+
     ModalDrawerSheet(
         modifier = Modifier.width(280.dp),
         drawerShape = MaterialTheme.shapes.large,
@@ -229,7 +231,8 @@ fun Drawer() {
         fun Divider() {
             HorizontalDivider(
                 modifier = Modifier
-                    .width(hPad)
+                    .fillMaxWidth()
+                    .padding(horizontal = hPad * 1.75f)
                     .align(Alignment.CenterHorizontally),
                 color = Color(0x66FFFFFF),
             )
@@ -241,7 +244,15 @@ fun Drawer() {
         }
 
         Space()
-        Item(R.string.today, R.drawable.today) {}
+        Item(R.string.today, R.drawable.today) {
+            if (c.c.todayLuna != c.c.date.toKey()) {
+                c.c.date = c.c.todayDate
+                c.onDateChanged()
+            }
+            coroutineScope.launch {
+                c.m.drawerState.close()
+            }
+        }
         Item(R.string.navSearch, R.drawable.search) {}
         Item(R.string.navStat, R.drawable.statistics) {}
         Space()
@@ -259,7 +270,7 @@ fun Drawer() {
 }
 
 @Composable
-fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
+fun Toolbar(numeralState: MutableState<String?>) {
     val c = c
     val coroutineScope = rememberCoroutineScope()
     var numeralsExpanded by remember { mutableStateOf(false) }
@@ -275,7 +286,7 @@ fun Toolbar(drawerState: DrawerState, numeralState: MutableState<String?>) {
             IconButton(
                 onClick = {
                     coroutineScope.launch {
-                        drawerState.apply {
+                        c.m.drawerState.apply {
                             if (isClosed) open() else close()
                         }
                     }
