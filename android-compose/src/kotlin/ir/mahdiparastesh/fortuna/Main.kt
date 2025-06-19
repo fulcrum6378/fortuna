@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.fortuna
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +12,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -56,7 +59,22 @@ class Main : ComponentActivity(), MainPage {
         )
         if (m.date == null) m.date = c.date
         setContent { FortunaTheme { MainRoot() } }
+
+        // runtime permission(s)
+        val requiredPermissions =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+            else
+                arrayOf()
+        // note: change reqPermLauncher to RequestMultiplePermissions() if you wanna add more.
+        for (prm in requiredPermissions)
+            if (checkSelfPermission(prm) != PackageManager.PERMISSION_GRANTED)
+                reqPermLauncher.launch(prm)
     }
+
+    /** Requests all the required permissions. (currently only for notifications in Android 13+) */
+    private val reqPermLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
     override fun updatePanel() {}
     override fun updateGrid() {}

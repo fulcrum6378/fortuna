@@ -251,10 +251,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             else
                 arrayOf()
         // note: change reqPermLauncher to RequestMultiplePermissions() if you wanna add more.
-        for (prm in requiredPermissions) {
+        for (prm in requiredPermissions)
             if (checkSelfPermission(prm) != PackageManager.PERMISSION_GRANTED)
                 reqPermLauncher.launch(prm)
-        }
 
         // Nyx
         Nyx.cancelNotification(c)
