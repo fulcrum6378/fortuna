@@ -282,9 +282,7 @@ fun Panel() {
     val months = stringArrayResource(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
-    ) {
+    Box {
         // a shadow beneath the TopAppBar
         Box(
             Modifier
@@ -391,8 +389,7 @@ fun Grid(numeralState: MutableState<String?>) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 48.dp)
-            .background(MaterialTheme.colorScheme.surface),
+            .padding(bottom = 48.dp),
         maxItemsInEachRow = if (!isWide) 5 else 10,
     ) {
         for (i in 0 until c.m.date!!.lengthOfMonth())
