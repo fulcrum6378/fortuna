@@ -28,9 +28,12 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Color.White,
     secondary = Color(0xFFF44336),
     onSecondary = Color.White,
-    surface = Color.White,
+    surface = Color(0xFFFEF7FF),
     onSurface = Color(0xFF777777),
-    surfaceContainer = Color(0xFFF0F5EF),
+    onSurfaceVariant = Color(0xFF000000),  // texts in variabilis input fields
+    surfaceBright = Color(0xFFF9F9F7),  // variabilis input fields
+    surfaceContainer = Color(0xFFF0F5EF),  // popup menus
+    surfaceContainerHigh = Color(0xFFECF1EB),  // dialog boxes
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -38,9 +41,12 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = Color.White,
     secondary = Color(0xFF670D06),
     onSecondary = Color.White,
-    surface = Color.Black,
+    surface = Color(0xFF141118),
     onSurface = Color.White,
+    onSurfaceVariant = Color(0xFFFFFFFF),
+    surfaceBright = Color(0xFF313133),
     surfaceContainer = Color(0xFF1A1E1D),
+    surfaceContainerHigh = Color(0xFF191F1B),
 )
 
 private val FontFamilyMorrisRoman = FontFamily(
@@ -58,6 +64,12 @@ private val Typography = Typography(
         fontSize = 28.sp,
         fontWeight = FontWeight.Bold,
         fontFamily = FontFamilyMorrisRoman,
+    ),
+    displaySmall = TextStyle(
+        // dialog title
+        fontSize = 25.sp,
+        fontWeight = FontWeight.Medium,
+        fontFamily = FontFamilyQuattrocento,
     ),
     titleLarge = TextStyle(
         // luna selector
@@ -79,10 +91,11 @@ private val Typography = Typography(
         fontFamily = FontFamilyQuattrocento,
     ),
     bodyMedium = TextStyle(
-        // dies numeral
+        // dies numeral, verbum
         fontSize = 17.sp,
         fontWeight = FontWeight.Normal,
         fontFamily = FontFamilyQuattrocento,
+        lineHeight = 26.sp,
     ),
     labelSmall = TextStyle(
         // dies score
@@ -91,7 +104,6 @@ private val Typography = Typography(
         fontFamily = FontFamilyQuattrocento,
     ),
     /*TextStyle(
-        TODO lineHeight = 16.sp,
         TODO letterSpacing = 0.5.sp
     )*/
 )

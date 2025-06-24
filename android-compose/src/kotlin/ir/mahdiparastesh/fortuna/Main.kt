@@ -58,7 +58,7 @@ class Main : ComponentActivity(), MainPage {
                 if (!night) SystemBarStyle.light(tp, tp) else SystemBarStyle.dark(tp)
         )
         if (m.date == null) m.date = c.date
-        setContent { FortunaTheme { MainRoot() } }
+        setContent { FortunaTheme { MainPage() } }
 
         // runtime permission(s)
         val requiredPermissions =

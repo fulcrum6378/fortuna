@@ -77,8 +77,8 @@ import java.time.temporal.ChronoField
 val c: Main get() = LocalActivity.current as Main
 
 @Composable
-fun MainRoot() {
-    //Log.d("YURIKO", "MainRoot()")
+fun MainPage() {
+    //Log.d("YURIKO", "MainPage()")
     val c = c
     val numeralState = remember {
         mutableStateOf<String?>(c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null))
@@ -282,7 +282,9 @@ fun Panel() {
     val months = stringArrayResource(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
 
-    Box {
+    Box(
+        modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+    ) {
         // a shadow beneath the TopAppBar
         Box(
             Modifier
@@ -304,10 +306,10 @@ fun Panel() {
             horizontalArrangement = Arrangement.Center,
         ) {
             val textFieldColours = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
             )
 
             // luna (month selector)
@@ -389,7 +391,8 @@ fun Grid(numeralState: MutableState<String?>) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 48.dp),
+            .padding(bottom = 48.dp)
+            .background(MaterialTheme.colorScheme.surface),
         maxItemsInEachRow = if (!isWide) 5 else 10,
     ) {
         for (i in 0 until c.m.date!!.lengthOfMonth())
