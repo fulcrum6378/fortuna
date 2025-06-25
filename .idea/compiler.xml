@@ -6,9 +6,15 @@
       <module name="Fortuna.android-compose" target="24" />
       <module name="Fortuna.android-view" target="24" />
       <module name="Fortuna.app" target="23" />
+      <module name="Fortuna.compose-desktop" target="24" />
+      <module name="Fortuna.compose-desktop.main" target="24" />
+      <module name="Fortuna.compose-desktop.test" target="24" />
       <module name="Fortuna.core" target="24" />
       <module name="Fortuna.core.main" target="24" />
       <module name="Fortuna.core.test" target="24" />
+      <module name="Fortuna.desktop-compose" target="24" />
+      <module name="Fortuna.desktop-compose.main" target="24" />
+      <module name="Fortuna.desktop-compose.test" target="24" />
       <module name="Fortuna.javafx" target="24" />
       <module name="Fortuna.javafx.main" target="24" />
       <module name="Fortuna.javafx.test" target="24" />
