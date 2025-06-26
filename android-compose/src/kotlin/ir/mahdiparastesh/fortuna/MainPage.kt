@@ -3,7 +3,6 @@
 package ir.mahdiparastesh.fortuna
 
 import androidx.activity.compose.LocalActivity
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -58,12 +57,23 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
+import ir.mahdiparastesh.fortuna.icon.Backup
+import ir.mahdiparastesh.fortuna.icon.Export
+import ir.mahdiparastesh.fortuna.icon.FortunaIcons
+import ir.mahdiparastesh.fortuna.icon.Help
+import ir.mahdiparastesh.fortuna.icon.Import
+import ir.mahdiparastesh.fortuna.icon.Search
+import ir.mahdiparastesh.fortuna.icon.Send
+import ir.mahdiparastesh.fortuna.icon.Statistics
+import ir.mahdiparastesh.fortuna.icon.Today
+import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
@@ -120,7 +130,7 @@ fun Drawer() {
         @Composable
         fun Item(
             @StringRes title: Int,
-            @DrawableRes icon: Int,
+            icon: ImageVector,
             onClick: () -> Unit
         ) {
             NavigationDrawerItem(
@@ -138,7 +148,7 @@ fun Drawer() {
                     .padding(horizontal = hPad, vertical = 2.dp),
                 icon = {
                     Icon(
-                        painter = painterResource(icon),
+                        imageVector = icon,
                         contentDescription = stringResource(title),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -164,7 +174,7 @@ fun Drawer() {
         }
 
         Space()
-        Item(R.string.today, R.drawable.today) {
+        Item(R.string.today, FortunaIcons.Today) {
             if (c.c.todayLuna != c.c.date.toKey()) {
                 c.c.date = c.c.todayDate
                 c.onDateChanged()
@@ -173,19 +183,19 @@ fun Drawer() {
                 c.m.drawerState.close()
             }
         }
-        Item(R.string.navSearch, R.drawable.search) {}
-        Item(R.string.navStat, R.drawable.statistics) {}
+        Item(R.string.navSearch, FortunaIcons.Search) {}
+        Item(R.string.navStat, FortunaIcons.Statistics) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navExport, R.drawable.data_export) {}
-        Item(R.string.navImport, R.drawable.data_import) {}
-        Item(R.string.navSend, R.drawable.data_send) {}
-        Item(R.string.backup, R.drawable.backup) {}
+        Item(R.string.navExport, FortunaIcons.Export) {}
+        Item(R.string.navImport, FortunaIcons.Import) {}
+        Item(R.string.navSend, FortunaIcons.Send) {}
+        Item(R.string.backup, FortunaIcons.Backup) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navHelp, R.drawable.help) {}
+        Item(R.string.navHelp, FortunaIcons.Help) {}
     }
 }
 
@@ -222,7 +232,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
         actions = {
             IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
                 Icon(
-                    painter = painterResource(R.drawable.arabic_numerals),
+                    imageVector = FortunaIcons.ArabicNumerals,
                     contentDescription = stringResource(R.string.numerals),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
@@ -486,7 +496,7 @@ fun Dies(
         )
         // verbum
         if (hasVerbum) Icon(
-            painter = painterResource(R.drawable.verbum),
+            imageVector = FortunaIcons.Verbum,
             contentDescription = stringResource(R.string.verbumDesc),
             modifier = Modifier
                 .align(Alignment.TopEnd)

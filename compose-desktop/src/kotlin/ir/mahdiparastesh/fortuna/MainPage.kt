@@ -68,7 +68,7 @@ fun Drawer() {
         @Composable
         fun Item(
             @StringRes title: Int,
-            @DrawableRes icon: Int,
+            icon: ImageVector,
             onClick: () -> Unit
         ) {
             NavigationDrawerItem(
@@ -86,7 +86,7 @@ fun Drawer() {
                     .padding(horizontal = hPad, vertical = 2.dp),
                 icon = {
                     Icon(
-                        painter = painterResource(icon),
+                        imageVector = icon,
                         contentDescription = stringResource(title),
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -112,7 +112,7 @@ fun Drawer() {
         }
 
         Space()
-        Item(R.string.today, R.drawable.today) {
+        Item(R.string.today, FortunaIcons.Today) {
             if (c.c.todayLuna != c.c.date.toKey()) {
                 c.c.date = c.c.todayDate
                 c.onDateChanged()
@@ -121,19 +121,19 @@ fun Drawer() {
                 c.m.drawerState.close()
             }
         }
-        Item(R.string.navSearch, R.drawable.search) {}
-        Item(R.string.navStat, R.drawable.statistics) {}
+        Item(R.string.navSearch, FortunaIcons.Search) {}
+        Item(R.string.navStat, FortunaIcons.Statistics) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navExport, R.drawable.data_export) {}
-        Item(R.string.navImport, R.drawable.data_import) {}
-        Item(R.string.navSend, R.drawable.data_send) {}
-        Item(R.string.backup, R.drawable.backup) {}
+        Item(R.string.navExport, FortunaIcons.Export) {}
+        Item(R.string.navImport, FortunaIcons.Import) {}
+        Item(R.string.navSend, FortunaIcons.Send) {}
+        Item(R.string.backup, FortunaIcons.Backup) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navHelp, R.drawable.help) {}
+        Item(R.string.navHelp, FortunaIcons.Help) {}
     }
 }
 
@@ -170,7 +170,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
         actions = {
             IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
                 Icon(
-                    painter = painterResource(R.drawable.arabic_numerals),
+                    imageVector = FortunaIcons.ArabicNumerals,
                     contentDescription = stringResource(R.string.numerals),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
