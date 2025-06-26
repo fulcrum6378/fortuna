@@ -14,10 +14,13 @@ tasks.named<KotlinJvmCompile>("compileKotlin") {
 }
 
 sourceSets.getByName("main") {
-    kotlin.srcDirs("src/kotlin")
+    kotlin.srcDirs(
+        "src/kotlin", "$rootDir/compose-shared/kotlin",
+    )
     resources {
-        srcDirs("$rootDir/android-shared/res")  // "$rootDir/android-shared/res_iranian"
-        include("font/**", "raw/**", "values/strings.xml")
+        srcDir("src/resources")
+        //srcDir("$rootDir/android-shared/res")  // "$rootDir/android-shared/res_iranian"
+        //include("raw/**")  fixme
     }
 }
 
@@ -27,22 +30,79 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)
     implementation(compose.components.resources)
+    implementation(compose.materialIconsExtended)  // TODO check if it takes much space
+}
+
+val calendar = "iranian"
+val composeResourcesDir = layout.buildDirectory.dir("composeResources")
+
+val prepareComposeResources = tasks.register("prepareComposeResources") {
+    val inputDir1 = file("$rootDir/android-shared/res")
+    val inputDir2 = file("$rootDir/android-shared/res_$calendar")
+    val outputDir = composeResourcesDir.get().asFile
+
+    inputs.dir(inputDir1)
+    inputs.dir(inputDir2)
+    outputs.dir(outputDir)
+
+    doLast {
+        outputDir.deleteRecursively()
+        outputDir.mkdirs()
+
+        // prepare string resources
+        val valuesDir = File(outputDir, "values").apply { mkdirs() }
+        val stringsXml = File(valuesDir, "strings.xml")
+        var strings = StringBuilder(File(inputDir1, "values/strings.xml").readText())
+        strings.deleteRange(strings.length - 12, strings.length)
+        strings.appendLine()
+        strings.append(File(inputDir2, "values/strings.xml").readText().substring(51))
+        stringsXml.writeText(strings.toString())
+        // TODO this algorithm doesn't assemble non-English XML files
+
+        // prepare font resources
+        copy {
+            from(File(inputDir1, "font"))
+            into(File(outputDir, "font").apply { mkdirs() })
+        }
+    }
+}
+tasks.named("convertXmlValueResourcesForMain") {
+    dependsOn(prepareComposeResources)
+}
+tasks.named("copyNonXmlValueResourcesForMain") {
+    dependsOn(prepareComposeResources)
 }
 
 compose {
     desktop {
         application {
-            mainClass = "ir.mahdiparastesh.fortuna.MainPageKt"
+            mainClass = "ir.mahdiparastesh.fortuna.MainKt"
         }
     }
     resources {
         packageOfResClass = "ir.mahdiparastesh.fortuna"
         nameOfResClass = "R"
-        customDirectory(
-            sourceSetName = "main",
-            directoryProvider = provider {
-                layout.projectDirectory.dir("../android-shared/res")
-            }
-        )
+        customDirectory("main", composeResourcesDir)
     }
 }
+
+/*val transferCVRs = tasks.register("transferCVRs") {
+    val canonicalPath = "ir.mahdiparastesh.fortuna/values"
+    val inputDir = layout.buildDirectory.dir(
+        "generated/compose/resourceGenerator/assembledResources/Main/composeResources/"
+    ).get().asFile
+    val outputDir = composeResourcesDir.get().asFile
+
+    inputs.dir(inputDir)
+    outputs.dir(outputDir)
+
+    doLast {
+        copy {
+            from(File(inputDir, canonicalPath))
+            into(File(outputDir, canonicalPath).apply { mkdirs() })
+        }
+    }
+}
+transferCVRs {
+    mustRunAfter(tasks.named("generateComposeResClass"))
+}*/

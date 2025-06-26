@@ -10,15 +10,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import ir.mahdiparastesh.fortuna.Luna
-import ir.mahdiparastesh.fortuna.Main
-import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.*
 import ir.mahdiparastesh.fortuna.base.BaseDialog
+import ir.mahdiparastesh.fortuna.base.MainComposablePage
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 
+// AVOID OPTIMISING IMPORTS!
+// `import ir.mahdiparastesh.fortuna.*` must always be present.
+
 @Composable
-fun VariabilisDialog(c: Main) {
+fun VariabilisDialog(c: MainComposablePage) {
     val i = c.m.variabilis!!
     val luna: Luna by lazy { c.c.vita[c.c.luna] }
     val verbum = rememberSaveable {
@@ -28,7 +29,7 @@ fun VariabilisDialog(c: Main) {
     BaseDialog(
         title =
             if (i != -1) "${c.c.luna}.${z(i + 1)}"
-            else stringResource(R.string.defValue),
+            else c.str(R.string.defValue),
         onDismissRequest = { c.m.variabilis = null },
     ) {
 
@@ -40,7 +41,7 @@ fun VariabilisDialog(c: Main) {
                 .fillMaxWidth(),
             textStyle = MaterialTheme.typography.bodyMedium,
             placeholder = {
-                Text(stringResource(R.string.notesHint))
+                Text(c.str(R.string.notesHint))
             },
             maxLines = 10,
             shape = MaterialTheme.shapes.medium,

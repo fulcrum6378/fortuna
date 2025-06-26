@@ -2,31 +2,86 @@
 
 package ir.mahdiparastesh.fortuna
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
-import org.jetbrains.compose.resources.stringResource
-
-fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = stringResource(R.string.app_name)) {
-        FortunaTheme { MainPage() }
-    }
-}
-
-/*@get:Composable
-val c: Main get() = LocalActivity.current as Main*/
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
+import ir.mahdiparastesh.fortuna.icon.Backup
+import ir.mahdiparastesh.fortuna.icon.Export
+import ir.mahdiparastesh.fortuna.icon.FortunaIcons
+import ir.mahdiparastesh.fortuna.icon.Help
+import ir.mahdiparastesh.fortuna.icon.Import
+import ir.mahdiparastesh.fortuna.icon.Search
+import ir.mahdiparastesh.fortuna.icon.Send
+import ir.mahdiparastesh.fortuna.icon.Statistics
+import ir.mahdiparastesh.fortuna.icon.Today
+import ir.mahdiparastesh.fortuna.icon.Verbum
+import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
+import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
+import ir.mahdiparastesh.fortuna.util.Numeral
+import ir.mahdiparastesh.fortuna.util.Numerals
+import kotlinx.coroutines.launch
+import java.time.temporal.ChronoField
 
 @Composable
 fun MainPage() {
     //Log.d("YURIKO", "MainPage()")
-    /*val c = c
-    val numeralState = remember {
-        mutableStateOf<String?>(c.c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null))
-    }
+    val c = c
+    val numeralState = remember { mutableStateOf<String?>(c.numeralType) }
 
     ModalNavigationDrawer(
         drawerContent = { Drawer() },
@@ -44,14 +99,10 @@ fun MainPage() {
     }
 
     if (c.m.variabilis != null)
-        VariabilisDialog(c)*/
-
-    Column {
-        Text("Hello world!")
-    }
+        VariabilisDialog(c)
 }
 
-/*@Composable
+@Composable
 fun Drawer() {
     //Log.d("YURIKO", "Drawer()")
     val c = c
@@ -67,14 +118,14 @@ fun Drawer() {
 
         @Composable
         fun Item(
-            @StringRes title: Int,
+            title: String,
             icon: ImageVector,
             onClick: () -> Unit
         ) {
             NavigationDrawerItem(
                 label = {
                     Text(
-                        text = stringResource(title),
+                        text = title,
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                     )
@@ -87,7 +138,7 @@ fun Drawer() {
                 icon = {
                     Icon(
                         imageVector = icon,
-                        contentDescription = stringResource(title),
+                        contentDescription = title,
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 },
@@ -112,7 +163,7 @@ fun Drawer() {
         }
 
         Space()
-        Item(R.string.today, FortunaIcons.Today) {
+        Item(c.str(R.string.today), FortunaIcons.Today) {
             if (c.c.todayLuna != c.c.date.toKey()) {
                 c.c.date = c.c.todayDate
                 c.onDateChanged()
@@ -121,19 +172,19 @@ fun Drawer() {
                 c.m.drawerState.close()
             }
         }
-        Item(R.string.navSearch, FortunaIcons.Search) {}
-        Item(R.string.navStat, FortunaIcons.Statistics) {}
+        Item(c.str(R.string.navSearch), FortunaIcons.Search) {}
+        Item(c.str(R.string.navStat), FortunaIcons.Statistics) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navExport, FortunaIcons.Export) {}
-        Item(R.string.navImport, FortunaIcons.Import) {}
-        Item(R.string.navSend, FortunaIcons.Send) {}
-        Item(R.string.backup, FortunaIcons.Backup) {}
+        Item(c.str(R.string.navExport), FortunaIcons.Export) {}
+        Item(c.str(R.string.navImport), FortunaIcons.Import) {}
+        Item(c.str(R.string.navSend), FortunaIcons.Send) {}
+        Item(c.str(R.string.backup), FortunaIcons.Backup) {}
         Space()
         Divider()
         Space()
-        Item(R.string.navHelp, FortunaIcons.Help) {}
+        Item(c.str(R.string.navHelp), FortunaIcons.Help) {}
     }
 }
 
@@ -146,7 +197,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.app_name),
+                text = c.str(R.string.app_name),
                 style = MaterialTheme.typography.displayLarge,
             )
         },
@@ -162,7 +213,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.navOpen),
+                    contentDescription = c.str(R.string.navOpen),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
@@ -171,7 +222,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
                 Icon(
                     imageVector = FortunaIcons.ArabicNumerals,
-                    contentDescription = stringResource(R.string.numerals),
+                    contentDescription = c.str(R.string.numerals),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
@@ -196,19 +247,13 @@ fun Toolbar(numeralState: MutableState<String?>) {
                                 )
                                 Spacer(Modifier.width(18.dp))
                                 Text(
-                                    text = stringResource(nt.name),
+                                    text = c.str(nt.name),
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
                         },
                         onClick = {
-                            c.c.sp.edit {
-                                putString(
-                                    Fortuna.SP_NUMERAL_TYPE,
-                                    ntName ?: Fortuna.SP_NUMERAL_TYPE_DEF
-                                )
-                            }
-                            c.shake()
+                            c.numeralType = ntName
                             numeralState.value = ntName
                             numeralsExpanded = false
                         },
@@ -227,7 +272,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
 fun Panel() {
     //Log.d("YURIKO", "Panel()")
     val c = c
-    val months = stringArrayResource(R.array.luna)
+    val months = c.strArr(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
 
     Box {
@@ -266,7 +311,7 @@ fun Panel() {
             ) {
                 TextField(
                     value = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
-                    onValueChange = { *//* unused *//* },
+                    onValueChange = { /* unused */ },
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .width(200.dp),
@@ -327,22 +372,19 @@ fun Grid(numeralState: MutableState<String?>) {
     //Log.d("YURIKO", "Grid()")
     val c = c
     val luna = c.c.vita[c.m.date!!.toKey()]
-    val numeralType = Numerals.build(
-        numeralState.value?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
-    )
+    val numeralType = c.buildNumeral(numeralState.value)
     val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
-    val config = LocalConfiguration.current
-    val isWide = config.smallestScreenWidthDp >= 600
+    val isWideScreen = c.isWideScreen()
 
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 48.dp),
-        maxItemsInEachRow = if (!isWide) 5 else 10,
+        maxItemsInEachRow = if (!isWideScreen) 5 else 10,
     ) {
         for (i in 0 until c.m.date!!.lengthOfMonth())
             Dies(
-                i, luna, numeralType, maximumStats, c.c.luna == c.c.todayLuna, isWide
+                i, luna, numeralType, maximumStats, c.c.luna == c.c.todayLuna, isWideScreen
             )
     }
 }
@@ -434,12 +476,12 @@ fun Dies(
         )
         // verbum
         if (hasVerbum) Icon(
-            painter = painterResource(R.drawable.verbum),
-            contentDescription = stringResource(R.string.verbumDesc),
+            imageVector = FortunaIcons.Verbum,
+            contentDescription = c.str(R.string.verbumDesc),
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(8.dp),
             tint = textColor,
         )
     }
-}*/
+}

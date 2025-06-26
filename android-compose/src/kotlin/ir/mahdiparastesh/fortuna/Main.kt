@@ -10,43 +10,46 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
-import ir.mahdiparastesh.fortuna.base.MainPage
-import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.base.FortunaStates
+import ir.mahdiparastesh.fortuna.base.MainComposablePage
+import ir.mahdiparastesh.fortuna.util.Numeral
+import ir.mahdiparastesh.fortuna.util.Numerals
 import java.time.chrono.ChronoLocalDate
-import java.time.temporal.ChronoField
 
-class Main : ComponentActivity(), MainPage {
+class Main : ComponentActivity(), MainComposablePage {
     override val c: Fortuna get() = applicationContext as Fortuna
-    val m: Model by viewModels()
+    override val m: Model by viewModels()
 
     val night: Boolean by lazy {
         resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
-    val cpl: FloatArray = floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
-    val cp: FloatArray by lazy {
-        if (!night) cpl else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
-    }
-    val csl: FloatArray = floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
-    val cs: FloatArray by lazy {
-        if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
-    }
+    override val cp: FloatArray by lazy { if (!night) cpl else createCPD() }
+    override val cpl: FloatArray = createCPL()
+    override val cs: FloatArray by lazy { if (!night) csl else createCSD() }
+    override val csl: FloatArray = createCSL()
 
-    class Model : ViewModel() {
-        var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
-        var variabilis by mutableStateOf<Int?>(null)
-        val drawerState = DrawerState(DrawerValue.Closed)
+    class Model : ViewModel(), FortunaStates {
+        override var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
+        override var variabilis by mutableStateOf<Int?>(null)
+        override val drawerState = DrawerState(DrawerValue.Closed)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,27 +75,38 @@ class Main : ComponentActivity(), MainPage {
                 reqPermLauncher.launch(prm)
     }
 
+
+    @Composable
+    override fun isWideScreen(): Boolean =
+        LocalConfiguration.current.smallestScreenWidthDp >= 600
+
+    @Composable
+    override fun str(ref: Any): String =
+        stringResource(ref as Int)
+
+    @Composable
+    override fun strArr(ref: Any): Array<String> =
+        stringArrayResource(ref as Int)
+
+    override var numeralType: String?
+        get() = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null)
+        set(newValue) {
+            c.sp.edit {
+                putString(
+                    Fortuna.SP_NUMERAL_TYPE,
+                    newValue ?: Fortuna.SP_NUMERAL_TYPE_DEF
+                )
+            }
+            shake()
+        }
+
+    override fun buildNumeral(numeralType: String?): Numeral? =
+        Numerals.build(numeralType?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it })
+
+
     /** Requests all the required permissions. (currently only for notifications in Android 13+) */
     private val reqPermLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
-
-    override fun updatePanel() {}
-    override fun updateGrid() {}
-
-    fun setDate(field: ChronoField, value: Int) {
-        c.date = c.date.with(field, value.toLong())
-        onDateChanged()
-    }
-
-    override fun moveInYears(to: Int) {
-        setDate(ChronoField.YEAR, c.date[ChronoField.YEAR] + to)
-        onDateChanged()
-    }
-
-    override fun onDateChanged() {
-        c.luna = c.date.toKey()
-        m.date = c.date
-    }
 
     /** Proper implementation of vibration in across different supported APIs */
     @Suppress("DEPRECATION")
@@ -103,3 +117,6 @@ class Main : ComponentActivity(), MainPage {
             .vibrate(VibrationEffect.createOneShot(dur, 100))
     }
 }
+
+@get:Composable
+val c: Main get() = LocalActivity.current as Main

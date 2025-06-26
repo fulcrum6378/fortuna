@@ -93,14 +93,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
-    val cpl: FloatArray = floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
-    val cp: FloatArray by lazy {
-        if (!night) cpl else floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
-    }
-    val csl: FloatArray = floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
-    val cs: FloatArray by lazy {
-        if (!night) csl else floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
-    }
+    override val cp: FloatArray by lazy { if (!night) cpl else createCPD() }
+    override val cpl: FloatArray = createCPL()
+    override val cs: FloatArray by lazy { if (!night) csl else createCSD() }
+    override val csl: FloatArray = createCSL()
 
     /** Improved drawable for the fields in [VariabilisDialog] and [ChronometerDialog] */
     val varFieldBg: MaterialShapeDrawable by lazy {

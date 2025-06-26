@@ -12,6 +12,24 @@ import java.time.temporal.ChronoUnit
 interface MainPage {
     val c: FortunaContext
 
+    /** Creates a light version of the primary theme colour. */
+    fun createCPL(): FloatArray = floatArrayOf(0.296875f, 0.68359375f, 0.3125f)  // #4CAF50
+
+    /** Creates a dark version of the primary theme colour. */
+    fun createCPD(): FloatArray = floatArrayOf(0.01171875f, 0.296875f, 0.0234375f)  // #034C06
+
+    /** Creates a light version of the secondary theme colour. */
+    fun createCSL(): FloatArray = floatArrayOf(0.953125f, 0.26171875f, 0.2109375f)  // #F44336
+
+    /** Creates a dark version of the secondary theme colour. */
+    fun createCSD(): FloatArray = floatArrayOf(0.40234375f, 0.05078125f, 0.0234375f)  // #670D06
+
+    val cp: FloatArray
+    val cpl: FloatArray
+    val cs: FloatArray
+    val csl: FloatArray
+
+
     /** Updates only the year and month inputs of Panel. */
     fun updatePanel()
 
