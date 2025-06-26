@@ -1,7 +1,10 @@
 package ir.mahdiparastesh.fortuna
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,8 +47,9 @@ object Context : FortunaContext, MainComposablePage {
     override val chronology: Chronology =
         IranianChronology.INSTANCE
 
-    init {
-        super<FortunaContext>.onCreate()
+    override fun onCreate() {
+        if (!appDir.exists()) appDir.mkdirs()
+        super.onCreate()
         if (m.date == null) m.date = c.date
     }
 
@@ -60,29 +64,7 @@ object Context : FortunaContext, MainComposablePage {
     }
 
 
-    val night: Boolean by lazy {
-        when {
-            System.getProperty("os.name").startsWith("Windows") -> {
-                val process = Runtime.getRuntime().exec(
-                    arrayOf(
-                        "reg", "query",
-                        "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-                        "/v", "AppsUseLightTheme"
-                    )
-                )
-                val output = process.inputStream.bufferedReader().readText()
-                !output.contains("0x1") // 0x1 = light mode, 0x0 = dark mode
-            }
-
-            System.getProperty("os.name").startsWith("Mac") -> {
-                val process = Runtime.getRuntime().exec("defaults read -g AppleInterfaceStyle")
-                val output = process.inputStream.bufferedReader().readText()
-                output.trim() == "Dark"
-            }
-
-            else -> false // Linux or unknown
-        }
-    }
+    var night = false
     override val cp: FloatArray by lazy { if (!night) cpl else createCPD() }
     override val cpl: FloatArray = createCPL()
     override val cs: FloatArray by lazy { if (!night) csl else createCSD() }
@@ -109,7 +91,19 @@ object Context : FortunaContext, MainComposablePage {
 val c get() = Context
 
 fun main() = application {
-    Window(onCloseRequest = ::exitApplication, title = c.str(R.string.app_name)) {
-        FortunaTheme { MainPage() }
+    c.onCreate()
+
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = c.str(R.string.app_name),
+        //icon = TODO Painter,
+        //undecorated = true,
+    ) {
+        FortunaTheme {
+            c.night = isSystemInDarkTheme()
+            Surface(color = MaterialTheme.colorScheme.surface) {
+                MainPage()
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
 }
 
+val calendar = "iranian"
+
 tasks.named<KotlinJvmCompile>("compileKotlin") {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_24)
@@ -14,14 +16,8 @@ tasks.named<KotlinJvmCompile>("compileKotlin") {
 }
 
 sourceSets.getByName("main") {
-    kotlin.srcDirs(
-        "src/kotlin", "$rootDir/compose-shared/kotlin",
-    )
-    resources {
-        srcDir("src/resources")
-        //srcDir("$rootDir/android-shared/res")  // "$rootDir/android-shared/res_iranian"
-        //include("raw/**")  fixme
-    }
+    kotlin.srcDirs("src/kotlin", "$rootDir/compose-shared/kotlin")
+    resources.srcDir("src/resources")
 }
 
 dependencies {
@@ -33,9 +29,9 @@ dependencies {
     implementation(compose.materialIconsExtended)  // TODO check if it takes much space
 }
 
-val calendar = "iranian"
-val composeResourcesDir = layout.buildDirectory.dir("composeResources")
 
+// arrange a temporary folder for compose resources
+val composeResourcesDir = layout.buildDirectory.dir("composeResources")
 val prepareComposeResources = tasks.register("prepareComposeResources") {
     val inputDir1 = file("$rootDir/android-shared/res")
     val inputDir2 = file("$rootDir/android-shared/res_$calendar")
@@ -85,24 +81,3 @@ compose {
         customDirectory("main", composeResourcesDir)
     }
 }
-
-/*val transferCVRs = tasks.register("transferCVRs") {
-    val canonicalPath = "ir.mahdiparastesh.fortuna/values"
-    val inputDir = layout.buildDirectory.dir(
-        "generated/compose/resourceGenerator/assembledResources/Main/composeResources/"
-    ).get().asFile
-    val outputDir = composeResourcesDir.get().asFile
-
-    inputs.dir(inputDir)
-    outputs.dir(outputDir)
-
-    doLast {
-        copy {
-            from(File(inputDir, canonicalPath))
-            into(File(outputDir, canonicalPath).apply { mkdirs() })
-        }
-    }
-}
-transferCVRs {
-    mustRunAfter(tasks.named("generateComposeResClass"))
-}*/

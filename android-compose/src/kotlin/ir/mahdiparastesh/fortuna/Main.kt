@@ -37,7 +37,7 @@ class Main : ComponentActivity(), MainComposablePage {
     override val c: Fortuna get() = applicationContext as Fortuna
     override val m: Model by viewModels()
 
-    val night: Boolean by lazy {
+    val night: Boolean by lazy {  // FIXME this is redundant
         resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }

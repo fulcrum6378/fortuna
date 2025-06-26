@@ -105,7 +105,7 @@ private val Geometry = Shapes(
 @Composable
 fun FortunaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = when {  // FIXME if it doesn't work in Windows
+        colorScheme = when {
             isSystemInDarkTheme() -> DarkColorScheme
             else -> LightColorScheme
         },
