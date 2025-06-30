@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="22">
+    <bytecodeTargetLevel target="24">
       <module name="Fortuna.android" target="24" />
       <module name="Fortuna.android-compose" target="24" />
-      <module name="Fortuna.android-view" target="24" />
       <module name="Fortuna.app" target="23" />
-      <module name="Fortuna.compose-desktop" target="24" />
-      <module name="Fortuna.compose-desktop.main" target="24" />
-      <module name="Fortuna.compose-desktop.test" target="24" />
-      <module name="Fortuna.core" target="24" />
-      <module name="Fortuna.core.main" target="24" />
-      <module name="Fortuna.core.test" target="24" />
       <module name="Fortuna.desktop-compose" target="24" />
       <module name="Fortuna.desktop-compose.main" target="24" />
       <module name="Fortuna.desktop-compose.test" target="24" />

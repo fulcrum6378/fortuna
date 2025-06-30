@@ -11,7 +11,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/android-compose" />
+            <option value="$PROJECT_DIR$/android-view" />
             <option value="$PROJECT_DIR$/compose-desktop" />
             <option value="$PROJECT_DIR$/core" />
           </set>

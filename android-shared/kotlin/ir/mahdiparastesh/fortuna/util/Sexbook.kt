@@ -9,11 +9,11 @@ import java.time.LocalDate
 import java.time.temporal.ChronoField
 
 /**
- * Imports data from the Sexbook app in a separate thread, if the app is installed.
- * The data includes orgasm times and crushes' birthdays.
+ * Imports data from the Sexbook app in a background thread, if the app is installed.
+ * The data includes orgasm times, crushes' birthdays and place names.
  *
- * @see <a href="https://codeberg.org/fulcrum6378/sexbook">Sexbook repo in Codeberg</a>
  * @see <a href="https://github.com/fulcrum6378/sexbook">Sexbook repo in GitHub</a>
+ * @see <a href="https://codeberg.org/fulcrum6378/sexbook">Sexbook repo in Codeberg</a>
  */
 class Sexbook(private val c: Fortuna) {
 
@@ -64,14 +64,19 @@ class Sexbook(private val c: Fortuna) {
         // also load Crushes
         c.contentResolver.query(
             "content://$PACKAGE/crush".toUri(), arrayOf(
-                "key", "first_name", "middle_name", "last_name", "status", "birth", "first_met"
-            ), "birth IS NOT NULL OR first_met IS NOT NULL", null, null
+                "key", "first_name", "middle_name", "last_name", "status", "birthday", "first_met"
+            ), "birthday IS NOT NULL OR first_met IS NOT NULL",
+            null, null
         ).iterate {
             crushes.add(
                 Crush(
                     getString(0),
-                    getString(1), getString(2), getString(3),
-                    getInt(4), getString(5), getString(6)
+                    getString(1),
+                    getString(2),
+                    getString(3),
+                    getInt(4),
+                    getString(5),
+                    getString(6)
                 )
             )
         }
@@ -134,7 +139,8 @@ class Sexbook(private val c: Fortuna) {
         var firstMetTime: String? = null
 
         init {
-            if (birth != null && (((status and 128) == 0) || ((status and 16) == 16)) // (status and 32) == 0
+            if (birth != null &&  // (status and 512 == 0)
+                (((status and 7) !in arrayOf(4, 5) || (status and 1024) != 0))
             ) parseDateTime(birth).also { dt ->
                 dt.first.also {
                     birthYear = it[0]
@@ -183,7 +189,9 @@ class Sexbook(private val c: Fortuna) {
                 mb = spl[1].toInt()
                 db = spl[2].toInt()
                 if (c.chronology.calendarType != "iso8601") {
-                    val cal = c.chronology.dateEpochDay(LocalDate.of(yb, mb, db).toEpochDay())
+                    val cal = c.chronology.dateEpochDay(
+                        LocalDate.of(yb, mb, db).toEpochDay()
+                    )
                     yb = cal[ChronoField.YEAR]
                     mb = cal[ChronoField.MONTH_OF_YEAR]
                     db = cal[ChronoField.DAY_OF_MONTH]
