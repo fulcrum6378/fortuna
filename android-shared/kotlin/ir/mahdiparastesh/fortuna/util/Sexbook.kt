@@ -54,9 +54,11 @@ class Sexbook(private val c: Fortuna) {
                     time[ChronoField.HOUR_OF_DAY].toByte(),
                     time[ChronoField.MINUTE_OF_HOUR].toByte(),
                     time[ChronoField.SECOND_OF_MINUTE].toByte(),
-                    getString(2), getShort(3).toByte(),
-                    getString(4), getInt(5) == 1,
-                    places[getLong(6)]
+                    getString(2),
+                    getShort(3).toByte(),
+                    places[getLong(4)],
+                    getString(5),
+                    getInt(6) == 1,
                 )
             )
         }
@@ -98,12 +100,13 @@ class Sexbook(private val c: Fortuna) {
      * @param second (Byte)
      * @param key the raw input from the user indicating their crush's name (String)
      * @param type wet dream, masturbation, oral, anal or vaginal sex (Byte)
+     * @param place the place where the sex happened (String?)
      * @param desc description (String)
      * @param accurate is this record accurate? (Boolean)
-     * @param place the place where the sex happened (String?)
      *
      * @see Grid#appendSexReports
      */
+    @Suppress("KDocUnresolvedReference")
     data class Report(
         val id: Long,
         val year: Short,
@@ -114,15 +117,16 @@ class Sexbook(private val c: Fortuna) {
         val second: Byte,
         val key: String?,
         val type: Byte,
+        val place: String?,
         val desc: String?,
         val accurate: Boolean,
-        val place: String?
     )
 
     /**
      * Class containing the information about a crush from Sexbook.
      * @see Grid#appendCrushDates
      */
+    @Suppress("KDocUnresolvedReference")
     inner class Crush(
         private val key: String,
         private val fName: String?, private val mName: String?, private val lName: String?,
@@ -140,7 +144,7 @@ class Sexbook(private val c: Fortuna) {
 
         init {
             if (birth != null &&  // (status and 512 == 0)
-                (((status and 7) !in arrayOf(4, 5) || (status and 1024) != 0))
+                (((status and 7) != 5 || (status and 1024) != 0))
             ) parseDateTime(birth).also { dt ->
                 dt.first.also {
                     birthYear = it[0]
