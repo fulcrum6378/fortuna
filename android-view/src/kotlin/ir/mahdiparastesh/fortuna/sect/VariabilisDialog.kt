@@ -52,13 +52,12 @@ class VariabilisDialog : BaseDialogue() {
         const val ARG_DAY = "day"
 
         /** @param day starting from 0 */
-        fun newInstance(day: Int): VariabilisDialog {
-            return VariabilisDialog().apply {
+        fun newInstance(day: Int): VariabilisDialog =
+            VariabilisDialog().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DAY, day)
                 }
             }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,9 +94,7 @@ class VariabilisDialog : BaseDialogue() {
 
         // emojis
         b.emoji.apply {
-            setText(
-                c.m.variabilisEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji)?.toString()
-            )
+            setText(c.m.variabilisEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji))
             if (text.isEmpty()) luna.emoji?.also { hint = it }
             filters = arrayOf(EmojiFilter(this@apply))
             if (c.m.variabilisEmoji != null) isCancelable = false
@@ -239,11 +236,10 @@ class VariabilisDialog : BaseDialogue() {
             } else sb.append(b.visName().uppercase(Locale.getDefault()))
                 .append(" was born${if (b.birthTime != null) " at ${b.birthTime}" else ""}!\n")
         }
-        if (!firstMet.isNullOrEmpty()) for (fm in firstMet)
-            sb.append(
-                "Met ${fm.visName()} for the first time" +
-                        "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n"
-            )
+        if (!firstMet.isNullOrEmpty()) for (fm in firstMet) sb.append(
+            "Met ${fm.visName()} for the first time" +
+                    "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n"
+        )
 
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
@@ -295,7 +291,9 @@ class VariabilisDialog : BaseDialogue() {
             try {
                 c.startActivity(
                     Intent("${Sexbook.PACKAGE}.ACTION_VIEW")
-                        .setComponent(ComponentName(Sexbook.PACKAGE, "${Sexbook.PACKAGE}.Main"))
+                        .setComponent(
+                            ComponentName(Sexbook.PACKAGE, "${Sexbook.PACKAGE}.Main")
+                        )
                         .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true

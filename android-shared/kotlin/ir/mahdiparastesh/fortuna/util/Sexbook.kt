@@ -143,15 +143,21 @@ class Sexbook(private val c: Fortuna) {
         var firstMetTime: String? = null
 
         init {
-            if (birth != null &&  // (status and 512 == 0)
-                (((status and 7) != 5 || (status and 1024) != 0))
-            ) parseDateTime(birth).also { dt ->
-                dt.first.also {
-                    birthYear = it[0]
-                    birthMonth = it[1]
-                    birthDay = it[2]
+            if (birth != null) {
+                val isImportant =  // birthday notifications are enabled or the crush is active
+                    (status and 1024) != 0 || (status and 32768) == 0
+                if (// has not disappeared or is important
+                    ((status and 7) != 5 || isImportant) &&
+                    // is safe or is important
+                    ((status and 512) == 0 || isImportant)
+                ) parseDateTime(birth).also { dt ->
+                    dt.first.also {
+                        birthYear = it[0]
+                        birthMonth = it[1]
+                        birthDay = it[2]
+                    }
+                    birthTime = dt.second
                 }
-                birthTime = dt.second
             }
             if (firstMet != null) parseDateTime(firstMet).also { dt ->
                 dt.first.also {

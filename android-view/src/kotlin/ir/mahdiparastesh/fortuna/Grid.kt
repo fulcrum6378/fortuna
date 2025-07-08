@@ -45,7 +45,7 @@ class Grid(private val c: Main) : ListAdapter {
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
     /** Helper array for animating cell colours */
-    private val cellColours: Array<Int> = Array<Int>(
+    private val cellColours: Array<Int> = Array(
         c.c.chronology.range(ChronoField.DAY_OF_MONTH).maximum.toInt()
     ) { Color.TRANSPARENT }
 
@@ -92,14 +92,16 @@ class Grid(private val c: Main) : ListAdapter {
                 b.dies.setTextColor(cpo)
                 b.variabilis.setTextColor(cpo)
                 b.verbumIcon.setColorFilter(cpo)
-                Color.valueOf(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE).toArgb()
+                Color.valueOf(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
+                    .toArgb()
             }
 
             score != null && score < 0f -> {
                 b.dies.setTextColor(cso)
                 b.variabilis.setTextColor(cso)
                 b.verbumIcon.setColorFilter(cso)
-                Color.valueOf(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE).toArgb()
+                Color.valueOf(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
+                    .toArgb()
             }
 
             else -> {
@@ -123,13 +125,15 @@ class Grid(private val c: Main) : ListAdapter {
         // clicks
         b.root.setOnClickListener { c.variabilis(i) }
         b.root.setOnLongClickListener {
-            ChronometerDialog.newInstance(i).show(c.supportFragmentManager, ChronometerDialog.TAG)
+            ChronometerDialog.newInstance(i)
+                .show(c.supportFragmentManager, ChronometerDialog.TAG)
             true
         }
 
         // highlight the cell if it indicates today
         if (c.c.luna == c.c.todayLuna && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
-            b.root.foreground = AppCompatResources.getDrawable(c, R.drawable.dies_today)
+            b.root.foreground = AppCompatResources
+                .getDrawable(c, R.drawable.dies_today)
         else
             b.root.foreground = c.resources.getDrawable(R.drawable.dies, c.theme)
 
