@@ -126,10 +126,8 @@ class VariabilisDialog : BaseDialogue() {
 
         // Sexbook records for this day
         c.m.sexbook.observe(this) {
-            if (i != -1) {
-                b.sexbook.appendCrushDates(i.toShort(), date[ChronoField.YEAR].toShort())
-                b.sexbook.appendSexReports(i)
-            }
+            b.sexbook.appendCrushDates(i.toShort(), date[ChronoField.YEAR].toShort())
+            if (i != -1) b.sexbook.appendSexReports(i)
         }
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
@@ -201,45 +199,56 @@ class VariabilisDialog : BaseDialogue() {
      */
     @SuppressLint("SetTextI18n")
     private fun TextView.appendCrushDates(day: Short, year: Short) {
-        if (day == (-1).toShort()) return
+        val lunar = day == (-1).toShort()
         val yr = c.c.date[ChronoField.YEAR].toShort()
         val mo = c.c.date[ChronoField.MONTH_OF_YEAR].toShort()
 
-        val birth = c.m.sexbook.value?.crushes
+        val birthdays = c.m.sexbook.value?.crushes
             ?.filter { x ->
                 x.birthYear != null && x.birthYear!! <= yr && x.birthMonth == mo &&
-                        x.birthDay == day
+                        (if (!lunar) x.birthDay == day else true)
             }
             ?.sortedBy { it.birthTime }
             ?.sortedBy { it.birthDay }
-        val firstMet = c.m.sexbook.value?.crushes
-            ?.filter { x -> x.firstMetYear == yr && x.firstMetMonth == mo && x.firstMetDay == day }
+        val firstDates = c.m.sexbook.value?.crushes
+            ?.filter { x ->
+                x.firstMetYear == yr && x.firstMetMonth == mo &&
+                        (if (!lunar) x.firstMetDay == day else true)
+            }
             ?.sortedBy { it.firstMetTime }
             ?.sortedBy { it.firstMetDay }
-        if (birth.isNullOrEmpty() && firstMet.isNullOrEmpty()) return
+        if (birthdays.isNullOrEmpty() && firstDates.isNullOrEmpty()) return
 
         val sb = StringBuilder()
-        if (!birth.isNullOrEmpty()) for (b in birth) {
-            val age = year - b.birthYear!!
+        if (!birthdays.isNullOrEmpty()) for (bd in birthdays) {
+            val age = year - bd.birthYear!!
             if (age > 0) {
-                if (b.active) sb.append("Happy ")
-                sb.append("${b.theirs()} ")
+                if (bd.active && !lunar) sb.append("Happy ")
+                sb.append(bd.theirs())
                 val sAge = age.toString()
-                sb.append(sAge).append(
-                    if (sAge.first() != '1' || sAge.length != 2) when (sAge.last()) {
-                        '1' -> "st"
-                        '2' -> "nd"
-                        '3' -> "rd"
-                        else -> "th"
-                    } else "th"
-                ).append(" birthday!\n")
-            } else sb.append(b.visName().uppercase(Locale.getDefault()))
-                .append(" was born${if (b.birthTime != null) " at ${b.birthTime}" else ""}!\n")
+                if (!lunar) sb.append(" ${ordinalSuffixes(sAge)}")
+                sb.append(" birthday")
+                if (lunar && bd.birthDay != null)
+                    sb.append(" on ${ordinalSuffixes(bd.birthDay.toString())}")
+                if (!lunar) sb.append("!")
+                sb.append("\n")
+            } else {
+                sb.append(bd.visName().uppercase(Locale.getDefault()))
+                sb.append(" was born")
+                if (!lunar && bd.birthTime != null) sb.append(" at ${bd.birthTime}")
+                if (lunar && bd.birthDay != null)
+                    sb.append(" on ${ordinalSuffixes(bd.birthDay.toString())}")
+                if (!lunar) sb.append("!")
+                sb.append("\n")
+            }
         }
-        if (!firstMet.isNullOrEmpty()) for (fm in firstMet) sb.append(
-            "Met ${fm.visName()} for the first time" +
-                    "${if (fm.firstMetTime != null) " at ${fm.firstMetTime}" else ""}!\n"
-        )
+        if (!firstDates.isNullOrEmpty()) for (fm in firstDates) {
+            sb.append("Met ${fm.visName()} for the first time")
+            if (!lunar && fm.firstMetTime != null) sb.append(" at ${fm.firstMetTime}")
+            if (lunar && fm.firstMetDay != null)
+                sb.append(" on ${ordinalSuffixes(fm.firstMetDay.toString())}")
+            sb.append("!\n")
+        }
 
         sb.deleteCharAt(sb.length - 1)
         text = text.toString() + sb.toString()
@@ -302,6 +311,16 @@ class VariabilisDialog : BaseDialogue() {
             }
         }
     }
+
+    private fun ordinalSuffixes(number: String) =
+        number + (if (number.first() != '1' || number.length != 2)
+            when (number.last()) {
+                '1' -> "st"
+                '2' -> "nd"
+                '3' -> "rd"
+                else -> "th"
+            }
+        else "th")
 
 
     /** Filters non-emoji characters allowing only emojis for an [EditText]. */
