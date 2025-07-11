@@ -1,6 +1,6 @@
 # Fortuna To-Do List
 
-* Lunar Variabilis shows unwanted crush birthdays
+* Index `Luna`s as serialized in cache
 * Doesn't open the correct day on a new day
 * Jumping to other dates using other calendars
 * Live saving for `VariabilisDialog`

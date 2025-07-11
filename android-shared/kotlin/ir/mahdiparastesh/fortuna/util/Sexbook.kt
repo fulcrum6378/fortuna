@@ -19,6 +19,7 @@ class Sexbook(private val c: Fortuna) {
 
     companion object {
         const val PACKAGE = "ir.mahdiparastesh.sexbook"
+        const val MAIN_PAGE = "${Sexbook.PACKAGE}.page.Main"
     }
 
     @Throws(SecurityException::class)

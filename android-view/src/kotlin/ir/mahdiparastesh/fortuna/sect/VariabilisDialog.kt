@@ -304,9 +304,7 @@ class VariabilisDialog : BaseDialogue() {
             try {
                 c.startActivity(
                     Intent("${Sexbook.PACKAGE}.ACTION_VIEW")
-                        .setComponent(
-                            ComponentName(Sexbook.PACKAGE, "${Sexbook.PACKAGE}.Main")
-                        )
+                        .setComponent(ComponentName(Sexbook.PACKAGE, Sexbook.MAIN_PAGE))
                         .setData(sex.first().id.toString().toUri())
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 ); true
