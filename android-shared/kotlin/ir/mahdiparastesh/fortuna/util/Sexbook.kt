@@ -214,5 +214,14 @@ class Sexbook(private val c: Fortuna) {
         }
     }
 
-    data class Data(val reports: List<Report>, val crushes: List<Crush>)
+    class Data(val reports: List<Report>, crushes: List<Crush>) {
+
+        val birthdayCrushes: List<Crush> = crushes.filter { cr ->
+            cr.birthMonth != null && cr.birthDay != null
+        }
+
+        val firstMetCrushes: List<Crush> = crushes.filter { cr ->
+            cr.firstMetYear != null && cr.firstMetMonth != null && cr.firstMetDay != null
+        }
+    }
 }

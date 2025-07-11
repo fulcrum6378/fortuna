@@ -202,18 +202,19 @@ class VariabilisDialog : BaseDialogue() {
         val lunar = day == (-1).toShort()
         val yr = c.c.date[ChronoField.YEAR].toShort()
         val mo = c.c.date[ChronoField.MONTH_OF_YEAR].toShort()
+        val da = (day + 1).toShort()
 
-        val birthdays = c.m.sexbook.value?.crushes
+        val birthdays = c.m.sexbook.value?.birthdayCrushes
             ?.filter { x ->
-                x.birthYear != null && x.birthYear!! <= yr && x.birthMonth == mo &&
-                        (if (!lunar) x.birthDay == day else true)
+                (x.birthYear == null || x.birthYear!! <= yr) && x.birthMonth == mo &&
+                        (if (!lunar) x.birthDay == da else true)
             }
             ?.sortedBy { it.birthTime }
             ?.sortedBy { it.birthDay }
-        val firstDates = c.m.sexbook.value?.crushes
+        val firstDates = c.m.sexbook.value?.firstMetCrushes
             ?.filter { x ->
                 x.firstMetYear == yr && x.firstMetMonth == mo &&
-                        (if (!lunar) x.firstMetDay == day else true)
+                        (if (!lunar) x.firstMetDay == da else true)
             }
             ?.sortedBy { it.firstMetTime }
             ?.sortedBy { it.firstMetDay }
@@ -221,16 +222,18 @@ class VariabilisDialog : BaseDialogue() {
 
         val sb = StringBuilder()
         if (!birthdays.isNullOrEmpty()) for (bd in birthdays) {
-            val age = year - bd.birthYear!!
-            if (age > 0) {
+            val age = bd.birthYear?.let { year - it }
+            if (age == null || age > 0) {
                 if (bd.active && !lunar) sb.append("Happy ")
                 sb.append(bd.theirs())
-                val sAge = age.toString()
-                if (!lunar) sb.append(" ${ordinalSuffixes(sAge)}")
+                if (age != null) {
+                    val sAge = age.toString()
+                    if (!lunar) sb.append(" ${ordinalSuffixes(sAge)}")
+                }
                 sb.append(" birthday")
                 if (lunar && bd.birthDay != null)
                     sb.append(" on ${ordinalSuffixes(bd.birthDay.toString())}")
-                if (!lunar) sb.append("!")
+                sb.append(if (!lunar) "!" else ".")
                 sb.append("\n")
             } else {
                 sb.append(bd.visName().uppercase(Locale.getDefault()))
@@ -238,7 +241,7 @@ class VariabilisDialog : BaseDialogue() {
                 if (!lunar && bd.birthTime != null) sb.append(" at ${bd.birthTime}")
                 if (lunar && bd.birthDay != null)
                     sb.append(" on ${ordinalSuffixes(bd.birthDay.toString())}")
-                if (!lunar) sb.append("!")
+                sb.append(if (!lunar) "!" else ".")
                 sb.append("\n")
             }
         }
@@ -247,7 +250,8 @@ class VariabilisDialog : BaseDialogue() {
             if (!lunar && fm.firstMetTime != null) sb.append(" at ${fm.firstMetTime}")
             if (lunar && fm.firstMetDay != null)
                 sb.append(" on ${ordinalSuffixes(fm.firstMetDay.toString())}")
-            sb.append("!\n")
+            sb.append(if (!lunar) "!" else ".")
+            sb.append("\n")
         }
 
         sb.deleteCharAt(sb.length - 1)
