@@ -125,11 +125,14 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT),
+            statusBarStyle = SystemBarStyle
+                .auto(Color.TRANSPARENT, Color.TRANSPARENT),
             //SystemBarStyle.dark(Color.TRANSPARENT),
             navigationBarStyle =  // do NOT use SystemBarStyle.auto()
-                if (!night) SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
-                else SystemBarStyle.dark(Color.TRANSPARENT)
+                if (!night) SystemBarStyle
+                    .light(Color.TRANSPARENT, Color.TRANSPARENT)
+                else SystemBarStyle
+                    .dark(Color.TRANSPARENT)
         )
         super.onCreate(savedInstanceState)
         setContentView(b.root)
@@ -147,8 +150,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             val nt = Numerals.all[n]
             b.toolbar.menu.add(0, n, n, nt.name).apply {
                 isCheckable = true
-                isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
-                        (nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
+                isChecked = c.sp.getString(
+                    Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF
+                ) == (nt.name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
             }
         }
         ((b.toolbar[1] as ActionMenuView)[0] as ImageView)
@@ -170,7 +174,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
         // Panel
         b.luna.adapter = ArrayAdapter(
-            this, R.layout.spinner, resources.getStringArray(R.array.luna)
+            this, R.layout.spinner,
+            resources.getStringArray(R.array.luna)
         ).apply { setDropDownViewResource(R.layout.spinner_dd) }
         updatePanel()
         b.luna.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -260,8 +265,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         CoroutineScope(Dispatchers.IO).launch {
 
             // load all emojis for input text filtering
-            m.emojis = InputStreamReader(resources.openRawResource(R.raw.emojis), Charsets.UTF_8)
-                .use { it.readText().split(' ') }
+            m.emojis = InputStreamReader(
+                resources.openRawResource(R.raw.emojis), Charsets.UTF_8
+            ).use { it.readText().split(' ') }
 
             // Sexbook integration
             if (m.sexbook.value == null &&
@@ -328,7 +334,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                     type = Fortuna.VITA_MIME_TYPE
                     putExtra(Intent.EXTRA_TITLE, c.getString(R.string.export_file))
                 })
-                else Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
+                else Toast.makeText(
+                    c, R.string.emptyVita, Toast.LENGTH_SHORT
+                ).show()
 
             R.id.navImport ->
                 importLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -340,7 +348,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 if (c.vita.hasData())
                     c.vita.export().also { sendFile(it, R.string.export_file) }
                 else
-                    Toast.makeText(c, R.string.emptyVita, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        c, R.string.emptyVita, Toast.LENGTH_SHORT
+                    ).show()
 
             R.id.navBackup -> BackupDialog().show(supportFragmentManager, BackupDialog.TAG)
             R.id.navHelp -> HelpDialog().show(supportFragmentManager, HelpDialog.TAG)
@@ -384,7 +394,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 data!!
             } catch (_: Exception) {
                 Toast.makeText(
-                    c, R.string.importOpenError, Toast.LENGTH_LONG
+                    c, R.string.importOpenError,
+                    Toast.LENGTH_LONG
                 ).show(); return@registerForActivityResult
             }
             val imported: Vita
@@ -392,7 +403,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 imported = Vita(c, text = data)
             } catch (_: Exception) {
                 Toast.makeText(
-                    c, R.string.importReadError, Toast.LENGTH_LONG
+                    c, R.string.importReadError,
+                    Toast.LENGTH_LONG
                 ).show(); return@registerForActivityResult
             }
             MaterialAlertDialogBuilder(this@Main).apply {
@@ -420,7 +432,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                         type = Fortuna.VITA_MIME_TYPE
                         putExtra(
                             Intent.EXTRA_STREAM,
-                            FileProvider.getUriForFile(c, packageName, exported)
+                            FileProvider.getUriForFile(
+                                c, packageName, exported
+                            )
                         )
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     }.also { startActivity(it) }
@@ -490,8 +504,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     /** Updates the overflow menu after the numeral system is changed. */
     private fun updateOverflow() {
         b.toolbar.menu.forEachIndexed { i, item ->
-            item.isChecked = c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF) ==
-                    (Numerals.all[i].name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
+            item.isChecked = c.sp.getString(
+                Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF
+            ) == (Numerals.all[i].name() ?: Fortuna.SP_NUMERAL_TYPE_DEF)
         }
     }
 

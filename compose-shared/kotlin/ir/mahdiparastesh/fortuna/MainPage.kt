@@ -56,6 +56,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Backup
@@ -81,7 +83,7 @@ import java.time.temporal.ChronoField
 fun MainPage() {
     //Log.d("YURIKO", "MainPage()")
     val c = c
-    val numeralState = remember { mutableStateOf<String?>(c.numeralType) }
+    val numeralState = remember { mutableStateOf(c.numeralType) }
 
     ModalNavigationDrawer(
         drawerContent = { Drawer() },
@@ -134,7 +136,8 @@ fun Drawer() {
                 onClick = onClick,
                 modifier = Modifier
                     .height(54.dp)
-                    .padding(horizontal = hPad, vertical = 2.dp),
+                    .padding(horizontal = hPad, vertical = 2.dp)
+                    .pointerHoverIcon(PointerIcon.Hand),
                 icon = {
                     Icon(
                         imageVector = icon,
@@ -210,6 +213,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
                         }
                     }
                 },
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Icon(
                     imageVector = Icons.Default.Menu,
@@ -219,7 +223,10 @@ fun Toolbar(numeralState: MutableState<String?>) {
             }
         },
         actions = {
-            IconButton(onClick = { numeralsExpanded = !numeralsExpanded }) {
+            IconButton(
+                onClick = { numeralsExpanded = !numeralsExpanded },
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+            ) {
                 Icon(
                     imageVector = FortunaIcons.ArabicNumerals,
                     contentDescription = c.str(R.string.numerals),
@@ -257,6 +264,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
                             numeralState.value = ntName
                             numeralsExpanded = false
                         },
+                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
                     )
                 }
             }
@@ -274,6 +282,7 @@ fun Panel() {
     val c = c
     val months = c.strArr(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
+    val prevNextMargin = 20.dp
 
     Box {
         // a shadow beneath the TopAppBar
@@ -303,6 +312,24 @@ fun Panel() {
                 unfocusedIndicatorColor = Color.Transparent,
             )
 
+            // move to a previous month
+            IconButton(
+                onClick = {
+                    c.moveInMonths(false)
+                },
+                Modifier
+                    .align(Alignment.CenterVertically)
+                    .pointerHoverIcon(PointerIcon.Hand),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = c.str(R.string.prevDesc),
+                    modifier = Modifier.rotate(90f),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Spacer(Modifier.width(prevNextMargin))
+
             // luna (month selector)
             ExposedDropdownMenuBox(
                 expanded = lunaExpanded,
@@ -318,12 +345,17 @@ fun Panel() {
                     readOnly = true,
                     textStyle = MaterialTheme.typography.titleLarge,
                     trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = null,
-                            modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
+                        IconButton(
+                            onClick = { lunaExpanded = true },
+                            modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = null,
+                                modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     },
                     colors = textFieldColours,
                 )
@@ -343,9 +375,9 @@ fun Panel() {
                             },
                             onClick = {
                                 c.setDate(ChronoField.MONTH_OF_YEAR, i + 1)
-                                c.onDateChanged()
                                 lunaExpanded = false
                             },
+                            modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
                         )
                     }
                 }
@@ -356,13 +388,30 @@ fun Panel() {
                 value = c.m.date!![ChronoField.YEAR].toString(),
                 onValueChange = {
                     c.setDate(ChronoField.YEAR, it.toInt())
-                    c.onDateChanged()
                 },
                 modifier = Modifier.width(85.dp),
                 textStyle = MaterialTheme.typography.titleSmall,
                 singleLine = true,
                 colors = textFieldColours,
             )
+
+            // move to a next month
+            Spacer(Modifier.width(prevNextMargin))
+            IconButton(
+                onClick = {
+                    c.moveInMonths(true)
+                },
+                Modifier
+                    .align(Alignment.CenterVertically)
+                    .pointerHoverIcon(PointerIcon.Hand),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = c.str(R.string.nextDesc),
+                    modifier = Modifier.rotate(-90f),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -384,7 +433,8 @@ fun Grid(numeralState: MutableState<String?>) {
     ) {
         for (i in 0 until c.m.date!!.lengthOfMonth())
             Dies(
-                i, luna, numeralType, maximumStats, c.c.luna == c.c.todayLuna, isWideScreen
+                i, luna, numeralType, maximumStats,
+                c.c.luna == c.c.todayLuna, isWideScreen
             )
     }
 }
@@ -443,9 +493,11 @@ fun Dies(
                         }
                     ),
                 )
-            ).clickable {
+            )
+            .clickable {
                 c.m.variabilis = i
-            },
+            }
+            .pointerHoverIcon(PointerIcon.Hand),
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),

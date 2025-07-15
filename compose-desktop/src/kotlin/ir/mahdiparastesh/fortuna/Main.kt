@@ -49,8 +49,10 @@ object Context : FortunaContext, MainComposablePage {
 
     override fun onCreate() {
         if (!appDir.exists()) appDir.mkdirs()
-        super.onCreate()
-        if (m.date == null) m.date = c.date
+        if (m.date == null) {
+            super.onCreate()
+            m.date = c.date
+        }
     }
 
 
@@ -58,7 +60,9 @@ object Context : FortunaContext, MainComposablePage {
     override val m: FortunaStates get() = Model
 
     object Model : FortunaStates {
-        override var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
+        override var date by mutableStateOf<ChronoLocalDate?>(
+            null, structuralEqualityPolicy()
+        )
         override var variabilis by mutableStateOf<Int?>(null)
         override val drawerState = DrawerState(DrawerValue.Closed)
     }

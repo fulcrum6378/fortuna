@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
 }
 
+group = "ir.mahdiparastesh"
+version = "1.1.0"
 val calendar = "iranian"
 
 tasks.named<KotlinJvmCompile>("compileKotlin") {
@@ -48,10 +50,14 @@ val prepareComposeResources = tasks.register("prepareComposeResources") {
         // prepare string resources
         val valuesDir = File(outputDir, "values").apply { mkdirs() }
         val stringsXml = File(valuesDir, "strings.xml")
-        var strings = StringBuilder(File(inputDir1, "values/strings.xml").readText())
+        var strings = StringBuilder(
+            File(inputDir1, "values/strings.xml").readText()
+        )
         strings.deleteRange(strings.length - 12, strings.length)
         strings.appendLine()
-        strings.append(File(inputDir2, "values/strings.xml").readText().substring(51))
+        strings.append(
+            File(inputDir2, "values/strings.xml").readText().substring(51)
+        )
         stringsXml.writeText(strings.toString())
         // TODO this algorithm doesn't assemble non-English XML files
 
