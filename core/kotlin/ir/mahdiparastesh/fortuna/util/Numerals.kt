@@ -262,7 +262,7 @@ class OldPersianNumeral : Numeral() {
     override fun convert(num: Int) {
         var n = num
         var bufferNumeralPos = chars.size - 1
-        var subtractValue = 0
+        var subtractValue: Int
         while (n > 0) {
             subtractValue = values[bufferNumeralPos]
             if (n >= subtractValue) {
@@ -292,25 +292,23 @@ class KharosthiNumeral : Numeral() {
     )
 
     override fun convert(num: Int) {
-        var n = num
+        val n = num
         if (n >= 1000) describeSuperKiloNumber(n / 1000, 0)
         if (n > 0) describeSubKiloNumber(n % 1000)
     }
 
     /** @param n must be greater than or equal to 1000 */
     private fun describeSuperKiloNumber(n: Int, step: Int) {
-        var nn = n
-        if (nn >= 1000) {
-            describeSuperKiloNumber(nn / 1000, step + 1)
-            nn /= 1000
-        } else {
-            if (nn > 1) describeSubKiloNumber(nn)
-            (0..step).forEach { write(chars[7]) }
+        if (n >= 1000)
+            describeSuperKiloNumber(n / 1000, step + 1)
+        else {
+            if (n > 1) describeSubKiloNumber(n)
+            (0..step).forEach { _ -> write(chars[7]) }
         }
         val remainder = n % 1000
         if (n >= 1000 && remainder > 0) {
             describeSubKiloNumber(remainder)
-            (0..step).forEach { write(chars[7]) }
+            (0..step).forEach { _ -> write(chars[7]) }
         }
     }
 

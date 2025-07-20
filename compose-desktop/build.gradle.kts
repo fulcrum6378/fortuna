@@ -23,7 +23,7 @@ sourceSets.getByName("main") {
 }
 
 dependencies {
-    implementation(project(":core"))
+    api(project(":core"))
 
     implementation(compose.desktop.currentOs)
     implementation(compose.material3)

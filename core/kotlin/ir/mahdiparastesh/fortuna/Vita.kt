@@ -44,7 +44,11 @@ class Vita(
                 key = s[0].substring(1)
                 val splitKey = key.split(".")
                 this[key] = Luna(
-                    c.chronology.date(splitKey[0].toInt(), splitKey[1].toInt(), 1).lengthOfMonth(),
+                    c.chronology.date(
+                        splitKey[0].toInt(),
+                        splitKey[1].toInt(),
+                        1
+                    ).lengthOfMonth(),
                     s.getOrNull(1)?.toFloat(),
                     sn.getOrNull(1)?.ifBlank { null },
                     sn.getOrNull(2)?.loadVitaText(),
@@ -73,7 +77,7 @@ class Vita(
 
     /** Dumps Vita data into a string to be written in a *.vita file. */
     private fun dump(): String = StringBuilder().apply {
-        var hasVerbum = false
+        var hasVerbum: Boolean
         this@Vita.toSortedMap().forEach { (k, luna) ->
             append("@$k")
             luna.default?.also { score ->
