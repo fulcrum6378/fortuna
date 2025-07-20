@@ -1,6 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
+val fortunaComposeVersion: String by project
+val calendar = "iranian"
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.compose)
@@ -8,8 +11,7 @@ plugins {
 }
 
 group = "ir.mahdiparastesh"
-version = "1.1.0"
-val calendar = "iranian"
+version = fortunaComposeVersion
 
 tasks.named<KotlinJvmCompile>("compileKotlin") {
     compilerOptions {
@@ -86,4 +88,10 @@ compose {
         nameOfResClass = "R"
         customDirectory("main", composeResourcesDir)
     }
+}
+
+tasks.jar {
+    archiveBaseName = "Fortuna"
+    /*from(configurations.runtimeClasspath.get().map(::zipTree))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE*/
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -37,6 +38,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -81,7 +83,6 @@ import java.time.temporal.ChronoField
 
 @Composable
 fun MainPage() {
-    //Log.d("YURIKO", "MainPage()")
     val c = c
     val numeralState = remember { mutableStateOf(c.numeralType) }
 
@@ -106,7 +107,6 @@ fun MainPage() {
 
 @Composable
 fun Drawer() {
-    //Log.d("YURIKO", "Drawer()")
     val c = c
     val coroutineScope = rememberCoroutineScope()
 
@@ -278,8 +278,8 @@ fun Toolbar(numeralState: MutableState<String?>) {
 
 @Composable
 fun Panel() {
-    //Log.d("YURIKO", "Panel()")
     val c = c
+    val luna = c.c.vita[c.m.date!!.toKey()]
     val months = c.strArr(R.array.luna)
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
     val prevNextMargin = 20.dp
@@ -299,11 +299,43 @@ fun Panel() {
                 )
         )
 
+        // move to a next year (up)
+        IconButton(
+            onClick = { c.moveInYears(1) },
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = 62.dp, y = (-34).dp)
+                .pointerHoverIcon(PointerIcon.Hand),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = c.str(R.string.annusUpDesc),
+                modifier = Modifier.rotate(180f),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        // move to a previous year (down)
+        IconButton(
+            onClick = { c.moveInYears(-1) },
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = 62.dp, y = 36.dp)
+                .pointerHoverIcon(PointerIcon.Hand),
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = c.str(R.string.annusDownDesc),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        // the vertically centered contents:
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 30.dp, bottom = 24.dp),
+                .padding(top = 32.dp, bottom = 28.dp),
             horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             val textFieldColours = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
@@ -314,12 +346,8 @@ fun Panel() {
 
             // move to a previous month
             IconButton(
-                onClick = {
-                    c.moveInMonths(false)
-                },
-                Modifier
-                    .align(Alignment.CenterVertically)
-                    .pointerHoverIcon(PointerIcon.Hand),
+                onClick = { c.moveInMonths(false) },
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
@@ -395,30 +423,56 @@ fun Panel() {
                 colors = textFieldColours,
             )
 
+            // default monthly score
+            Spacer(Modifier.width(prevNextMargin))
+            TextButton(
+                onClick = { c.m.variabilis = -1 },
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+            ) {
+                Text(
+                    text = luna.default.displayScore(true),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
             // move to a next month
             Spacer(Modifier.width(prevNextMargin))
             IconButton(
-                onClick = {
-                    c.moveInMonths(true)
-                },
-                Modifier
-                    .align(Alignment.CenterVertically)
-                    .pointerHoverIcon(PointerIcon.Hand),
+                onClick = { c.moveInMonths(true) },
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
                     contentDescription = c.str(R.string.nextDesc),
                     modifier = Modifier.rotate(-90f),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
+
+        // default monthly emoji
+        if (luna.emoji != null) Text(
+            text = luna.emoji ?: "",
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = 155.dp, y = (-29).dp),
+            style = MaterialTheme.typography.labelSmall,
+        )
+        // default monthly verbum
+        if (luna.verbum?.isNotBlank() == true) Icon(
+            imageVector = FortunaIcons.Verbum,
+            contentDescription = c.str(R.string.verbumDesc),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = 178.dp, y = (-27).dp),
+            tint = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
 @Composable
 fun Grid(numeralState: MutableState<String?>) {
-    //Log.d("YURIKO", "Grid()")
     val c = c
     val luna = c.c.vita[c.m.date!!.toKey()]
     val numeralType = c.buildNumeral(numeralState.value)
@@ -448,7 +502,6 @@ fun Dies(
     hasToday: Boolean,
     isWide: Boolean,
 ) {
-    //Log.d("YURIKO", "Dies(${i + 1})")
     val c = c
 
     val score: Float? =
@@ -494,9 +547,7 @@ fun Dies(
                     ),
                 )
             )
-            .clickable {
-                c.m.variabilis = i
-            }
+            .clickable { c.m.variabilis = i }
             .pointerHoverIcon(PointerIcon.Hand),
     ) {
         Column(

@@ -1,5 +1,6 @@
 # Fortuna To-Do List
 
+* Compatibility for `onBackPressed`
 * Index `Luna`s as serialized in cache
 * Doesn't open the correct day on a new day
 * Jumping to other dates using other calendars
