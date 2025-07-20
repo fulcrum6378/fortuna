@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 
@@ -29,7 +32,7 @@ fun BaseDialog(
                 .wrapContentHeight()
                 .clip(MaterialTheme.shapes.large)  // use it before background()
                 .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(vertical = 16.dp, horizontal = 20.dp)
+                .padding(20.dp, 18.dp, 20.dp, 14.dp)
         ) {
             // title
             Text(
@@ -42,5 +45,23 @@ fun BaseDialog(
 
             content()
         }
+    }
+}
+
+@Composable
+fun BaseDialogButton(
+    text: String,
+    onClick: () -> Unit,
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+    ) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(10.dp, 9.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }

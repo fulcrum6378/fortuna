@@ -1,6 +1,11 @@
 package ir.mahdiparastesh.fortuna.sect
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -10,8 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import ir.mahdiparastesh.fortuna.*
 import ir.mahdiparastesh.fortuna.base.BaseDialog
+import ir.mahdiparastesh.fortuna.base.BaseDialogButton
 import ir.mahdiparastesh.fortuna.base.MainComposablePage
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 
@@ -54,6 +61,40 @@ fun VariabilisDialog(c: MainComposablePage) {
                 unfocusedIndicatorColor = Color.Transparent,
             ),
         )
+
+        // buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(0.3333333f),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                BaseDialogButton(c.str(R.string.clear)) {
+                    c.saveDies(
+                        luna, i,
+                        luna.default ?: 0f,
+                        luna.emoji,
+                        verbum.value
+                    )
+                    // TODO c.c.shake()
+                    c.m.variabilis = null
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(1f),
+                horizontalArrangement = Arrangement.End,
+            ) {
+                BaseDialogButton(c.str(R.string.cancel)) { c.m.variabilis = null }
+                Spacer(Modifier.width(2.dp))
+                BaseDialogButton(c.str(R.string.save)) {
+                    // TODO show an AlertDialog
+                    c.m.variabilis = null
+                }
+            }
+        }
     }
 }
 

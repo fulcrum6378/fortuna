@@ -86,6 +86,12 @@ val Typography
             fontFamily = FontFamilyQuattrocento,
             lineHeight = 26.sp,
         ),
+        bodySmall = TextStyle(
+            // dialog buttons
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            fontFamily = FontFamilyQuattrocento,
+        ),
         labelMedium = TextStyle(
             // numbers at the bottom of Panel
             fontSize = 14.sp,
