@@ -1,9 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
-val fortunaComposeVersion: String by project
-val calendar = "iranian"
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.compose)
@@ -11,7 +8,8 @@ plugins {
 }
 
 group = "ir.mahdiparastesh"
-version = fortunaComposeVersion
+version = project.extra["fortuna.compose.version"]!!
+val calendar = "iranian"
 
 tasks.named<KotlinJvmCompile>("compileKotlin") {
     compilerOptions {

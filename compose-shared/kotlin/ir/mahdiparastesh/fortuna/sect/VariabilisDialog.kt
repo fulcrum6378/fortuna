@@ -23,7 +23,7 @@ fun VariabilisDialog(c: MainComposablePage) {
     val i = c.m.variabilis!!
     val luna: Luna by lazy { c.c.vita[c.c.luna] }
     val verbum = rememberSaveable {
-        mutableStateOf<String?>(if (i != -1) luna.verba[i] else luna.verbum)
+        mutableStateOf(if (i != -1) luna.verba[i] else luna.verbum)
     }
 
     BaseDialog(

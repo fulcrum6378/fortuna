@@ -73,6 +73,7 @@ import ir.mahdiparastesh.fortuna.icon.Statistics
 import ir.mahdiparastesh.fortuna.icon.Today
 import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
+import ir.mahdiparastesh.fortuna.util.NumberUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
@@ -80,6 +81,7 @@ import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoField
+import java.util.Locale
 
 @Composable
 fun MainPage() {
@@ -136,7 +138,7 @@ fun Drawer() {
                 onClick = onClick,
                 modifier = Modifier
                     .height(54.dp)
-                    .padding(horizontal = hPad, vertical = 2.dp)
+                    .padding(hPad, 2.dp)
                     .pointerHoverIcon(PointerIcon.Hand),
                 icon = {
                     Icon(
@@ -272,7 +274,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
+        ),  // TODO change these if the luna was painful
     )
 }
 
@@ -467,6 +469,29 @@ fun Panel() {
                 .align(Alignment.Center)
                 .offset(x = 178.dp, y = (-27).dp),
             tint = MaterialTheme.colorScheme.onSurface,
+        )
+
+        // luna sum and mean
+        val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
+        val scores = luna.collectScores(maximumStats ?: 0)
+        val mean = luna.mean(0, scores)
+        Text(
+            text = "∑ : " + luna.sum(0, scores) +
+                    " - x̄: " + String.format(Locale.UK, "%.2f", mean),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 12.dp, bottom = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium,
+        )
+        // luna size in terms of bytes
+        Text(
+            text = NumberUtils.showBytes(c.strArr(R.array.bytes), luna.size),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 12.dp, bottom = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.labelMedium,
         )
     }
 }

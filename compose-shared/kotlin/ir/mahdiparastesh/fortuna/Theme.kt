@@ -74,7 +74,7 @@ val Typography
             textAlign = TextAlign.Center,
         ),
         bodyLarge = TextStyle(
-            // dies numeral
+            // dies numeral, default monthly score
             fontSize = 18.sp,
             fontWeight = FontWeight.Normal,
             fontFamily = FontFamilyQuattrocento,
@@ -85,6 +85,12 @@ val Typography
             fontWeight = FontWeight.Normal,
             fontFamily = FontFamilyQuattrocento,
             lineHeight = 26.sp,
+        ),
+        labelMedium = TextStyle(
+            // numbers at the bottom of Panel
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal,
+            fontFamily = FontFamilyQuattrocento,
         ),
         labelSmall = TextStyle(
             // dies score
