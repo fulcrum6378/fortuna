@@ -7,4 +7,6 @@ interface FortunaStates {
     var date: ChronoLocalDate?
     var variabilis: Int?
     val drawerState: DrawerState
+    var panelSwitch: Boolean
+    var gridSwitch: Boolean
 }

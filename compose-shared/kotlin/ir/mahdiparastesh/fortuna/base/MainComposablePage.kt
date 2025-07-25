@@ -8,8 +8,13 @@ import java.time.temporal.ChronoField
 interface MainComposablePage : MainPage {
     val m: FortunaStates
 
-    override fun updatePanel() {}
-    override fun updateGrid() {}
+    override fun updatePanel() {
+        m.panelSwitch = !m.panelSwitch
+    }
+
+    override fun updateGrid() {
+        m.gridSwitch = !m.gridSwitch
+    }
 
     fun setDate(field: ChronoField, value: Int) {
         c.date = c.date.with(field, value.toLong())

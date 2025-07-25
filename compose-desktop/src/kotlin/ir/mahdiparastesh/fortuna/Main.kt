@@ -65,6 +65,8 @@ object Context : FortunaContext, MainComposablePage {
         )
         override var variabilis by mutableStateOf<Int?>(null)
         override val drawerState = DrawerState(DrawerValue.Closed)
+        override var panelSwitch by mutableStateOf(false)
+        override var gridSwitch by mutableStateOf(false)
     }
 
 

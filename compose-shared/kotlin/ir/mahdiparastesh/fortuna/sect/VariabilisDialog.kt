@@ -73,14 +73,10 @@ fun VariabilisDialog(c: MainComposablePage) {
                 horizontalArrangement = Arrangement.Start,
             ) {
                 BaseDialogButton(c.str(R.string.clear)) {
-                    c.saveDies(
-                        luna, i,
-                        luna.default ?: 0f,
-                        luna.emoji,
-                        verbum.value
-                    )
-                    // TODO c.c.shake()
+                    // TODO Toast hold a little longer
+                    c.saveDies(luna, i, null, null, null)
                     c.m.variabilis = null
+                    // TODO c.c.shake()
                 }
             }
             Row(
@@ -90,8 +86,14 @@ fun VariabilisDialog(c: MainComposablePage) {
                 BaseDialogButton(c.str(R.string.cancel)) { c.m.variabilis = null }
                 Spacer(Modifier.width(2.dp))
                 BaseDialogButton(c.str(R.string.save)) {
-                    // TODO show an AlertDialog
+                    c.saveDies(
+                        luna, i,
+                        luna.default ?: 0f,
+                        luna.emoji,
+                        verbum.value
+                    )
                     c.m.variabilis = null
+                    // TODO c.c.shake()
                 }
             }
         }
