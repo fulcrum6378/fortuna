@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package ir.mahdiparastesh.fortuna
 
@@ -11,7 +11,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -33,17 +34,12 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -60,13 +56,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toolingGraphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Backup
@@ -115,6 +119,33 @@ fun MainPage() {
 }
 
 @Composable
+fun Icon(
+    imageVector: ImageVector,
+    contentDescription: String?,
+    tint: Color = Color.Unspecified,
+    modifier: Modifier = Modifier,
+) {
+    val painter = rememberVectorPainter(imageVector)
+    val colorFilter = remember(tint) {
+        if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
+    }
+    val semantics =
+        if (contentDescription != null)
+            Modifier.semantics {
+                this.contentDescription = contentDescription
+                this.role = Role.Image
+            }
+        else
+            Modifier
+    Box(
+        modifier = modifier
+            .toolingGraphicsLayer()
+            .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
+            .then(semantics),
+    )
+}
+
+@Composable
 fun Drawer() {
     val c = c
     val coroutineScope = rememberCoroutineScope()
@@ -135,10 +166,11 @@ fun Drawer() {
         ) {
             NavigationDrawerItem(
                 label = {
-                    Text(
+                    BasicText(
                         text = title,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                        ),
                     )
                 },
                 selected = false,
@@ -208,9 +240,11 @@ fun Toolbar(numeralState: MutableState<String?>) {
 
     TopAppBar(
         title = {
-            Text(
+            BasicText(
                 text = c.str(R.string.app_name),
-                style = MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayLarge.copy(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                ),
             )
         },
         navigationIcon = {
@@ -262,9 +296,11 @@ fun Toolbar(numeralState: MutableState<String?>) {
                                     colors = CheckboxColorScheme,
                                 )
                                 Spacer(Modifier.width(18.dp))
-                                Text(
+                                BasicText(
                                     text = c.str(nt.name),
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    ),
                                 )
                             }
                         },
@@ -370,12 +406,6 @@ fun Panel() {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            val textFieldColours = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            )
 
             // move to a previous month
             IconButton(
@@ -397,28 +427,24 @@ fun Panel() {
                 onExpandedChange = { lunaExpanded = it },
                 modifier = Modifier.width(200.dp),
             ) {
-                TextField(
-                    value = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
-                    onValueChange = { /* unused */ },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .width(200.dp),
-                    readOnly = true,
-                    textStyle = MaterialTheme.typography.titleLarge,
-                    trailingIcon = {
-                        IconButton(
-                            onClick = { lunaExpanded = true },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
-                                contentDescription = null,
-                                modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    },
-                    colors = textFieldColours,
-                )
+                Row {
+                    BasicText(
+                        text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
+                        modifier = Modifier
+                            .width(200.dp)
+                            .clickable { lunaExpanded = true }
+                            .pointerHoverIcon(PointerIcon.Hand),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface,
+                        ),
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.ArrowDropDown,
+                        contentDescription = null,
+                        modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
                 ExposedDropdownMenu(
                     expanded = lunaExpanded,
                     onDismissRequest = { lunaExpanded = false },
@@ -427,10 +453,12 @@ fun Panel() {
                     months.forEachIndexed { i, option ->
                         DropdownMenuItem(
                             text = {
-                                Text(
+                                BasicText(
                                     text = option,
                                     modifier = Modifier.padding(horizontal = 5.dp),
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    ),
                                 )
                             },
                             onClick = {
@@ -444,15 +472,16 @@ fun Panel() {
             }
 
             // annus (year field)
-            TextField(
+            BasicTextField(
                 value = c.m.date!![ChronoField.YEAR].toString(),
                 onValueChange = {
                     c.setDate(ChronoField.YEAR, it.toInt())
                 },
                 modifier = Modifier.width(85.dp),
-                textStyle = MaterialTheme.typography.titleSmall,
+                textStyle = MaterialTheme.typography.titleSmall.copy(
+                    color = MaterialTheme.colorScheme.onSurface,
+                ),
                 singleLine = true,
-                colors = textFieldColours,
             )
 
             // default monthly score
@@ -461,10 +490,11 @@ fun Panel() {
                 onClick = { c.m.variabilis = -1 },
                 modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
-                Text(
+                BasicText(
                     text = luna.default.displayScore(true),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
                 )
             }
 
@@ -483,14 +513,16 @@ fun Panel() {
             }
         }
 
+
         // default monthly emoji
-        if (luna.emoji != null) Text(
+        if (luna.emoji != null) BasicText(
             text = luna.emoji ?: "",
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = 155.dp, y = (-29).dp),
             style = MaterialTheme.typography.labelSmall,
         )
+
         // default monthly verbum
         if (luna.verbum?.isNotBlank() == true) Icon(
             imageVector = FortunaIcons.Verbum,
@@ -501,27 +533,31 @@ fun Panel() {
             tint = MaterialTheme.colorScheme.onSurface,
         )
 
+
         // luna sum and mean
         val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
         val scores = luna.collectScores(maximumStats ?: 0)
         val mean = luna.mean(0, scores)
-        Text(
+        BasicText(
             text = "∑ : " + luna.sum(0, scores) +
                     " - x̄: " + String.format(Locale.UK, "%.2f", mean),
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 12.dp, bottom = 8.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+            ),
         )
+
         // luna size in terms of bytes
-        Text(
+        BasicText(
             text = NumberUtils.showBytes(c.strArr(R.array.bytes), luna.size),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 12.dp, bottom = 8.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelMedium.copy(
+                color = MaterialTheme.colorScheme.onSurface,
+            ),
         )
     }
 }
@@ -609,23 +645,26 @@ fun Dies(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+
             // day number
-            Text(
+            BasicText(
                 text = numeral.write(i + 1),
-                color = textColor,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = textColor,
+                ),
             )
             // score
-            Text(
+            BasicText(
                 text = (if (isEstimated) "c. " else "") + score.displayScore(false),
                 modifier = Modifier.alpha(if (score != null) 1f else .6f),
-                color = textColor,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    color = textColor,
+                ),
             )
         }
 
         // emoji
-        if (emoji != null) Text(
+        if (emoji != null) BasicText(
             text = emoji,
             modifier = Modifier
                 .align(Alignment.TopStart)
