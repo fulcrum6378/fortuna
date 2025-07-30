@@ -35,8 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -65,6 +63,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Arrow
@@ -145,12 +144,14 @@ fun Icon(
 fun Button(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
+    width: Dp = 36.dp,
+    height: Dp = 36.dp,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier
-            .size(36.dp)
+            .size(width, height)
             .clip(RoundedCornerShape(20.dp))
             .combinedClickable(
                 onClick = onClick,
@@ -257,85 +258,90 @@ fun Toolbar(numeralState: MutableState<String?>) {
     val coroutineScope = rememberCoroutineScope()
     var numeralsExpanded by remember { mutableStateOf(false) }
 
-    TopAppBar(
-        title = {
-            BasicText(
-                text = c.str(R.string.app_name),
-                style = MaterialTheme.typography.displayLarge.copy(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                ),
-            )
-        },
-        navigationIcon = {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        c.m.drawerState.apply {
-                            if (isClosed) open() else close()
-                        }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primary)
+            .padding(10.dp, 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    c.m.drawerState.apply {
+                        if (isClosed) open() else close()
                     }
-                },
-            ) {
-                Icon(
-                    imageVector = FortunaIcons.Menu,
-                    contentDescription = c.str(R.string.navOpen),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-        },
-        actions = {
-            Button(
-                onClick = { numeralsExpanded = !numeralsExpanded },
-            ) {
-                Icon(
-                    imageVector = FortunaIcons.ArabicNumerals,
-                    contentDescription = c.str(R.string.numerals),
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-            }
-            DropdownMenu(
-                expanded = numeralsExpanded,
-                onDismissRequest = { numeralsExpanded = false }
-            ) {
-                for (n in Numerals.all.indices) {
-                    val nt = Numerals.all[n]
-                    val ntName: String? = nt.name()
-
-                    DropdownMenuItem(
-                        text = {
-                            Row(
-                                modifier = Modifier.padding(start = 5.dp, end = 18.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Checkbox(
-                                    checked = numeralState.value == ntName,
-                                    onCheckedChange = null,
-                                    colors = CheckboxColorScheme,
-                                )
-                                Spacer(Modifier.width(18.dp))
-                                BasicText(
-                                    text = c.str(nt.name),
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    ),
-                                )
-                            }
-                        },
-                        onClick = {
-                            c.numeralType = ntName
-                            numeralState.value = ntName
-                            numeralsExpanded = false
-                        },
-                        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
-                    )
                 }
+            },
+            width = 42.dp,
+            height = 42.dp,
+        ) {
+            Icon(
+                imageVector = FortunaIcons.Menu,
+                contentDescription = c.str(R.string.navOpen),
+                tint = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+
+        BasicText(
+            text = c.str(R.string.app_name),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 20.dp),
+            style = MaterialTheme.typography.displayLarge.copy(
+                color = MaterialTheme.colorScheme.onPrimary,
+            ),
+        )
+
+        Button(
+            onClick = { numeralsExpanded = !numeralsExpanded },
+            width = 42.dp,
+            height = 42.dp,
+        ) {
+            Icon(
+                imageVector = FortunaIcons.ArabicNumerals,
+                contentDescription = c.str(R.string.numerals),
+                tint = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+        DropdownMenu(
+            expanded = numeralsExpanded,
+            onDismissRequest = { numeralsExpanded = false },
+        ) {
+            for (n in Numerals.all.indices) {
+                val nt = Numerals.all[n]
+                val ntName: String? = nt.name()
+
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            modifier = Modifier.padding(start = 5.dp, end = 18.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Checkbox(
+                                checked = numeralState.value == ntName,
+                                onCheckedChange = null,
+                                colors = CheckboxColorScheme,
+                            )
+                            Spacer(Modifier.width(18.dp))
+                            BasicText(
+                                text = c.str(nt.name),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                ),
+                            )
+                        }
+                    },
+                    onClick = {
+                        c.numeralType = ntName
+                        numeralState.value = ntName
+                        numeralsExpanded = false
+                    },
+                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+                )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        ),  // TODO change these if the luna was painful
-    )
+        }
+    }
 }
 
 @Composable
