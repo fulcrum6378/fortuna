@@ -25,24 +25,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -73,11 +67,13 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
+import ir.mahdiparastesh.fortuna.icon.Arrow
 import ir.mahdiparastesh.fortuna.icon.Backup
 import ir.mahdiparastesh.fortuna.icon.Export
 import ir.mahdiparastesh.fortuna.icon.FortunaIcons
 import ir.mahdiparastesh.fortuna.icon.Help
 import ir.mahdiparastesh.fortuna.icon.Import
+import ir.mahdiparastesh.fortuna.icon.Menu
 import ir.mahdiparastesh.fortuna.icon.Search
 import ir.mahdiparastesh.fortuna.icon.Send
 import ir.mahdiparastesh.fortuna.icon.Statistics
@@ -122,8 +118,8 @@ fun MainPage() {
 fun Icon(
     imageVector: ImageVector,
     contentDescription: String?,
-    tint: Color = Color.Unspecified,
     modifier: Modifier = Modifier,
+    tint: Color = Color.Unspecified,
 ) {
     val painter = rememberVectorPainter(imageVector)
     val colorFilter = remember(tint) {
@@ -143,6 +139,29 @@ fun Icon(
             .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
             .then(semantics),
     )
+}
+
+@Composable
+fun Button(
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .size(36.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+                role = Role.Button,
+            )
+            .pointerHoverIcon(PointerIcon.Hand),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
 }
 
 @Composable
@@ -248,7 +267,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             )
         },
         navigationIcon = {
-            IconButton(
+            Button(
                 onClick = {
                     coroutineScope.launch {
                         c.m.drawerState.apply {
@@ -256,19 +275,17 @@ fun Toolbar(numeralState: MutableState<String?>) {
                         }
                     }
                 },
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
+                    imageVector = FortunaIcons.Menu,
                     contentDescription = c.str(R.string.navOpen),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         },
         actions = {
-            IconButton(
+            Button(
                 onClick = { numeralsExpanded = !numeralsExpanded },
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 Icon(
                     imageVector = FortunaIcons.ArabicNumerals,
@@ -329,31 +346,8 @@ fun Panel() {
     var lunaExpanded by rememberSaveable { mutableStateOf(false) }
     val prevNextMargin = 20.dp
 
-    @Composable
-    fun IconButton(
-        onClick: () -> Unit,
-        onLongClick: (() -> Unit)? = null,
-        modifier: Modifier = Modifier,
-        content: @Composable () -> Unit
-    ) {
-        Box(
-            modifier = modifier
-                .minimumInteractiveComponentSize()
-                .size(40.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    role = Role.Button,
-                )
-                .pointerHoverIcon(PointerIcon.Hand),
-            contentAlignment = Alignment.Center
-        ) {
-            content()
-        }
-    }
-
     Box {
+
         // a shadow beneath the TopAppBar
         Box(
             Modifier
@@ -368,8 +362,9 @@ fun Panel() {
                 )
         )
 
+
         // move to a next year (up)
-        IconButton(
+        Button(
             onClick = { c.moveInYears(1) },
             onLongClick = { c.moveInYears(5) },
             modifier = Modifier
@@ -377,14 +372,15 @@ fun Panel() {
                 .offset(x = 62.dp, y = (-34).dp),
         ) {
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = FortunaIcons.Arrow,
                 contentDescription = c.str(R.string.annusUpDesc),
                 modifier = Modifier.rotate(180f),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
+
         // move to a previous year (down)
-        IconButton(
+        Button(
             onClick = { c.moveInYears(-1) },
             onLongClick = { c.moveInYears(-5) },
             modifier = Modifier
@@ -392,28 +388,29 @@ fun Panel() {
                 .offset(x = 62.dp, y = 36.dp),
         ) {
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = FortunaIcons.Arrow,
                 contentDescription = c.str(R.string.annusDownDesc),
                 tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
+
         // the vertically centered contents:
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp, bottom = 28.dp),
+                .padding(top = 37.dp, bottom = 33.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
             // move to a previous month
-            IconButton(
+            Button(
                 onClick = { c.moveInMonths(false) },
                 onLongClick = { c.moveInMonths(false, 6) },
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
+                    imageVector = FortunaIcons.Arrow,
                     contentDescription = c.str(R.string.prevDesc),
                     modifier = Modifier.rotate(90f),
                     tint = MaterialTheme.colorScheme.onSurface
@@ -439,7 +436,7 @@ fun Panel() {
                         ),
                     )
                     Icon(
-                        imageVector = Icons.Filled.ArrowDropDown,
+                        imageVector = FortunaIcons.Arrow,
                         contentDescription = null,
                         modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
                         tint = MaterialTheme.colorScheme.onSurface
@@ -486,9 +483,8 @@ fun Panel() {
 
             // default monthly score
             Spacer(Modifier.width(prevNextMargin))
-            TextButton(
+            Button(
                 onClick = { c.m.variabilis = -1 },
-                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
             ) {
                 BasicText(
                     text = luna.default.displayScore(true),
@@ -500,12 +496,12 @@ fun Panel() {
 
             // move to a next month
             Spacer(Modifier.width(prevNextMargin))
-            IconButton(
+            Button(
                 onClick = { c.moveInMonths(true) },
                 onLongClick = { c.moveInMonths(true, 6) },
             ) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
+                    imageVector = FortunaIcons.Arrow,
                     contentDescription = c.str(R.string.nextDesc),
                     modifier = Modifier.rotate(-90f),
                     tint = MaterialTheme.colorScheme.onSurface,

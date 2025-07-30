@@ -1,5 +1,6 @@
 # Fortuna To-Do List
 
+* Make the loaded `Luna` in the `MainPage` stateful with non-array values?
 * Compatibility for `onBackPressed`
 * Index `Luna`s as serialized in cache
 * Doesn't open the correct day on a new day
