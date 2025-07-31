@@ -6,16 +6,21 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import ir.mahdiparastesh.fortuna.Theme
+import ir.mahdiparastesh.fortuna.util.FontFamilyQuattrocento
 
 @Composable
 fun BaseDialog(
@@ -30,17 +35,21 @@ fun BaseDialog(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(MaterialTheme.shapes.large)  // use it before background()
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .clip(CutCornerShape(14.dp))  // use it before background()
+                .background(Theme.palette.dialog)
                 .padding(20.dp, 18.dp, 20.dp, 14.dp)
         ) {
             // title
-            Text(
+            BasicText(
                 text = title,
                 modifier = Modifier
                     .padding(top = 2.dp, bottom = 20.dp),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.displaySmall,
+                style = TextStyle(
+                    color = Theme.palette.onWindow,
+                    fontSize = Theme.geometry.dialogTitle,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamilyQuattrocento,
+                ),
             )
 
             content()
@@ -57,11 +66,15 @@ fun BaseDialogButton(
         onClick = onClick,
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
     ) {
-        Text(
+        BasicText(
             text = text,
             modifier = Modifier.padding(10.dp, 9.dp),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.bodySmall,
+            style = TextStyle(
+                color = Theme.palette.onWindow,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamilyQuattrocento,
+            ),
         )
     }
 }

@@ -18,12 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -49,7 +49,11 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Arrow
 import ir.mahdiparastesh.fortuna.icon.Backup
@@ -64,6 +68,8 @@ import ir.mahdiparastesh.fortuna.icon.Statistics
 import ir.mahdiparastesh.fortuna.icon.Today
 import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
+import ir.mahdiparastesh.fortuna.util.FontFamilyMorrisRoman
+import ir.mahdiparastesh.fortuna.util.FontFamilyQuattrocento
 import ir.mahdiparastesh.fortuna.util.Icon
 import ir.mahdiparastesh.fortuna.util.NumberUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
@@ -109,9 +115,9 @@ fun Drawer() {
 
     ModalDrawerSheet(
         modifier = Modifier.width(280.dp),
-        drawerShape = MaterialTheme.shapes.large,
-        drawerContainerColor = MaterialTheme.colorScheme.primary,
-        drawerContentColor = MaterialTheme.colorScheme.onPrimary,
+        drawerShape = CutCornerShape(14.dp),
+        drawerContainerColor = Theme.palette.themePleasure,
+        drawerContentColor = Theme.palette.onTheme,
     ) {
         val hPad = 15.dp
 
@@ -125,8 +131,11 @@ fun Drawer() {
                 label = {
                     BasicText(
                         text = title,
-                        style = MaterialTheme.typography.titleSmall.copy(
-                            color = MaterialTheme.colorScheme.onPrimary,
+                        style = TextStyle(
+                            color = Theme.palette.onTheme,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamilyQuattrocento,
                         ),
                     )
                 },
@@ -140,10 +149,10 @@ fun Drawer() {
                     Icon(
                         imageVector = icon,
                         contentDescription = title,
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = Theme.palette.onTheme,
                     )
                 },
-                shape = MaterialTheme.shapes.medium,
+                shape = CutCornerShape(10.dp),
             )
         }
 
@@ -198,7 +207,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(Theme.palette.themePleasure)
             .padding(10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -216,7 +225,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             Icon(
                 imageVector = FortunaIcons.Menu,
                 contentDescription = c.str(R.string.navOpen),
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = Theme.palette.onTheme,
             )
         }
 
@@ -225,8 +234,11 @@ fun Toolbar(numeralState: MutableState<String?>) {
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 20.dp),
-            style = MaterialTheme.typography.displayLarge.copy(
-                color = MaterialTheme.colorScheme.onPrimary,
+            style = TextStyle(
+                color = Theme.palette.onTheme,
+                fontSize = Theme.geometry.appTitle,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamilyMorrisRoman,
             ),
         )
 
@@ -238,7 +250,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             Icon(
                 imageVector = FortunaIcons.ArabicNumerals,
                 contentDescription = c.str(R.string.numerals),
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = Theme.palette.onTheme,
             )
 
             OptionsMenu(
@@ -271,7 +283,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
                                     .paint(
                                         rememberVectorPainter(FortunaIcons.Send),
                                         colorFilter = ColorFilter.tint(
-                                            MaterialTheme.colorScheme.onSurface
+                                            Theme.palette.onWindow
                                         ),
                                         contentScale = ContentScale.Fit
                                     )
@@ -281,8 +293,11 @@ fun Toolbar(numeralState: MutableState<String?>) {
                             Spacer(Modifier.width(33.dp))
                         BasicText(
                             text = c.str(nt.name),
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = MaterialTheme.colorScheme.onSurface,
+                            style = TextStyle(
+                                color = Theme.palette.onWindow,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = FontFamilyQuattrocento,
                             ),
                         )
                     }
@@ -329,7 +344,7 @@ fun Panel() {
                 imageVector = FortunaIcons.Arrow,
                 contentDescription = c.str(R.string.annusUpDesc),
                 modifier = Modifier.rotate(180f),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = Theme.palette.onWindow
             )
         }
 
@@ -344,7 +359,7 @@ fun Panel() {
             Icon(
                 imageVector = FortunaIcons.Arrow,
                 contentDescription = c.str(R.string.annusDownDesc),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = Theme.palette.onWindow
             )
         }
 
@@ -367,7 +382,7 @@ fun Panel() {
                     imageVector = FortunaIcons.Arrow,
                     contentDescription = c.str(R.string.prevDesc),
                     modifier = Modifier.rotate(90f),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = Theme.palette.onWindow
                 )
             }
             Spacer(Modifier.width(prevNextMargin))
@@ -381,18 +396,18 @@ fun Panel() {
             ) {
                 BasicText(
                     text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
-                    /*modifier = Modifier
-                        .width(200.dp)
-                        .pointerHoverIcon(PointerIcon.Hand),*/
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
+                    style = TextStyle(
+                        color = Theme.palette.onWindow,
+                        fontSize = Theme.geometry.thisMonthName,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamilyQuattrocento,
                     ),
                 )
                 Icon(
                     imageVector = FortunaIcons.Arrow,
                     contentDescription = null,
                     modifier = Modifier.rotate(if (lunaExpanded.value) 180f else 0f),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = Theme.palette.onWindow
                 )
 
                 OptionsMenu(
@@ -412,8 +427,11 @@ fun Panel() {
                         BasicText(
                             text = option,
                             modifier = Modifier.padding(horizontal = 5.dp),
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = MaterialTheme.colorScheme.onSurface,
+                            style = TextStyle(
+                                color = Theme.palette.onWindow,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = FontFamilyQuattrocento,
                             ),
                         )
                     }
@@ -427,8 +445,12 @@ fun Panel() {
                     c.setDate(ChronoField.YEAR, it.toInt())
                 },
                 modifier = Modifier.width(85.dp),
-                textStyle = MaterialTheme.typography.titleSmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface,
+                textStyle = TextStyle(
+                    color = Theme.palette.onWindow,
+                    fontSize = Theme.geometry.thisYearNumber,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamilyQuattrocento,
+                    textAlign = TextAlign.Center,
                 ),
                 singleLine = true,
             )
@@ -440,8 +462,11 @@ fun Panel() {
             ) {
                 BasicText(
                     text = luna.default.displayScore(true),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
+                    style = TextStyle(
+                        color = Theme.palette.onWindow,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = FontFamilyQuattrocento,
                     ),
                 )
             }
@@ -456,7 +481,7 @@ fun Panel() {
                     imageVector = FortunaIcons.Arrow,
                     contentDescription = c.str(R.string.nextDesc),
                     modifier = Modifier.rotate(-90f),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                    tint = Theme.palette.onWindow,
                 )
             }
         }
@@ -468,7 +493,11 @@ fun Panel() {
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = 155.dp, y = (-29).dp),
-            style = MaterialTheme.typography.labelSmall,
+            style = TextStyle(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamilyQuattrocento,
+            ),
         )
 
         // default monthly verbum
@@ -478,9 +507,16 @@ fun Panel() {
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = 178.dp, y = (-27).dp),
-            tint = MaterialTheme.colorScheme.onSurface,
+            tint = Theme.palette.onWindow,
         )
 
+
+        val panelBottomTextStyle = TextStyle(
+            color = Theme.palette.onWindow,
+            fontSize = Theme.geometry.panelBottomTexts,
+            fontWeight = FontWeight.Normal,
+            fontFamily = FontFamilyQuattrocento,
+        )
 
         // luna sum and mean
         val maximumStats = c.c.maximaForStats(c.c.date, c.c.luna)
@@ -492,9 +528,7 @@ fun Panel() {
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(start = 12.dp, bottom = 8.dp),
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = MaterialTheme.colorScheme.onSurface,
-            ),
+            style = panelBottomTextStyle,
         )
 
         // luna size in terms of bytes
@@ -503,9 +537,7 @@ fun Panel() {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 12.dp, bottom = 8.dp),
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = MaterialTheme.colorScheme.onSurface,
-            ),
+            style = panelBottomTextStyle,
         )
     }
 }
@@ -551,17 +583,17 @@ fun Dies(
     val textColor: Color
     val targetColour = when {
         score != null && score > 0f -> {
-            textColor = MaterialTheme.colorScheme.onPrimary
+            textColor = Theme.palette.onTheme
             Color(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
         }
 
         score != null && score < 0f -> {
-            textColor = MaterialTheme.colorScheme.onSecondary
+            textColor = Theme.palette.onTheme
             Color(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
         }
 
         else -> {
-            textColor = MaterialTheme.colorScheme.onSurface
+            textColor = Theme.palette.onWindow
             Color.Transparent
         }
     }
@@ -597,16 +629,22 @@ fun Dies(
             // day number
             BasicText(
                 text = numeral.write(i + 1),
-                style = MaterialTheme.typography.bodyLarge.copy(
+                style = TextStyle(
                     color = textColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = FontFamilyQuattrocento,
                 ),
             )
             // score
             BasicText(
                 text = (if (isEstimated) "c. " else "") + score.displayScore(false),
                 modifier = Modifier.alpha(if (score != null) 1f else .6f),
-                style = MaterialTheme.typography.labelSmall.copy(
+                style = TextStyle(
                     color = textColor,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = FontFamilyQuattrocento,
                 ),
             )
         }
@@ -617,7 +655,11 @@ fun Dies(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(7.dp),
-            style = MaterialTheme.typography.labelSmall,
+            style = TextStyle(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamilyQuattrocento,
+            ),
         )
         // verbum
         if (hasVerbum) Icon(

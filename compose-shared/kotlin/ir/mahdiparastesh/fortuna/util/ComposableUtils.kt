@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import ir.mahdiparastesh.fortuna.Theme
 
 @Composable
 fun Icon(
@@ -108,7 +108,7 @@ fun OptionsMenu(
         Column(
             modifier = Modifier
                 .width(popupWidth)
-                .background(MaterialTheme.colorScheme.surface),
+                .background(Theme.palette.popup),
         ) {
             for (i in itemRange)
                 itemContent(i)

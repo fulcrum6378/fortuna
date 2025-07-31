@@ -105,11 +105,11 @@ fun main() = application {
         //icon = TODO Painter,
         //undecorated = true,
     ) {
-        FortunaTheme {
-            c.night = isSystemInDarkTheme()
-            Surface(color = MaterialTheme.colorScheme.surface) {
-                MainPage()
-            }
+        c.night = isSystemInDarkTheme()
+        Theme.init(c.night)
+
+        Surface(color = Theme.palette.window) {
+            MainPage()
         }
     }
 }
