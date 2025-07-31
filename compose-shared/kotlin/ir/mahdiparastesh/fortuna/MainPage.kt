@@ -26,7 +26,6 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -64,7 +63,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Arrow
 import ir.mahdiparastesh.fortuna.icon.Backup
@@ -141,7 +142,7 @@ fun Icon(
 }
 
 @Composable
-fun Button(
+fun RoundButton(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
     width: Dp = 36.dp,
@@ -265,7 +266,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             .padding(10.dp, 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Button(
+        RoundButton(
             onClick = {
                 coroutineScope.launch {
                     c.m.drawerState.apply {
@@ -293,7 +294,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             ),
         )
 
-        Button(
+        RoundButton(
             onClick = { numeralsExpanded = !numeralsExpanded },
             width = 42.dp,
             height = 42.dp,
@@ -303,42 +304,52 @@ fun Toolbar(numeralState: MutableState<String?>) {
                 contentDescription = c.str(R.string.numerals),
                 tint = MaterialTheme.colorScheme.onPrimary,
             )
-        }
-        DropdownMenu(
-            expanded = numeralsExpanded,
-            onDismissRequest = { numeralsExpanded = false },
-        ) {
-            for (n in Numerals.all.indices) {
-                val nt = Numerals.all[n]
-                val ntName: String? = nt.name()
 
-                DropdownMenuItem(
-                    text = {
-                        Row(
-                            modifier = Modifier.padding(start = 5.dp, end = 18.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+            if (numeralsExpanded) Popup(
+                alignment = Alignment.TopStart,
+                offset = IntOffset(0, 36),  // position relative to parent
+                onDismissRequest = { numeralsExpanded = false }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .width(179.dp)
+                        .background(MaterialTheme.colorScheme.surface),
+                ) {
+                    for (n in Numerals.all.indices) {
+                        val nt = Numerals.all[n]
+                        val ntName: String? = nt.name()
+
+                        Box(
+                            modifier = Modifier
+                                .clickable {
+                                    c.numeralType = ntName
+                                    numeralState.value = ntName
+                                    numeralsExpanded = false
+                                }
+                                .pointerHoverIcon(PointerIcon.Hand)
                         ) {
-                            Checkbox(
-                                checked = numeralState.value == ntName,
-                                onCheckedChange = null,
-                                colors = CheckboxColorScheme,
-                            )
-                            Spacer(Modifier.width(18.dp))
-                            BasicText(
-                                text = c.str(nt.name),
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                ),
-                            )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Checkbox(
+                                    checked = numeralState.value == ntName,
+                                    onCheckedChange = null,
+                                    colors = CheckboxColorScheme,
+                                )
+                                Spacer(Modifier.width(18.dp))
+                                BasicText(
+                                    text = c.str(nt.name),
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    ),
+                                )
+                            }
                         }
-                    },
-                    onClick = {
-                        c.numeralType = ntName
-                        numeralState.value = ntName
-                        numeralsExpanded = false
-                    },
-                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
-                )
+                    }
+                }
             }
         }
     }
@@ -370,7 +381,7 @@ fun Panel() {
 
 
         // move to a next year (up)
-        Button(
+        RoundButton(
             onClick = { c.moveInYears(1) },
             onLongClick = { c.moveInYears(5) },
             modifier = Modifier
@@ -386,7 +397,7 @@ fun Panel() {
         }
 
         // move to a previous year (down)
-        Button(
+        RoundButton(
             onClick = { c.moveInYears(-1) },
             onLongClick = { c.moveInYears(-5) },
             modifier = Modifier
@@ -411,7 +422,7 @@ fun Panel() {
         ) {
 
             // move to a previous month
-            Button(
+            RoundButton(
                 onClick = { c.moveInMonths(false) },
                 onLongClick = { c.moveInMonths(false, 6) },
             ) {
@@ -489,7 +500,7 @@ fun Panel() {
 
             // default monthly score
             Spacer(Modifier.width(prevNextMargin))
-            Button(
+            RoundButton(
                 onClick = { c.m.variabilis = -1 },
             ) {
                 BasicText(
@@ -502,7 +513,7 @@ fun Panel() {
 
             // move to a next month
             Spacer(Modifier.width(prevNextMargin))
-            Button(
+            RoundButton(
                 onClick = { c.moveInMonths(true) },
                 onLongClick = { c.moveInMonths(true, 6) },
             ) {
