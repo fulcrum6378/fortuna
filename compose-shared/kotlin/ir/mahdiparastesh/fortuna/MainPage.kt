@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package ir.mahdiparastesh.fortuna
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,10 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -36,13 +29,11 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -58,14 +49,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
 import ir.mahdiparastesh.fortuna.icon.Arrow
 import ir.mahdiparastesh.fortuna.icon.Backup
@@ -80,12 +64,16 @@ import ir.mahdiparastesh.fortuna.icon.Statistics
 import ir.mahdiparastesh.fortuna.icon.Today
 import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
+import ir.mahdiparastesh.fortuna.util.Icon
 import ir.mahdiparastesh.fortuna.util.NumberUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
+import ir.mahdiparastesh.fortuna.util.OptionsMenu
+import ir.mahdiparastesh.fortuna.util.OptionsMenuItem
+import ir.mahdiparastesh.fortuna.util.RoundButton
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoField
 import java.util.Locale
@@ -112,58 +100,6 @@ fun MainPage() {
 
     if (c.m.variabilis != null)
         VariabilisDialog(c)
-}
-
-@Composable
-fun Icon(
-    imageVector: ImageVector,
-    contentDescription: String?,
-    modifier: Modifier = Modifier,
-    tint: Color = Color.Unspecified,
-) {
-    val painter = rememberVectorPainter(imageVector)
-    val colorFilter = remember(tint) {
-        if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
-    }
-    val semantics =
-        if (contentDescription != null)
-            Modifier.semantics {
-                this.contentDescription = contentDescription
-                this.role = Role.Image
-            }
-        else
-            Modifier
-    Box(
-        modifier = modifier
-            .toolingGraphicsLayer()
-            .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
-            .then(semantics),
-    )
-}
-
-@Composable
-fun RoundButton(
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-    width: Dp = 36.dp,
-    height: Dp = 36.dp,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Box(
-        modifier = modifier
-            .size(width, height)
-            .clip(RoundedCornerShape(20.dp))
-            .combinedClickable(
-                onClick = onClick,
-                onLongClick = onLongClick,
-                role = Role.Button,
-            )
-            .pointerHoverIcon(PointerIcon.Hand),
-        contentAlignment = Alignment.Center
-    ) {
-        content()
-    }
 }
 
 @Composable
@@ -257,7 +193,7 @@ fun Drawer() {
 fun Toolbar(numeralState: MutableState<String?>) {
     val c = c
     val coroutineScope = rememberCoroutineScope()
-    var numeralsExpanded by remember { mutableStateOf(false) }
+    val numeralsExpanded = remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -295,7 +231,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
         )
 
         RoundButton(
-            onClick = { numeralsExpanded = !numeralsExpanded },
+            onClick = { numeralsExpanded.value = true },
             width = 42.dp,
             height = 42.dp,
         ) {
@@ -305,49 +241,50 @@ fun Toolbar(numeralState: MutableState<String?>) {
                 tint = MaterialTheme.colorScheme.onPrimary,
             )
 
-            if (numeralsExpanded) Popup(
-                alignment = Alignment.TopStart,
-                offset = IntOffset(0, 36),  // position relative to parent
-                onDismissRequest = { numeralsExpanded = false }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .width(179.dp)
-                        .background(MaterialTheme.colorScheme.surface),
-                ) {
-                    for (n in Numerals.all.indices) {
-                        val nt = Numerals.all[n]
-                        val ntName: String? = nt.name()
+            OptionsMenu(
+                expandedState = numeralsExpanded,
+                popupVerticalOffset = 43,
+                popupWidth = 179.dp,
+                itemRange = Numerals.all.indices,
+            ) { n ->
+                val nt = Numerals.all[n]
+                val ntName: String? = nt.name()
 
-                        Box(
-                            modifier = Modifier
-                                .clickable {
-                                    c.numeralType = ntName
-                                    numeralState.value = ntName
-                                    numeralsExpanded = false
-                                }
-                                .pointerHoverIcon(PointerIcon.Hand)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Checkbox(
-                                    checked = numeralState.value == ntName,
-                                    onCheckedChange = null,
-                                    colors = CheckboxColorScheme,
-                                )
-                                Spacer(Modifier.width(18.dp))
-                                BasicText(
-                                    text = c.str(nt.name),
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    ),
-                                )
-                            }
-                        }
+                OptionsMenuItem(
+                    onClick = {
+                        c.numeralType = ntName
+                        numeralState.value = ntName
+                        numeralsExpanded.value = false
+                    },
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (numeralState.value == ntName) {
+                            Box(
+                                Modifier
+                                    .toolingGraphicsLayer()
+                                    .size(15.dp)
+                                    .paint(
+                                        rememberVectorPainter(FortunaIcons.Send),
+                                        colorFilter = ColorFilter.tint(
+                                            MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        contentScale = ContentScale.Fit
+                                    )
+                            )
+                            Spacer(Modifier.width(18.dp))
+                        } else
+                            Spacer(Modifier.width(33.dp))
+                        BasicText(
+                            text = c.str(nt.name),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
+                        )
                     }
                 }
             }
@@ -360,7 +297,7 @@ fun Panel() {
     val c = c
     val luna = c.c.vita[c.m.date!!.toKey()]
     val months = c.strArr(R.array.luna)
-    var lunaExpanded by rememberSaveable { mutableStateOf(false) }
+    val lunaExpanded = rememberSaveable { mutableStateOf(false) }
     val prevNextMargin = 20.dp
 
     Box {
@@ -436,50 +373,48 @@ fun Panel() {
             Spacer(Modifier.width(prevNextMargin))
 
             // luna (month selector)
-            ExposedDropdownMenuBox(
-                expanded = lunaExpanded,
-                onExpandedChange = { lunaExpanded = it },
-                modifier = Modifier.width(200.dp),
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .clickable { lunaExpanded.value = true }
+                    .pointerHoverIcon(PointerIcon.Hand),
             ) {
-                Row {
-                    BasicText(
-                        text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
-                        modifier = Modifier
-                            .width(200.dp)
-                            .clickable { lunaExpanded = true }
-                            .pointerHoverIcon(PointerIcon.Hand),
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                        ),
-                    )
-                    Icon(
-                        imageVector = FortunaIcons.Arrow,
-                        contentDescription = null,
-                        modifier = Modifier.rotate(if (lunaExpanded) 180f else 0f),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                ExposedDropdownMenu(
-                    expanded = lunaExpanded,
-                    onDismissRequest = { lunaExpanded = false },
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    months.forEachIndexed { i, option ->
-                        DropdownMenuItem(
-                            text = {
-                                BasicText(
-                                    text = option,
-                                    modifier = Modifier.padding(horizontal = 5.dp),
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    ),
-                                )
-                            },
-                            onClick = {
-                                c.setDate(ChronoField.MONTH_OF_YEAR, i + 1)
-                                lunaExpanded = false
-                            },
-                            modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+                BasicText(
+                    text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
+                    /*modifier = Modifier
+                        .width(200.dp)
+                        .pointerHoverIcon(PointerIcon.Hand),*/
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
+                )
+                Icon(
+                    imageVector = FortunaIcons.Arrow,
+                    contentDescription = null,
+                    modifier = Modifier.rotate(if (lunaExpanded.value) 180f else 0f),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+
+                OptionsMenu(
+                    expandedState = lunaExpanded,
+                    popupVerticalOffset = 50,
+                    popupWidth = 200.dp,
+                    itemRange = months.indices,
+                ) { i ->
+                    val option = months[i]
+
+                    OptionsMenuItem(
+                        onClick = {
+                            c.setDate(ChronoField.MONTH_OF_YEAR, i + 1)
+                            lunaExpanded.value = false
+                        },
+                    ) {
+                        BasicText(
+                            text = option,
+                            modifier = Modifier.padding(horizontal = 5.dp),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurface,
+                            ),
                         )
                     }
                 }

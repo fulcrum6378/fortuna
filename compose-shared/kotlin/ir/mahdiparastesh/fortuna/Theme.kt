@@ -2,8 +2,6 @@ package ir.mahdiparastesh.fortuna
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.CutCornerShape
-import androidx.compose.material3.CheckboxColors
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
@@ -126,10 +124,3 @@ fun FortunaTheme(content: @Composable () -> Unit) {
         content = content
     )
 }
-
-@get:Composable
-val CheckboxColorScheme: CheckboxColors
-    get() = CheckboxDefaults.colors(
-        checkedColor = MaterialTheme.colorScheme.onSurface,
-        uncheckedColor = MaterialTheme.colorScheme.onSurface,
-    )
