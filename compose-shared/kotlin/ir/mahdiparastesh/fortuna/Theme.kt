@@ -1,7 +1,9 @@
 package ir.mahdiparastesh.fortuna
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 object Theme {
@@ -47,6 +49,7 @@ object Theme {
     fun pickGeometry() {
         geometry =
             Geometry(
+                toolbarHeight = 60.dp,
                 appTitle = 28.sp,
                 dialogTitle = 25.sp,
 
@@ -71,6 +74,7 @@ object Theme {
     )
 
     data class Geometry(
+        val toolbarHeight: Dp,
         val appTitle: TextUnit,
         val dialogTitle: TextUnit,
 

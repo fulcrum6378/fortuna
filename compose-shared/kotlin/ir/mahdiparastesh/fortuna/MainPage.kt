@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -39,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -49,13 +50,13 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
-import ir.mahdiparastesh.fortuna.icon.Arrow
 import ir.mahdiparastesh.fortuna.icon.Backup
 import ir.mahdiparastesh.fortuna.icon.Export
 import ir.mahdiparastesh.fortuna.icon.FortunaIcons
@@ -68,6 +69,7 @@ import ir.mahdiparastesh.fortuna.icon.Statistics
 import ir.mahdiparastesh.fortuna.icon.Today
 import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
+import ir.mahdiparastesh.fortuna.util.Arrow
 import ir.mahdiparastesh.fortuna.util.FontFamilyMorrisRoman
 import ir.mahdiparastesh.fortuna.util.FontFamilyQuattrocento
 import ir.mahdiparastesh.fortuna.util.Icon
@@ -207,11 +209,33 @@ fun Toolbar(numeralState: MutableState<String?>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Theme.palette.themePleasure)
-            .padding(10.dp, 10.dp),
+            .height(Theme.geometry.toolbarHeight)
+            .background(Theme.palette.themePleasure),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RoundButton(
+
+        @Composable
+        fun ActionButton(
+            onClick: () -> Unit,
+            content: @Composable () -> Unit
+        ) {
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .width(Theme.geometry.toolbarHeight)
+                    .combinedClickable(
+                        onClick = onClick,
+                        //onLongClick = onLongClick, TODO tooltip
+                        role = Role.Button,
+                    )
+                    .pointerHoverIcon(PointerIcon.Hand),
+                contentAlignment = Alignment.Center
+            ) {
+                content()
+            }
+        }
+
+        ActionButton(
             onClick = {
                 coroutineScope.launch {
                     c.m.drawerState.apply {
@@ -219,8 +243,6 @@ fun Toolbar(numeralState: MutableState<String?>) {
                     }
                 }
             },
-            width = 42.dp,
-            height = 42.dp,
         ) {
             Icon(
                 imageVector = FortunaIcons.Menu,
@@ -233,7 +255,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
             text = c.str(R.string.app_name),
             modifier = Modifier
                 .weight(1f)
-                .padding(start = 20.dp),
+                .padding(start = 12.dp),
             style = TextStyle(
                 color = Theme.palette.onTheme,
                 fontSize = Theme.geometry.appTitle,
@@ -242,10 +264,8 @@ fun Toolbar(numeralState: MutableState<String?>) {
             ),
         )
 
-        RoundButton(
+        ActionButton(
             onClick = { numeralsExpanded.value = true },
-            width = 42.dp,
-            height = 42.dp,
         ) {
             Icon(
                 imageVector = FortunaIcons.ArabicNumerals,
@@ -314,6 +334,7 @@ fun Panel() {
     val months = c.strArr(R.array.luna)
     val lunaExpanded = rememberSaveable { mutableStateOf(false) }
     val prevNextMargin = 20.dp
+    val arrowCornerSize = 17.dp
 
     Box {
 
@@ -336,31 +357,24 @@ fun Panel() {
         RoundButton(
             onClick = { c.moveInYears(1) },
             onLongClick = { c.moveInYears(5) },
+            cornerSize = arrowCornerSize,
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = 62.dp, y = (-34).dp),
         ) {
-            Icon(
-                imageVector = FortunaIcons.Arrow,
-                contentDescription = c.str(R.string.annusUpDesc),
-                modifier = Modifier.rotate(180f),
-                tint = Theme.palette.onWindow
-            )
+            Arrow(c.str(R.string.annusUpDesc), 180f)
         }
 
         // move to a previous year (down)
         RoundButton(
             onClick = { c.moveInYears(-1) },
             onLongClick = { c.moveInYears(-5) },
+            cornerSize = arrowCornerSize,
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = 62.dp, y = 36.dp),
         ) {
-            Icon(
-                imageVector = FortunaIcons.Arrow,
-                contentDescription = c.str(R.string.annusDownDesc),
-                tint = Theme.palette.onWindow
-            )
+            Arrow(c.str(R.string.annusDownDesc), 0f)
         }
 
 
@@ -377,13 +391,9 @@ fun Panel() {
             RoundButton(
                 onClick = { c.moveInMonths(false) },
                 onLongClick = { c.moveInMonths(false, 6) },
+                cornerSize = arrowCornerSize,
             ) {
-                Icon(
-                    imageVector = FortunaIcons.Arrow,
-                    contentDescription = c.str(R.string.prevDesc),
-                    modifier = Modifier.rotate(90f),
-                    tint = Theme.palette.onWindow
-                )
+                Arrow(c.str(R.string.prevDesc), 90f)
             }
             Spacer(Modifier.width(prevNextMargin))
 
@@ -403,12 +413,7 @@ fun Panel() {
                         fontFamily = FontFamilyQuattrocento,
                     ),
                 )
-                Icon(
-                    imageVector = FortunaIcons.Arrow,
-                    contentDescription = null,
-                    modifier = Modifier.rotate(if (lunaExpanded.value) 180f else 0f),
-                    tint = Theme.palette.onWindow
-                )
+                Arrow(null, if (lunaExpanded.value) 180f else 0f)
 
                 OptionsMenu(
                     expandedState = lunaExpanded,
@@ -476,13 +481,9 @@ fun Panel() {
             RoundButton(
                 onClick = { c.moveInMonths(true) },
                 onLongClick = { c.moveInMonths(true, 6) },
+                cornerSize = arrowCornerSize,
             ) {
-                Icon(
-                    imageVector = FortunaIcons.Arrow,
-                    contentDescription = c.str(R.string.nextDesc),
-                    modifier = Modifier.rotate(-90f),
-                    tint = Theme.palette.onWindow,
-                )
+                Arrow(c.str(R.string.nextDesc), -90f)
             }
         }
 

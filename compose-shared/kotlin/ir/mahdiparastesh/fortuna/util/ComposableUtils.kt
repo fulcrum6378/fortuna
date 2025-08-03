@@ -5,9 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toolingGraphicsLayer
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import ir.mahdiparastesh.fortuna.Theme
+import ir.mahdiparastesh.fortuna.icon.Arrow
+import ir.mahdiparastesh.fortuna.icon.FortunaIcons
 
 @Composable
 fun Icon(
@@ -41,23 +44,39 @@ fun Icon(
     modifier: Modifier = Modifier,
     tint: Color = Color.Unspecified,
 ) {
-    val painter = rememberVectorPainter(imageVector)
-    val colorFilter = remember(tint) {
-        if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
-    }
-    val semantics =
-        if (contentDescription != null)
-            Modifier.semantics {
-                this.contentDescription = contentDescription
-                this.role = Role.Image
-            }
-        else
-            Modifier
     Box(
-        modifier = modifier
+        modifier
             .toolingGraphicsLayer()
-            .paint(painter, colorFilter = colorFilter, contentScale = ContentScale.Fit)
-            .then(semantics),
+            .paint(
+                painter = rememberVectorPainter(imageVector),
+                colorFilter = remember(tint) {
+                    if (tint == Color.Unspecified) null else ColorFilter.tint(tint)
+                },
+                contentScale = ContentScale.Fit
+            )
+            .then(
+                if (contentDescription != null) Modifier.semantics {
+                    this.contentDescription = contentDescription
+                    this.role = Role.Image
+                } else Modifier
+            ),
+    )
+}
+
+@Composable
+fun Arrow(
+    contentDescription: String?,
+    rotation: Float,
+) {
+    Icon(
+        imageVector = FortunaIcons.Arrow,
+        contentDescription = contentDescription,
+        modifier = Modifier
+            .padding(5.dp)
+            .then(
+                if (rotation != 0f) Modifier.rotate(rotation) else Modifier
+            ),
+        tint = Theme.palette.onWindow
     )
 }
 
@@ -65,15 +84,13 @@ fun Icon(
 fun RoundButton(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
-    width: Dp = 36.dp,
-    height: Dp = 36.dp,
+    cornerSize: Dp = 0.dp,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
-        modifier = modifier
-            .size(width, height)
-            .clip(RoundedCornerShape(20.dp))
+        modifier
+            .clip(CutCornerShape(cornerSize))
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick,
@@ -119,10 +136,11 @@ fun OptionsMenu(
 @Composable
 fun OptionsMenuItem(
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier
             .clickable(onClick = onClick)
             .pointerHoverIcon(PointerIcon.Hand)
     ) {
