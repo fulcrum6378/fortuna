@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
@@ -71,7 +71,7 @@ import ir.mahdiparastesh.fortuna.util.Numeral
 import ir.mahdiparastesh.fortuna.util.Numerals
 import ir.mahdiparastesh.fortuna.util.OptionsMenu
 import ir.mahdiparastesh.fortuna.util.OptionsMenuItem
-import ir.mahdiparastesh.fortuna.util.RoundButton
+import ir.mahdiparastesh.fortuna.util.SmallButton
 import kotlinx.coroutines.launch
 import java.time.temporal.ChronoField
 import java.util.Locale
@@ -277,38 +277,31 @@ fun Toolbar(numeralState: MutableState<String?>) {
                         numeralsExpanded.value = false
                     },
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (numeralState.value == ntName) {
-                            Box(
-                                Modifier
-                                    .toolingGraphicsLayer()
-                                    .size(15.dp)
-                                    .paint(
-                                        rememberVectorPainter(FortunaIcons.Send),
-                                        colorFilter = ColorFilter.tint(
-                                            Theme.palette.onWindow
-                                        ),
-                                        contentScale = ContentScale.Fit
-                                    )
-                            )
-                            Spacer(Modifier.width(18.dp))
-                        } else
-                            Spacer(Modifier.width(33.dp))
-                        BasicText(
-                            text = c.str(nt.name),
-                            style = TextStyle(
-                                color = Theme.palette.onWindow,
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Normal,
-                                fontFamily = FontFamilyQuattrocento,
-                            ),
+                    if (numeralState.value == ntName) {
+                        Box(
+                            Modifier
+                                .toolingGraphicsLayer()
+                                .size(15.dp)
+                                .paint(
+                                    rememberVectorPainter(FortunaIcons.Send),
+                                    colorFilter = ColorFilter.tint(
+                                        Theme.palette.onWindow
+                                    ),
+                                    contentScale = ContentScale.Fit
+                                )
                         )
-                    }
+                        Spacer(Modifier.width(18.dp))
+                    } else
+                        Spacer(Modifier.width(33.dp))
+                    BasicText(
+                        text = c.str(nt.name),
+                        style = TextStyle(
+                            color = Theme.palette.onWindow,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = FontFamilyQuattrocento,
+                        ),
+                    )
                 }
             }
         }
@@ -322,7 +315,7 @@ fun Panel() {
     val months = c.strArr(R.array.luna)
     val lunaExpanded = rememberSaveable { mutableStateOf(false) }
     val prevNextMargin = 20.dp
-    val arrowCornerSize = 17.dp
+    val arrowCornerSize = 7.dp  // 17.dp
 
     Box {
 
@@ -342,7 +335,7 @@ fun Panel() {
 
 
         // move to a next year (up)
-        RoundButton(
+        SmallButton(
             onClick = { c.moveInYears(1) },
             onLongClick = { c.moveInYears(5) },
             cornerSize = arrowCornerSize,
@@ -354,7 +347,7 @@ fun Panel() {
         }
 
         // move to a previous year (down)
-        RoundButton(
+        SmallButton(
             onClick = { c.moveInYears(-1) },
             onLongClick = { c.moveInYears(-5) },
             cornerSize = arrowCornerSize,
@@ -376,7 +369,7 @@ fun Panel() {
         ) {
 
             // move to a previous month
-            RoundButton(
+            SmallButton(
                 onClick = { c.moveInMonths(false) },
                 onLongClick = { c.moveInMonths(false, 6) },
                 cornerSize = arrowCornerSize,
@@ -388,12 +381,16 @@ fun Panel() {
             // luna (month selector)
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(CutCornerShape(7.dp))
                     .clickable { lunaExpanded.value = true }
                     .pointerHoverIcon(PointerIcon.Hand),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 BasicText(
                     text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
+                    modifier = Modifier
+                        .width(150.dp)
+                        .padding(start = 10.dp, top = 3.dp, bottom = 3.dp),
                     style = TextStyle(
                         color = Theme.palette.onWindow,
                         fontSize = Theme.geometry.thisMonthName,
@@ -450,11 +447,13 @@ fun Panel() {
 
             // default monthly score
             Spacer(Modifier.width(prevNextMargin))
-            RoundButton(
+            SmallButton(
                 onClick = { c.m.variabilis = -1 },
+                cornerSize = 7.dp,
             ) {
                 BasicText(
                     text = luna.default.displayScore(true),
+                    modifier = Modifier.padding(7.dp),
                     style = TextStyle(
                         color = Theme.palette.onWindow,
                         fontSize = 18.sp,
@@ -466,7 +465,7 @@ fun Panel() {
 
             // move to a next month
             Spacer(Modifier.width(prevNextMargin))
-            RoundButton(
+            SmallButton(
                 onClick = { c.moveInMonths(true) },
                 onLongClick = { c.moveInMonths(true, 6) },
                 cornerSize = arrowCornerSize,
