@@ -103,7 +103,8 @@ dependencies {
 
     implementation(libs.activity.compose)
     implementation(libs.activity.ktx)
-    implementation(libs.compose.material3)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.foundation.layout)
     implementation(libs.dropbox.android)
     implementation(libs.dropbox.core)
     implementation(libs.core.ktx)

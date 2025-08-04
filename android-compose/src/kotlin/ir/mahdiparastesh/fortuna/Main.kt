@@ -15,8 +15,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +34,9 @@ import java.time.chrono.ChronoLocalDate
 class Main : ComponentActivity(), MainComposablePage {
     override val c: Fortuna get() = applicationContext as Fortuna
     override val m: Model by viewModels()
+    override val isAndroid: Boolean = true
 
-    val night: Boolean by lazy {  // FIXME this is redundant
+    val night: Boolean by lazy {
         resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
@@ -47,9 +46,13 @@ class Main : ComponentActivity(), MainComposablePage {
     override val csl: FloatArray = createCSL()
 
     class Model : ViewModel(), FortunaStates {
-        override var date by mutableStateOf<ChronoLocalDate?>(null, structuralEqualityPolicy())
+        override var date by mutableStateOf<ChronoLocalDate?>(
+            null, structuralEqualityPolicy()
+        )
         override var variabilis by mutableStateOf<Int?>(null)
-        override val drawerState = DrawerState(DrawerValue.Closed)
+        override var drawerState by mutableStateOf(false)
+        override var panelSwitch by mutableStateOf(false)
+        override var gridSwitch by mutableStateOf(false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,11 +60,14 @@ class Main : ComponentActivity(), MainComposablePage {
         val tp = android.graphics.Color.TRANSPARENT
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(tp, tp),
-            navigationBarStyle =
-                if (!night) SystemBarStyle.light(tp, tp) else SystemBarStyle.dark(tp)
+            navigationBarStyle = if (!night)
+                SystemBarStyle.light(tp, tp)
+            else
+                SystemBarStyle.dark(tp)
         )
         if (m.date == null) m.date = c.date
-        setContent { FortunaTheme { MainPage() } }
+        Theme.init(night)
+        setContent { MainPage() }
 
         // runtime permission(s)
         val requiredPermissions =

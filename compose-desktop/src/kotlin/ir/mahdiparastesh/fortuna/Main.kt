@@ -57,6 +57,7 @@ object Context : FortunaContext, MainComposablePage {
 
     override val c: FortunaContext get() = this
     override val m: FortunaStates get() = Model
+    override val isAndroid: Boolean = false
 
     object Model : FortunaStates {
         override var date by mutableStateOf<ChronoLocalDate?>(

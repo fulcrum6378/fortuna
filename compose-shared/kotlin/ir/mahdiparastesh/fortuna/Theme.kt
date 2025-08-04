@@ -53,6 +53,7 @@ object Theme {
                 appTitle = 28.sp,
                 dialogTitle = 25.sp,
 
+                panelButtonCorners = 7.dp,
                 thisMonthName = 21.sp,
                 thisYearNumber = 19.sp,
                 thisMonthScore = 18.sp,
@@ -78,6 +79,7 @@ object Theme {
         val appTitle: TextUnit,
         val dialogTitle: TextUnit,
 
+        val panelButtonCorners: Dp,
         val thisMonthName: TextUnit,
         val thisYearNumber: TextUnit,
         val thisMonthScore: TextUnit,

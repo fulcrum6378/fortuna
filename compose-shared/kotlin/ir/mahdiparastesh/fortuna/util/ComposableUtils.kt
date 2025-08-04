@@ -86,7 +86,7 @@ fun Arrow(
 fun SmallButton(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
-    cornerSize: Dp = 0.dp,
+    cornerSize: Dp = Theme.geometry.panelButtonCorners,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {

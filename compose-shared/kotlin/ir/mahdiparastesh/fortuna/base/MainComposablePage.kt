@@ -7,6 +7,7 @@ import java.time.temporal.ChronoField
 
 interface MainComposablePage : MainPage {
     val m: FortunaStates
+    val isAndroid: Boolean
 
     override fun updatePanel() {
         m.panelSwitch = !m.panelSwitch

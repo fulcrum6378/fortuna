@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -196,112 +196,117 @@ fun Toolbar(numeralState: MutableState<String?>) {
     val coroutineScope = rememberCoroutineScope()
     val numeralsExpanded = remember { mutableStateOf(false) }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(Theme.geometry.toolbarHeight)
-            .background(Theme.palette.themePleasure),
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
+        Modifier.background(Theme.palette.themePleasure)
     ) {
 
-        @Composable
-        fun ActionButton(
-            onClick: () -> Unit,
-            content: @Composable () -> Unit
-        ) {
-            Box(
-                Modifier
-                    .fillMaxHeight()
-                    .width(Theme.geometry.toolbarHeight)
-                    .combinedClickable(
-                        onClick = onClick,
-                        //onLongClick = onLongClick, TODO tooltip
-                        role = Role.Button,
-                    )
-                    .pointerHoverIcon(PointerIcon.Hand),
-                contentAlignment = Alignment.Center
-            ) {
-                content()
-            }
-        }
-
-        ActionButton(
-            onClick = {
-                coroutineScope.launch {
-                    c.m.drawerState = !c.m.drawerState
-                }
-            },
-        ) {
-            Icon(
-                imageVector = FortunaIcons.Menu,
-                contentDescription = c.str(R.string.navOpen),
-                tint = Theme.palette.onTheme,
-            )
-        }
-
-        BasicText(
-            text = c.str(R.string.app_name),
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(start = 12.dp),
-            style = TextStyle(
-                color = Theme.palette.onTheme,
-                fontSize = Theme.geometry.appTitle,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamilyMorrisRoman,
-            ),
-        )
-
-        ActionButton(
-            onClick = { numeralsExpanded.value = true },
+                .fillMaxWidth()
+                .height(Theme.geometry.toolbarHeight + (if (c.isAndroid) 30.dp else 0.dp))
+                .padding(top = (if (c.isAndroid) 30.dp else 0.dp)),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = FortunaIcons.ArabicNumerals,
-                contentDescription = c.str(R.string.numerals),
-                tint = Theme.palette.onTheme,
+
+            @Composable
+            fun ActionButton(
+                onClick: () -> Unit,
+                content: @Composable () -> Unit
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .width(Theme.geometry.toolbarHeight)
+                        .combinedClickable(
+                            onClick = onClick,
+                            //onLongClick = onLongClick, TODO tooltip
+                            role = Role.Button,
+                        )
+                        .pointerHoverIcon(PointerIcon.Hand),
+                    contentAlignment = Alignment.Center
+                ) {
+                    content()
+                }
+            }
+
+            ActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        c.m.drawerState = !c.m.drawerState
+                    }
+                },
+            ) {
+                Icon(
+                    imageVector = FortunaIcons.Menu,
+                    contentDescription = c.str(R.string.navOpen),
+                    tint = Theme.palette.onTheme,
+                )
+            }
+
+            BasicText(
+                text = c.str(R.string.app_name),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                style = TextStyle(
+                    color = Theme.palette.onTheme,
+                    fontSize = Theme.geometry.appTitle,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamilyMorrisRoman,
+                ),
             )
 
-            OptionsMenu(
-                expandedState = numeralsExpanded,
-                popupVerticalOffset = 43,
-                popupWidth = 179.dp,
-                itemRange = Numerals.all.indices,
-            ) { n ->
-                val nt = Numerals.all[n]
-                val ntName: String? = nt.name()
+            ActionButton(
+                onClick = { numeralsExpanded.value = true },
+            ) {
+                Icon(
+                    imageVector = FortunaIcons.ArabicNumerals,
+                    contentDescription = c.str(R.string.numerals),
+                    tint = Theme.palette.onTheme,
+                )
 
-                OptionsMenuItem(
-                    onClick = {
-                        c.numeralType = ntName
-                        numeralState.value = ntName
-                        numeralsExpanded.value = false
-                    },
-                ) {
-                    if (numeralState.value == ntName) {
-                        Box(
-                            Modifier
-                                .toolingGraphicsLayer()
-                                .size(15.dp)
-                                .paint(
-                                    rememberVectorPainter(FortunaIcons.Send),
-                                    colorFilter = ColorFilter.tint(
-                                        Theme.palette.onWindow
-                                    ),
-                                    contentScale = ContentScale.Fit
-                                )
+                OptionsMenu(
+                    expandedState = numeralsExpanded,
+                    popupVerticalOffset = 43,
+                    popupWidth = 179.dp,
+                    itemRange = Numerals.all.indices,
+                ) { n ->
+                    val nt = Numerals.all[n]
+                    val ntName: String? = nt.name()
+
+                    OptionsMenuItem(
+                        onClick = {
+                            c.numeralType = ntName
+                            numeralState.value = ntName
+                            numeralsExpanded.value = false
+                        },
+                    ) {
+                        if (numeralState.value == ntName) {
+                            Box(
+                                Modifier
+                                    .toolingGraphicsLayer()
+                                    .size(15.dp)
+                                    .paint(
+                                        rememberVectorPainter(FortunaIcons.Send),
+                                        colorFilter = ColorFilter.tint(
+                                            Theme.palette.onWindow
+                                        ),
+                                        contentScale = ContentScale.Fit
+                                    )
+                            )
+                            Spacer(Modifier.width(18.dp))
+                        } else
+                            Spacer(Modifier.width(33.dp))
+                        BasicText(
+                            text = c.str(nt.name),
+                            style = TextStyle(
+                                color = Theme.palette.onWindow,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = FontFamilyQuattrocento,
+                            ),
                         )
-                        Spacer(Modifier.width(18.dp))
-                    } else
-                        Spacer(Modifier.width(33.dp))
-                    BasicText(
-                        text = c.str(nt.name),
-                        style = TextStyle(
-                            color = Theme.palette.onWindow,
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Normal,
-                            fontFamily = FontFamilyQuattrocento,
-                        ),
-                    )
+                    }
                 }
             }
         }
@@ -314,8 +319,7 @@ fun Panel() {
     val luna = c.c.vita[c.m.date!!.toKey()]
     val months = c.strArr(R.array.luna)
     val lunaExpanded = rememberSaveable { mutableStateOf(false) }
-    val prevNextMargin = 20.dp
-    val arrowCornerSize = 7.dp  // 17.dp
+    val prevNextMargin = if (c.isWideScreen()) 20.dp else 5.dp
 
     Box {
 
@@ -334,36 +338,11 @@ fun Panel() {
         )
 
 
-        // move to a next year (up)
-        SmallButton(
-            onClick = { c.moveInYears(1) },
-            onLongClick = { c.moveInYears(5) },
-            cornerSize = arrowCornerSize,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = 62.dp, y = (-34).dp),
-        ) {
-            Arrow(c.str(R.string.annusUpDesc), 180f)
-        }
-
-        // move to a previous year (down)
-        SmallButton(
-            onClick = { c.moveInYears(-1) },
-            onLongClick = { c.moveInYears(-5) },
-            cornerSize = arrowCornerSize,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = 62.dp, y = 36.dp),
-        ) {
-            Arrow(c.str(R.string.annusDownDesc), 0f)
-        }
-
-
-        // the vertically centered contents:
+        // the vertically-centered contents:
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 37.dp, bottom = 33.dp),
+                .padding(top = 7.dp, bottom = 3.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -372,13 +351,13 @@ fun Panel() {
             SmallButton(
                 onClick = { c.moveInMonths(false) },
                 onLongClick = { c.moveInMonths(false, 6) },
-                cornerSize = arrowCornerSize,
             ) {
                 Arrow(c.str(R.string.prevDesc), 90f)
             }
+
             Spacer(Modifier.width(prevNextMargin))
 
-            // luna (month selector)
+            // MONTH
             Row(
                 modifier = Modifier
                     .clip(CutCornerShape(7.dp))
@@ -389,8 +368,8 @@ fun Panel() {
                 BasicText(
                     text = months[c.m.date!![ChronoField.MONTH_OF_YEAR] - 1],
                     modifier = Modifier
-                        .width(150.dp)
-                        .padding(start = 10.dp, top = 3.dp, bottom = 3.dp),
+                        .defaultMinSize(minWidth = 140.dp)
+                        .padding(start = 14.dp, top = 10.dp, bottom = 10.dp),
                     style = TextStyle(
                         color = Theme.palette.onWindow,
                         fontSize = Theme.geometry.thisMonthName,
@@ -428,75 +407,120 @@ fun Panel() {
                 }
             }
 
-            // annus (year field)
-            BasicTextField(
-                value = c.m.date!![ChronoField.YEAR].toString(),
-                onValueChange = {
-                    c.setDate(ChronoField.YEAR, it.toInt())
-                },
-                modifier = Modifier.width(85.dp),
-                textStyle = TextStyle(
-                    color = Theme.palette.onWindow,
-                    fontSize = Theme.geometry.thisYearNumber,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamilyQuattrocento,
-                    textAlign = TextAlign.Center,
-                ),
-                singleLine = true,
-            )
 
-            // default monthly score
-            Spacer(Modifier.width(prevNextMargin))
-            SmallButton(
-                onClick = { c.m.variabilis = -1 },
-                cornerSize = 7.dp,
+            // YEAR
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                BasicText(
-                    text = luna.default.displayScore(true),
-                    modifier = Modifier.padding(7.dp),
-                    style = TextStyle(
+
+                // move to a next year (up)
+                SmallButton(
+                    onClick = { c.moveInYears(1) },
+                    onLongClick = { c.moveInYears(5) },
+                ) {
+                    Arrow(c.str(R.string.annusUpDesc), 180f)
+                }
+
+                // year field
+                BasicTextField(
+                    value = c.m.date!![ChronoField.YEAR].toString(),
+                    onValueChange = {
+                        c.setDate(ChronoField.YEAR, it.toInt())
+                    },
+                    modifier = Modifier.width(100.dp),
+                    textStyle = TextStyle(
                         color = Theme.palette.onWindow,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal,
+                        fontSize = Theme.geometry.thisYearNumber,
+                        fontWeight = FontWeight.Bold,
                         fontFamily = FontFamilyQuattrocento,
+                        textAlign = TextAlign.Center,
                     ),
+                    singleLine = true,
+                    decorationBox = { innerTextField ->
+                        Box(
+                            Modifier.padding(vertical = 11.dp)
+                        ) {
+                            innerTextField()
+                        }
+                    }
                 )
+
+                // move to a previous year (down)
+                SmallButton(
+                    onClick = { c.moveInYears(-1) },
+                    onLongClick = { c.moveInYears(-5) },
+                ) {
+                    Arrow(c.str(R.string.annusDownDesc), 0f)
+                }
             }
 
-            // move to a next month
+            if (c.isWideScreen()) Spacer(Modifier.width(10.dp))
+
+            // default monthly score
+            Column(
+                horizontalAlignment = Alignment.End,
+            ) {
+
+                Row(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .height(18.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Bottom,
+                ) {
+                    // default monthly emoji
+                    if (luna.emoji != null) BasicText(
+                        text = luna.emoji ?: "",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = FontFamilyQuattrocento,
+                        ),
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    // default monthly verbum
+                    if (luna.verbum?.isNotBlank() == true) Icon(
+                        imageVector = FortunaIcons.Verbum,
+                        contentDescription = c.str(R.string.verbumDesc),
+                        tint = Theme.palette.onWindow,
+                    )
+                }
+
+                if (c.isWideScreen()) Spacer(Modifier.height(7.dp))
+
+                SmallButton(
+                    onClick = { c.m.variabilis = -1 },
+                ) {
+                    BasicText(
+                        text = luna.default.displayScore(true),
+                        modifier = Modifier
+                            .width(48.dp)
+                            .padding(vertical = 13.dp),
+                        style = TextStyle(
+                            color = Theme.palette.onWindow,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = FontFamilyQuattrocento,
+                            textAlign = TextAlign.Center,
+                        ),
+                    )
+                }
+
+                Spacer(Modifier.height(24.dp))
+            }
+
             Spacer(Modifier.width(prevNextMargin))
+
+            // move to a next month
             SmallButton(
                 onClick = { c.moveInMonths(true) },
                 onLongClick = { c.moveInMonths(true, 6) },
-                cornerSize = arrowCornerSize,
             ) {
                 Arrow(c.str(R.string.nextDesc), -90f)
             }
         }
-
-
-        // default monthly emoji
-        if (luna.emoji != null) BasicText(
-            text = luna.emoji ?: "",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = 155.dp, y = (-29).dp),
-            style = TextStyle(
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = FontFamilyQuattrocento,
-            ),
-        )
-
-        // default monthly verbum
-        if (luna.verbum?.isNotBlank() == true) Icon(
-            imageVector = FortunaIcons.Verbum,
-            contentDescription = c.str(R.string.verbumDesc),
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(x = 178.dp, y = (-27).dp),
-            tint = Theme.palette.onWindow,
-        )
 
 
         val panelBottomTextStyle = TextStyle(
@@ -515,7 +539,7 @@ fun Panel() {
                     " - x̄: " + String.format(Locale.UK, "%.2f", mean),
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 12.dp, bottom = 8.dp),
+                .padding(start = 15.dp, bottom = 8.dp),
             style = panelBottomTextStyle,
         )
 
@@ -524,7 +548,7 @@ fun Panel() {
             text = NumberUtils.showBytes(c.strArr(R.array.bytes), luna.size),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = 12.dp, bottom = 8.dp),
+                .padding(end = 15.dp, bottom = 8.dp),
             style = panelBottomTextStyle,
         )
     }
@@ -586,7 +610,7 @@ fun Dies(
                 Color.Transparent
             }
         },
-        animationSpec = tween(durationMillis = 275)
+        animationSpec = tween(durationMillis = 100)
     )
 
     val emoji = luna.emojis.getOrNull(i)
