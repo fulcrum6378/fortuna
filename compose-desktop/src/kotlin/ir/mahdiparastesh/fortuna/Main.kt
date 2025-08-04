@@ -1,14 +1,14 @@
 package ir.mahdiparastesh.fortuna
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.structuralEqualityPolicy
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import ir.mahdiparastesh.chrono.IranianChronology
@@ -63,7 +63,7 @@ object Context : FortunaContext, MainComposablePage {
             null, structuralEqualityPolicy()
         )
         override var variabilis by mutableStateOf<Int?>(null)
-        override val drawerState = DrawerState(DrawerValue.Closed)
+        override var drawerState by mutableStateOf(false)
         override var panelSwitch by mutableStateOf(false)
         override var gridSwitch by mutableStateOf(false)
     }
@@ -107,7 +107,7 @@ fun main() = application {
         c.night = isSystemInDarkTheme()
         Theme.init(c.night)
 
-        Surface(color = Theme.palette.window) {
+        Box(Modifier.background(Theme.palette.window)) {
             MainPage()
         }
     }

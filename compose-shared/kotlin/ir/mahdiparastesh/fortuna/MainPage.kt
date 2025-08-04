@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.fortuna
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,17 +22,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +43,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toolingGraphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -57,16 +54,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ir.mahdiparastesh.fortuna.icon.ArabicNumerals
-import ir.mahdiparastesh.fortuna.icon.Backup
-import ir.mahdiparastesh.fortuna.icon.Export
 import ir.mahdiparastesh.fortuna.icon.FortunaIcons
-import ir.mahdiparastesh.fortuna.icon.Help
-import ir.mahdiparastesh.fortuna.icon.Import
 import ir.mahdiparastesh.fortuna.icon.Menu
-import ir.mahdiparastesh.fortuna.icon.Search
 import ir.mahdiparastesh.fortuna.icon.Send
-import ir.mahdiparastesh.fortuna.icon.Statistics
-import ir.mahdiparastesh.fortuna.icon.Today
 import ir.mahdiparastesh.fortuna.icon.Verbum
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.Arrow
@@ -91,26 +81,26 @@ fun MainPage() {
     val c = c
     val numeralState = remember { mutableStateOf(c.numeralType) }
 
-    ModalNavigationDrawer(
+    /*ModalNavigationDrawer(
         drawerContent = { Drawer() },
         drawerState = c.m.drawerState,
+    ) {*/
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Toolbar(numeralState)
-            key(c.m.panelSwitch) { Panel() }
-            key(c.m.gridSwitch) { Grid(numeralState) }
-        }
+        Toolbar(numeralState)
+        key(c.m.panelSwitch) { Panel() }
+        key(c.m.gridSwitch) { Grid(numeralState) }
     }
+    //}
 
     if (c.m.variabilis != null)
         VariabilisDialog(c)
 }
 
-@Composable
+/*@Composable
 fun Drawer() {
     val c = c
     val coroutineScope = rememberCoroutineScope()
@@ -198,7 +188,7 @@ fun Drawer() {
         Space()
         Item(c.str(R.string.navHelp), FortunaIcons.Help) {}
     }
-}
+}*/
 
 @Composable
 fun Toolbar(numeralState: MutableState<String?>) {
@@ -238,9 +228,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
         ActionButton(
             onClick = {
                 coroutineScope.launch {
-                    c.m.drawerState.apply {
-                        if (isClosed) open() else close()
-                    }
+                    c.m.drawerState = !c.m.drawerState
                 }
             },
         ) {
@@ -582,22 +570,25 @@ fun Dies(
     val isToday = hasToday && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1
 
     val textColor: Color
-    val targetColour = when {
-        score != null && score > 0f -> {
-            textColor = Theme.palette.onTheme
-            Color(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
-        }
+    val targetColour by animateColorAsState(
+        targetValue = when {
+            score != null && score > 0f -> {
+                textColor = Theme.palette.onTheme
+                Color(c.cp[0], c.cp[1], c.cp[2], score / Vita.MAX_RANGE)
+            }
 
-        score != null && score < 0f -> {
-            textColor = Theme.palette.onTheme
-            Color(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
-        }
+            score != null && score < 0f -> {
+                textColor = Theme.palette.onTheme
+                Color(c.cs[0], c.cs[1], c.cs[2], -score / Vita.MAX_RANGE)
+            }
 
-        else -> {
-            textColor = Theme.palette.onWindow
-            Color.Transparent
-        }
-    }
+            else -> {
+                textColor = Theme.palette.onWindow
+                Color.Transparent
+            }
+        },
+        animationSpec = tween(durationMillis = 275)
+    )
 
     val emoji = luna.emojis.getOrNull(i)
     val hasVerbum = luna.verba[i]?.isNotBlank() == true
@@ -606,7 +597,7 @@ fun Dies(
         modifier = Modifier
             .fillMaxWidth(fraction = if (!isWide) 0.2f else 0.1f)
             .height(100.dp)
-            .background(targetColour)  // TODO animate
+            .background(targetColour)
             .border(
                 BorderStroke(
                     if (isToday) 5.dp else 0.25.dp,

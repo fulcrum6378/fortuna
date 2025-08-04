@@ -26,9 +26,7 @@ dependencies {
     api(project(":core"))
 
     implementation(compose.desktop.currentOs)
-    implementation(compose.material3)
     implementation(compose.components.resources)
-    implementation(compose.materialIconsExtended)  // TODO check if it takes much space
 }
 
 
