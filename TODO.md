@@ -1,14 +1,37 @@
 # Fortuna To-Do List
 
+### 📊 Data Access & Analysis
+
+* Line chart
 * Make the loaded `Luna` in the `MainPage` stateful with non-array values?
-* Compatibility for `onBackPressed`
-* Index `Luna`s as serialized in cache
-* Doesn't open the correct day on a new day
-* Jumping to other dates using other calendars
+
+### 📝 Data Entry
+
+* Secondary Emoji? using '-' separators?
 * Live saving for `VariabilisDialog`
-* Convert `emojis.txt` into `Emojis.kt`
+
+### 🚀 UI Ease of Use
+
+* Swipe to navigate
 * An advanced touch navigation button which rolls the calendar using touch coordinates...
   Or rather keep rolling the calendar when the user hols the navigation icon buttons
-* Line chart
-* Secondary Emoji? using '-' separators?
-* Swipe to navigate
+* Jumping to other dates using other calendars
+* Nostalgia: to remember what you did last year(s) this day!
+* Replace an old emoji if a new one is entered
+
+### ⚡ Performance & App Size
+
+* Convert `emojis.txt` into `Emojis.kt`
+* Index `Luna`s as serialized in cache
+
+### ✨ UI Aesthetics
+
+* Changeable theme colour? Blue & Orange, Golden & Brown, Light Green & Gray
+* Make the clear button reddish
+
+---
+
+### :android-view
+
+* Doesn't open the correct day on a new day
+* Compatibility for `onBackPressed`

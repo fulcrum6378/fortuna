@@ -45,7 +45,7 @@ class SearchDialog : BaseDialogue() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        b.field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
+        //b.field.addTextChangedListener { isCancelable = it.isNullOrEmpty() }
         b.field.setOnEditorActionListener { v, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO)
                 (b.list.adapter as SearchAdapter).search(v.text)
@@ -68,7 +68,7 @@ class SearchDialog : BaseDialogue() {
         return dialogue
     }
 
-    override fun onResume() {
+    /*override fun onResume() {
         super.onResume()
         dialogue.setOnKeyListener { _, keyCode, event ->
             if (keyCode == android.view.KeyEvent.KEYCODE_BACK &&
@@ -78,7 +78,7 @@ class SearchDialog : BaseDialogue() {
                 dismiss(); true
             } else false
         }
-    }
+    }*/
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
@@ -108,7 +108,9 @@ class SearchAdapter(
             Search(q.trim(), c.c.vita.clone() as Vita) {
                 notifyDataSetChanged()
                 if (c.m.searchResults.isEmpty())
-                    Toast.makeText(c, R.string.foundNothing, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        c, R.string.foundNothing, Toast.LENGTH_SHORT
+                    ).show()
                 f.requireDialog()
                     .setTitle(f.getString(R.string.navSearch) + " {${c.m.searchResults.size}}")
             }
@@ -145,7 +147,8 @@ class SearchAdapter(
         private val vita = clonedVita.toSortedMap { a, b -> b.compareTo(a) }
         private val qEmojis = mutableSetOf<String>()
         private val qWords = mutableSetOf<String>()
-        private val exclusive = !c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
+        private val exclusive =
+            !c.c.sp.getBoolean(Fortuna.SP_SEARCH_INCLUSIVE, false)
 
         init {
             CoroutineScope(Dispatchers.IO).launch {
@@ -180,9 +183,15 @@ class SearchAdapter(
 
                 // then search the Vita
                 for (luna in vita.entries) {
-                    onEachDay(luna.key, (-1).toByte(), luna.value.emoji, luna.value.verbum)
+                    onEachDay(
+                        luna.key, (-1).toByte(), luna.value.emoji,
+                        luna.value.verbum
+                    )
                     for (d in luna.value.verba.indices.reversed())
-                        onEachDay(luna.key, d.toByte(), luna.value.emojis[d], luna.value.verba[d])
+                        onEachDay(
+                            luna.key, d.toByte(), luna.value.emojis[d],
+                            luna.value.verba[d]
+                        )
                 }
 
                 withContext(Dispatchers.Main, onFinish)
