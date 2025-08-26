@@ -24,6 +24,7 @@ import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
+import ir.mahdiparastesh.fortuna.util.Emojis
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toScore
@@ -332,7 +333,7 @@ class VariabilisDialog : BaseDialogue() {
             dest: Spanned?, dstart: Int, dend: Int
         ): CharSequence? {
             if (field.text.isNotEmpty()) return ""
-            if (source == null || c.m.emojis.any { it == source }) return null
+            if (source == null || Emojis.list.any { it == source }) return null
 
             val ba = source.toString().toByteArray(Charsets.UTF_8)
             val bz = ba.size

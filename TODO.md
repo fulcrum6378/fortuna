@@ -21,7 +21,6 @@
 
 ### ⚡ Performance & App Size
 
-* Convert `emojis.txt` into `Emojis.kt`
 * Index `Luna`s as serialized in cache
 
 ### ✨ UI Aesthetics
@@ -33,5 +32,5 @@
 
 ### :android-view
 
-* Doesn't open the correct day on a new day
-* Compatibility for `onBackPressed`
+* Doesn't open the correct day on a new day and mingles months on a new month
+* `VariabilisDialog` gets deformed when another app is in the pop-up mode above it

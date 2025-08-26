@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Fortuna
@@ -25,6 +24,7 @@ import ir.mahdiparastesh.fortuna.databinding.SearchBinding
 import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
 import ir.mahdiparastesh.fortuna.util.AnyViewHolder
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
+import ir.mahdiparastesh.fortuna.util.Emojis
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -260,7 +260,7 @@ class SearchAdapter(
         }
 
         private fun getEmojiEndIfStartsWithIt(text: CharSequence): Int {
-            for (e in c.m.emojis) if (text.indexOf(e) == 0) return e.length
+            for (e in Emojis.list) if (text.indexOf(e) == 0) return e.length
             return -1
         }
     }

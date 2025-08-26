@@ -23,6 +23,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -76,7 +77,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.InputStreamReader
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 import java.util.Locale
@@ -113,7 +113,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
     class Model : ViewModel() {
         var sexbook: MutableLiveData<Sexbook.Data?> = MutableLiveData(null)
-        var emojis = listOf<String>()
         var variabilisScore: Int? = null
         var variabilisEmoji: String? = null
         var variabilisVerbum: String? = null
@@ -264,11 +263,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         // miscellaneous background IO tasks
         CoroutineScope(Dispatchers.IO).launch {
 
-            // load all emojis for input text filtering
-            m.emojis = InputStreamReader(
-                resources.openRawResource(R.raw.emojis), Charsets.UTF_8
-            ).use { it.readText().split(' ') }
-
             // Sexbook integration
             if (m.sexbook.value == null &&
                 try {
@@ -290,9 +284,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
 
-        // resolving intents
+        // Activity management
         addOnNewIntentListener { resolveIntent(it) }
         resolveIntent(intent)
+        onBackPressedDispatcher.addCallback(goBack)
     }
 
     override fun onResume() {
@@ -545,12 +540,13 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.root.closeDrawer(GravityCompat.START, true)
     }
 
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun onBackPressed() {
-        if (b.root.isDrawerOpen(GravityCompat.START)) {
-            closeDrawer()
-            return; }
-        @Suppress("DEPRECATION") super.onBackPressed()
+    private val goBack = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (b.root.isDrawerOpen(GravityCompat.START)) {
+                closeDrawer()
+                return; }
+            finish()
+        }
     }
 
     override fun onStop() {
