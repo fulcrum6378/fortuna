@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna.compose"
-        minSdk = 26
+        minSdk = 30
         targetSdk = 36
         versionCode = 1
         versionName = project.extra["fortuna.compose.version"]!! as String

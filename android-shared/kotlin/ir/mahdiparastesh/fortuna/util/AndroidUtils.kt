@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.os.Build
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.util.MainHandler
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField

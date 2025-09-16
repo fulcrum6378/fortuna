@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
-        minSdk = 26
+        minSdk = 30
         targetSdk = 36
         versionCode = 15
         versionName = "14.8.7"

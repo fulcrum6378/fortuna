@@ -71,7 +71,6 @@ import ir.mahdiparastesh.fortuna.util.UiTools.blur
 import ir.mahdiparastesh.fortuna.util.UiTools.color
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -273,14 +272,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 }
             ) Sexbook(c).load { data ->
                 m.sexbook.value = data
-            }
-
-            // scroll to top on older devices
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                delay(500)
-                withContext(Dispatchers.Main) {
-                    b.scroller.scrollTo(0, 0)
-                }
             }
         }
 

@@ -7,7 +7,6 @@ import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
@@ -81,10 +80,8 @@ class VariabilisDialog : BaseDialogue() {
                         ?: luna.default?.toVariabilis() ?: 6
             wrapSelectorWheel = false
             setFormatter { it.toScore().displayScore(false) }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                textColor = c.color(android.R.attr.textColor)
-                textSize = c.resources.displayMetrics.density * 25f
-            }
+            textColor = c.color(android.R.attr.textColor)
+            textSize = c.resources.displayMetrics.density * 25f
             (this@apply[0] as EditText).also { it.filters = arrayOf() }
             if (c.m.variabilisScore != null) isCancelable = false
             setOnValueChangedListener { _, _, newVal ->
