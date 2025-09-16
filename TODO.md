@@ -30,8 +30,7 @@
 
 ---
 
-## :android-view
+## 📱 android-view
 
 * Doesn't open the correct day on a new day and mingles months on a new month
 * `VariabilisDialog` gets deformed when another app is in the pop-up mode above it
-* `ChronometerDialog` crashes when you input a date

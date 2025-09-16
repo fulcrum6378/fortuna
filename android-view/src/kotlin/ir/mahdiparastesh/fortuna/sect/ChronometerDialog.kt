@@ -33,7 +33,9 @@ import kotlin.math.absoluteValue
 class ChronometerDialog : BaseDialogue() {
 
     private var i: Int = 0
-    private val date: ChronoLocalDate by lazy { c.c.date.with(ChronoField.DAY_OF_MONTH, i + 1L) }
+    private val date: ChronoLocalDate by lazy {
+        c.c.date.with(ChronoField.DAY_OF_MONTH, i + 1L)
+    }
 
     companion object {
         const val TAG = "chronometer"
@@ -99,7 +101,7 @@ class ChronometerDialog : BaseDialogue() {
                             )
                             c.m.compareDatesWith = dat
                             dateComparison(date, dat)
-                        } catch (_: DateTimeException) {
+                        } catch (_: RuntimeException) {  // DateTimeException or NumberFormatException
                             result.isVisible = false
                             ""
                         }
@@ -120,8 +122,9 @@ class ChronometerDialog : BaseDialogue() {
                         CalendarContract.CONTENT_URI.buildUpon()
                             .appendPath("time")
                             .appendEncodedPath(
-                                (date.atTime(LocalTime.of(0, 0, 0))
-                                    .toEpochSecond(OffsetDateTime.now().offset) * 1000L)
+                                (date.atTime(
+                                    LocalTime.of(0, 0, 0)
+                                ).toEpochSecond(OffsetDateTime.now().offset) * 1000L)
                                     .toString()
                             )
                             .build()
