@@ -21,8 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fortuna"
 include(":core")
-//include(":android-compose")
-include(":compose-desktop")
+//include(":android-compose")  // SUSPENDED
+//include(":compose-desktop")  // SUSPENDED
 include(":android-view")
 //include(":javafx")  // DISCONTINUED
 

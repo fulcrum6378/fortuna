@@ -3,7 +3,6 @@
 ### 📊 Data Access & Analysis
 
 * Line chart
-* Make the loaded `Luna` in the `MainPage` stateful with non-array values?
 
 ### 📝 Data Entry
 
@@ -12,6 +11,7 @@
 
 ### 🚀 UI Ease of Use
 
+* Doesn't open the correct day on a new day and mingles months on a new month
 * Swipe to navigate
 * An advanced touch navigation button which rolls the calendar using touch coordinates...
   Or rather keep rolling the calendar when the user hols the navigation icon buttons
@@ -25,12 +25,6 @@
 
 ### ✨ UI Aesthetics
 
+* `VariabilisDialog` gets deformed when another app is in the pop-up mode above it
 * Changeable theme colour? Blue & Orange, Golden & Brown, Light Green & Gray
 * Make the clear button reddish
-
----
-
-## 📱 android-view
-
-* Doesn't open the correct day on a new day and mingles months on a new month
-* `VariabilisDialog` gets deformed when another app is in the pop-up mode above it
