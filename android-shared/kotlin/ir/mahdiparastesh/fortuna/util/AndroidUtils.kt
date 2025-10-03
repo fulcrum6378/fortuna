@@ -14,7 +14,7 @@ import java.time.temporal.ChronoField
 /** Static shared Android utilities */
 object AndroidUtils {
 
-    /** Opens the specified date in the device's default calendar app. */
+    /** Opens Fortuna navigating to the specified date. */
     fun openInDate(c: Context, cal: ChronoLocalDate, req: Int): PendingIntent =
         PendingIntent.getActivity(
             c, req, Intent(c, Main::class.java)

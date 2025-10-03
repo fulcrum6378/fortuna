@@ -219,7 +219,7 @@ fun Toolbar(numeralState: MutableState<String?>) {
                         .width(Theme.geometry.toolbarHeight)
                         .combinedClickable(
                             onClick = onClick,
-                            //onLongClick = onLongClick, TODO tooltip
+                            //onLongClick = onLongClick, TO-DO tooltip
                             role = Role.Button,
                         )
                         .pointerHoverIcon(PointerIcon.Hand),

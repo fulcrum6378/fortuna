@@ -33,7 +33,7 @@ class TodayWidget : AppWidgetProvider() {
         private fun update(c: Fortuna) = RemoteViews(c.packageName, R.layout.today_widget).apply {
             val date = c.chronology.dateNow()
             val den = c.resources.displayMetrics.density
-            /*FIXME setImageViewBitmap(
+            /*FIX-ME setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(
                     ShapeAppearanceModel.Builder().setAllCorners(CornerFamily.CUT, den * 8f).build()
                 ).let {

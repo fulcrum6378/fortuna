@@ -58,7 +58,7 @@ fun VariabilisDialog(c: MainComposablePage) {
                 lineHeight = 26.sp,
             ),
             /*placeholder = {
-                todo BasicText(c.str(R.string.notesHint))
+                to-do BasicText(c.str(R.string.notesHint))
             },*/
             maxLines = 10,
             /*colors = TextFieldDefaults.colors(
@@ -84,9 +84,9 @@ fun VariabilisDialog(c: MainComposablePage) {
                 BaseDialogButton(c.str(R.string.clear), onLongClick = {
                     c.saveDies(luna, i, null, null, null)
                     c.m.variabilis = null
-                    // TODO c.c.shake()
+                    // TO-DO c.c.shake()
                 }) {
-                    // TODO Toast hold a little longer
+                    // TO-DO Toast hold a little longer
                 }
             }
             Row(
@@ -103,7 +103,7 @@ fun VariabilisDialog(c: MainComposablePage) {
                         verbum.value
                     )
                     c.m.variabilis = null
-                    // TODO c.c.shake()
+                    // TO-DO c.c.shake()
                 }
             }
         }

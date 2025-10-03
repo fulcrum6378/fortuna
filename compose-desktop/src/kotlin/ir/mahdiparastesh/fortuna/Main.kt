@@ -88,9 +88,9 @@ object Context : FortunaContext, MainComposablePage {
     override fun strArr(ref: Any): Array<String> =
         stringArrayResource(ref as StringArrayResource).toTypedArray()
 
-    override var numeralType: String? = null  // FIXME
+    override var numeralType: String? = null  // FIX-ME
 
-    override fun buildNumeral(numeralType: String?): Numeral? = null  // FIXME
+    override fun buildNumeral(numeralType: String?): Numeral? = null  // FIX-ME
 }
 
 @get:Composable
@@ -102,7 +102,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = c.str(R.string.app_name),
-        //icon = TODO Painter,
+        //icon = TO-DO Painter,
         //undecorated = true,
     ) {
         c.night = isSystemInDarkTheme()

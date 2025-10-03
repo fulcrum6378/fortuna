@@ -14,11 +14,13 @@ import android.view.MotionEvent
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
@@ -71,11 +73,19 @@ class VariabilisDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arrayOf(b.highlight, b.verbum).forEach { it.background = c.varFieldBg }
 
+        val variabilisScore: Int? = c.c.sp
+            .getInt(Fortuna.SP_VARIABILIS_SCORE, -1)
+            .let { if (it == -1) null else it }
+        val variabilisEmoji: String? = c.c.sp
+            .getString(Fortuna.SP_VARIABILIS_EMOJI, null)
+        val variabilisVerbum: String? = c.c.sp
+            .getString(Fortuna.SP_VARIABILIS_VERBUM, null)
+
         // score picker
         b.picker.apply {
             maxValue = 12
             minValue = 0
-            value = c.m.variabilisScore
+            value = variabilisScore
                 ?: (if (i != -1) luna[i]?.toVariabilis() else null)
                         ?: luna.default?.toVariabilis() ?: 6
             wrapSelectorWheel = false
@@ -83,31 +93,31 @@ class VariabilisDialog : BaseDialogue() {
             textColor = c.color(android.R.attr.textColor)
             textSize = c.resources.displayMetrics.density * 25f
             (this@apply[0] as EditText).also { it.filters = arrayOf() }
-            if (c.m.variabilisScore != null) isCancelable = false
+            if (variabilisScore != null) isCancelable = false
             setOnValueChangedListener { _, _, newVal ->
-                c.m.variabilisScore = newVal
+                c.c.sp.edit { putInt(Fortuna.SP_VARIABILIS_SCORE, newVal) }
                 dialogue.setCancelable(false)
             }
         }
 
         // emojis
         b.emoji.apply {
-            setText(c.m.variabilisEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji))
+            setText(variabilisEmoji ?: (if (i != -1) luna.emojis[i] else luna.emoji))
             if (text.isEmpty()) luna.emoji?.also { hint = it }
             filters = arrayOf(EmojiFilter(this@apply))
-            if (c.m.variabilisEmoji != null) isCancelable = false
+            if (variabilisEmoji != null) isCancelable = false
             addTextChangedListener {
-                c.m.variabilisEmoji = it.toString()
+                c.c.sp.edit { putString(Fortuna.SP_VARIABILIS_EMOJI, it.toString()) }
                 dialogue.setCancelable(false)
             }
         }
 
         // descriptions
         b.verbum.apply {
-            setText(c.m.variabilisVerbum ?: (if (i != -1) luna.verba[i] else luna.verbum))
-            if (c.m.variabilisVerbum != null) isCancelable = false
+            setText(variabilisVerbum ?: (if (i != -1) luna.verba[i] else luna.verbum))
+            if (variabilisVerbum != null) isCancelable = false
             addTextChangedListener {
-                c.m.variabilisVerbum = it.toString()
+                c.c.sp.edit { putString(Fortuna.SP_VARIABILIS_VERBUM, it.toString()) }
                 dialogue.setCancelable(false)
             }
             setOnTouchListener { v, event ->  // scroll inside ScrollView
@@ -171,6 +181,7 @@ class VariabilisDialog : BaseDialogue() {
         }
 
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
+            setBackgroundColor(0x22F44336)
             setOnClickListener(LimitedToastAlert(c, R.string.holdLonger))
             setOnLongClickListener {
                 c.saveDies(luna, i, null, null, null)
@@ -185,9 +196,13 @@ class VariabilisDialog : BaseDialogue() {
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         b.verbum.clearFocus()
-        c.m.variabilisScore = null
-        c.m.variabilisEmoji = null
-        c.m.variabilisVerbum = null
+        c.c.sp.edit {
+            remove(Fortuna.SP_VARIABILIS_LUNA)
+            remove(Fortuna.SP_VARIABILIS_DIES)
+            remove(Fortuna.SP_VARIABILIS_SCORE)
+            remove(Fortuna.SP_VARIABILIS_EMOJI)
+            remove(Fortuna.SP_VARIABILIS_VERBUM)
+        }
     }
 
     /**

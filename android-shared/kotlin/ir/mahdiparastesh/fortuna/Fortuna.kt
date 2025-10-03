@@ -52,6 +52,11 @@ class Fortuna : Application(), FortunaContext {
         /* ----- keys of all shared preferences ----- */
         const val SP_NUMERAL_TYPE = "numeral_type"
         const val SP_NUMERAL_TYPE_DEF = "0"  // defaults to Arabic
+        const val SP_VARIABILIS_LUNA = "variabilis_luna"
+        const val SP_VARIABILIS_DIES = "variabilis_dies"
+        const val SP_VARIABILIS_SCORE = "variabilis_score"
+        const val SP_VARIABILIS_EMOJI = "variabilis_emoji"
+        const val SP_VARIABILIS_VERBUM = "variabilis_verbum"
         const val SP_SEARCH_INCLUSIVE = "search_inclusive"
         const val SP_DROPBOX_CREDENTIAL = "dropbox_credential"
     }

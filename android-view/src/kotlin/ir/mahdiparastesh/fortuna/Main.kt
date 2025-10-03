@@ -49,6 +49,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import ir.mahdiparastesh.chrono.IranianDate
 import ir.mahdiparastesh.fortuna.base.MainPage
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
@@ -112,9 +113,6 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
     class Model : ViewModel() {
         var sexbook: MutableLiveData<Sexbook.Data?> = MutableLiveData(null)
-        var variabilisScore: Int? = null
-        var variabilisEmoji: String? = null
-        var variabilisVerbum: String? = null
         var lastSearchQuery: String? = null
         var searchResults = ArrayList<SearchAdapter.Result>()
         var compareDatesWith: ChronoLocalDate? = null
@@ -279,6 +277,12 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         addOnNewIntentListener { resolveIntent(it) }
         resolveIntent(intent)
         onBackPressedDispatcher.addCallback(goBack)
+
+        b.toolbar.setOnClickListener {
+            AndroidUtils.openInDate(
+                c, IranianDate.of(6404, 8, 1), 2
+            ).send(2)
+        }
     }
 
     override fun onResume() {
@@ -287,6 +291,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     private fun resolveIntent(intent: Intent) {
+        // TODO this algorithm is faulty
         intent.getStringExtra(MainHandler.EXTRA_LUNA)?.also { extraLuna ->
             c.luna = extraLuna
             c.date = c.chronology.dateNow()
@@ -295,6 +300,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         }
         if (intent.hasExtra(MainHandler.EXTRA_DIES))
             variabilis(intent.getIntExtra(MainHandler.EXTRA_DIES, 1) - 1)
+        // TODO open VariabilisDialog if one instance is pending
     }
 
     override fun onRestart() {
@@ -470,7 +476,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             fgColor = color(android.R.attr.textColor)
         } else {
             if (mean > 0f) {  // pleasant
-                bgColor = color(com.google.android.material.R.attr.colorPrimary)
+                bgColor = color(android.R.attr.colorPrimary)
                 fgColor = color(com.google.android.material.R.attr.colorOnPrimary)
             } else /*mean < 0f*/ {  // painful
                 bgColor = color(com.google.android.material.R.attr.colorSecondary)

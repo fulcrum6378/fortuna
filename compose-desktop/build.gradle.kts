@@ -57,7 +57,7 @@ val prepareComposeResources = tasks.register("prepareComposeResources") {
             File(inputDir2, "values/strings.xml").readText().substring(51)
         )
         stringsXml.writeText(strings.toString())
-        // TODO this algorithm doesn't assemble non-English XML files
+        // TO-DO this algorithm doesn't assemble non-English XML files
 
         // prepare font resources
         copy {

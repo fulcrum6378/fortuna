@@ -48,7 +48,8 @@ class Nyx : BroadcastReceiver() {
         }
 
         private fun broadcast(c: Context): PendingIntent = PendingIntent.getBroadcast(
-            c, 0, Intent(c, Nyx::class.java), PendingIntent.FLAG_IMMUTABLE
+            c, 0,
+            Intent(c, Nyx::class.java), PendingIntent.FLAG_IMMUTABLE
         )
 
         @Suppress("unused")

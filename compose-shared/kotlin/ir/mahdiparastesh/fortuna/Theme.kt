@@ -59,7 +59,7 @@ object Theme {
                 thisMonthScore = 18.sp,
                 panelBottomTexts = 14.sp,
             )
-        // TODO adjust laptops and tablets
+        // TO-DO adjust laptops and tablets
     }
 
     data class Palette(
