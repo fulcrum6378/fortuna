@@ -73,6 +73,10 @@ class VariabilisDialog : BaseDialogue() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         arrayOf(b.highlight, b.verbum).forEach { it.background = c.varFieldBg }
 
+        c.c.sp.edit {
+            putString(Fortuna.SP_VARIABILIS_LUNA, c.c.luna)
+            putInt(Fortuna.SP_VARIABILIS_DIES, i)
+        }
         val variabilisScore: Int? = c.c.sp
             .getInt(Fortuna.SP_VARIABILIS_SCORE, -1)
             .let { if (it == -1) null else it }

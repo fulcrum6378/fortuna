@@ -37,22 +37,30 @@ class TodayWidget : AppWidgetProvider() {
             )
         }
 
-        private fun update(c: Fortuna) = RemoteViews(c.packageName, R.layout.today_widget).apply {
+        private fun update(c: Fortuna) = RemoteViews(
+                c.packageName, R.layout.today_widget
+        ).apply {
             val date = c.chronology.dateNow()
             val den = c.resources.displayMetrics.density
             setImageViewBitmap(
                 R.id.bg, MaterialShapeDrawable(
-                    ShapeAppearanceModel.Builder().setAllCorners(CornerFamily.CUT, den * 8f).build()
+                    ShapeAppearanceModel.Builder()
+                        .setAllCorners(CornerFamily.CUT, den * 8f)
+                        .build()
                 ).let {
-                    it.fillColor = c.resources.getColorStateList(R.color.todayWidget, null)
+                    it.fillColor = c.resources
+                        .getColorStateList(R.color.todayWidget, null)
                     val size = if (!c.isLandscape()) arrayOf(70, 100) else arrayOf(140, 50)
                     it.toBitmap((den * size[0]).toInt(), (den * size[1]).toInt())
                 })
-            setOnClickPendingIntent(R.id.root, AndroidUtils.openInDate(c, date, 1))
+            setOnClickPendingIntent(
+                R.id.root, AndroidUtils.openInDate(c, date, 1)
+            )
             setTextViewText(
                 R.id.dies, Numerals.build(
-                    c.sp.getString(Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF)
-                        .let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
+                    c.sp.getString(
+                        Fortuna.SP_NUMERAL_TYPE, Fortuna.SP_NUMERAL_TYPE_DEF
+                    ).let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
                 ).write(date[ChronoField.DAY_OF_MONTH])
             )
             val month =
