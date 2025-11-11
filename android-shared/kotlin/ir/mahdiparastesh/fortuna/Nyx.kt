@@ -31,8 +31,8 @@ import java.time.temporal.ChronoUnit
 class Nyx : BroadcastReceiver() {
 
     companion object {
-        private const val REMIND = "remind"
-        private const val CHANNEL = 378
+        private const val NTF_CHANNEL_ID = "remind"
+        private const val NTF_ID = 378
 
         fun alarm(c: Context) {
             (c.getSystemService(Context.ALARM_SERVICE) as? AlarmManager)?.setInexactRepeating(
@@ -59,7 +59,7 @@ class Nyx : BroadcastReceiver() {
 
         fun cancelNotification(c: Context) {
             (c.getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
-                .cancel(CHANNEL)
+                .cancel(NTF_ID)
         }
     }
 
@@ -94,12 +94,12 @@ class Nyx : BroadcastReceiver() {
         val nm = c.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(
             NotificationChannel(
-                REMIND, c.getString(R.string.ntfReminderTitle),
+                NTF_CHANNEL_ID, c.getString(R.string.ntfReminderTitle),
                 NotificationManager.IMPORTANCE_LOW
             ).apply { description = c.getString(R.string.ntfReminderDesc) }
         )
         nm.notify(
-            CHANNEL, Notification.Builder(c, REMIND)
+            NTF_ID, Notification.Builder(c, NTF_CHANNEL_ID)
                 .setSmallIcon(R.drawable.logo_monochrome)
                 .setColor(c.resources.getColor(R.color.CP, c.theme))
                 .setContentTitle(c.getString(R.string.ntfReminder))

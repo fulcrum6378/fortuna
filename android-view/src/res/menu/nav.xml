@@ -36,6 +36,10 @@
 
     <group android:id="@+id/misc">
         <item
+            android:id="@+id/navServer"
+            android:icon="@drawable/server"
+            android:title="@string/navServer" />
+        <item
             android:id="@+id/navHelp"
             android:icon="@drawable/help"
             android:title="@string/navHelp" />

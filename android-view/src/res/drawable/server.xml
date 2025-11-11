@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?android:textColor"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--https://www.svgrepo.com/svg/471871/server-05-->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M19,9C19,12.866 15.866,16 12,16M19,9C19,5.134 15.866,2 12,2M19,9H5M12,16C8.134,16 5,12.866 5,9M12,16C13.751,14.083 14.747,11.596 14.801,9C14.747,6.404 13.751,3.917 12,2M12,16C10.249,14.083 9.255,11.596 9.201,9C9.255,6.404 10.249,3.917 12,2M12,16V18M5,9C5,5.134 8.134,2 12,2M14,20C14,21.105 13.105,22 12,22C10.895,22 10,21.105 10,20M14,20C14,18.895 13.105,18 12,18M14,20H21M10,20C10,18.895 10.895,18 12,18M10,20H3"
+        android:strokeWidth="2"
+        android:strokeColor="#000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

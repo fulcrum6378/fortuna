@@ -102,4 +102,5 @@ dependencies {
     implementation(libs.dropbox.core)
     implementation(libs.material)
     implementation(libs.coroutines.android)
+    implementation(libs.nanohttpd)
 }

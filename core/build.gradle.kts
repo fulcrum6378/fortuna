@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
+tasks.withType<JavaCompile> {
+    options.release = 24
+}
 tasks.named<KotlinJvmCompile>("compileKotlin") {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_24)

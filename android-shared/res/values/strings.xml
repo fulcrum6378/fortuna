@@ -85,6 +85,7 @@
     <string name="importReadError">Unfortunately an error occurred while reading the file!</string>
     <string name="askImport">Are you sure you want to replace all these records?</string>
     <string name="navSend">Send data to</string>
+    <string name="navServer">Server</string>
     <string name="navHelp">Help</string>
     <string name="help">
         This app is designed based on the \"Hedonist\" philosophy!
@@ -163,4 +164,13 @@
 
     <!-- TodayWidget -->
     <string name="widTodayDesc">Shows current date like a calendar app.</string>
+
+    <!-- Server -->
+    <string name="ntfServerTitle">Local Server</string>
+    <string name="ntfServerDesc">
+        Serves a local website using which you can use Fortuna from another device.
+    </string>
+    <string name="ntfServer">Serving on your local network&#8230;</string>
+    <string name="ntfServerBrowse">Browse</string>
+    <string name="ntfServerStop">Stop</string>
 </resources>

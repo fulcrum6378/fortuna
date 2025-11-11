@@ -51,6 +51,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.base.MainPage
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
+import ir.mahdiparastesh.fortuna.http.Server
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
@@ -344,6 +345,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                     ).show()
 
             R.id.navBackup -> BackupDialog().show(supportFragmentManager, BackupDialog.TAG)
+
+            R.id.navServer ->
+                startService(Intent(this, Server::class.java))
+
             R.id.navHelp -> HelpDialog().show(supportFragmentManager, HelpDialog.TAG)
         }
         return true

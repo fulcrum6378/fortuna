@@ -1,7 +1,7 @@
 [versions]
-agp = "8.11.2"
+agp = "8.13.0"
 #composeMP = "1.9.0"  # https://github.com/JetBrains/compose-multiplatform/releases
-kotlin = "2.2.20"
+kotlin = "2.3.0-Beta1"
 activityKtx = "1.11.0"
 constraintLayout = "2.2.1"
 coreKtx = "1.17.0"
@@ -12,6 +12,7 @@ coroutines = "1.10.1"
 material = "1.13.0"
 #activityCompose = "1.10.1"
 #jetpackCompose = "1.8.3"
+nanoHttpd = "2.3.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -31,6 +32,7 @@ dropbox-android = { group = "com.dropbox.core", name = "dropbox-android-sdk", ve
 dropbox-core = { group = "com.dropbox.core", name = "dropbox-core-sdk", version.ref = "dropBox" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+nanohttpd = { group = "org.nanohttpd", name = "nanohttpd", version.ref = "nanoHttpd" }
 # :android-compose
 #activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 #compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "jetpackCompose" }
