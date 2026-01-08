@@ -107,7 +107,8 @@ class Server : Service() {
 
         override fun serve(session: IHTTPSession?): Response? {
             return newFixedLengthResponse(
-                "<html><head><title></title></head><body></html>"
+                c.resources.openRawResource(R.raw.index)
+                    .readBytes().toString(charset = Charsets.UTF_8)
             )
         }
 
