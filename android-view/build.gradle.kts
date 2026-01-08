@@ -51,13 +51,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_24
-        targetCompatibility = JavaVersion.VERSION_24
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
     kotlin {
         target {
             compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_24)
+                jvmTarget.set(JvmTarget.JVM_25)
                 freeCompilerArgs.add("-Xannotation-default-target=param-property")
             }
         }
