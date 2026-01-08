@@ -20,7 +20,7 @@ android {
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
         buildConfigField("String", "DROPBOX_APP_KEY", "\"${dropboxKey}\"")
-        manifestPlaceholders.put("dropboxKey", dropboxKey)
+        manifestPlaceholders["dropboxKey"] = dropboxKey
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -38,6 +38,7 @@ android {
     sourceSets.getByName("main") {
         manifest.srcFile("$rootDir/android-shared/AndroidManifest.xml")
         kotlin.srcDirs("src/kotlin", "$rootDir/android-shared/kotlin")
+        assets.srcDir("src/assets")
     }
     sourceSets.getByName("iranian") {
         res.srcDirs(

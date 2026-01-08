@@ -11,8 +11,10 @@ import android.net.LinkProperties
 import android.net.Network
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
+import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 
@@ -105,13 +107,63 @@ class Server : Service() {
             start(SOCKET_READ_TIMEOUT, false)
         }
 
-        override fun serve(session: IHTTPSession?): Response? {
-            return newFixedLengthResponse(
-                c.resources.openRawResource(R.raw.index)
-                    .readBytes().toString(charset = Charsets.UTF_8)
+        override fun serve(session: IHTTPSession?): Response? = when (session?.uri) {
+
+            "/" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "text/html",
+                readFile("index.html")
             )
+
+            "/style.css" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "text/css",
+                readFile("style.css")
+            )
+
+            "/jquery-3.7.1.min.js" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "text/javascript",
+                readFile("jquery-3.7.1.min.js")
+            )
+
+            "/script.js" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "text/javascript",
+                readFile("script.js")
+            )
+
+            // TODO /favicon.ico
+
+            "/month_names" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "application/json",
+                "[" + resources.getStringArray(R.array.luna)
+                    .joinToString(",") { "\"$it\"" } + "]"
+            )
+
+            "/luna" -> {
+                Log.d("LUNA", session.queryParameterString)
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "application/json",
+                    "{" +
+                            "}"
+                )
+            }
+
+            else -> newFixedLengthResponse(
+                Response.Status.NOT_FOUND,
+                "text/plain",
+                "Not Found!"
+            )
+        }.apply {
+            if (BuildConfig.DEBUG) addHeader("Access-Control-Allow-Origin", "*")
         }
 
         fun address(): String = "http://$hostname:$listeningPort/"
+
+        fun readFile(path: String): String = c.resources.assets.open("web_app/$path")
+            .readBytes().toString(charset = Charsets.UTF_8)
     }
 }

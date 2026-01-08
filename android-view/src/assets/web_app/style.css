@@ -1,0 +1,48 @@
+body {
+  background-color: #FEFEFE;
+  color: #777;
+  margin: 0;
+}
+
+aside {
+  display: flex;
+}
+#nav-year, #nav-month {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#nav-year {
+  width: 10vh;
+  margin-left: 1.5vh;
+}
+#nav-year span {
+  padding: 2vh 0;
+  text-align: center;
+  transition: font-size 300ms linear;
+}
+#nav-month {
+  width: 20vh;
+}
+#nav-month span {
+  margin: 0.5vh 0;
+  padding: 1vh 0 1vh 3.5vh;
+  font-size: 2.5vh;
+}
+#nav-year span:nth-child(6), #nav-month span[selected] {
+  font-weight: bold;
+  background-color: #EEE;
+}
+#nav-year span:nth-child(1), #nav-year span:nth-child(11) { font-size: 1.8vh; }
+#nav-year span:nth-child(2), #nav-year span:nth-child(10) { font-size: 2.1vh; }
+#nav-year span:nth-child(3), #nav-year span:nth-child(9)  { font-size: 2.4vh; }
+#nav-year span:nth-child(4), #nav-year span:nth-child(8)  { font-size: 2.7vh; }
+#nav-year span:nth-child(5), #nav-year span:nth-child(7)  { font-size: 3vh; }
+#nav-year span:nth-child(6) { font-size: 3.3vh; border-radius: 3.5vh; }
+#nav-month span[selected] { border-radius: 2.5vh; }
+
+@font-face {
+  font-family: quattrocento-regular;
+  src: url(../../../../android-shared/res/font/quattrocento_regular.ttf);
+}
