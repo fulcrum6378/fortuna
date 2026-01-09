@@ -135,11 +135,13 @@ class Server : Service() {
 
             // TODO /favicon.ico
 
-            "/month_names" -> newFixedLengthResponse(
+            "/calendar" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "application/json",
-                "[" + resources.getStringArray(R.array.luna)
-                    .joinToString(",") { "\"$it\"" } + "]"
+                "{" +
+                        "\"monthNames\": [" + resources.getStringArray(R.array.luna)
+                    .joinToString(",") { "\"$it\"" } + "]" +
+                        "}"
             )
 
             "/luna" -> {
