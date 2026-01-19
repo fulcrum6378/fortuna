@@ -67,6 +67,66 @@ main {
   display: flex;
 }
 #grid {
+  display: grid;
+  grid-template-columns: 7vw 7vw 7vw 7vw 7vw;
 }
-#grid > div {
+.dies {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 1.1rem;
+  border: 1px solid #F3F3F3;
+  align-content: center;
+  cursor: pointer;
+}
+.dies > p:first-child {
+  font-size: 1.25rem;
+}
+.dies > p {
+  margin: 0.4rem 0;
+}
+.dies.pleasant, .dies.painful { color: white; }
+.dies.pleasant.lv0_5 { background-color: rgba(76, 174, 80, 0.167); }
+.dies.pleasant.lv1   { background-color: rgba(76, 174, 80, 0.333); }
+.dies.pleasant.lv1_5 { background-color: rgba(76, 174, 80, 0.500); }
+.dies.pleasant.lv2   { background-color: rgba(76, 174, 80, 0.667); }
+.dies.pleasant.lv2_5 { background-color: rgba(76, 174, 80, 0.833); }
+.dies.pleasant.lv3   { background-color: rgba(76, 174, 80, 1.000); }
+.dies.painful.lv0_5 { background-color: rgba(243, 67, 54, 0.167); }
+.dies.painful.lv1   { background-color: rgba(243, 67, 54, 0.333); }
+.dies.painful.lv1_5 { background-color: rgba(243, 67, 54, 0.500); }
+.dies.painful.lv2   { background-color: rgba(243, 67, 54, 0.667); }
+.dies.painful.lv2_5 { background-color: rgba(243, 67, 54, 0.833); }
+.dies.painful.lv3   { background-color: rgba(243, 67, 54, 1.000); }
+
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #222s;
+    color: #FFF;
+  }
+  #nav-year {
+    border-right-color: #666;
+  }
+  #nav-year span:nth-child(6), #nav-month span[selected] {
+    background-color: #666;
+  }
+  #nav-year span:not(:nth-child(6)):hover, #nav-month span:not([selected]):hover {
+    background-color: #444;
+  }
+  .dies {
+    border-color: #666;
+  }
+  .dies.pleasant.lv0_5 { background-color: rgba(3, 76, 6, 0.167); }
+  .dies.pleasant.lv1   { background-color: rgba(3, 76, 6, 0.333); }
+  .dies.pleasant.lv1_5 { background-color: rgba(3, 76, 6, 0.500); }
+  .dies.pleasant.lv2   { background-color: rgba(3, 76, 6, 0.667); }
+  .dies.pleasant.lv2_5 { background-color: rgba(3, 76, 6, 0.833); }
+  .dies.pleasant.lv3   { background-color: rgba(3, 76, 6, 1.000); }
+  .dies.painful.lv0_5 { background-color: rgba(103, 13, 6, 0.167); }
+  .dies.painful.lv1   { background-color: rgba(103, 13, 6, 0.333); }
+  .dies.painful.lv1_5 { background-color: rgba(103, 13, 6, 0.500); }
+  .dies.painful.lv2   { background-color: rgba(103, 13, 6, 0.667); }
+  .dies.painful.lv2_5 { background-color: rgba(103, 13, 6, 0.833); }
+  .dies.painful.lv3   { background-color: rgba(103, 13, 6, 1.000); }
 }
