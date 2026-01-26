@@ -292,9 +292,8 @@ class KharosthiNumeral : Numeral() {
     )
 
     override fun convert(num: Int) {
-        val n = num
-        if (n >= 1000) describeSuperKiloNumber(n / 1000, 0)
-        if (n > 0) describeSubKiloNumber(n % 1000)
+        if (num >= 1000) describeSuperKiloNumber(num / 1000, 0)
+        if (num > 0) describeSubKiloNumber(num % 1000)
     }
 
     /** @param n must be greater than or equal to 1000 */

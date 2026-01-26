@@ -1,72 +1,52 @@
 
-// AJAX Debug
-const _calendar = {
-    monthNames: ['Farvardin', 'Ordibehesht', 'Khordad', 'Tir', 'Mordad', 'Shahrivar',
-                 'Mehr', 'Aban', 'Azar', 'Dey', 'Bahman', 'Esfand'],
-    dayNumerals: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
-                  'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
-                  'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX'],
-    thisYear: 6404,
-    thisMonth: 10,
-};
-const _luna = {
-    dayCount: 30,
-    scores: [0.5, 1, 2, 1, 3, 0, -0.5, -1, -1.5, -2,
-             -2.5, 0, -3, 2.5, 2, 1.5, 1, 0.5, 0, 3,
-             0, 1, 1, 1, 1, 1, 1.5, 1, 2, 3],
-    emojis: [],
-    verba: [],
-};
-
 // States
-let thisYear;
-let thisMonth;
+let calendar;
 
 // Constants
 const yearRange = 5;
 
 // Calendar Setup
-/*$.ajax({
+$.ajax({
     url: 'calendar',
     dataType: 'json',
-    async: false,
-    success: function(_calendar) {*/
+    success: function(_calendar) {
+        calendar = _calendar;
+
         // Month Navigation Menu
-        for (m in _calendar.monthNames)
-            $('#nav-month').append('<span>' + _calendar.monthNames[m] + '</span>');
-        
-        thisYear = _calendar.thisYear;
-        thisMonth = _calendar.thisMonth;
+        for (m in calendar.monthNames)
+            $('#nav-month').append('<span>' + calendar.monthNames[m] + '</span>');
+
+        thisYear = calendar.thisYear;
+        thisMonth = calendar.thisMonth;
         luna(thisYear, thisMonth);
-    /*},
-});*/
+    },
+});
 
 function luna(year, month) {
     //$('#nav-year').prepend('<span>6398</span>');
     // todo delete last child
-    
+
     // Year Navigation Menu
     // TODO truncate #nav-year
     for (let y = 0; y < (yearRange * 2) + 1; y++) {
         let yy;
         if (y == yearRange)
-            yy = thisYear;
+            yy = calendar.thisYear;
         else if (y < yearRange)
-            yy = thisYear - (yearRange - y);
+            yy = calendar.thisYear - (yearRange - y);
         else
-            yy = thisYear + (y - yearRange);
+            yy = calendar.thisYear + (y - yearRange);
         $('#nav-year').append('<span>' + yy + '</span>');
     }
-    
+
     // Month Navigation Menu
     // TODO iterate through the children and remove the `selected` attr from other items.
     $('#nav-month span:nth-child(' + month + ')').attr('selected', '');  // TODO any better method?
-    
-    /*$.ajax({
+
+    $.ajax({
         url: 'luna?year=' + year + '&month=' + month,
         dataType: 'json',
-        async: false,
-        success: function(_luna) {*/
+        success: function(_luna) {
             for (let d = 0; d < _luna.dayCount; d++) {
                 let clsMood = '';
                 let clsLevel = '';
@@ -80,10 +60,10 @@ function luna(year, month) {
                     clsMood = 'mediocre';
                 }
                 $('#grid').append('<div class="dies ' + clsMood + clsLevel + '">' +
-                        '<p>' + _calendar.dayNumerals[d] + '</p>' +
-                        '<p>' + _luna.scores[d] + '</p>' + 
+                        '<p>' + calendar.numerals[d] + '</p>' +
+                        '<p>' + (_luna.scores[d] != null ? _luna.scores[d] : '?') + '</p>' + 
                         '</div>');
             }
-        /*},
-    });*/
+        },
+    });
 }

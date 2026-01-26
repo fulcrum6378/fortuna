@@ -4,6 +4,15 @@ body {
   margin: 0;
   display: flex;
 }
+aside {
+  width: 33vh; /* #nav-year + #nav-month */
+  display: flex;
+}
+main {
+  width: calc(100vw - 33vh);
+  height: 100vh;
+  display: flex;
+}
 @font-face {
   font-family: quattrocento-regular;
   src: url(../../../../android-shared/res/font/quattrocento_regular.ttf);
@@ -11,10 +20,6 @@ body {
 
 
 
-aside {
-  width: 33vh; /* #nav-year + #nav-month */
-  display: flex;
-}
 #nav-year, #nav-month {
   height: 100vh;
   display: flex;
@@ -61,11 +66,6 @@ aside {
 
 
 
-main {
-  width: calc(100vw - 33vh);
-  height: 100vh;
-  display: flex;
-}
 #grid {
   display: grid;
   grid-template-columns: 7vw 7vw 7vw 7vw 7vw;
@@ -98,6 +98,34 @@ main {
 .dies.painful.lv2   { background-color: rgba(243, 67, 54, 0.667); }
 .dies.painful.lv2_5 { background-color: rgba(243, 67, 54, 0.833); }
 .dies.painful.lv3   { background-color: rgba(243, 67, 54, 1.000); }
+
+
+
+#panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#panelTop {
+  display: flex;
+  margin-bottom: 1rem;
+}
+#emoji {
+  width: 2rem;
+  height: 2rem;
+  font-size: 22px;
+  text-align: center;
+}
+#score {
+}
+#verbum {
+  width: 85%;
+  height: 50vh;
+  font-size: 18px;
+}
+
 
 
 @media (prefers-color-scheme: dark) {

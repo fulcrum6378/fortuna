@@ -11,12 +11,15 @@ import android.net.LinkProperties
 import android.net.Network
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
 import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.NumberUtils.write
+import ir.mahdiparastesh.fortuna.util.Numerals
+import java.time.temporal.ChronoField
 
 class Server : Service() {
     private val c: Fortuna by lazy { applicationContext as Fortuna }
@@ -135,21 +138,56 @@ class Server : Service() {
 
             // TODO /favicon.ico
 
-            "/calendar" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "application/json",
-                "{" +
-                        "\"monthNames\": [" + resources.getStringArray(R.array.luna)
-                    .joinToString(",") { "\"$it\"" } + "]" +
-                        "}"
-            )
+            "/calendar" -> {
+                val monthNames = resources.getStringArray(R.array.luna)
+                    .joinToString(",") { "\"$it\"" }
+                val numeral = Numerals.build(
+                    c.sp.getString(Fortuna.SP_NUMERAL_TYPE, null)
+                        ?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
+                )
+                val maxDays = c.chronology.range(ChronoField.DAY_OF_MONTH).maximum.toInt()
+                val numerals = List(maxDays) { numeral.write(it + 1) }
+                    .joinToString(",") { "\"$it\"" }
 
-            "/luna" -> {
-                Log.d("LUNA", session.queryParameterString)
                 newFixedLengthResponse(
                     Response.Status.OK,
                     "application/json",
                     "{" +
+                            "\"monthNames\":[" + monthNames + "]," +
+                            "\"numerals\":[" + numerals + "]," +
+                            "\"thisYear\":${c.todayDate[ChronoField.YEAR]}," +
+                            "\"thisMonth\":${c.todayDate[ChronoField.MONTH_OF_YEAR]}" +
+                            "}"
+                )
+            }
+
+            "/luna" -> {  // "?year=?&month=?"
+                val year = session.parameters!!["year"]!![0].toInt()
+                val month = session.parameters!!["month"]!![0].toInt()
+
+                val date = c.chronology.date(year, month, 1)
+                val len = date.lengthOfMonth()
+                val lunaKey = date.toKey()
+                val luna = if (lunaKey in c.vita) c.vita[date.toKey()] else null
+
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "application/json",
+                    "{" +
+                            "\"dayCount\":$len," +
+                            "\"defaultScore\":${luna?.default}," +
+                            "\"defaultEmoji\":${luna?.emoji}," +
+                            "\"defaultVerbum\":${luna?.verbum}," +
+                            "\"scores\":${
+                                List(len) { luna?.diebus[it] }
+                            }," +
+                            "\"emojis\":[${
+                                List(len) { luna?.emojis[it] }
+                                    .joinToString(",") { if (it != null) "\"$it\"" else "$it" }
+                            }]," +
+                            "\"verba\":${
+                                List(len) { if (luna?.verba[it].isNullOrEmpty()) "0" else "1" }
+                            }" +
                             "}"
                 )
             }
