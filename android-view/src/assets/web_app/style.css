@@ -36,6 +36,7 @@ main {
   text-align: center;
   border-radius: 3.5vh;
   transition: font-size 300ms linear;
+  cursor: default;
 }
 #nav-month {
   width: 20vh;
@@ -46,6 +47,7 @@ main {
   font-size: 2.8vh;
   border-top-right-radius: 2.5vh;
   border-bottom-right-radius: 2.5vh;
+  cursor: default;
 }
 #nav-year span:nth-child(6), #nav-month span[selected] {
   font-weight: bold;
@@ -67,22 +69,39 @@ main {
 
 
 #grid {
+  width: 80%;
   display: grid;
-  grid-template-columns: 7vw 7vw 7vw 7vw 7vw;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+  overflow-y: auto;
 }
 .dies {
   width: 100%;
   height: 100%;
   text-align: center;
-  font-size: 1.1rem;
   border: 1px solid #F3F3F3;
-  align-content: center;
   cursor: pointer;
 }
-.dies > p:first-child {
-  font-size: 1.25rem;
+.dies p:first-child {
+  display: flex;
+  height: 25%;
+  margin: 5px 9px 0 7px;
 }
-.dies > p {
+.dies p:first-child span {
+  flex: 1;
+  text-align: start;
+  font-size: 1rem;
+}
+.dies p:first-child svg {
+  width: 19px;
+  height: 19px;
+  margin-top: 3px;
+}
+.dies p:nth-child(2) {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.dies p:nth-child(3) {
+  font-size: 1.1rem;
   margin: 0.4rem 0;
 }
 .dies.pleasant, .dies.painful { color: white; }

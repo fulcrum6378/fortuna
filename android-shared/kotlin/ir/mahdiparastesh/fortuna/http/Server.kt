@@ -176,8 +176,14 @@ class Server : Service() {
                     "{" +
                             "\"dayCount\":$len," +
                             "\"defaultScore\":${luna?.default}," +
-                            "\"defaultEmoji\":${luna?.emoji}," +
-                            "\"defaultVerbum\":${luna?.verbum}," +
+                            "\"defaultEmoji\":${
+                                if (luna?.emoji != null) "\"${luna.emoji}\"" else null
+                            }," +
+                            "\"defaultVerbum\":${
+                                if (luna?.verbum != null) "\"${
+                                    luna.verbum!!.replace("\n", "\\n")
+                                }\"" else null
+                            }," +
                             "\"scores\":${
                                 List(len) { luna?.diebus[it] }
                             }," +

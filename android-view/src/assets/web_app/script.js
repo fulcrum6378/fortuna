@@ -1,6 +1,9 @@
 
 // States
-let calendar;
+let calendar = null;
+let year = null;
+let month = null;
+let dies = null;
 
 // Constants
 const yearRange = 5;
@@ -13,55 +16,77 @@ $.ajax({
         calendar = _calendar;
 
         // Month Navigation Menu
-        for (m in calendar.monthNames)
+        for (m in calendar.monthNames) {
             $('#nav-month').append('<span>' + calendar.monthNames[m] + '</span>');
+        }
+        $('#nav-month span').click(function() {
+            if (month == $(this).index() + 1) return;
+            month = $(this).index() + 1;
+            luna(false);
+        });
 
-        thisYear = calendar.thisYear;
-        thisMonth = calendar.thisMonth;
-        luna(thisYear, thisMonth);
+        year = calendar.thisYear;
+        month = calendar.thisMonth;
+        luna(true);
     },
 });
 
-function luna(year, month) {
-    //$('#nav-year').prepend('<span>6398</span>');
-    // todo delete last child
+function luna(yearChanged) {
 
     // Year Navigation Menu
-    // TODO truncate #nav-year
-    for (let y = 0; y < (yearRange * 2) + 1; y++) {
-        let yy;
-        if (y == yearRange)
-            yy = calendar.thisYear;
-        else if (y < yearRange)
-            yy = calendar.thisYear - (yearRange - y);
-        else
-            yy = calendar.thisYear + (y - yearRange);
-        $('#nav-year').append('<span>' + yy + '</span>');
+    if (yearChanged) {
+        $('#nav-year').empty();
+        for (let y = 0; y < (yearRange * 2) + 1; y++) {
+            let yy;
+            if (y == yearRange)
+                yy = year;
+            else if (y < yearRange)
+                yy = year - (yearRange - y);
+            else
+                yy = year + (y - yearRange);
+            $('#nav-year').append('<span>' + yy + '</span>');
+        }
+        $('#nav-year span').click(function () {
+            let inc = $(this).index()
+            if (inc < yearRange)
+                year -= yearRange - inc;
+            else
+                year += inc - yearRange;
+            luna(true);
+        });
     }
 
     // Month Navigation Menu
-    // TODO iterate through the children and remove the `selected` attr from other items.
-    $('#nav-month span:nth-child(' + month + ')').attr('selected', '');  // TODO any better method?
+    $('#nav-month span:not(:nth-child(' + month + '))').removeAttr('selected');
+    $('#nav-month span:nth-child(' + month + ')').attr('selected', '');
 
     $.ajax({
         url: 'luna?year=' + year + '&month=' + month,
         dataType: 'json',
         success: function(_luna) {
+            $('#grid').empty();
             for (let d = 0; d < _luna.dayCount; d++) {
+                let score = _luna.scores[d] != null ? _luna.scores[d] : _luna.defaultScore;
                 let clsMood = '';
                 let clsLevel = '';
-                if (_luna.scores[d] > 0) {
+                if (score > 0) {
                     clsMood = 'pleasant ';
-                    clsLevel = 'lv' + _luna.scores[d].toString().replace('.', '_');
-                } else if (_luna.scores[d] < 0) {
+                    clsLevel = 'lv' + score.toString().replace('.', '_');
+                } else if (score < 0) {
                     clsMood = 'painful ';
-                    clsLevel = 'lv' + _luna.scores[d].toString().substring(1).replace('.', '_');
+                    clsLevel = 'lv' + score.toString().substring(1).replace('.', '_');
                 } else {
                     clsMood = 'mediocre';
                 }
                 $('#grid').append('<div class="dies ' + clsMood + clsLevel + '">' +
+                        '<p>' + 
+                        '<span>' + (_luna.emojis[d] ? _luna.emojis[d] : '') + '</span>' +
+                        (_luna.verba[d] === 1 ? '<svg><use href="#verbum" /></svg>' : '') +
+                        '</p>' +
                         '<p>' + calendar.numerals[d] + '</p>' +
-                        '<p>' + (_luna.scores[d] != null ? _luna.scores[d] : '?') + '</p>' + 
+                        '<p>' + (_luna.scores[d] != null ? _luna.scores[d]
+                                : (_luna.defaultScore != null ? "c. " + _luna.defaultScore
+                                : '?')) + '</p>' + 
                         '</div>');
             }
         },
