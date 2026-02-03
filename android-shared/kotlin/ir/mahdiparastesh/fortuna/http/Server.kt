@@ -13,7 +13,6 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
-import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
@@ -156,7 +155,8 @@ class Server : Service() {
                             "\"monthNames\":[" + monthNames + "]," +
                             "\"numerals\":[" + numerals + "]," +
                             "\"thisYear\":${c.todayDate[ChronoField.YEAR]}," +
-                            "\"thisMonth\":${c.todayDate[ChronoField.MONTH_OF_YEAR]}" +
+                            "\"thisMonth\":${c.todayDate[ChronoField.MONTH_OF_YEAR]}," +
+                            "\"thisDay\":${c.todayDate[ChronoField.DAY_OF_MONTH]}" +
                             "}"
                 )
             }
@@ -168,7 +168,7 @@ class Server : Service() {
                 val date = c.chronology.date(year, month, 1)
                 val len = date.lengthOfMonth()
                 val lunaKey = date.toKey()
-                val luna = if (lunaKey in c.vita) c.vita[date.toKey()] else null
+                val luna = if (lunaKey in c.vita) c.vita[lunaKey] else null
 
                 newFixedLengthResponse(
                     Response.Status.OK,
@@ -180,9 +180,9 @@ class Server : Service() {
                                 if (luna?.emoji != null) "\"${luna.emoji}\"" else null
                             }," +
                             "\"defaultVerbum\":${
-                                if (luna?.verbum != null) "\"${
-                                    luna.verbum!!.replace("\n", "\\n")
-                                }\"" else null
+                                if (luna?.verbum != null)
+                                    "\"${escapeVerbum(luna.verbum!!)}\""
+                                else null
                             }," +
                             "\"scores\":${
                                 List(len) { luna?.diebus[it] }
@@ -198,18 +198,49 @@ class Server : Service() {
                 )
             }
 
+            "/dies" -> {  // "?year=?&month=?&day=?"
+                val year = session.parameters!!["year"]!![0].toInt()
+                val month = session.parameters!!["month"]!![0].toInt()
+                val day = session.parameters!!["day"]!![0].toInt()
+
+                val date = c.chronology.date(year, month, if (day > 0) day else 1)
+                val lunaKey = date.toKey()
+                val luna = if (lunaKey in c.vita) c.vita[lunaKey] else null
+
+                val score = if (day > 0) luna?.diebus[day - 1] else luna?.default
+                val emoji = if (day > 0) luna?.emojis[day - 1] else luna?.emoji
+                val verbum = if (day > 0) luna?.verba[day - 1] else luna?.verbum
+
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "application/json",
+                    "{" +
+                            "\"score\":${score}," +
+                            "\"emoji\":${if (emoji != null) "\"$emoji\"" else null}," +
+                            "\"verbum\":${if (verbum != null) "\"${escapeVerbum(verbum)}\"" else null}" +
+                            "}"
+                )
+            }
+
             else -> newFixedLengthResponse(
                 Response.Status.NOT_FOUND,
                 "text/plain",
                 "Not Found!"
             )
-        }.apply {
+        }/*.apply {
             if (BuildConfig.DEBUG) addHeader("Access-Control-Allow-Origin", "*")
-        }
+        }*/
 
         fun address(): String = "http://$hostname:$listeningPort/"
 
         fun readFile(path: String): String = c.resources.assets.open("web_app/$path")
             .readBytes().toString(charset = Charsets.UTF_8)
+
+        fun escapeVerbum(verbum: String): String {
+            return verbum
+                .replace("\n", "\\n")
+                .replace("\"", "\\\"")
+                .replace("\'", "\\\'")
+        }
     }
 }
