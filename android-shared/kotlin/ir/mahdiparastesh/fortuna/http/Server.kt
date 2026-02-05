@@ -13,11 +13,13 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
+import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numerals
+import org.json.JSONObject
 import java.time.temporal.ChronoField
 
 class Server : Service() {
@@ -176,14 +178,8 @@ class Server : Service() {
                     "{" +
                             "\"dayCount\":$len," +
                             "\"defaultScore\":${luna?.default}," +
-                            "\"defaultEmoji\":${
-                                if (luna?.emoji != null) "\"${luna.emoji}\"" else null
-                            }," +
-                            "\"defaultVerbum\":${
-                                if (luna?.verbum != null)
-                                    "\"${escapeVerbum(luna.verbum!!)}\""
-                                else null
-                            }," +
+                            "\"defaultEmoji\":${luna?.emoji?.let { JSONObject.quote(it) }}," +
+                            "\"defaultVerbum\":${luna?.verbum?.let { JSONObject.quote(it) }}," +
                             "\"scores\":${
                                 List(len) { luna?.diebus[it] }
                             }," +
@@ -216,8 +212,8 @@ class Server : Service() {
                     "application/json",
                     "{" +
                             "\"score\":${score}," +
-                            "\"emoji\":${if (emoji != null) "\"$emoji\"" else null}," +
-                            "\"verbum\":${if (verbum != null) "\"${escapeVerbum(verbum)}\"" else null}" +
+                            "\"emoji\":${emoji?.let { JSONObject.quote(it) }}," +
+                            "\"verbum\":${verbum?.let { JSONObject.quote(it) }}" +
                             "}"
                 )
             }
@@ -227,20 +223,13 @@ class Server : Service() {
                 "text/plain",
                 "Not Found!"
             )
-        }/*.apply {
+        }.apply {
             if (BuildConfig.DEBUG) addHeader("Access-Control-Allow-Origin", "*")
-        }*/
+        }
 
         fun address(): String = "http://$hostname:$listeningPort/"
 
         fun readFile(path: String): String = c.resources.assets.open("web_app/$path")
             .readBytes().toString(charset = Charsets.UTF_8)
-
-        fun escapeVerbum(verbum: String): String {
-            return verbum
-                .replace("\n", "\\n")
-                .replace("\"", "\\\"")
-                .replace("\'", "\\\'")
-        }
     }
 }
