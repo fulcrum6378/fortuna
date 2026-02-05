@@ -36,19 +36,15 @@ android {
     }
 
     sourceSets.getByName("main") {
-        manifest.srcFile("$rootDir/android-shared/AndroidManifest.xml")
-        kotlin.srcDirs("src/kotlin", "$rootDir/android-shared/kotlin")
-        assets.srcDir("src/assets")
+        manifest.srcFile("src/AndroidManifest.xml")
+        kotlin.srcDirs("src/kotlin")
+        assets.srcDir("../assets")
     }
     sourceSets.getByName("iranian") {
-        res.srcDirs(
-            "src/res", "$rootDir/android-shared/res", "$rootDir/android-shared/res_iranian"
-        )
+        res.srcDirs("src/res", "src/res_iranian")
     }
     sourceSets.getByName("gregorian") {
-        res.srcDirs(
-            "src/res", "$rootDir/android-shared/res", "$rootDir/android-shared/res_gregorian"
-        )
+        res.srcDirs("src/res", "src/res_gregorian")
     }
 
     compileOptions {
@@ -84,7 +80,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "$rootDir/android-shared/proguard-rules.pro"
+                "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("main")
         }

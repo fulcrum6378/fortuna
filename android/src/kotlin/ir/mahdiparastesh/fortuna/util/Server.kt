@@ -1,4 +1,4 @@
-package ir.mahdiparastesh.fortuna.http
+package ir.mahdiparastesh.fortuna.util
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -18,14 +18,13 @@ import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
-import ir.mahdiparastesh.fortuna.util.Numerals
 import org.json.JSONObject
 import java.time.temporal.ChronoField
 
 class Server : Service() {
     private val c: Fortuna by lazy { applicationContext as Fortuna }
-    private val cncManager by lazy { getSystemService(ConnectivityManager::class.java) }
-    private val ntfManager by lazy { getSystemService(NotificationManager::class.java) }
+    private val cncManager by lazy { c.getSystemService(ConnectivityManager::class.java) }
+    private val ntfManager by lazy { c.getSystemService(NotificationManager::class.java) }
     private var httpServer: HttpServer? = null
 
     companion object {

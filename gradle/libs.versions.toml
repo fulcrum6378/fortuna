@@ -1,6 +1,5 @@
 [versions]
 agp = "8.13.2"
-#composeMP = "1.9.0"  # https://github.com/JetBrains/compose-multiplatform/releases
 kotlin = "2.3.0"
 activityKtx = "1.12.2"
 constraintLayout = "2.2.1"
@@ -10,19 +9,15 @@ recyclerView = "1.4.0"
 dropBox = "7.0.0"
 coroutines = "1.10.1"
 material = "1.13.0"
-#activityCompose = "1.10.1"
-#jetpackCompose = "1.8.3"
 nanoHttpd = "2.3.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-#compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMP" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-#kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [libraries]
-# :android-view
+# :android
 activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintLayout" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,7 +28,3 @@ dropbox-core = { group = "com.dropbox.core", name = "dropbox-core-sdk", version.
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 nanohttpd = { group = "org.nanohttpd", name = "nanohttpd", version.ref = "nanoHttpd" }
-# :android-compose
-#activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-#compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "jetpackCompose" }
-#compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "jetpackCompose" }

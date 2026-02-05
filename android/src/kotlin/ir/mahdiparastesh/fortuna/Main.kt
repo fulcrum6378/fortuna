@@ -51,7 +51,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.base.MainPage
 import ir.mahdiparastesh.fortuna.databinding.MainBinding
-import ir.mahdiparastesh.fortuna.http.Server
+import ir.mahdiparastesh.fortuna.util.Server
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
 import ir.mahdiparastesh.fortuna.sect.HelpDialog

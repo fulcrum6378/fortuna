@@ -21,9 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Fortuna"
 include(":core")
-//include(":android-compose")  // SUSPENDED
-//include(":compose-desktop")  // SUSPENDED
-include(":android-view")
-//include(":javafx")  // DISCONTINUED
-
-// let there be only one Android or Compose module enabled in order not to confuse Android Studio.
+include(":android")

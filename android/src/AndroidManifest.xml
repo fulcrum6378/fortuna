@@ -98,7 +98,7 @@
         </receiver>
 
         <service
-            android:name=".http.Server"
+            android:name=".util.Server"
             android:exported="false"
             android:foregroundServiceType="dataSync"
             android:stopWithTask="false" />
