@@ -1,19 +1,51 @@
 
-// States
+// states
 let calendar = null;
 let year = null;
 let month = null;
 let day = null;
 
-// Constants
+// constants
 const API_BASE_URL = location.protocol == 'file:' ? 'http://192.168.1.20:7007/' : '';
-const yearRange = 5;
+const YEAR_RANGE = 5;
+const DATE_SEP = '.';
+
+
+function onInitialise() {
+
+    // set up the month navigation menu
+    for (m in calendar.monthNames) {
+        $('#nav-month').append('<span>' + calendar.monthNames[m] + '</span>');
+    }
+    $('#nav-month span').click(function() {
+        if (month != $(this).index() + 1) {
+            month = $(this).index() + 1;
+            getLuna(false);
+        } else {
+            day = 0;
+            getDies();
+        }
+    });
+
+    // get the current luna
+    year = calendar.thisYear;
+    month = calendar.thisMonth;
+    getLuna(true);
+}
+
+function errorAlert() {
+    alert('Could not connect to the server!');
+}
 
 function getLuna(yearChanged) {
     $.ajax({
         url: API_BASE_URL + 'luna?year=' + year + '&month=' + month,
         dataType: 'json',
         success: (luna) => onNewLuna(luna, yearChanged),
+        error: () => {
+            errorAlert();
+            // TODO fallback to previous states
+        },
     });
 }
 
@@ -22,22 +54,22 @@ function onNewLuna(luna, yearChanged) {
     // update the year navigation menu
     if (yearChanged) {
         $('#nav-year').empty();
-        for (let y = 0; y < (yearRange * 2) + 1; y++) {
+        for (let y = 0; y < (YEAR_RANGE * 2) + 1; y++) {
             let yy;
-            if (y == yearRange)
+            if (y == YEAR_RANGE)
                 yy = year;
-            else if (y < yearRange)
-                yy = year - (yearRange - y);
+            else if (y < YEAR_RANGE)
+                yy = year - (YEAR_RANGE - y);
             else
-                yy = year + (y - yearRange);
+                yy = year + (y - YEAR_RANGE);
             $('#nav-year').append('<span>' + yy + '</span>');
         }
         $('#nav-year span').click(function () {
             let inc = $(this).index()
-            if (inc < yearRange)
-                year -= yearRange - inc;
+            if (inc < YEAR_RANGE)
+                year -= YEAR_RANGE - inc;
             else
-                year += inc - yearRange;
+                year += inc - YEAR_RANGE;
             getLuna(true);
         });
     }
@@ -48,6 +80,11 @@ function onNewLuna(luna, yearChanged) {
 
     // empty the grid
     $('#grid').empty();
+
+    // set texts in the header of the panel
+    $('#panel > header > span:first-child').text(
+        year + DATE_SEP + (month < 10 ? '0' : '') + month
+    );
 
     // determine if this luna is in the future
     let isFutureLuna = year > calendar.thisYear ||
@@ -113,11 +150,20 @@ function onNewLuna(luna, yearChanged) {
 }
 
 function getDies() {
+
+    if (day > 0) $('.dies:nth-child(' + day + ')').addClass('pending');
+
     $.ajax({
         url: API_BASE_URL + 'dies?year=' + year + '&month=' + month + '&day=' + day,
         dataType: 'json',
         success: onNewDies,
-        error: (jqXHR, textStatus, errorThrown) => alert(errorThrown),  // TODO test this and apply on others
+        error: () => {
+            errorAlert();
+            if (day > 0) $('.dies:nth-child(' + day + ')')
+                .attr('selected', '')
+                .removeClass('pending');
+            // TODO fallback to previous states
+        },
     });
 }
 
@@ -125,12 +171,19 @@ function onNewDies(dies) {
 
     // highlight the selected day
     $('.dies[selected]').removeAttr('selected');
-    if (day > 0) $('.dies:nth-child(' + day + ')').attr('selected', '');
+    if (day > 0) $('.dies:nth-child(' + day + ')')
+            .attr('selected', '')
+            .removeClass('pending');
 
     // update the panel
+    $('#panel > header > span:last-child').text(
+        (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
+    );
     $('#score option:eq(' + convertScoreToIndex(dies.score) + ')').prop('selected', true);
     $('#emoji').val(dies.emoji);
     $('#verbum').val(dies.verbum);
+
+    // TODO update the emoji and verbum icon if data changed
 }
 
 function convertScoreToIndex(score) {
@@ -162,7 +215,7 @@ function convertScoreToIndex(score) {
         case -3.0:
             return 12;
         default:
-            return 5;
+            return 6;
     }
 }
 
@@ -173,19 +226,7 @@ $.ajax({
     dataType: 'json',
     success: function(_calendar) {
         calendar = _calendar;
-
-        // Month Navigation Menu
-        for (m in calendar.monthNames) {
-            $('#nav-month').append('<span>' + calendar.monthNames[m] + '</span>');
-        }
-        $('#nav-month span').click(function() {
-            if (month == $(this).index() + 1) return;
-            month = $(this).index() + 1;
-            getLuna(false);
-        });
-
-        year = calendar.thisYear;
-        month = calendar.thisMonth;
-        getLuna(true);
+        onInitialise();
     },
+    error: errorAlert,
 });
