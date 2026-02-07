@@ -11,6 +11,7 @@ import android.net.LinkProperties
 import android.net.Network
 import android.os.Build
 import android.os.IBinder
+import android.widget.Toast
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
 import ir.mahdiparastesh.fortuna.BuildConfig
@@ -21,6 +22,11 @@ import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import org.json.JSONObject
 import java.time.temporal.ChronoField
 
+/**
+ * An Android-served website that provides a Single-Paged Application version of Fortuna.
+ *
+ * Note: You can opt to use Ktor instead if NanoHTTPD won't operate well enough.
+ */
 class Server : Service() {
     private val c: Fortuna by lazy { applicationContext as Fortuna }
     private val cncManager by lazy { c.getSystemService(ConnectivityManager::class.java) }
@@ -47,11 +53,22 @@ class Server : Service() {
     override fun onCreate() {
         super.onCreate()
         ntfManager.createNotificationChannel(notificationChannel())
-        httpServer = HttpServer(
-            cncManager.getLinkProperties(cncManager.activeNetwork)!!
-        )
-        startForeground(NTF_ID, notification())
-        cncManager.registerDefaultNetworkCallback(MyNetworkCallback())
+        val network = cncManager.getLinkProperties(cncManager.activeNetwork)
+        if (network != null) {
+            try {
+                httpServer = HttpServer(network)
+            } catch (_: NoHostAddressException) {
+                stopSelf()
+                return
+            }
+            startForeground(NTF_ID, notification())
+            cncManager.registerDefaultNetworkCallback(MyNetworkCallback())
+        } else {
+            Toast.makeText(
+                c, R.string.ntfServerNoNetwork, Toast.LENGTH_SHORT
+            ).show()
+            stopSelf()
+        }
     }
 
     private fun notificationChannel() =
@@ -98,14 +115,27 @@ class Server : Service() {
         override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
             httpServer?.stop()
             httpServer = null
-            httpServer = HttpServer(linkProperties)
+            try {
+                httpServer = HttpServer(linkProperties)
+            } catch (_: NoHostAddressException) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+            }
         }
     }
 
     inner class HttpServer(linkProperties: LinkProperties) : NanoHTTPD(
-        linkProperties.linkAddresses.find { it.prefixLength == 24 }?.address?.hostAddress,
+        try {
+            linkProperties.linkAddresses.find { it.prefixLength == 24 }!!.address.hostAddress
+        } catch (_: NullPointerException) {
+            Toast.makeText(
+                c, R.string.ntfServerNoHostAddress, Toast.LENGTH_LONG
+            ).show()
+            throw NoHostAddressException()
+        },
         7007
     ) {
+
         init {
             start(SOCKET_READ_TIMEOUT, false)
         }
@@ -115,28 +145,39 @@ class Server : Service() {
             "/" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "text/html",
-                readFile("index.html")
+                readAsset("index.html")
             )
 
             "/style.css" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "text/css",
-                readFile("style.css")
+                readAsset("style.css")
             )
 
             "/jquery-3.7.1.min.js" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "text/javascript",
-                readFile("jquery-3.7.1.min.js")
+                readAsset("jquery-3.7.1.min.js")
             )
 
             "/script.js" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "text/javascript",
-                readFile("script.js")
+                readAsset("script.js")
             )
 
             // TODO /favicon.ico
+
+            "/quattrocento_regular.ttf" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "font/ttf",
+                readAsset("quattrocento_regular.ttf")
+            )
+            // fonts are compressed and cannot be called from `c.assets.openNonAssetFd()`,
+            // and `c.assets.openNonAsset()` is not exposed by the Android API.
+
+
+            /* ---------- BEGINNING OF THE API ---------- */
 
             "/calendar" -> {
                 val monthNames = resources.getStringArray(R.array.luna)
@@ -217,6 +258,9 @@ class Server : Service() {
                 )
             }
 
+            /* ---------- END OF THE API ---------- */
+
+
             else -> newFixedLengthResponse(
                 Response.Status.NOT_FOUND,
                 "text/plain",
@@ -228,7 +272,10 @@ class Server : Service() {
 
         fun address(): String = "http://$hostname:$listeningPort/"
 
-        fun readFile(path: String): String = c.resources.assets.open("web_app/$path")
+        fun readAsset(path: String): String = c.resources.assets.open("web_app/$path")
             .readBytes().toString(charset = Charsets.UTF_8)
     }
+
+    class NoHostAddressException :
+        IllegalArgumentException("Could not find a proper host address")
 }

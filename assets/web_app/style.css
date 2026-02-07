@@ -1,3 +1,6 @@
+* {
+  font-family: quattrocento-regular;
+}
 body {
   background-color: #F9F9F9;
   color: #777;
@@ -16,7 +19,7 @@ main {
 }
 @font-face {
   font-family: quattrocento-regular;
-  src: url(../android/src/res/font/quattrocento_regular.ttf);  /* TODO */
+  src: url(quattrocento_regular.ttf);
 }
 
 
@@ -45,7 +48,7 @@ main {
 #nav-month span {
   margin: 0.5vh 0;
   padding: 1vh 0 1vh 3.5vh;
-  font-size: 2.8vh;
+  font-size: 2.7vh;
   border-top-right-radius: 2.5vh;
   border-bottom-right-radius: 2.5vh;
   cursor: pointer;
@@ -60,12 +63,12 @@ main {
 #nav-year span:not(:nth-child(6)):hover, #nav-month span:not([selected]):hover {
   background-color: #F3F3F3;
 }
-#nav-year span:nth-child(1), #nav-year span:nth-child(11) { font-size: 1.8vh; }
-#nav-year span:nth-child(2), #nav-year span:nth-child(10) { font-size: 2.1vh; }
-#nav-year span:nth-child(3), #nav-year span:nth-child(9)  { font-size: 2.4vh; }
-#nav-year span:nth-child(4), #nav-year span:nth-child(8)  { font-size: 2.7vh; }
-#nav-year span:nth-child(5), #nav-year span:nth-child(7)  { font-size: 3vh; }
-#nav-year span:nth-child(6) { font-size: 3.3vh; }
+#nav-year span:nth-child(1), #nav-year span:nth-child(11) { font-size: 1.7vh; }
+#nav-year span:nth-child(2), #nav-year span:nth-child(10) { font-size: 2.0vh; }
+#nav-year span:nth-child(3), #nav-year span:nth-child(9)  { font-size: 2.3vh; }
+#nav-year span:nth-child(4), #nav-year span:nth-child(8)  { font-size: 2.6vh; }
+#nav-year span:nth-child(5), #nav-year span:nth-child(7)  { font-size: 2.9vh; }
+#nav-year span:nth-child(6) { font-size: 3.2vh; }
 
 
 
@@ -162,16 +165,24 @@ main {
   text-align: center;
 }
 #score {
+  font-size: 20px;
 }
 #verbum {
   width: 85%;
   height: 50vh;
-  font-size: 18px;
+  padding: 10px 13px;
+  font-size: 17.5px;
+  line-height: 2rem;
   resize: none;
 }
 #panel > footer {
+  margin-top: 2rem;
 }
 #panel > footer > button {
+  margin: 0 20px;
+  padding: 8px 12px;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 

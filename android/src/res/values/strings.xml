@@ -173,4 +173,8 @@
     <string name="ntfServer">Serving on your local network&#8230;</string>
     <string name="ntfServerBrowse">Browse</string>
     <string name="ntfServerStop">Stop</string>
+    <string name="ntfServerNoNetwork">No networks detected.</string>
+    <string name="ntfServerNoHostAddress">
+        Cannot create a local server. Disable any VPNs if exist.
+    </string>
 </resources>
