@@ -8,7 +8,7 @@ let day = null;
 // constants
 const API_BASE_URL = location.protocol == 'file:' ? 'http://192.168.1.20:7007/' : '';
 const YEAR_RANGE = 5;
-const DATE_SEP = '.';
+const DATE_SEP = ' / ';
 
 
 function onInitialise() {
@@ -20,7 +20,7 @@ function onInitialise() {
     $('#nav-month span').click(function() {
         if (month != $(this).index() + 1) {
             month = $(this).index() + 1;
-            getLuna(false);
+            getLuna();
         } else {
             day = 0;
             getDies();
@@ -30,18 +30,18 @@ function onInitialise() {
     // get the current luna
     year = calendar.thisYear;
     month = calendar.thisMonth;
-    getLuna(true);
+    getLuna(true, true);
 }
 
 function errorAlert() {
     alert('Could not connect to the server!');
 }
 
-function getLuna(yearChanged) {
+function getLuna(yearChanged = false, firstTime = false) {
     $.ajax({
         url: API_BASE_URL + 'luna?year=' + year + '&month=' + month,
         dataType: 'json',
-        success: (luna) => onNewLuna(luna, yearChanged),
+        success: (luna) => onNewLuna(luna, yearChanged, firstTime),
         error: () => {
             errorAlert();
             // TODO fallback to previous states
@@ -49,7 +49,7 @@ function getLuna(yearChanged) {
     });
 }
 
-function onNewLuna(luna, yearChanged) {
+function onNewLuna(luna, yearChanged, firstTime = false) {
 
     // update the year navigation menu
     if (yearChanged) {
@@ -81,10 +81,13 @@ function onNewLuna(luna, yearChanged) {
     // empty the grid
     $('#grid').empty();
 
-    // set texts in the header of the panel
-    $('#panel > header > span:first-child').text(
+    // update the panel
+    $('#panel > header > p > span:first-child').text(
         year + DATE_SEP + (month < 10 ? '0' : '') + month
     );
+    if (firstTime) {
+        $('#panel > footer > button, #emoji, #verbum').removeAttr('disabled');
+    }
 
     // determine if this luna is in the future
     let isFutureLuna = year > calendar.thisYear ||
@@ -176,14 +179,21 @@ function onNewDies(dies) {
             .removeClass('pending');
 
     // update the panel
-    $('#panel > header > span:last-child').text(
+    $('#panel > header > p > span:last-child').text(
         (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
     );
-    $('#score option:eq(' + convertScoreToIndex(dies.score) + ')').prop('selected', true);
+    //$('#score option:eq(' + convertScoreToIndex(dies.score) + ')').prop('selected', true);
+    $('#score').animate({
+        scrollTop: scoreScrollHeightOfEachItem() * convertScoreToIndex(dies.score)
+    }, 200);
     $('#emoji').val(dies.emoji);
     $('#verbum').val(dies.verbum);
 
     // TODO update the emoji and verbum icon if data changed
+}
+
+function scoreScrollHeightOfEachItem() {
+    return $('#score')[0].scrollHeight / 13;
 }
 
 function convertScoreToIndex(score) {
@@ -220,6 +230,11 @@ function convertScoreToIndex(score) {
 }
 
 
+
+// set up the panel
+$('#score').scrollTop(scoreScrollHeightOfEachItem() * 6);
+$('#reset').click(getDies);
+
 // set up the calendar
 $.ajax({
     url: API_BASE_URL + 'calendar',
@@ -230,3 +245,5 @@ $.ajax({
     },
     error: errorAlert,
 });
+
+//Math.floor(($('#score').scrollTop() * 1.1) / scoreScrollHeightOfEachItem())

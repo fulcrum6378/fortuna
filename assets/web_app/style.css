@@ -18,6 +18,10 @@ main {
   display: flex;
 }
 @font-face {
+  font-family: quattrocento-bold;
+  src: url(quattrocento_bold.ttf);
+}
+@font-face {
   font-family: quattrocento-regular;
   src: url(quattrocento_regular.ttf);
 }
@@ -54,7 +58,7 @@ main {
   cursor: pointer;
 }
 #nav-year span:nth-child(6), #nav-month span[selected] {
-  font-weight: bold;
+  font-family: quattrocento-bold;
   background-color: #EEE;
 }
 #nav-year span:not(:nth-child(6)) {
@@ -150,39 +154,87 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 #panel > header {
+  width: 85%;
+  padding: 1.5rem 7.5% 0 7.5%;
+  text-align: left;
+}
+#panel > header > p {
+  height: 25px;
+  margin: 0;
+}
+#panel > header > p > span {
+  font-size: 25px;
+  font-family: quattrocento-bold;
+}
+#panel > header > p > span:last-child {
+  margin-left: 4px;
+}
+#panel > header > hr {
+  margin: 0.5rem 0 0 0;
+  opacity: 0.35;
 }
 #panelTop {
-  display: flex;
-  margin-bottom: 1rem;
+  width: 85%;
+  margin: 1rem 0;
 }
 #emoji {
   width: 2rem;
   height: 2rem;
+  position: fixed;
+  margin-top: 5.5rem;
   font-size: 22px;
   text-align: center;
 }
 #score {
-  font-size: 20px;
+  height: 6rem;
+  padding: 0;
+  list-style: none;
+  overflow: scroll;
+  scrollbar-width: none;
+  scroll-snap-type: y mandatory;
 }
+#score li {
+  margin: 3rem 0;
+  scroll-snap-align: center;
+  text-align: center;
+  font-size: 30px;
+  font-family: quattrocento-bold;
+}
+#score li:first-child {
+  margin-top: 3rem;
+}
+#score li:last-child {
+  margin-bottom: 3rem;
+}
+/*#scoreCover {
+  position: fixed;
+  width: 17%;
+  height: 8rem;
+  margin-top: -8rem;
+  margin-left: 9%;
+  background: linear-gradient(to bottom, #F9F9F9, transparent, #F9F9F9);;
+}*/
 #verbum {
-  width: 85%;
-  height: 50vh;
+  width: calc(85% - 13px);
+  height: calc(100% - 21rem);
   padding: 10px 13px;
   font-size: 17.5px;
   line-height: 2rem;
   resize: none;
 }
 #panel > footer {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 #panel > footer > button {
   margin: 0 20px;
   padding: 8px 12px;
   font-size: 18px;
   cursor: pointer;
+}
+#panel > footer > button {
+  cursor: default;
 }
 
 

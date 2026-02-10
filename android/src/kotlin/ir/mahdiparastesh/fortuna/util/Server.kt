@@ -168,6 +168,12 @@ class Server : Service() {
 
             // TODO /favicon.ico
 
+            "/quattrocento_bold.ttf" -> newFixedLengthResponse(
+                Response.Status.OK,
+                "font/ttf",
+                readAsset("quattrocento_bold.ttf")
+            )
+
             "/quattrocento_regular.ttf" -> newFixedLengthResponse(
                 Response.Status.OK,
                 "font/ttf",
