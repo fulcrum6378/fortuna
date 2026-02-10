@@ -1,15 +1,21 @@
 
 // states
-let calendar = null;
-let year = null;
-let month = null;
-let day = null;
+let calendar = null,
+    year = null,
+    month = null,
+    day = null,
+    defScore = null,
+    orgScore = null,
+    orgEmoji = null,
+    orgVerbum = null;
 
 // constants
 const API_BASE_URL = location.protocol == 'file:' ? 'http://192.168.1.20:7007/' : '';
 const API_TIMEOUT = 10000;
 const YEAR_RANGE = 5;
 const DATE_SEP = ' / ';
+const SVG_VERBUM = '<svg><use href="#ic_verbum" /></svg>';
+
 
 
 function onInitialise() {
@@ -88,7 +94,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
         year + DATE_SEP + (month < 10 ? '0' : '') + month
     );
     if (firstTime) {
-        $('#panel > footer > button, #emoji, #verbum').removeAttr('disabled');
+        $('#emoji, #verbum, #reset').removeAttr('disabled');
     }
 
     // determine if this luna is in the future
@@ -104,7 +110,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
                 month == calendar.thisMonth && d > calendar.thisDay - 1);
 
         // 'div.dies' settings
-        let clsScore = rawScore != null ? rawScore : luna.defaultScore;
+        let clsScore = rawScore ?? luna.defaultScore;
         let clsMood = '';
         let clsLevel = '';
         let clsToday = '';
@@ -130,12 +136,13 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
         // DOM insertion
         $('#grid').append('<div class="dies ' + clsMood + clsLevel + clsToday + '">' +
                 '<p>' + 
-                '<span>' + (luna.emojis[d] ? luna.emojis[d] : '') + '</span>' +
-                (luna.verba[d] === 1 ? '<svg><use href="#ic_verbum" /></svg>' : '') +
+                '<span>' + (luna.emojis[d] ?? '') + '</span>' +
+                (luna.verba[d] === 1 ? SVG_VERBUM : '') +
                 '</p>' +
                 '<p>' + calendar.numerals[d] + '</p>' +
                 '<p' + clsScoreNonImportant + '>' + visScore + '</p>' + 
                 '</div>');
+        // TODO other calendars in title=""
     }
 
     // clicking on each day
@@ -147,6 +154,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
 
     // apply the default monthly details
     day = 0;
+    defScore = luna.defaultScore;
     onNewDies({
         score: luna.defaultScore,
         emoji: luna.defaultEmoji,
@@ -181,21 +189,42 @@ function onNewDies(dies) {
             .attr('selected', '')
             .removeClass('pending');
 
+    // update the grid
+    $('.dies:nth-child(' + day + ') p:first-child span').text(dies.emoji ?? '');
+    if (dies.verbum != null && $('.dies:nth-child(' + day + ') p:first-child svg').length == 0)
+        $('.dies:nth-child(' + day + ') p:first-child').append(SVG_VERBUM);
+    else if (dies.verbum == null && $('.dies:nth-child(' + day + ') p:first-child svg').length == 1)
+        $('.dies:nth-child(' + day + ') p:first-child svg').remove();
+
+    // update the states
+    orgScore = dies.score;
+    orgEmoji = dies.emoji ?? '';
+    orgVerbum = dies.verbum ?? '';
+
     // update the panel
     $('#panel > header > p > span:last-child').text(
         (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
     );
-    $('#score').animate({  // TODO default to the monthly estimated score
-        scrollTop: scoreScrollHeightOfEachItem() * convertScoreToIndex(dies.score)
+    let toScore = dies.score ?? defScore;
+    $('#score').animate({
+        scrollTop: scrollHeightOfEachScoreItem() * convertScoreToIndex(toScore)
     }, 300);
     $('#emoji').val(dies.emoji);
     $('#verbum').val(dies.verbum);
-
-    // TODO update the emoji and verbum icon if data changed
+    if (dies.score != null)
+        $('#save').attr('disabled', '');
+    else if (dies.score != defScore)
+        $('#save').removeAttr('disabled');
 }
 
-function scoreScrollHeightOfEachItem() {
+function scrollHeightOfEachScoreItem() {
     return $('#score')[0].scrollHeight / 13;
+}
+
+function selectedScore() {
+    return convertIndexToScore(
+        Math.floor(($('#score').scrollTop() * 1.1) / scrollHeightOfEachScoreItem())
+    );
 }
 
 function convertScoreToIndex(score) {
@@ -231,11 +260,20 @@ function convertScoreToIndex(score) {
     }
 }
 
+function convertIndexToScore(index) {
+    return [3.0, 2.5, 2.0, 1.5, 1.0, 0.5, 0.0, -0.5, -1.0, -1.5, -2.0, -2.5, -3.0][index];
+}
+
+function isDataInPanelChanged() {
+    return selectedScore() != orgScore ||
+            $('#emoji').val() != orgEmoji ||
+            $('#verbum').val() != orgVerbum;
+}
 
 
-// set up the panel
-$('#score').scrollTop(scoreScrollHeightOfEachItem() * 6);
-$('#reset').click(getDies);
+
+// at first...
+$('#score').scrollTop(scrollHeightOfEachScoreItem() * 6);
 
 // set up the calendar
 $.ajax({
@@ -249,4 +287,29 @@ $.ajax({
     timeout: API_TIMEOUT,
 });
 
-//Math.floor(($('#score').scrollTop() * 1.1) / scoreScrollHeightOfEachItem())
+// configure the panel inputs
+$('#score').on('scroll', function () {
+    if (selectedScore() !== orgScore)
+        $('#save').removeAttr('disabled');
+    else if (!isDataInPanelChanged())
+        $('#save').attr('disabled', '');
+});
+$('#emoji').on('input', function () {
+    if ($('#emoji').val() != orgEmoji)
+        $('#save').removeAttr('disabled');
+    else if (!isDataInPanelChanged())
+        $('#save').attr('disabled', '');
+});
+$('#verbum').on('input', function () {
+    if ($('#verbum').val() != orgVerbum)
+        $('#save').removeAttr('disabled');
+    else if (!isDataInPanelChanged())
+        $('#save').attr('disabled', '');
+});
+
+// configure the panel buttons
+$('#save').click(function () {
+});
+$('#reset').click(getDies);
+$('#clear').click(function () {
+});

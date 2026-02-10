@@ -233,7 +233,7 @@ main {
   font-size: 18px;
   cursor: pointer;
 }
-#panel > footer > button {
+#panel > footer > button[disabled] {
   cursor: default;
 }
 

@@ -37,7 +37,7 @@
       <hr>
     </header>
     <div id="panelTop">
-      <input id="emoji" type="text" disabled>
+      <input id="emoji" type="text" title="An emoji for this day/month" disabled>
       <ul id="score">
         <li>3.0</li>
         <li>2.5</li>
@@ -57,9 +57,12 @@
     </div>
     <textarea id="verbum" name="verbum" disabled></textarea>
     <footer>
-      <button id="save" disabled>Save</button>
-      <button id="reset" disabled>Reset</button>
-      <button id="clear" disabled>Clear</button>
+      <button id="save" title="Saves the current data in Vita."
+          disabled>Save</button>
+      <button id="reset" title="Reloads unchanged data from Vita."
+          disabled>Reset</button>
+      <button id="clear" title="Removes all data about this day/month-default from Vita."
+          disabled>Clear</button>
     </footer>
   </article>
 </main>
