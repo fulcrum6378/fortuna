@@ -7,6 +7,7 @@ let day = null;
 
 // constants
 const API_BASE_URL = location.protocol == 'file:' ? 'http://192.168.1.20:7007/' : '';
+const API_TIMEOUT = 10000;
 const YEAR_RANGE = 5;
 const DATE_SEP = ' / ';
 
@@ -46,6 +47,7 @@ function getLuna(yearChanged = false, firstTime = false) {
             errorAlert();
             // TODO fallback to previous states
         },
+        timeout: API_TIMEOUT,
     });
 }
 
@@ -167,6 +169,7 @@ function getDies() {
                 .removeClass('pending');
             // TODO fallback to previous states
         },
+        timeout: API_TIMEOUT,
     });
 }
 
@@ -182,10 +185,9 @@ function onNewDies(dies) {
     $('#panel > header > p > span:last-child').text(
         (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
     );
-    //$('#score option:eq(' + convertScoreToIndex(dies.score) + ')').prop('selected', true);
-    $('#score').animate({
+    $('#score').animate({  // TODO default to the monthly estimated score
         scrollTop: scoreScrollHeightOfEachItem() * convertScoreToIndex(dies.score)
-    }, 200);
+    }, 300);
     $('#emoji').val(dies.emoji);
     $('#verbum').val(dies.verbum);
 
@@ -244,6 +246,7 @@ $.ajax({
         onInitialise();
     },
     error: errorAlert,
+    timeout: API_TIMEOUT,
 });
 
 //Math.floor(($('#score').scrollTop() * 1.1) / scoreScrollHeightOfEachItem())

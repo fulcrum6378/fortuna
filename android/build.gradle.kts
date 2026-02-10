@@ -15,7 +15,7 @@ android {
         minSdk = 30
         targetSdk = 36
         versionCode = 15
-        versionName = "15.0.0"
+        versionName = "16.0.0"
 
         val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
             ?: logger.warn("Dropbox app key was not found!")
@@ -38,7 +38,7 @@ android {
     sourceSets.getByName("main") {
         manifest.srcFile("src/AndroidManifest.xml")
         kotlin.srcDirs("src/kotlin")
-        assets.srcDir("../assets")
+        assets.srcDir("../web")
     }
     sourceSets.getByName("iranian") {
         res.srcDirs("src/res", "src/res_iranian")

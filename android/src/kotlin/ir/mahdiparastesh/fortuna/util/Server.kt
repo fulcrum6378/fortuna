@@ -20,6 +20,9 @@ import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import org.json.JSONObject
+import java.io.IOException
+import java.io.InputStream
+import java.net.ServerSocket
 import java.time.temporal.ChronoField
 
 /**
@@ -34,6 +37,7 @@ class Server : Service() {
     private var httpServer: HttpServer? = null
 
     companion object {
+        const val TCP_PORT = 7007
         private const val NTF_CHANNEL_ID = "serve"
         private const val NTF_ID = 202
     }
@@ -55,14 +59,26 @@ class Server : Service() {
         ntfManager.createNotificationChannel(notificationChannel())
         val network = cncManager.getLinkProperties(cncManager.activeNetwork)
         if (network != null) {
+
+            // check if our port is free
+            try {
+                ServerSocket(TCP_PORT).close()
+            } catch (_: IOException) {
+                stopSelf()
+                return
+            }
+
+            // check if a local server can be established
             try {
                 httpServer = HttpServer(network)
             } catch (_: NoHostAddressException) {
                 stopSelf()
                 return
             }
+
             startForeground(NTF_ID, notification())
             cncManager.registerDefaultNetworkCallback(MyNetworkCallback())
+
         } else {
             Toast.makeText(
                 c, R.string.ntfServerNoNetwork, Toast.LENGTH_SHORT
@@ -133,7 +149,7 @@ class Server : Service() {
             ).show()
             throw NoHostAddressException()
         },
-        7007
+        TCP_PORT
     ) {
 
         init {
@@ -142,43 +158,69 @@ class Server : Service() {
 
         override fun serve(session: IHTTPSession?): Response? = when (session?.uri) {
 
-            "/" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "text/html",
-                readAsset("index.html")
-            )
+            "/" -> {
+                val ass = readAsset("index.html")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "text/html",
+                    ass, ass.available().toLong()
+                )
+            }
 
-            "/style.css" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "text/css",
-                readAsset("style.css")
-            )
+            "/favicon.svg" -> {
+                val ass = readAsset("favicon.svg")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "image/svg+xml",
+                    ass, ass.available().toLong()
+                )
+            }
 
-            "/jquery-3.7.1.min.js" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "text/javascript",
-                readAsset("jquery-3.7.1.min.js")
-            )
+            "/style.css" -> {
+                val ass = readAsset("style.css")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "text/css",
+                    ass,
+                    ass.available().toLong()
+                )
+            }
 
-            "/script.js" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "text/javascript",
-                readAsset("script.js")
-            )
+            "/jquery-3.7.1.min.js" -> {
+                val ass = readAsset("jquery-3.7.1.min.js")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "text/javascript",
+                    ass, ass.available().toLong()
+                )
+            }
 
-            // TODO /favicon.ico
+            "/script.js" -> {
+                val ass = readAsset("script.js")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "text/javascript",
+                    ass, ass.available().toLong()
+                )
+            }
 
-            "/quattrocento_bold.ttf" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "font/ttf",
-                readAsset("quattrocento_bold.ttf")
-            )
+            "/quattrocento_bold.ttf" -> {
+                val ass = readAsset("quattrocento_bold.ttf")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "font/ttf",
+                    ass, ass.available().toLong()
+                )
+            }
 
-            "/quattrocento_regular.ttf" -> newFixedLengthResponse(
-                Response.Status.OK,
-                "font/ttf",
-                readAsset("quattrocento_regular.ttf")
-            )
+            "/quattrocento_regular.ttf" -> {
+                val ass = readAsset("quattrocento_regular.ttf")
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "font/ttf",
+                    ass, ass.available().toLong()
+                )
+            }
             // fonts are compressed and cannot be called from `c.assets.openNonAssetFd()`,
             // and `c.assets.openNonAsset()` is not exposed by the Android API.
 
@@ -278,8 +320,7 @@ class Server : Service() {
 
         fun address(): String = "http://$hostname:$listeningPort/"
 
-        fun readAsset(path: String): String = c.resources.assets.open("web_app/$path")
-            .readBytes().toString(charset = Charsets.UTF_8)
+        fun readAsset(path: String): InputStream = c.resources.assets.open(path)
     }
 
     class NoHostAddressException :
