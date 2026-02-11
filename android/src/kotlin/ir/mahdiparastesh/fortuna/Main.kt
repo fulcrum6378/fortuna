@@ -54,6 +54,7 @@ import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.util.Server
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
+import ir.mahdiparastesh.fortuna.sect.Grid
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
 import ir.mahdiparastesh.fortuna.sect.SearchAdapter
 import ir.mahdiparastesh.fortuna.sect.SearchDialog
@@ -62,7 +63,6 @@ import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.sect.VariabilisDialog
 import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.util.MainHandler
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.z
@@ -117,6 +117,13 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         var searchResults = ArrayList<SearchAdapter.Result>()
         var compareDatesWith: ChronoLocalDate? = null
         var changingConfigForLunaSpinner = false
+    }
+
+    companion object {
+        const val EXTRA_LUNA = "luna"
+        const val EXTRA_DIES = "dies"
+        const val HANDLE_NEW_DAY = 0
+        var handler: Handler? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -230,10 +237,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         b.verbumIcon.setColorFilter(color(android.R.attr.textColor))
 
         // Handler
-        MainHandler.handler = object : Handler(Looper.getMainLooper()) {
+        handler = object : Handler(Looper.getMainLooper()) {
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
-                    MainHandler.HANDLE_NEW_DAY -> {
+                    HANDLE_NEW_DAY -> {
                         c.updateToday()
                         updateGrid()
                     }
@@ -287,7 +294,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     private fun resolveIntent(intent: Intent) {
         val toLuna: String? =
             c.sp.getString(Fortuna.SP_VARIABILIS_LUNA, null)
-                ?: intent.getStringExtra(MainHandler.EXTRA_LUNA)
+                ?: intent.getStringExtra(EXTRA_LUNA)
         if (toLuna != null) {
             c.luna = toLuna
             c.date = c.lunaToDate(c.luna)
@@ -297,7 +304,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             val toDies: Int? =
                 c.sp.getInt(Fortuna.SP_VARIABILIS_DIES, -2)
                     .let { if (it == -2) null else it }
-                    ?: (intent.getIntExtra(MainHandler.EXTRA_DIES, 0) - 1)
+                    ?: (intent.getIntExtra(EXTRA_DIES, 0) - 1)
                         .let { if (it == -1) null else it }
             if (toDies != null) variabilis(toDies)
         }
@@ -557,7 +564,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
     override fun onDestroy() {
         m.changingConfigForLunaSpinner = true
-        MainHandler.handler = null
+        handler = null
         super.onDestroy()
     }
 }

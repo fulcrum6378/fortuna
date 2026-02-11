@@ -1,5 +1,6 @@
-package ir.mahdiparastesh.fortuna
+package ir.mahdiparastesh.fortuna.sect
 
+import android.R
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.database.DataSetObserver
@@ -9,8 +10,11 @@ import android.view.ViewGroup
 import android.widget.ListAdapter
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
+import ir.mahdiparastesh.fortuna.Fortuna
+import ir.mahdiparastesh.fortuna.Luna
+import ir.mahdiparastesh.fortuna.Main
+import ir.mahdiparastesh.fortuna.Vita
 import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
-import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numeral
@@ -40,7 +44,7 @@ class Grid(private val c: Main) : ListAdapter {
         refreshTimes++
     }
 
-    private val tc: Int by lazy { c.color(android.R.attr.textColor) }
+    private val tc: Int by lazy { c.color(R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
@@ -79,7 +83,7 @@ class Grid(private val c: Main) : ListAdapter {
         // icons
         (luna.verba[i]?.isNotBlank() == true).also { show ->
             b.verbumIcon.isVisible = show
-            if (show) b.verbumIcon.setImageResource(R.drawable.verbum)
+            if (show) b.verbumIcon.setImageResource(ir.mahdiparastesh.fortuna.R.drawable.verbum)
             else b.verbumIcon.setImageDrawable(null)
         }
         val emj = luna.emojis.getOrNull(i)
@@ -133,9 +137,9 @@ class Grid(private val c: Main) : ListAdapter {
         // highlight the cell if it indicates today
         if (c.c.luna == c.c.todayLuna && c.c.todayDate[ChronoField.DAY_OF_MONTH] == i + 1)
             b.root.foreground = AppCompatResources
-                .getDrawable(c, R.drawable.dies_today)
+                .getDrawable(c, ir.mahdiparastesh.fortuna.R.drawable.dies_today)
         else
-            b.root.foreground = c.resources.getDrawable(R.drawable.dies, c.theme)
+            b.root.foreground = c.resources.getDrawable(ir.mahdiparastesh.fortuna.R.drawable.dies, c.theme)
 
         return b.root
     }

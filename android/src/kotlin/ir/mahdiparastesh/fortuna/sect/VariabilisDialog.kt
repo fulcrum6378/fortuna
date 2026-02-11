@@ -296,6 +296,7 @@ class VariabilisDialog : BaseDialogue() {
 
         val sb = StringBuilder()
         if (text.isNotEmpty()) sb.append("\n")
+        val defaultPlace = c.m.sexbook.value?.defaultPlace
         for (x in sex) {
             sb.append(
                 when (x.type) {
@@ -310,7 +311,7 @@ class VariabilisDialog : BaseDialogue() {
             if (!x.key.isNullOrBlank()) sb.append(" with ${x.key}")
             if (x.accurate) sb.append(" at ${z(x.hour)}:${z(x.minute)}:${z(x.second)}")
             else sb.append(" at ~${z(x.hour)}:${z(x.minute)}")
-            if (x.place?.isNotBlank() == true) sb.append(" in ${x.place}")
+            if (defaultPlace != x.place && x.place?.isNotBlank() == true) sb.append(" in ${x.place}")
             if (x.desc.isNullOrBlank()) sb.append(".\n")
             else sb.append(": ${x.desc}\n")
         }

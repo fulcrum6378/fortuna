@@ -15,7 +15,6 @@ import android.os.Build
 import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.Dropbox
-import ir.mahdiparastesh.fortuna.util.MainHandler
 import ir.mahdiparastesh.fortuna.util.NumberUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +69,7 @@ class Nyx : BroadcastReceiver() {
 
         // today
         TodayWidget.externalUpdate(c)
-        MainHandler.handler?.obtainMessage(MainHandler.HANDLE_NEW_DAY)?.sendToTarget()
+        Main.handler?.obtainMessage(Main.HANDLE_NEW_DAY)?.sendToTarget()
 
         // remind the user to score the recent day if already has not
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||

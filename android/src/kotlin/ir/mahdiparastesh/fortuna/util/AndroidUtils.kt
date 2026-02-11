@@ -18,8 +18,8 @@ object AndroidUtils {
     fun openInDate(c: Context, cal: ChronoLocalDate, req: Int): PendingIntent =
         PendingIntent.getActivity(
             c, req, Intent(c, Main::class.java)
-                .putExtra(MainHandler.EXTRA_LUNA, cal.toKey())
-                .putExtra(MainHandler.EXTRA_DIES, cal[ChronoField.DAY_OF_MONTH]),
+                .putExtra(Main.EXTRA_LUNA, cal.toKey())
+                .putExtra(Main.EXTRA_DIES, cal[ChronoField.DAY_OF_MONTH]),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
                 PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
         )  // A unique request code protects the PendingIntent from being recycled!

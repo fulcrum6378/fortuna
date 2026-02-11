@@ -1,5 +1,6 @@
 package ir.mahdiparastesh.fortuna.util
 
+import android.os.Bundle
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.util.AndroidUtils.iterate
@@ -27,6 +28,7 @@ class Sexbook(private val c: Fortuna) {
         val places = hashMapOf<Long, String>()
         val reports = arrayListOf<Report>()
         val crushes = arrayListOf<Crush>()
+        var settings: Bundle?
 
         // get a list of all Places
         try {
@@ -37,6 +39,17 @@ class Sexbook(private val c: Fortuna) {
         } catch (_: SecurityException) {
             return
         }
+
+        // get a Bundle of all settings
+        try {
+            settings = c.contentResolver.call(
+                "content://$PACKAGE".toUri(), "OPTIONS", null, null
+            )
+        } catch (_: SecurityException) {
+            return
+        }
+        val defaultPlace = settings?.getLong("defaultPlace", -1L)
+            ?.let { if (it == -1L) null else places[it] }
 
         // now get a list of all sex Reports
         c.contentResolver.query(
@@ -68,7 +81,11 @@ class Sexbook(private val c: Fortuna) {
         c.contentResolver.query(
             "content://$PACKAGE/crush".toUri(), arrayOf(
                 "key", "first_name", "middle_name", "last_name", "status", "birthday", "first_met"
-            ), "birthday IS NOT NULL OR first_met IS NOT NULL",
+            ), "(birthday IS NOT NULL OR first_met IS NOT NULL)" +
+                    (if (settings?.getBoolean("hideUnsafe") == true)
+                        " AND (status & 512) LIKE 0" else "") +
+                    (if (settings?.getBoolean("hideDisappeared") == true)
+                        " AND (status & 7) NOT LIKE 5" else ""),
             null, null
         ).iterate {
             crushes.add(
@@ -85,7 +102,7 @@ class Sexbook(private val c: Fortuna) {
         }
 
         withContext(Dispatchers.Main) {
-            listener(Data(reports, crushes))
+            listener(Data(reports, crushes, defaultPlace))
         }
     }
 
@@ -215,7 +232,11 @@ class Sexbook(private val c: Fortuna) {
         }
     }
 
-    class Data(val reports: List<Report>, crushes: List<Crush>) {
+    class Data(
+        val reports: List<Report>,
+        crushes: List<Crush>,
+        val defaultPlace: String? = null,
+    ) {
 
         val birthdayCrushes: List<Crush> = crushes.filter { cr ->
             cr.birthMonth != null && cr.birthDay != null
