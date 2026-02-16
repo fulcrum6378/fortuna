@@ -139,7 +139,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
                 '<span>' + (luna.emojis[d] ?? '') + '</span>' +
                 (luna.verba[d] === 1 ? SVG_VERBUM : '') +
                 '</p>' +
-                '<p>' + calendar.numerals[d] + '</p>' +
+                '<p>' + (calendar.numerals != null ? calendar.numerals[d] : d + 1) + '</p>' +
                 '<p' + clsScoreNonImportant + '>' + visScore + '</p>' + 
                 '</div>');
         // TODO other calendars in title=""
@@ -309,6 +309,18 @@ $('#verbum').on('input', function () {
 
 // configure the panel buttons
 $('#save').click(function () {
+    $.ajax({
+        url: API_BASE_URL + 'save?year=' + year + '&month=' + month + '&day=' + day,
+        data: 'score=1',
+        dataType: 'json',
+        success: (res) => {
+            
+        },
+        error: () => {
+            errorAlert();
+        },
+        timeout: API_TIMEOUT,
+    });
 });
 $('#reset').click(getDies);
 $('#clear').click(function () {

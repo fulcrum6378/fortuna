@@ -6,11 +6,11 @@ plugins {
 }
 
 tasks.withType<JavaCompile> {
-    options.release = 24
+    options.release = 25
 }
 tasks.named<KotlinJvmCompile>("compileKotlin") {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_24)
+        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 

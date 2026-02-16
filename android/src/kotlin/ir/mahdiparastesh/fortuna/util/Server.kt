@@ -12,6 +12,7 @@ import android.net.Network
 import android.os.Build
 import android.os.IBinder
 import android.widget.Toast
+import androidx.annotation.WorkerThread
 import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
 import ir.mahdiparastesh.fortuna.BuildConfig
@@ -156,6 +157,7 @@ class Server : Service() {
             start(SOCKET_READ_TIMEOUT, false)
         }
 
+        @WorkerThread
         override fun serve(session: IHTTPSession?): Response? = when (session?.uri) {
 
             "/" -> {
@@ -235,15 +237,19 @@ class Server : Service() {
                         ?.let { if (it == Fortuna.SP_NUMERAL_TYPE_DEF) null else it }
                 )
                 val maxDays = c.chronology.range(ChronoField.DAY_OF_MONTH).maximum.toInt()
-                val numerals = List(maxDays) { numeral.write(it + 1) }
-                    .joinToString(",") { "\"$it\"" }
+                val numerals =
+                    if (numeral != null)
+                        "[" + List(maxDays) { numeral.write(it + 1) }
+                            .joinToString(",") { "\"$it\"" } + "]"
+                    else
+                        "null"
 
                 newFixedLengthResponse(
                     Response.Status.OK,
                     "application/json",
                     "{" +
                             "\"monthNames\":[" + monthNames + "]," +
-                            "\"numerals\":[" + numerals + "]," +
+                            "\"numerals\":" + numerals + "," +
                             "\"thisYear\":${c.todayDate[ChronoField.YEAR]}," +
                             "\"thisMonth\":${c.todayDate[ChronoField.MONTH_OF_YEAR]}," +
                             "\"thisDay\":${c.todayDate[ChronoField.DAY_OF_MONTH]}" +
@@ -303,6 +309,30 @@ class Server : Service() {
                             "\"emoji\":${emoji?.let { JSONObject.quote(it) }}," +
                             "\"verbum\":${verbum?.let { JSONObject.quote(it) }}" +
                             "}"
+                )
+            }
+
+            "/save" -> {  // "?year=?&month=?&day=?"
+                val year = session.parameters!!["year"]!![0].toInt()
+                val month = session.parameters!!["month"]!![0].toInt()
+                val day = session.parameters!!["day"]!![0].toInt()
+
+                val score = session.parameters!!["score"]!![0].toFloat()
+                val emoji = session.parameters!!["emoji"]!![0]
+                val verbum = session.parameters!!["verbum"]!![0]
+
+                val date = c.chronology.date(year, month, if (day > 0) day else 1)
+                val lunaKey = date.toKey()
+                val luna = if (lunaKey in c.vita) c.vita[lunaKey] else null
+
+                luna!! //todo
+                luna.set(day - 1, score, emoji, verbum)
+                //todo refresh Main if active
+
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "application/json",
+                    "{\"saved\":\"$score\"}"
                 )
             }
 
