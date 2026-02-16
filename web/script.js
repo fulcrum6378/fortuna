@@ -109,32 +109,17 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
         let isFuture = isFutureLuna || (year == calendar.thisYear &&
                 month == calendar.thisMonth && d > calendar.thisDay - 1);
 
-        // 'div.dies' settings
-        let clsScore = rawScore ?? luna.defaultScore;
-        let clsMood = '';
-        let clsLevel = '';
-        let clsToday = '';
-        if (clsScore > 0) {
-            clsMood = 'pleasant ';
-            clsLevel = 'lv' + clsScore.toString().replace('.', '_') + ' ';
-        } else if (clsScore < 0) {
-            clsMood = 'painful ';
-            clsLevel = 'lv' + clsScore.toString().substring(1).replace('.', '_') + ' ';
-        } else {
-            clsMood = 'mediocre ';
-        }
-        if (year == calendar.thisYear && month == calendar.thisMonth &&
-                d == calendar.thisDay - 1)
-            clsToday = 'today ';
-
-        // settings of the children
+        let divClasses = diesClasses(
+            !isFuture ? (rawScore ?? luna.defaultScore) : 0.0,
+            d + 1
+        ).join(' ');
         let visScore = (rawScore != null ? rawScore
                 : (!isFuture && luna.defaultScore != null ? 'c. ' + luna.defaultScore
                 : '?'));
         let clsScoreNonImportant = luna.scores[d] == null ? ' class="non-important"' : '';
 
         // DOM insertion
-        $('#grid').append('<div class="dies ' + clsMood + clsLevel + clsToday + '">' +
+        $('#grid').append('<div class="dies ' + divClasses + '">' +
                 '<p>' + 
                 '<span>' + (luna.emojis[d] ?? '') + '</span>' +
                 (luna.verba[d] === 1 ? SVG_VERBUM : '') +
@@ -160,6 +145,30 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
         emoji: luna.defaultEmoji,
         verbum: luna.defaultVerbum
     });
+}
+
+// determine proper classes for `.dies`
+function diesClasses(clsScore, day_ = day) {
+    let clsMood = '';
+    let clsLevel = '';
+    let clsToday = '';
+    if (clsScore > 0) {
+        clsMood = 'pleasant';
+        clsLevel = 'lv' + clsScore.toString().replace('.', '_');
+    } else if (clsScore < 0) {
+        clsMood = 'painful';
+        clsLevel = 'lv' + clsScore.toString().substring(1).replace('.', '_');
+    } else {
+        clsMood = 'mediocre';
+    }
+    if (year == calendar.thisYear && month == calendar.thisMonth &&
+            day_ == calendar.thisDay)
+        clsToday = 'today';
+
+    let classes = [clsMood];
+    if (clsLevel) classes.push(clsLevel);
+    if (clsToday) classes.push(clsToday);
+    return classes
 }
 
 function getDies() {
@@ -189,7 +198,61 @@ function onNewDies(dies) {
             .attr('selected', '')
             .removeClass('pending');
 
-    // update the grid
+    updateDiesInGrid(dies);
+
+    // update the panel inputs
+    $('#panel > header > p > span:last-child').text(
+        (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
+    );
+    selectScore(dies.score ?? defScore);
+    $('#emoji').val(dies.emoji);
+    $('#verbum').val(dies.verbum);
+
+    // update the panel buttons
+    if (dies.score != null) {
+        $('#save').attr('disabled', '');
+        $('#clear').removeAttr('disabled');
+    } else {
+        if (dies.score != defScore)
+            $('#save').removeAttr('disabled');
+        $('#clear').attr('disabled', '');
+    }
+}
+
+function updateDiesInGrid(dies) {
+
+    // update the score in the grid cell
+    if (dies.score != orgScore) {
+        let isFutureLuna = year > calendar.thisYear ||
+                (year == calendar.thisYear && month > calendar.thisMonth);
+        let isFuture = isFutureLuna || (year == calendar.thisYear &&
+                month == calendar.thisMonth && day > calendar.thisDay);
+        let visScore = (dies.score != null ? dies.score
+                : (!isFuture && defScore != null ? 'c. ' + defScore
+                : '?'));
+
+        // update the div classes
+        let div = $('.dies:nth-child(' + day + ')');
+        let oldDivClasses = diesClasses(!isFuture ? (orgScore ?? defScore) : 0.0);
+        let newDivClasses = diesClasses(!isFuture ? (dies.score ?? defScore) : 0.0);
+        for (const newCls of newDivClasses)
+            if (!oldDivClasses.includes(newCls))
+                div.addClass(newCls);
+            else
+                oldDivClasses.splice(oldDivClasses.indexOf(newCls), 1);
+        for (const oldCls of oldDivClasses)
+            div.removeClass(oldCls);
+
+        // update the score paragraph
+        let scoreParagraph = $('.dies:nth-child(' + day + ') p:nth-child(3)');
+        if (dies.score == null)
+            scoreParagraph.addClass('non-important');
+        else
+            scoreParagraph.removeClass('non-important');
+        scoreParagraph.text(visScore);
+    }
+
+    // update the icons in the grid cell
     $('.dies:nth-child(' + day + ') p:first-child span').text(dies.emoji ?? '');
     if (dies.verbum != null && $('.dies:nth-child(' + day + ') p:first-child svg').length == 0)
         $('.dies:nth-child(' + day + ') p:first-child').append(SVG_VERBUM);
@@ -200,21 +263,12 @@ function onNewDies(dies) {
     orgScore = dies.score;
     orgEmoji = dies.emoji ?? '';
     orgVerbum = dies.verbum ?? '';
+}
 
-    // update the panel
-    $('#panel > header > p > span:last-child').text(
-        (day > 0) ? (DATE_SEP + (day < 10 ? '0' : '') + day) : ''
-    );
-    let toScore = dies.score ?? defScore;
+function selectScore(toScore) {
     $('#score').animate({
         scrollTop: scrollHeightOfEachScoreItem() * convertScoreToIndex(toScore)
     }, 300);
-    $('#emoji').val(dies.emoji);
-    $('#verbum').val(dies.verbum);
-    if (dies.score != null)
-        $('#save').attr('disabled', '');
-    else if (dies.score != defScore)
-        $('#save').removeAttr('disabled');
 }
 
 function scrollHeightOfEachScoreItem() {
@@ -309,19 +363,70 @@ $('#verbum').on('input', function () {
 
 // configure the panel buttons
 $('#save').click(function () {
+    $('#save').attr('disabled', '');
+    let newDies = {
+        score: selectedScore(),
+        emoji: $('#emoji').val() ? $('#emoji').val() : null,
+        verbum: $('#verbum').val() ? $('#verbum').val() : null
+    };
+
     $.ajax({
         url: API_BASE_URL + 'save?year=' + year + '&month=' + month + '&day=' + day,
-        data: 'score=1',
+        data: 'score=' + newDies.score +
+                '&emoji=' + newDies.emoji +
+                '&verbum=' + newDies.verbum,
         dataType: 'json',
         success: (res) => {
-            
+            if (res.status != 'ok') {
+                alert('Saving failed!');  // impossible currently
+                return; }
+
+            if (day > 0)
+                updateDiesInGrid(newDies);
+            else
+                getLuna();
+            $('#clear').removeAttr('disabled');
         },
         error: () => {
+            $('#save').removeAttr('disabled');
             errorAlert();
         },
         timeout: API_TIMEOUT,
     });
 });
-$('#reset').click(getDies);
+$('#reset').click(function () {
+    if (isDataInPanelChanged() && !confirm('Are you sure?'))
+        return;  // Math.abs(orgVerbum.length - $('#verbum').val().length) > 10
+    getDies();
+});
 $('#clear').click(function () {
+    if ((orgEmoji != '' || orgVerbum != '') && !confirm('Are you sure?'))
+        return;
+
+    $('#save').attr('disabled', '');
+    $('#clear').attr('disabled', '');
+
+    $.ajax({
+        url: API_BASE_URL + 'clear?year=' + year + '&month=' + month + '&day=' + day,
+        dataType: 'json',
+        success: (res) => {
+            if (res.status != 'ok') {
+                alert('Clearing failed!');  // impossible currently
+                return; }
+
+            if (day != 0)
+                updateDiesInGrid({score: null, emoji: null, verbum: null});
+            else
+                getLuna();
+
+            selectScore(day != 0 ? (defScore ?? 0.0) : 0.0);
+            $('#emoji').val('');
+            $('#verbum').val('');
+        },
+        error: () => {
+            $('#clear').removeAttr('disabled');
+            errorAlert();
+        },
+        timeout: API_TIMEOUT,
+    });
 });

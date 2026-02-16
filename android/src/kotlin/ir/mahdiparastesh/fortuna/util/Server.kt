@@ -17,6 +17,8 @@ import androidx.core.net.toUri
 import fi.iki.elonen.NanoHTTPD
 import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
+import ir.mahdiparastesh.fortuna.Luna
+import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
@@ -317,22 +319,59 @@ class Server : Service() {
                 val month = session.parameters!!["month"]!![0].toInt()
                 val day = session.parameters!!["day"]!![0].toInt()
 
+                // POST parameters
                 val score = session.parameters!!["score"]!![0].toFloat()
                 val emoji = session.parameters!!["emoji"]!![0]
+                    .let { if (it == "null") null else it }
                 val verbum = session.parameters!!["verbum"]!![0]
+                    .let { if (it == "null") null else it }
+
+                // find Luna
+                val date = c.chronology.date(year, month, if (day > 0) day else 1)
+                val len = date.lengthOfMonth()
+                val lunaKey = date.toKey()
+                if (lunaKey !in c.vita) c.vita[lunaKey] =
+                    Luna(len, null, null, null)
+                val luna = c.vita[lunaKey]
+
+                // alter Luna
+                luna.set(day - 1, score, emoji, verbum)
+                c.vita.save()
+
+                // update our UI here
+                if (c.luna == lunaKey)
+                    Main.handler?.obtainMessage(Main.HANDLE_VITA_DAY_CHANGED, day == 0)
+                        ?.sendToTarget()
+
+                newFixedLengthResponse(
+                    Response.Status.OK,
+                    "application/json",
+                    "{\"status\":\"ok\"}"
+                )
+            }
+
+            "/clear" -> {  // "?year=?&month=?&day=?"
+                val year = session.parameters!!["year"]!![0].toInt()
+                val month = session.parameters!!["month"]!![0].toInt()
+                val day = session.parameters!!["day"]!![0].toInt()
 
                 val date = c.chronology.date(year, month, if (day > 0) day else 1)
                 val lunaKey = date.toKey()
                 val luna = if (lunaKey in c.vita) c.vita[lunaKey] else null
 
-                luna!! //todo
-                luna.set(day - 1, score, emoji, verbum)
-                //todo refresh Main if active
+                if (luna != null) {
+                    luna.set(day - 1, null, null, null)
+                    c.vita.save()
+
+                    if (c.luna == lunaKey)
+                        Main.handler?.obtainMessage(Main.HANDLE_VITA_DAY_CHANGED, day == 0)
+                            ?.sendToTarget()
+                }
 
                 newFixedLengthResponse(
                     Response.Status.OK,
                     "application/json",
-                    "{\"saved\":\"$score\"}"
+                    "{\"status\":\"ok\"}"
                 )
             }
 

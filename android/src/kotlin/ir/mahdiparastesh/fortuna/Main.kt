@@ -123,6 +123,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
+        const val HANDLE_VITA_DAY_CHANGED = 1
         var handler: Handler? = null
     }
 
@@ -242,6 +243,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
                         c.updateToday()
+                        updateGrid()
+                    }
+
+                    HANDLE_VITA_DAY_CHANGED -> {
+                        if (msg.obj as Boolean) updatePanel()
                         updateGrid()
                     }
                 }
