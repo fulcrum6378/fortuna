@@ -14,7 +14,3 @@
 
 * `VariabilisDialog` gets deformed when another app is in the pop-up mode above it
 * Make white areas of the background more silver-cyan
-
----
-
-* Introduce `Server` in README

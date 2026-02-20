@@ -180,12 +180,17 @@ main {
   margin: 1rem 0;
 }
 #emoji {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   position: fixed;
   margin-top: 5.5rem;
+  background: none;
+  border: none;
   font-size: 22px;
   text-align: center;
+}
+#emoji::placeholder {
+  opacity: 0.5;
 }
 #score {
   height: 6rem;
@@ -217,9 +222,12 @@ main {
   background: linear-gradient(to bottom, #F9F9F9, transparent, #F9F9F9);;
 }*/
 #verbum {
-  width: calc(85% - 13px);
+  width: calc(85% - 30px);
   height: calc(100% - 21rem);
-  padding: 10px 13px;
+  padding: 10px 15px;
+  background-color: transparent;/*#F9F9F7-#ECF1EB*/
+  border: 1px solid #AAA;
+  border-radius: 1.5rem;
   font-size: 17.5px;
   line-height: 2rem;
   resize: none;
@@ -236,14 +244,18 @@ main {
 #panel > footer > button[disabled] {
   cursor: default;
 }
+#clear:not([disabled]) {
+  text-shadow: 2px 2px 2px #FF000055;
+}
 
 
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #222s;
+    background-color: #222;
     color: #FFF;
   }
+
   #nav-year {
     border-right-color: #666;
   }
@@ -268,4 +280,14 @@ main {
   .dies.painful.lv2   { background-color: rgba(103, 13, 6, 0.667); }
   .dies.painful.lv2_5 { background-color: rgba(103, 13, 6, 0.833); }
   .dies.painful.lv3   { background-color: rgba(103, 13, 6, 1.000); }
+  .dies.today {
+    border-color: rgba(255, 255, 255, 0.267);
+  }
+  .dies[selected] {
+    border-color: rgba(255, 255, 255, 0.85);
+  }
+
+  #emoji, #verbum {
+    color: #FFF;
+  }
 }

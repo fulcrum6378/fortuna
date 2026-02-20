@@ -63,19 +63,23 @@ Here is a complete example:
 
 ## Structure of the Source Code
 
+The app is divided into two modules:
+
+- **core**: abstract Fortuna capabilities for any Java-based platform
+- **android**: the Android application which uses the core module
+
 #### Main classes
 
+- [**Vita.kt**](core/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) (core) :
+  reads and writes Vita files and includes all the related utilities
+
 - [**Fortuna.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Fortuna.kt) :
-  the Application subclass
+  the Application subclass implementing
+  [FortunaContext](core/kotlin/ir/mahdiparastesh/fortuna/base/FortunaContext.kt)
 
 - [**Main.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Main.kt) :
-  the main and only Activity instance in this app
-
-- [**Vita.kt**](core/kotlin/ir/mahdiparastesh/fortuna/Vita.kt) :
-  reads and writes Vita files and all related utilities
-
-- [**Grid.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Grid.kt) :
-  controls the calendar table and the dialogues that might pop up while interacting with it
+  the main and only Activity instance in this app, implementing
+  [MainPage](core/kotlin/ir/mahdiparastesh/fortuna/base/MainPage.kt)
 
 - [**Nyx.kt**](android/src/kotlin/ir/mahdiparastesh/fortuna/Nyx.kt) :
   a BroadcastReceiver that performs a few tasks at 12 AM; including:
@@ -86,6 +90,12 @@ Here is a complete example:
 
 #### Subpackages
 
+- [**base**](core/kotlin/ir/mahdiparastesh/fortuna/base) (core) :
+  base classes for any imaginable Fortuna app
+    - [FortunaContext.kt](core/kotlin/ir/mahdiparastesh/fortuna/base/FortunaContext.kt) :
+      skeleton of a Fortuna app
+    - [MainPage.kt](core/kotlin/ir/mahdiparastesh/fortuna/base/MainPage.kt) :
+      skeleton of the main page of a Fortuna app
 - [**sect**](android/src/kotlin/ir/mahdiparastesh/fortuna/sect) :
   internal and external sections of this app
 - [**util**](android/src/kotlin/ir/mahdiparastesh/fortuna/util) :
@@ -138,28 +148,34 @@ override val chronology: Chronology = when (BuildConfig.FLAVOR) {
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string-array name="luna">
-    <item>Chaitra</item>
-    <item>Vaisakha</item>
-    <item>Jyeshtha</item>
-    <item>Ashadha</item>
-    <item>Shravana</item>
-    <item>Bhadra</item>
-    <item>Ashvin</item>
-    <item>Kartika</item>
-    <item>Agrahayana</item>
-    <item>Pausha</item>
-    <item>Magha</item>
-    <item>Phalguna</item>
-  </string-array>
+    <string-array name="luna">
+        <item>Chaitra</item>
+        <item>Vaisakha</item>
+        <item>Jyeshtha</item>
+        <item>Ashadha</item>
+        <item>Shravana</item>
+        <item>Bhadra</item>
+        <item>Ashvin</item>
+        <item>Kartika</item>
+        <item>Agrahayana</item>
+        <item>Pausha</item>
+        <item>Magha</item>
+        <item>Phalguna</item>
+    </string-array>
 </resources>
 ```
+
+### Server
+
+This Android app also can create an HTTP server and serve a
+[single-page application](https://en.wikipedia.org/wiki/Single-page_application)
+using which you can interact directly with data stored in the Android Fortuna itself.
 
 ## License
 
 ```
 Fortuna - an application of Evaluative Hedonism
-Written in 2022-2025 by Mahdi Parastesh <fulcrum1378@gmail.com>
+Written in 2022-2026 by Mahdi Parastesh <fulcrum1378@gmail.com>
 
 To the extent possible under law, the author has dedicated all copyright and
 related and neighboring rights to this software to the public domain worldwide.
