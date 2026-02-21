@@ -8,7 +8,7 @@ body {
   display: flex;
 }
 aside {
-  width: 33vh; /* #nav-year + #nav-month */
+  width: 36vh; /* #nav-year + #nav-month */
   display: flex;
   padding-right: 2vh;
 }
@@ -47,12 +47,13 @@ main {
   cursor: default;
 }
 #nav-month {
-  width: 20vh;
+  width: 23vh;
 }
 #nav-month span {
   margin: 0.5vh 0;
   padding: 1vh 0 1vh 3.5vh;
   font-size: 2.7vh;
+  border: 1px solid transparent;
   border-top-right-radius: 2.5vh;
   border-bottom-right-radius: 2.5vh;
   cursor: pointer;
@@ -73,6 +74,9 @@ main {
 #nav-year span:nth-child(4), #nav-year span:nth-child(8)  { font-size: 2.6vh; }
 #nav-year span:nth-child(5), #nav-year span:nth-child(7)  { font-size: 2.9vh; }
 #nav-year span:nth-child(6) { font-size: 3.2vh; }
+#nav-month span.pending {
+  border-color: #777;
+}
 
 
 
@@ -230,6 +234,7 @@ main {
   border-radius: 1.5rem;
   font-size: 17.5px;
   line-height: 2rem;
+  color: #333;
   resize: none;
 }
 #panel > footer {
@@ -245,7 +250,7 @@ main {
   cursor: default;
 }
 #clear:not([disabled]) {
-  text-shadow: 2px 2px 2px #FF000055;
+  text-shadow: 2px 2px 2px #F4433655;
 }
 
 
@@ -265,6 +270,10 @@ main {
   #nav-year span:not(:nth-child(6)):hover, #nav-month span:not([selected]):hover {
     background-color: #444;
   }
+  #nav-month span.pending {
+    border-color: #999;
+  }
+
   .dies {
     border-color: #666;
   }

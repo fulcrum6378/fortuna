@@ -3,11 +3,15 @@
 let calendar = null,
     year = null,
     month = null,
-    day = null,
+    day = null,  // store these in storage
     defScore = null,
+    lunaDayCount = null,
     orgScore = null,
     orgEmoji = null,
-    orgVerbum = null;
+    orgVerbum = null,
+    fetchingLuna = false,
+    fetchingDies = false,
+    holdingShift = false;
 
 // constants
 const API_BASE_URL = location.protocol == 'file:' ? 'http://192.168.1.20:7007/' : '';
@@ -26,9 +30,11 @@ function onInitialise() {
     }
     $('#nav-month span').click(function() {
         if (month != $(this).index() + 1) {
+            if (fetchingLuna) return;
             month = $(this).index() + 1;
             getLuna();
         } else {
+            if (fetchingDies) return;
             day = 0;
             getDies();
         }
@@ -45,12 +51,18 @@ function errorAlert() {
 }
 
 function getLuna(yearChanged = false, firstTime = false) {
+    fetchingLuna = true;
+
+    $('#nav-month span:nth-child(' + month + ')').addClass('pending');
+
     $.ajax({
         url: API_BASE_URL + 'luna?year=' + year + '&month=' + month,
         dataType: 'json',
         success: (luna) => onNewLuna(luna, yearChanged, firstTime),
         error: () => {
+            fetchingLuna = false;
             errorAlert();
+            $('#nav-month span:nth-child(' + month + ')').removeClass('pending');
             // TODO fallback to previous states
         },
         timeout: API_TIMEOUT,
@@ -58,6 +70,7 @@ function getLuna(yearChanged = false, firstTime = false) {
 }
 
 function onNewLuna(luna, yearChanged, firstTime = false) {
+    fetchingLuna = false;
 
     // update the year navigation menu
     if (yearChanged) {
@@ -73,6 +86,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
             $('#nav-year').append('<span>' + yy + '</span>');
         }
         $('#nav-year span').click(function () {
+            if (fetchingLuna) return;
             let inc = $(this).index()
             if (inc < YEAR_RANGE)
                 year -= YEAR_RANGE - inc;
@@ -84,7 +98,9 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
 
     // highlight the selected month in the month navigation menu
     $('#nav-month span:not(:nth-child(' + month + '))').removeAttr('selected');
-    $('#nav-month span:nth-child(' + month + ')').attr('selected', '');
+    $('#nav-month span:nth-child(' + month + ')')
+            .removeClass('pending')
+            .attr('selected', '');
 
     // empty the grid
     $('#grid').empty();
@@ -132,6 +148,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
 
     // clicking on each day
     $('.dies').click(function () {
+        if (fetchingDies) return;
         if (day == $(this).index() + 1) return;
         day = $(this).index() + 1;
         getDies();
@@ -140,6 +157,7 @@ function onNewLuna(luna, yearChanged, firstTime = false) {
     // apply the default monthly details
     day = 0;
     defScore = luna.defaultScore;
+    lunaDayCount = luna.dayCount;
     onNewDies({
         score: luna.defaultScore,
         emoji: luna.defaultEmoji,
@@ -172,6 +190,7 @@ function diesClasses(clsScore, day_ = day) {
 }
 
 function getDies() {
+    fetchingDies = true;
 
     if (day > 0) $('.dies:nth-child(' + day + ')').addClass('pending');
 
@@ -180,6 +199,7 @@ function getDies() {
         dataType: 'json',
         success: onNewDies,
         error: () => {
+            fetchingDies = false;
             errorAlert();
             if (day > 0) $('.dies:nth-child(' + day + ')')
                 .attr('selected', '')
@@ -191,6 +211,7 @@ function getDies() {
 }
 
 function onNewDies(dies) {
+    fetchingDies = false;
 
     // highlight the selected day
     $('.dies[selected]').removeAttr('selected');
@@ -324,6 +345,12 @@ function isDataInPanelChanged() {
             $('#verbum').val() != orgVerbum;
 }
 
+function differenceOfDataChangedInPanel() {
+    return (selectedScore() != orgScore ? 1 : 0) +
+            ($('#emoji').val() != orgEmoji ? 1 : 0) +
+            (Math.abs(orgVerbum.length - $('#verbum').val().length) / 10);
+}
+
 
 
 // at first...
@@ -342,7 +369,7 @@ $.ajax({
 });
 
 // configure the panel inputs
-$('#score').on('scroll', function () {
+$('#score').on('scroll', function (ev) {
     if (selectedScore() !== orgScore)
         $('#save').removeAttr('disabled');
     else if (!isDataInPanelChanged())
@@ -395,8 +422,8 @@ $('#save').click(function () {
     });
 });
 $('#reset').click(function () {
-    if (isDataInPanelChanged() && !confirm('Are you sure?'))
-        return;  // Math.abs(orgVerbum.length - $('#verbum').val().length) > 10
+    if (differenceOfDataChangedInPanel() > 3 && !confirm('Are you sure?'))
+        return;
     getDies();
 });
 $('#clear').click(function () {
@@ -429,4 +456,64 @@ $('#clear').click(function () {
         },
         timeout: API_TIMEOUT,
     });
+});
+
+// implement the arrow keys & shift
+$(document).on('keydown', function (ev) {
+    switch (ev.which) {
+
+        case 16:  // SHIFT
+            holdingShift = true;
+            break;
+
+        case 38:  // UP
+            if (fetchingLuna) return;
+            let decrementor = holdingShift ? 6 : 1;
+            if (month > decrementor) {
+                month -= decrementor;
+                getLuna();
+            } else {
+                decrementor -= month;
+                month = calendar.monthNames.length - decrementor;
+                year -= 1;
+                getLuna(true);
+            }
+            break;
+
+        case 40:  // DOWN
+            if (fetchingLuna) return;
+            let incrementor = holdingShift ? 6 : 1;
+            if ((month + incrementor) <= calendar.monthNames.length) {
+                month += incrementor;
+                getLuna();
+            } else {
+                incrementor -= calendar.monthNames.length - month;
+                month = incrementor;
+                year += 1;
+                getLuna(true);
+            }
+            break;
+
+        case 37:  // LEFT
+            if (fetchingDies || day < 1) return;
+            day -= holdingShift ? 5 : 1;
+            if (day < 1) day = 1;
+            getDies();
+            break;
+
+        case 39:  // RIGHT
+            if (fetchingDies || day >= lunaDayCount) return;
+            day += holdingShift ? 5 : 1;
+            if (day > lunaDayCount) day = lunaDayCount;
+            getDies();
+            break;
+    }
+});
+$(document).on('keyup', function (ev) {
+    switch (ev.which) {
+
+        case 16:  // SHIFT
+            holdingShift = false;
+            break;
+    }
 });
