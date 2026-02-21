@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.chrono.IranianChronology
+import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
@@ -49,6 +50,28 @@ class ChronometerDialog : BaseDialogue() {
                 }
             }
         }
+
+        fun chronometry(c: Fortuna, date: ChronoLocalDate) = StringBuilder().apply {
+            val epochDay = date.toEpochDay()
+            for (oc in c.otherChronologies()) {
+                val d = try {
+                    oc.dateEpochDay(epochDay)
+                } catch (_: DateTimeException) {
+                    continue  // some calendar do not support ancient dates
+                }
+                val visualName = c.getString(
+                    when (oc) {
+                        is IranianChronology -> R.string.calIranian
+                        is IsoChronology -> R.string.calGregorian
+                        is HijrahChronology -> R.string.calIslamic
+                        else -> throw IllegalStateException(
+                            "Please add a string resource for this new Chronology."
+                        )
+                    }
+                )
+                append("$visualName: ${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
+            }
+        }.toString()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,27 +88,7 @@ class ChronometerDialog : BaseDialogue() {
                         c.resources.getStringArray(R.array.weekDays)[
                             date[ChronoField.DAY_OF_WEEK] - 1]
             )
-            setMessage(StringBuilder().apply {
-                val epochDay = date.toEpochDay()
-                for (oc in c.c.otherChronologies()) {
-                    val d = try {
-                        oc.dateEpochDay(epochDay)
-                    } catch (_: DateTimeException) {
-                        continue  // some calendar do not support ancient dates
-                    }
-                    val visualName = c.getString(
-                        when (oc) {
-                            is IranianChronology -> R.string.calIranian
-                            is IsoChronology -> R.string.calGregorian
-                            is HijrahChronology -> R.string.calIslamic
-                            else -> throw IllegalStateException(
-                                "Please add a string resource for this new Chronology."
-                            )
-                        }
-                    )
-                    append("$visualName: ${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
-                }
-            }.toString())
+            setMessage(chronometry(c.c, date))
             setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
                 dat.background = c.varFieldBg
                 val watcher = object : TextWatcher {

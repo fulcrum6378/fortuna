@@ -217,19 +217,11 @@ main {
 #score li:last-child {
   margin-bottom: 3rem;
 }
-/*#scoreCover {
-  position: fixed;
-  width: 17%;
-  height: 8rem;
-  margin-top: -8rem;
-  margin-left: 9%;
-  background: linear-gradient(to bottom, #F9F9F9, transparent, #F9F9F9);;
-}*/
 #verbum {
   width: calc(85% - 30px);
   height: calc(100% - 21rem);
   padding: 10px 15px;
-  background-color: transparent;/*#F9F9F7-#ECF1EB*/
+  background-color: transparent;
   border: 1px solid #AAA;
   border-radius: 1.5rem;
   font-size: 17.5px;

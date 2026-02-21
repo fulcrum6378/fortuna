@@ -20,6 +20,7 @@ import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
+import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import org.json.JSONObject
@@ -254,7 +255,8 @@ class Server : Service() {
                             "\"numerals\":" + numerals + "," +
                             "\"thisYear\":${c.todayDate[ChronoField.YEAR]}," +
                             "\"thisMonth\":${c.todayDate[ChronoField.MONTH_OF_YEAR]}," +
-                            "\"thisDay\":${c.todayDate[ChronoField.DAY_OF_MONTH]}" +
+                            "\"thisDay\":${c.todayDate[ChronoField.DAY_OF_MONTH]}," +
+                            "\"emojis\":[${Emojis.list.joinToString { "\"$it\"" }}]" +
                             "}"
                 )
             }
@@ -267,6 +269,14 @@ class Server : Service() {
                 val len = date.lengthOfMonth()
                 val lunaKey = date.toKey()
                 val luna = if (lunaKey in c.vita) c.vita[lunaKey] else null
+
+                val chronometry = List(len) {
+                    JSONObject.quote(
+                        ChronometerDialog.chronometry(
+                            c, date.with(ChronoField.DAY_OF_MONTH, (it + 1).toLong())
+                        )
+                    )
+                }.joinToString(",")
 
                 newFixedLengthResponse(
                     Response.Status.OK,
@@ -285,7 +295,8 @@ class Server : Service() {
                             }]," +
                             "\"verba\":${
                                 List(len) { if (luna?.verba[it].isNullOrEmpty()) "0" else "1" }
-                            }" +
+                            }," +
+                            "\"chronometry\":[$chronometry]" +
                             "}"
                 )
             }

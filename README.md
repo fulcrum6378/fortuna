@@ -67,6 +67,7 @@ The app is divided into two modules:
 
 - **core**: abstract Fortuna capabilities for any Java-based platform
 - **android**: the Android application which uses the core module
+- **web**: the web version of Fortuna as a single-page application
 
 #### Main classes
 
@@ -110,7 +111,7 @@ In Fortuna, [build flavours](https://developer.android.com/build/build-variants)
 represent calendar systems, so all you need to do is to:
 
 1. Add a new build flavour for Gradle
-2. Create "app/src/res_CALENDAR" (e.g. res_indian) and inside it:
+2. Create "android/src/res_CALENDAR" (e.g. res_indian) and inside it:
     - *drawable/today_widget_preview.png* : a preview
       for [TodayWidget](android/src/kotlin/ir/mahdiparastesh/fortuna/sect/TodayWidget.kt)
     - *values/strings.xml* : month names as *<string-array name="luna"/>*
