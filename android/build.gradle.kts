@@ -15,12 +15,7 @@ android {
         minSdk = 30
         targetSdk = 36
         versionCode = 15
-        versionName = "16.4.2"
-
-        val dropboxKey = System.getenv("FORTUNA_DROPBOX_KEY")
-            ?: logger.warn("Dropbox app key was not found!")
-        buildConfigField("String", "DROPBOX_APP_KEY", "\"${dropboxKey}\"")
-        manifestPlaceholders["dropboxKey"] = dropboxKey
+        versionName = "16.4.4"
     }
 
     setFlavorDimensions(listOf("calendar"))

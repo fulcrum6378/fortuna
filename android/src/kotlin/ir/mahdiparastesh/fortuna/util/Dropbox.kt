@@ -8,7 +8,6 @@ import com.dropbox.core.android.Auth
 import com.dropbox.core.oauth.DbxCredential
 import com.dropbox.core.v2.DbxClientV2
 import com.dropbox.core.v2.files.WriteMode
-import ir.mahdiparastesh.fortuna.BuildConfig
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
 import java.io.FileInputStream
@@ -21,14 +20,15 @@ import java.io.FileInputStream
 @Suppress("RedundantSuspendModifier")
 class Dropbox(private val c: Fortuna) {
 
+    private val appKey = "s6s99epgh66b4cz"
     private var awaitingLogin: (() -> Unit)? = null
 
 
-    fun requestConfig() = DbxRequestConfig("db-${BuildConfig.DROPBOX_APP_KEY}")
+    fun requestConfig() = DbxRequestConfig("db-$appKey")
 
     fun login(c: Activity, listener: () -> Unit) {
         Auth.startOAuth2PKCE(
-            c, BuildConfig.DROPBOX_APP_KEY, requestConfig(), listOf("files.content.write")
+            c, appKey, requestConfig(), listOf("files.content.write")
         )
         awaitingLogin = listener
     }
@@ -74,7 +74,7 @@ class Dropbox(private val c: Fortuna) {
                 .withMode(WriteMode.OVERWRITE)
                 .uploadAndFinish(fis)
             true
-        } catch (_: DbxException) { // includes when no network is available
+        } catch (_: DbxException) {  // includes when no network is available
             false
         }
         fis.close()

@@ -135,10 +135,10 @@
         <item>%d TB</item>
     </string-array>
     <string name="dateSeparator">/</string>
+    <string name="dropbox">Dropbox:&#160;</string>
     <string name="cloudOn">ON</string>
     <string name="cloudOff">OFF</string>
     <string name="logout">Logout</string>
-    <string name="dropbox">Dropbox:&#160;</string>
     <string name="dropboxSuccess">Uploaded to Dropbox!</string>
     <string name="dropboxFailure">Couldn\'t upload to Dropbox!</string>
     <string name="dropboxLogoutSure">
