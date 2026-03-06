@@ -124,6 +124,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_VITA_DAY_CHANGED = 1
+        const val HANDLE_SERVER_STATUS = 2
         var handler: Handler? = null
     }
 
@@ -249,6 +250,12 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                     HANDLE_VITA_DAY_CHANGED -> {
                         if (msg.obj as Boolean) updatePanel()
                         updateGrid()
+                    }
+
+                    HANDLE_SERVER_STATUS -> b.nav.menu.findItem(R.id.navServer).also { item ->
+                        val status = msg.obj as Boolean
+                        item.isCheckable = status
+                        item.isChecked = status
                     }
                 }
             }

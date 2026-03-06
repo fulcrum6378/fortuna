@@ -483,13 +483,13 @@ $(document).on('keydown', function (e) {
 
         case 38:  // UP
             if (doPanelInputsHaveFocus() || fetchingLuna) return;
-            let decrementor = holdingShift ? 6 : 1;
-            if (month > decrementor) {
-                month -= decrementor;
+            let decrementer = holdingShift ? 6 : 1;
+            if (month > decrementer) {
+                month -= decrementer;
                 getLuna();
             } else {
-                decrementor -= month;
-                month = calendar.monthNames.length - decrementor;
+                decrementer -= month;
+                month = calendar.monthNames.length - decrementer;
                 year -= 1;
                 getLuna(true);
             }

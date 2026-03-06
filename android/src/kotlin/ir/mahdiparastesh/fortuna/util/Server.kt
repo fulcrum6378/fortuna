@@ -83,6 +83,9 @@ class Server : Service() {
             startForeground(NTF_ID, notification())
             cncManager.registerDefaultNetworkCallback(MyNetworkCallback())
 
+            // broadcast Server status
+            Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS, true)?.sendToTarget()
+
         } else {
             Toast.makeText(
                 c, R.string.ntfServerNoNetwork, Toast.LENGTH_SHORT
@@ -129,6 +132,14 @@ class Server : Service() {
                 ).build()
             )
             .build()
+
+    override fun onDestroy() {
+
+        // broadcast Server status
+        Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS, false)?.sendToTarget()
+
+        super.onDestroy()
+    }
 
 
     inner class MyNetworkCallback : ConnectivityManager.NetworkCallback() {
@@ -181,8 +192,8 @@ class Server : Service() {
                 )
             }
 
-            "/style.css" -> {
-                val ass = readAsset("style.css")
+            "/index.css" -> {
+                val ass = readAsset("index.css")
                 newFixedLengthResponse(
                     Response.Status.OK,
                     "text/css",
@@ -200,8 +211,8 @@ class Server : Service() {
                 )
             }
 
-            "/script.js" -> {
-                val ass = readAsset("script.js")
+            "/index.js" -> {
+                val ass = readAsset("index.js")
                 newFixedLengthResponse(
                     Response.Status.OK,
                     "text/javascript",
