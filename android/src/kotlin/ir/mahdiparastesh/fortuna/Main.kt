@@ -281,16 +281,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         CoroutineScope(Dispatchers.IO).launch {
 
             // Sexbook integration
-            if (m.sexbook.value == null &&
-                try {
-                    packageManager.getPackageInfo(Sexbook.PACKAGE, 0)
-                    true
-                } catch (_: PackageManager.NameNotFoundException) {
-                    false
+            if (m.sexbook.value == null && Sexbook.isInstalled(c))
+                Sexbook(c).load { data ->
+                    m.sexbook.value = data
                 }
-            ) Sexbook(c).load { data ->
-                m.sexbook.value = data
-            }
         }
 
         // Activity management

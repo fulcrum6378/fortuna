@@ -7,6 +7,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
@@ -17,6 +18,7 @@ import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.Dropbox
 import ir.mahdiparastesh.fortuna.util.NumberUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
+import ir.mahdiparastesh.fortuna.util.Sexbook
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +32,7 @@ import java.time.temporal.ChronoUnit
 class Nyx : BroadcastReceiver() {
 
     companion object {
+        private const val MAIN_BROADCAST = "ir.mahdiparastesh.fortuna.NYX"
         private const val NTF_CHANNEL_ID = "remind"
         private const val NTF_ID = 378
 
@@ -48,7 +51,7 @@ class Nyx : BroadcastReceiver() {
 
         private fun broadcast(c: Context): PendingIntent = PendingIntent.getBroadcast(
             c, 0,
-            Intent(c, Nyx::class.java), PendingIntent.FLAG_IMMUTABLE
+            Intent(MAIN_BROADCAST), PendingIntent.FLAG_IMMUTABLE
         )
 
         @Suppress("unused")
@@ -63,8 +66,13 @@ class Nyx : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            alarm(context); return; }
+        if (intent.action != MAIN_BROADCAST) {
+            when (intent.action) {
+                Intent.ACTION_BOOT_COMPLETED -> alarm(context)
+            }
+            return
+        }
+
         val c = context.applicationContext as Fortuna
 
         // today
@@ -87,6 +95,13 @@ class Nyx : BroadcastReceiver() {
         val dropbox = Dropbox(c)
         if (dropbox.isAuthenticated())
             CoroutineScope(Dispatchers.IO).launch { dropbox.backup() }
+
+        // Sexbook
+        if (Sexbook.isInstalled(c)) c.sendBroadcast(
+            Intent(MAIN_BROADCAST).setComponent(
+                ComponentName(Sexbook.PACKAGE, Sexbook.NOTIFICATION_ACTIONS_RECEIVER)
+            )
+        )
     }
 
     private fun howWasYourDay(c: Fortuna, date: ChronoLocalDate) {

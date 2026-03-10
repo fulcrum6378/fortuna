@@ -1,5 +1,7 @@
 package ir.mahdiparastesh.fortuna.util
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.net.toUri
 import ir.mahdiparastesh.fortuna.Fortuna
@@ -21,6 +23,14 @@ class Sexbook(private val c: Fortuna) {
     companion object {
         const val PACKAGE = "ir.mahdiparastesh.sexbook"
         const val MAIN_PAGE = "$PACKAGE.page.Main"
+        const val NOTIFICATION_ACTIONS_RECEIVER = "$PACKAGE.ctrl.NotificationActions"
+
+        fun isInstalled(c: Context) = try {
+            c.packageManager.getPackageInfo(PACKAGE, 0)
+            true
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
+        }
     }
 
     @Throws(SecurityException::class)
