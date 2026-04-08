@@ -24,7 +24,7 @@
     <string name="scoreFuture">You don\'t know your future!!!</string>
 
     <!-- detailDate() -->
-    <string name="calIranian">Humanist Iranian</string>
+    <string name="calIranian">Iranian</string><!--Humanist -->
     <string name="calGregorian">Gregorian</string>
     <string name="calIslamic">Islamic</string>
     <plurals name="day">
@@ -74,6 +74,7 @@
     <string name="navOpen">Open menu</string>
     <string name="navClose">Close menu</string>
     <string name="navSearch">Search</string>
+    <string name="navConvert">Convert</string>
     <string name="searchInclusive">Inclusive Search</string>
     <string name="foundNothing">Nothing was found!</string>
     <string name="navStat">Statistics</string>

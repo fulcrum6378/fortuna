@@ -20,8 +20,8 @@ import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.databinding.SearchBinding
-import ir.mahdiparastesh.fortuna.databinding.SearchItemBinding
+import ir.mahdiparastesh.fortuna.databinding.SearchDialogBinding
+import ir.mahdiparastesh.fortuna.databinding.SearchDialogItemBinding
 import ir.mahdiparastesh.fortuna.util.AnyViewHolder
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Emojis
@@ -37,7 +37,7 @@ import kotlin.math.min
 class SearchDialog : BaseDialogue() {
 
     private lateinit var dialogue: AlertDialog
-    private val b: SearchBinding by lazy { SearchBinding.inflate(layoutInflater) }
+    private val b: SearchDialogBinding by lazy { SearchDialogBinding.inflate(layoutInflater) }
 
     companion object {
         const val TAG = "search"
@@ -94,7 +94,7 @@ class SearchDialog : BaseDialogue() {
 /** A RecyclerView adapter for the search dialogue which also includes utilities for searching. */
 class SearchAdapter(
     private val c: Main, private val f: SearchDialog
-) : RecyclerView.Adapter<AnyViewHolder<SearchItemBinding>>() {
+) : RecyclerView.Adapter<AnyViewHolder<SearchDialogItemBinding>>() {
 
     private val sampleRadius = 50
     private val sampleMore = "..."
@@ -121,11 +121,11 @@ class SearchAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            AnyViewHolder<SearchItemBinding> =
-        AnyViewHolder(SearchItemBinding.inflate(c.layoutInflater, parent, false))
+            AnyViewHolder<SearchDialogItemBinding> =
+        AnyViewHolder(SearchDialogItemBinding.inflate(c.layoutInflater, parent, false))
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(h: AnyViewHolder<SearchItemBinding>, i: Int) {
+    override fun onBindViewHolder(h: AnyViewHolder<SearchDialogItemBinding>, i: Int) {
         h.b.date.text = c.m.searchResults[i].luna + "." + (
                 if (c.m.searchResults[i].dies >= 0) z(c.m.searchResults[i].dies + 1)
                 else c.getString(R.string.defValue)

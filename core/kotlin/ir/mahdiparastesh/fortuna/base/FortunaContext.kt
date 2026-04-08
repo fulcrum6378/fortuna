@@ -104,6 +104,9 @@ interface FortunaContext {
         HijrahChronology.INSTANCE,
     ).filter { it != chronology }
 
+    /** Returns a visible name for this Chronology. */
+    fun chronologyName(chronology: Chronology): String
+
     fun dateTimeFromTimestamp(millis: Long): Pair<ChronoLocalDate, LocalTime> {
         val dateTime = Instant
             .ofEpochMilli(millis)

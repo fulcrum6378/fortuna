@@ -54,6 +54,7 @@ import ir.mahdiparastesh.fortuna.databinding.MainBinding
 import ir.mahdiparastesh.fortuna.util.Server
 import ir.mahdiparastesh.fortuna.sect.BackupDialog
 import ir.mahdiparastesh.fortuna.sect.ChronometerDialog
+import ir.mahdiparastesh.fortuna.sect.ConvertDialog
 import ir.mahdiparastesh.fortuna.sect.Grid
 import ir.mahdiparastesh.fortuna.sect.HelpDialog
 import ir.mahdiparastesh.fortuna.sect.SearchAdapter
@@ -331,6 +332,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                 closeDrawer()
             }
 
+            R.id.navConvert -> ConvertDialog().show(supportFragmentManager, ConvertDialog.TAG)
             R.id.navSearch -> SearchDialog().show(supportFragmentManager, SearchDialog.TAG)
             R.id.navStat -> StatisticsDialog().show(supportFragmentManager, StatisticsDialog.TAG)
             R.id.navExport ->

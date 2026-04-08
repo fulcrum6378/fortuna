@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/button_small"
+    android:orientation="horizontal"
+    tools:ignore="Autofill,LabelFor">
+
+    <EditText
+        android:id="@+id/y"
+        style="@style/dateEntryField"
+        android:inputType="numberSigned"
+        android:maxLength="5" />
+
+    <TextView
+        style="@style/dateEntrySep"
+        android:text="@string/dateSeparator" />
+
+    <EditText
+        android:id="@+id/m"
+        style="@style/dateEntryField"
+        android:maxLength="2" />
+
+    <TextView
+        style="@style/dateEntrySep"
+        android:text="@string/dateSeparator" />
+
+    <EditText
+        android:id="@+id/d"
+        style="@style/dateEntryField"
+        android:maxLength="2" />
+</LinearLayout>

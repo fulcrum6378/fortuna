@@ -1,6 +1,5 @@
 package ir.mahdiparastesh.fortuna.sect
 
-import android.R
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.database.DataSetObserver
@@ -14,7 +13,7 @@ import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.databinding.ItemGridBinding
+import ir.mahdiparastesh.fortuna.databinding.GridItemBinding
 import ir.mahdiparastesh.fortuna.util.NumberUtils.displayScore
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numeral
@@ -44,7 +43,7 @@ class Grid(private val c: Main) : ListAdapter {
         refreshTimes++
     }
 
-    private val tc: Int by lazy { c.color(R.attr.textColor) }
+    private val tc: Int by lazy { c.color(android.R.attr.textColor) }
     private val cpo: Int by lazy { c.color(com.google.android.material.R.attr.colorOnPrimary) }
     private val cso: Int by lazy { c.color(com.google.android.material.R.attr.colorOnSecondary) }
 
@@ -67,8 +66,8 @@ class Grid(private val c: Main) : ListAdapter {
 
     @SuppressLint("SetTextI18n", "ViewHolder", "UseCompatLoadingForDrawables")
     override fun getView(i: Int, convertView: View?, parent: ViewGroup): View {
-        val b = convertView?.let { ItemGridBinding.bind(it) }
-            ?: ItemGridBinding.inflate(c.layoutInflater, parent, false)
+        val b = convertView?.let { GridItemBinding.bind(it) }
+            ?: GridItemBinding.inflate(c.layoutInflater, parent, false)
 
         // calculation
         val score: Float? =
@@ -139,7 +138,8 @@ class Grid(private val c: Main) : ListAdapter {
             b.root.foreground = AppCompatResources
                 .getDrawable(c, ir.mahdiparastesh.fortuna.R.drawable.dies_today)
         else
-            b.root.foreground = c.resources.getDrawable(ir.mahdiparastesh.fortuna.R.drawable.dies, c.theme)
+            b.root.foreground =
+                c.resources.getDrawable(ir.mahdiparastesh.fortuna.R.drawable.dies, c.theme)
 
         return b.root
     }

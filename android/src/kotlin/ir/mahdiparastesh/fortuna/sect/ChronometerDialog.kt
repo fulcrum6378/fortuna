@@ -8,10 +8,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.core.view.isVisible
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import ir.mahdiparastesh.chrono.IranianChronology
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.databinding.DateComparisonBinding
+import ir.mahdiparastesh.fortuna.databinding.ChronometerDialogBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
 import ir.mahdiparastesh.fortuna.util.NumberUtils.toKey
@@ -20,8 +19,6 @@ import java.time.DateTimeException
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.chrono.ChronoLocalDate
-import java.time.chrono.HijrahChronology
-import java.time.chrono.IsoChronology
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import kotlin.math.abs
@@ -59,17 +56,8 @@ class ChronometerDialog : BaseDialogue() {
                 } catch (_: DateTimeException) {
                     continue  // some calendar do not support ancient dates
                 }
-                val visualName = c.getString(
-                    when (oc) {
-                        is IranianChronology -> R.string.calIranian
-                        is IsoChronology -> R.string.calGregorian
-                        is HijrahChronology -> R.string.calIslamic
-                        else -> throw IllegalStateException(
-                            "Please add a string resource for this new Chronology."
-                        )
-                    }
-                )
-                append("$visualName: ${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
+                append("${c.chronologyName(oc)}: ")
+                append("${d.toKey()}.${z(d[ChronoField.DAY_OF_MONTH])}\n")
             }
         }.toString()
     }
@@ -82,6 +70,38 @@ class ChronometerDialog : BaseDialogue() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+        val b = ChronometerDialogBinding.inflate(c.layoutInflater)
+        b.dateEntry.apply {
+            root.background = c.varFieldBg
+            val watcher = object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    b.result.text = try {
+                        b.result.isVisible = true
+                        val dat = c.c.chronology.date(
+                            y.text.toString().toInt(),
+                            (m.text.toString().toInt()),
+                            d.text.toString().toInt()
+                        )
+                        c.m.compareDatesWith = dat
+                        dateComparison(date, dat)
+                    } catch (_: RuntimeException) {  // DateTimeException or NumberFormatException
+                        b.result.isVisible = false
+                        ""
+                    }
+                }
+            }
+            val dit = c.m.compareDatesWith ?: c.c.todayDate
+            y.setText(z(dit[ChronoField.YEAR]))
+            m.setText(z(dit[ChronoField.MONTH_OF_YEAR]))
+            y.addTextChangedListener(watcher)
+            m.addTextChangedListener(watcher)
+            d.addTextChangedListener(watcher)
+            d.setText(z(dit[ChronoField.DAY_OF_MONTH]))  // ONLY ONE OF THEM MUST COME AFTER THEM!
+        }
+
         return MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 "${c.c.luna}.${z(i + 1)} - " +
@@ -89,35 +109,7 @@ class ChronometerDialog : BaseDialogue() {
                             date[ChronoField.DAY_OF_WEEK] - 1]
             )
             setMessage(chronometry(c.c, date))
-            setView(DateComparisonBinding.inflate(c.layoutInflater).apply {
-                dat.background = c.varFieldBg
-                val watcher = object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-                    override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
-                    override fun afterTextChanged(s: Editable?) {
-                        result.text = try {
-                            result.isVisible = true
-                            val dat = c.c.chronology.date(
-                                y.text.toString().toInt(),
-                                (m.text.toString().toInt()),
-                                d.text.toString().toInt()
-                            )
-                            c.m.compareDatesWith = dat
-                            dateComparison(date, dat)
-                        } catch (_: RuntimeException) {  // DateTimeException or NumberFormatException
-                            result.isVisible = false
-                            ""
-                        }
-                    }
-                }
-                val dit = c.m.compareDatesWith ?: c.c.todayDate
-                y.setText(z(dit[ChronoField.YEAR]))
-                m.setText(z(dit[ChronoField.MONTH_OF_YEAR]))
-                y.addTextChangedListener(watcher)
-                m.addTextChangedListener(watcher)
-                d.addTextChangedListener(watcher)
-                d.setText(z(dit[ChronoField.DAY_OF_MONTH]))
-            }.root)
+            setView(b.root)
             setPositiveButton(R.string.ok, null)
             setNeutralButton(R.string.viewInCalendar) { _, _ ->
                 c.startActivity(

@@ -9,6 +9,7 @@ import ir.mahdiparastesh.fortuna.sect.TodayWidget
 import java.io.File
 import java.time.chrono.ChronoLocalDate
 import java.time.chrono.Chronology
+import java.time.chrono.HijrahChronology
 import java.time.chrono.IsoChronology
 
 class Fortuna : Application(), FortunaContext {
@@ -44,6 +45,17 @@ class Fortuna : Application(), FortunaContext {
 
     fun isLandscape() =
         resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    override fun chronologyName(chronology: Chronology): String = getString(
+        when (chronology) {
+            is IranianChronology -> R.string.calIranian
+            is IsoChronology -> R.string.calGregorian
+            is HijrahChronology -> R.string.calIslamic
+            else -> throw IllegalStateException(
+                "Please add a string resource for this new Chronology."
+            )
+        }
+    )
 
 
     companion object {

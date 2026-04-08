@@ -13,7 +13,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.databinding.BackupBinding
+import ir.mahdiparastesh.fortuna.databinding.BackupDialogBinding
 import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Dropbox
@@ -43,7 +43,7 @@ class BackupDialog : BaseDialogue() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val b = BackupBinding.inflate(layoutInflater)
+        val b = BackupDialogBinding.inflate(layoutInflater)
 
         b.updateStatus()
         b.backup.setOnClickListener {
@@ -119,15 +119,16 @@ class BackupDialog : BaseDialogue() {
     }
 
     /** Updates the modification date of the backup file. */
-    private fun BackupBinding.updateStatus() {
+    private fun BackupDialogBinding.updateStatus() {
         status.text = getString(
-            R.string.backupStatus, lastBackup(), AndroidUtils.showBytes(c, c.c.backup.length())
+            R.string.backupStatus, lastBackup(),
+            AndroidUtils.showBytes(c, c.c.backup.length())
         )
     }
 
     /** Checks whether the user has logged in to Dropbox and update the UI accordingly. */
     @SuppressLint("SetTextI18n")
-    private fun BackupBinding.updateDropbox() {
+    private fun BackupDialogBinding.updateDropbox() {
         val auth = c.dropbox!!.isAuthenticated()
 
         dropbox.text = getString(R.string.dropbox) +

@@ -8,7 +8,6 @@
 
 * Nostalgia: to remember what you did last year(s) this day! (in a NostalgiaDialog?)
 * Index `Luna`s as serialized in cache
-* Jumping to other dates using other calendars (JumpDialog?)
 * Make diagrams out of search results in web
 
 ### 🚀 UI
@@ -17,6 +16,7 @@
 * Make white areas of the background more silver-cyan
 * A shutdown button inside web
 * Server status doesn't survive `Main`'s restart
+* An icon for `ConvertDialog`
 
 ### ✨ Special
 

@@ -16,7 +16,7 @@ import androidx.core.util.forEach
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.R
 import ir.mahdiparastesh.fortuna.Vita
-import ir.mahdiparastesh.fortuna.databinding.WholeBinding
+import ir.mahdiparastesh.fortuna.databinding.StatisticsDialogBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.DoubleClickListener
 import ir.mahdiparastesh.fortuna.util.NumberUtils.groupDigits
@@ -67,7 +67,7 @@ class StatisticsDialog : BaseDialogue() {
             if (!meanMap.containsKey(y)) meanMap[y] = Array(maxMonths) { null }
             meanMap[y][m] = mean
         }
-        val bw = WholeBinding.inflate(layoutInflater)
+        val bw = StatisticsDialogBinding.inflate(layoutInflater)
 
         val cellH = resources.getDimension(R.dimen.statCellHeight).toInt()
         val nullCellColour = ContextCompat.getColor(c, R.color.statCell)
@@ -86,11 +86,15 @@ class StatisticsDialog : BaseDialogue() {
                 val cell = View(c)
                 cell.setBackgroundColor(
                     when {
-                        score != null && score > 0f -> Color
-                            .valueOf(c.cpl[0], c.cpl[1], c.cpl[2], score / Vita.MAX_RANGE).toArgb()
+                        score != null && score > 0f -> Color.valueOf(
+                            c.cpl[0], c.cpl[1], c.cpl[2],
+                            score / Vita.MAX_RANGE
+                        ).toArgb()
 
-                        score != null && score < 0f -> Color
-                            .valueOf(c.csl[0], c.csl[1], c.csl[2], -score / Vita.MAX_RANGE).toArgb()
+                        score != null && score < 0f -> Color.valueOf(
+                            c.csl[0], c.csl[1], c.csl[2],
+                            -score / Vita.MAX_RANGE
+                        ).toArgb()
 
                         score != null -> Color.TRANSPARENT
                         else -> nullCellColour

@@ -23,7 +23,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import ir.mahdiparastesh.fortuna.Fortuna
 import ir.mahdiparastesh.fortuna.Luna
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.databinding.VariabilisBinding
+import ir.mahdiparastesh.fortuna.databinding.VariabilisDialogBinding
 import ir.mahdiparastesh.fortuna.util.BaseDialogue
 import ir.mahdiparastesh.fortuna.util.Emojis
 import ir.mahdiparastesh.fortuna.util.LimitedToastAlert
@@ -47,7 +47,7 @@ class VariabilisDialog : BaseDialogue() {
         c.c.date.with(ChronoField.DAY_OF_MONTH, if (i != -1) i + 1L else 1)
     }
     private val luna: Luna by lazy { c.c.vita[c.c.luna] }
-    private val b: VariabilisBinding by lazy { VariabilisBinding.inflate(c.layoutInflater) }
+    private val b: VariabilisDialogBinding by lazy { VariabilisDialogBinding.inflate(c.layoutInflater) }
 
     companion object {
         const val TAG = "variabilis"
