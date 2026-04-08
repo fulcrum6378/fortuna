@@ -10,7 +10,8 @@
         android:id="@+id/y"
         style="@style/dateEntryField"
         android:inputType="numberSigned"
-        android:maxLength="5" />
+        android:maxLength="5"
+        android:minEms="4" />
 
     <TextView
         style="@style/dateEntrySep"
@@ -19,7 +20,8 @@
     <EditText
         android:id="@+id/m"
         style="@style/dateEntryField"
-        android:maxLength="2" />
+        android:maxLength="2"
+        android:minEms="2" />
 
     <TextView
         style="@style/dateEntrySep"
@@ -28,5 +30,6 @@
     <EditText
         android:id="@+id/d"
         style="@style/dateEntryField"
-        android:maxLength="2" />
+        android:maxLength="2"
+        android:minEms="2" />
 </LinearLayout>

@@ -155,6 +155,7 @@
     <string name="clear">Clear</string>
     <string name="done">Done!</string>
     <string name="failed">Failed!</string>
+    <string name="go">Go</string>
 
     <!-- Nyx -->
     <string name="ntfReminderTitle">Daily Reminder</string>

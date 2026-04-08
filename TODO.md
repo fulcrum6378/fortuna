@@ -13,6 +13,8 @@
 ### 🚀 UI
 
 * `VariabilisDialog` gets deformed when another app is in the pop-up mode above it
+  I call `show()` on `VariabilisDialog` inside `onCreateDialog()`; is it causing the problem?
+  I did the same in `ConvertDialog`
 * Make white areas of the background more silver-cyan
 * A shutdown button inside web
 * Server status doesn't survive `Main`'s restart
