@@ -345,6 +345,7 @@ class Server : Service() {
                 val score = session.parameters!!["score"]!![0].toFloat()
                 val emoji = session.parameters!!["emoji"]!![0]
                     .let { if (it == "null") null else it }
+                // TODO emojis are not reconstructed from unicode
                 val verbum = session.parameters!!["verbum"]!![0]
                     .let { if (it == "null") null else it }
 
