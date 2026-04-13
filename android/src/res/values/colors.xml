@@ -8,4 +8,5 @@
     <color name="backupActionStroke">#38000000</color>
     <color name="todayWidget">#AA034C06</color>
     <color name="navDivider">#60FFFFFF</color>
+    <color name="selectedField">#111</color>
 </resources>

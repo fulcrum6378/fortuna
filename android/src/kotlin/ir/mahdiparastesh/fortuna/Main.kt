@@ -118,6 +118,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         var searchResults = ArrayList<SearchAdapter.Result>()
         var compareDatesWith: ChronoLocalDate? = null
         var changingConfigForLunaSpinner = false
+        var selectedChronologyForConversion = 0
     }
 
     companion object {
