@@ -23,4 +23,4 @@
 ### ✨ Special
 
 * Send a broadcast with action `ir.mahdiparastesh.fortuna.NYX` which any app can receive
-* emojis are not reconstructed from unicode in `Server/save`
+* Should we use *StringEscapeUtils* instead?

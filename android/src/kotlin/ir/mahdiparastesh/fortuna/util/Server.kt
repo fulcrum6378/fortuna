@@ -160,7 +160,8 @@ class Server : Service() {
             linkProperties.linkAddresses.find { it.prefixLength == 24 }!!.address.hostAddress
         } catch (_: NullPointerException) {
             Toast.makeText(
-                c, R.string.ntfServerNoHostAddress, Toast.LENGTH_LONG
+                c, R.string.ntfServerNoHostAddress,
+                Toast.LENGTH_LONG
             ).show()
             throw NoHostAddressException()
         },
@@ -344,10 +345,9 @@ class Server : Service() {
                 // POST parameters
                 val score = session.parameters!!["score"]!![0].toFloat()
                 val emoji = session.parameters!!["emoji"]!![0]
-                    .let { if (it == "null") null else it }
-                // TODO emojis are not reconstructed from unicode
+                    .let { if (it == "null") null else decodeHttpText(it) }
                 val verbum = session.parameters!!["verbum"]!![0]
-                    .let { if (it == "null") null else it }
+                    .let { if (it == "null") null else decodeHttpText(it) }
 
                 // find Luna
                 val date = c.chronology.date(year, month, if (day > 0) day else 1)
@@ -413,6 +413,11 @@ class Server : Service() {
         fun address(): String = "http://$hostname:$listeningPort/"
 
         fun readAsset(path: String): InputStream = c.resources.assets.open(path)
+
+        fun decodeHttpText(text: String): String =
+            Regex("&#(\\d+);").replace(text) {
+                String(Character.toChars(it.groupValues[1].toInt()))
+            }
     }
 
     class NoHostAddressException :
