@@ -247,6 +247,11 @@ main {
 
 
 
+@media (prefers-color-scheme: light) {
+  .dies.mediocre p:first-child svg {
+     filter: contrast(0.1);
+  }
+}
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #222;

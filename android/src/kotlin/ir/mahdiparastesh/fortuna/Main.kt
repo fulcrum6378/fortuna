@@ -126,7 +126,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         const val EXTRA_DIES = "dies"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_VITA_DAY_CHANGED = 1
-        const val HANDLE_SERVER_STATUS = 2
+        const val HANDLE_SERVER_STATUS_CHANGED = 2
         var handler: Handler? = null
     }
 
@@ -145,9 +145,14 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         setContentView(b.root)
 
         // Toolbar & Navigation
-        ActionBarDrawerToggle(
+        object : ActionBarDrawerToggle(
             this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
-        ).apply {
+        ) {
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                updateServerStatus()
+            }
+        }.apply {
             b.root.addDrawerListener(this)
             isDrawerIndicatorEnabled = true
             syncState()
@@ -254,11 +259,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
                         updateGrid()
                     }
 
-                    HANDLE_SERVER_STATUS -> b.nav.menu.findItem(R.id.navServer).also { item ->
-                        val status = msg.obj as Boolean
-                        item.isCheckable = status
-                        item.isChecked = status
-                    }
+                    HANDLE_SERVER_STATUS_CHANGED -> updateServerStatus()
                 }
             }
         }
@@ -364,7 +365,9 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             R.id.navBackup -> BackupDialog().show(supportFragmentManager, BackupDialog.TAG)
 
             R.id.navServer ->
-                startService(Intent(this, Server::class.java))
+                startService(Intent(this, Server::class.java).apply {
+                    if (Server.active) action = Server.ACTION_STOP
+                })
 
             R.id.navHelp -> HelpDialog().show(supportFragmentManager, HelpDialog.TAG)
         }
@@ -552,6 +555,14 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager).defaultVibrator
         else getSystemService(VIBRATOR_SERVICE) as Vibrator)
             .vibrate(VibrationEffect.createOneShot(dur, 100))
+    }
+
+    private fun updateServerStatus() {
+        val status = Server.active
+        b.nav.menu.findItem(R.id.navServer).also { item ->
+            item.isCheckable = status
+            item.isChecked = status
+        }
     }
 
     fun closeDrawer() {

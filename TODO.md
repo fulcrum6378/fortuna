@@ -17,8 +17,8 @@
   I did the same in `ConvertDialog`
 * Make white areas of the background more silver-cyan
 * A shutdown button inside web
-* Server status doesn't survive `Main`'s restart
 * An icon for `ConvertDialog`
+* Special emoji icons?
 
 ### ✨ Special
 

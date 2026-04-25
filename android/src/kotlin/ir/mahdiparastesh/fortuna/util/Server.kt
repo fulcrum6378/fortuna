@@ -44,12 +44,16 @@ class Server : Service() {
         const val TCP_PORT = 7007
         private const val NTF_CHANNEL_ID = "serve"
         private const val NTF_ID = 202
+        const val ACTION_STOP = "stop"
+
+        @JvmStatic
+        var active = false
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        if (intent.action == "stop") {
+        if (intent.action == ACTION_STOP) {
             httpServer?.stop()
             httpServer = null
             stopForeground(STOP_FOREGROUND_REMOVE)
@@ -83,8 +87,8 @@ class Server : Service() {
             startForeground(NTF_ID, notification())
             cncManager.registerDefaultNetworkCallback(MyNetworkCallback())
 
-            // broadcast Server status
-            Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS, true)?.sendToTarget()
+            active = true
+            Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS_CHANGED)?.sendToTarget()
 
         } else {
             Toast.makeText(
@@ -126,7 +130,7 @@ class Server : Service() {
                     PendingIntent.getService(
                         this, 0,
                         Intent(this, Server::class.java)
-                            .apply { action = "stop" },
+                            .apply { action = ACTION_STOP },
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 ).build()
@@ -134,10 +138,8 @@ class Server : Service() {
             .build()
 
     override fun onDestroy() {
-
-        // broadcast Server status
-        Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS, false)?.sendToTarget()
-
+        active = false
+        Main.handler?.obtainMessage(Main.HANDLE_SERVER_STATUS_CHANGED)?.sendToTarget()
         super.onDestroy()
     }
 
