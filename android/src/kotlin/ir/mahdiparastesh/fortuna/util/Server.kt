@@ -345,9 +345,9 @@ class Server : Service() {
                 // POST parameters
                 val score = session.parameters!!["score"]!![0].toFloat()
                 val emoji = session.parameters!!["emoji"]!![0]
-                    .let { if (it == "null") null else decodeHttpText(it) }
+                    .let { if (it == "null") null else it }
                 val verbum = session.parameters!!["verbum"]!![0]
-                    .let { if (it == "null") null else decodeHttpText(it) }
+                    .let { if (it == "null") null else it }
 
                 // find Luna
                 val date = c.chronology.date(year, month, if (day > 0) day else 1)
@@ -413,11 +413,6 @@ class Server : Service() {
         fun address(): String = "http://$hostname:$listeningPort/"
 
         fun readAsset(path: String): InputStream = c.resources.assets.open(path)
-
-        fun decodeHttpText(text: String): String =
-            Regex("&#(\\d+);").replace(text) {
-                String(Character.toChars(it.groupValues[1].toInt()))
-            }
     }
 
     class NoHostAddressException :

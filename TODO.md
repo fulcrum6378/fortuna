@@ -23,4 +23,3 @@
 ### ✨ Special
 
 * Send a broadcast with action `ir.mahdiparastesh.fortuna.NYX` which any app can receive
-* Should we use *StringEscapeUtils* instead?

@@ -415,8 +415,8 @@ $('#save').click(function () {
     $.ajax({
         url: API_BASE_URL + 'save?year=' + year + '&month=' + month + '&day=' + day,
         data: 'score=' + newDies.score +
-                '&emoji=' + newDies.emoji +
-                '&verbum=' + newDies.verbum,
+                '&emoji=' + encodeURIComponent(newDies.emoji) +
+                '&verbum=' + encodeURIComponent(newDies.verbum),
         dataType: 'json',
         success: (res) => {
             if (res.status != 'ok') {
