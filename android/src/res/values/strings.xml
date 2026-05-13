@@ -45,8 +45,8 @@
     <string name="difAgo">%s ago</string>
     <string name="difLater">%s later</string>
     <string name="sameDay">Same day</string>
-    <string name="difBefore">%s before that time</string>
-    <string name="difAfter">%s after that time</string>
+    <string name="difBefore">%s until then</string>
+    <string name="difAfter">%s since then</string>
     <string name="difSep" translatable="false">,&#160;</string>
     <string-array name="weekDays">
         <item>Monday</item>

@@ -52,14 +52,18 @@ class VariabilisDialog : BaseDialogue() {
     companion object {
         const val TAG = "variabilis"
         const val ARG_DAY = "day"
+        var active = false
 
         /** @param day starting from 0 */
-        fun newInstance(day: Int): VariabilisDialog =
-            VariabilisDialog().apply {
+        fun newInstance(day: Int): VariabilisDialog? {
+            if (active) return null
+            active = true
+            return VariabilisDialog().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DAY, day)
                 }
             }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -207,6 +211,7 @@ class VariabilisDialog : BaseDialogue() {
             remove(Fortuna.SP_VARIABILIS_EMOJI)
             remove(Fortuna.SP_VARIABILIS_VERBUM)
         }
+        active = false
     }
 
     /**

@@ -3,6 +3,7 @@
 ### 📝 Data Entry
 
 * Secondary Emoji? using '-' separators?
+* UNDO capabilities for Vita just like 3D programs (action-based)
 
 ### 🔮 Data Access
 
@@ -19,6 +20,7 @@
 * A shutdown button inside web
 * An icon for `ConvertDialog`
 * Special emoji icons?
+* Open a full-screen verbum in `VariabilisDialog` when its text is long
 
 ### ✨ Special
 

@@ -31,8 +31,6 @@ import java.time.temporal.ChronoField
 
 /**
  * An Android-served website that provides a Single-Paged Application version of Fortuna.
- *
- * Note: You can opt to use Ktor instead if NanoHTTPD won't operate well enough.
  */
 class Server : Service() {
     private val c: Fortuna by lazy { applicationContext as Fortuna }
@@ -45,8 +43,6 @@ class Server : Service() {
         private const val NTF_CHANNEL_ID = "serve"
         private const val NTF_ID = 202
         const val ACTION_STOP = "stop"
-
-        @JvmStatic
         var active = false
     }
 

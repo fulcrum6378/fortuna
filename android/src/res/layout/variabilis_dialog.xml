@@ -85,7 +85,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pickerCl"
             app:layout_constraintWidth_percent="0.87" />
-        <!-- Android appears to lack the ability to underline the misspelled words!! -->
 
         <TextView
             android:id="@+id/sexbook"

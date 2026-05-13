@@ -305,7 +305,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
         val toLuna: String? =
             c.sp.getString(Fortuna.SP_VARIABILIS_LUNA, null)
                 ?: intent.getStringExtra(EXTRA_LUNA)
-        if (toLuna != null) {
+        if (toLuna != null && !VariabilisDialog.active) {
             c.luna = toLuna
             c.date = c.lunaToDate(c.luna)
             updatePanel()
@@ -531,7 +531,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
      * @param day starting from 0
      */
     fun variabilis(day: Int) {
-        VariabilisDialog.newInstance(day).show(supportFragmentManager, VariabilisDialog.TAG)
+        VariabilisDialog.newInstance(day)?.show(supportFragmentManager, VariabilisDialog.TAG)
     }
 
     override fun onDateChanged() {

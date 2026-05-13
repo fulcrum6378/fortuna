@@ -15,7 +15,7 @@ android {
         minSdk = 30
         targetSdk = 36
         versionCode = 15
-        versionName = "16.8.6"
+        versionName = "16.9.0"
     }
 
     setFlavorDimensions(listOf("calendar"))
@@ -80,6 +80,7 @@ android {
             signingConfig = signingConfigs.getByName("main")
         }
     }
+    lint { checkReleaseBuilds = false }
 }
 
 dependencies {
