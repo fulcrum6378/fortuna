@@ -7,7 +7,7 @@
             android:title="@string/today" />
         <item
             android:id="@+id/navConvert"
-            android:icon="@drawable/today"
+            android:icon="@drawable/convert"
             android:title="@string/navConvert" />
         <item
             android:id="@+id/navSearch"

@@ -15,7 +15,7 @@
     <string name="annusDownDesc">Move to the previous year</string>
     <string name="verbumDesc">Contains descriptions</string>
 
-    <!-- Variabilis -->
+    <!-- VariabilisDialog -->
     <string name="emojiHint" translatable="false">😃</string>
     <string name="notesHint" translatable="false">.....</string>
     <string name="defValue">DEFAULT</string>
@@ -23,7 +23,7 @@
     <string name="holdLonger">Hold a little longer&#8230;</string>
     <string name="scoreFuture">You don\'t know your future!!!</string>
 
-    <!-- detailDate() -->
+    <!-- ChronometerDialog -->
     <string name="calIranian">Iranian</string><!--Humanist -->
     <string name="calGregorian">Gregorian</string>
     <string name="calIslamic">Islamic</string>
@@ -57,6 +57,7 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="setToToday">Set to today</string>
 
     <!-- Numerals -->
     <string name="numerals">Numerals</string>

@@ -67,7 +67,7 @@ object NumberUtils {
             for (ff in 0 until f.length) {
                 ret.append(f[ff])
                 right++
-                if (fractionLimit in 1..right) break
+                if (fractionLimit in 1 downTo right) break
                 if (right % 3 == 0 && ff != 0 && ff < f.length - 1) ret.append(",")
             }
         }

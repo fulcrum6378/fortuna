@@ -32,6 +32,8 @@ import java.time.temporal.ChronoUnit
 class Nyx : BroadcastReceiver() {
 
     companion object {
+        /** Implicit broadcasts were restricted since Android 8,
+         * therefore we need to explicitly call targets. */
         private const val MAIN_BROADCAST = "ir.mahdiparastesh.fortuna.NYX"
         private const val NTF_CHANNEL_ID = "remind"
         private const val NTF_ID = 378
@@ -51,7 +53,8 @@ class Nyx : BroadcastReceiver() {
 
         private fun broadcast(c: Context): PendingIntent = PendingIntent.getBroadcast(
             c, 0,
-            Intent(MAIN_BROADCAST), PendingIntent.FLAG_IMMUTABLE
+            Intent(c, Nyx::class.java).setAction(MAIN_BROADCAST),
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         @Suppress("unused")

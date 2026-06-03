@@ -18,10 +18,7 @@
   I did the same in `ConvertDialog`
 * Make white areas of the background more silver-cyan
 * A shutdown button inside web
-* An icon for `ConvertDialog`
 * Special emoji icons?
 * Open a full-screen verbum in `VariabilisDialog` when its text is long
 
 ### ✨ Special
-
-* Send a broadcast with action `ir.mahdiparastesh.fortuna.NYX` which any app can receive

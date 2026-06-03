@@ -508,7 +508,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             }
         }
         b.toolbar.setBackgroundColor(bgColor)
-        b.toolbar.navigationIcon?.colorFilter =  // a tint color will never work!
+        b.toolbar.navigationIcon?.colorFilter =  // a tint colour will never work!
             PorterDuffColorFilter(fgColor, PorterDuff.Mode.SRC_IN)
         b.toolbar.setTitleTextColor(fgColor)
         b.toolbar.overflowIcon?.setTint(fgColor)

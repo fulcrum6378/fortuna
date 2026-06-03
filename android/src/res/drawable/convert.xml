@@ -1,0 +1,35 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:autoMirrored="true"
+    android:tint="?android:textColor"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!--https://www.svgrepo.com/svg/495194/convert-card-->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M22,15C22,18.87 18.87,22 15,22L16.05,20.25"
+        android:strokeWidth="1.5"
+        android:strokeColor="#000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M2,9C2,5.13 5.13,2 9,2L7.95,3.75"
+        android:strokeWidth="1.5"
+        android:strokeColor="#000"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:fillColor="#000"
+        android:pathData="M22,4.2V4.31C22,4.59 21.78,4.81 21.5,4.81H12.5C12.22,4.81 12,4.59 12,4.31V4.2C12,2.44 12.44,2 14.22,2H19.78C21.56,2 22,2.44 22,4.2Z" />
+    <path
+        android:fillColor="#000"
+        android:pathData="M12.5,5.809C12.22,5.809 12,6.029 12,6.309V7.309V8.299C12,10.059 12.44,10.499 14.22,10.499H19.78C21.56,10.499 22,10.059 22,8.299V7.309V6.309C22,6.029 21.78,5.809 21.5,5.809H12.5Z" />
+    <path
+        android:fillColor="#000"
+        android:pathData="M12,15.7V15.81C12,16.09 11.78,16.31 11.5,16.31H2.5C2.22,16.31 2,16.09 2,15.81V15.7C2,13.94 2.44,13.5 4.22,13.5H9.78C11.56,13.5 12,13.94 12,15.7Z" />
+    <path
+        android:fillColor="#000"
+        android:pathData="M2.5,17.309C2.22,17.309 2,17.529 2,17.809V18.809V19.799C2,21.559 2.44,21.999 4.22,21.999H9.78C11.56,21.999 12,21.559 12,19.799V18.809V17.809C12,17.529 11.78,17.309 11.5,17.309H2.5Z" />
+</vector>

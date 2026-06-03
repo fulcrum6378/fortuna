@@ -102,6 +102,12 @@ class ChronometerDialog : BaseDialogue() {
             d.setText(z(dit[ChronoField.DAY_OF_MONTH]))  // ONLY ONE OF THEM MUST COME AFTER THEM!
         }
 
+        b.today.setOnClickListener {
+            b.dateEntry.y.setText(z(c.c.todayDate[ChronoField.YEAR]))
+            b.dateEntry.m.setText(z(c.c.todayDate[ChronoField.MONTH_OF_YEAR]))
+            b.dateEntry.d.setText(z(c.c.todayDate[ChronoField.DAY_OF_MONTH]))
+        }
+
         return MaterialAlertDialogBuilder(c).apply {
             setTitle(
                 "${c.c.luna}.${z(i + 1)} - " +
