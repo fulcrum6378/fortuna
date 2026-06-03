@@ -4,6 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="Android">
         <option name="selectionMode" value="DROPDOWN" />
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="Android (silent)">
         <option name="selectionMode" value="DROPDOWN" />

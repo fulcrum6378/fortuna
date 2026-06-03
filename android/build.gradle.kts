@@ -1,24 +1,21 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "ir.mahdiparastesh.fortuna"
-    compileSdk = 36
+    compileSdk = 37
     buildToolsVersion = System.getenv("ANDROID_BUILD_TOOLS_VERSION")
 
     defaultConfig {
         applicationId = "ir.mahdiparastesh.fortuna"
         minSdk = 30
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 15
-        versionName = "16.9.0"
+        versionName = "16.9.2"
     }
 
-    setFlavorDimensions(listOf("calendar"))
+    flavorDimensions += "calendar"
     productFlavors {
         create("iranian") {
             dimension = "calendar"
@@ -30,29 +27,18 @@ android {
         }
     }
 
-    sourceSets.getByName("main") {
+    sourceSets.named("main") {
         manifest.srcFile("src/AndroidManifest.xml")
-        kotlin.srcDirs("src/kotlin")
-        assets.srcDir("../web")
+        kotlin.directories += "src/kotlin"
+        assets.directories += "../web"
     }
-    sourceSets.getByName("iranian") {
-        res.srcDirs("src/res", "src/res_iranian")
+    sourceSets.named("iranian") {
+        res.directories += "src/res"
+        res.directories += "src/res_iranian"
     }
-    sourceSets.getByName("gregorian") {
-        res.srcDirs("src/res", "src/res_gregorian")
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
-    }
-    kotlin {
-        target {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_25)
-                freeCompilerArgs.add("-Xannotation-default-target=param-property")
-            }
-        }
+    sourceSets.named("gregorian") {
+        res.directories += "src/res"
+        res.directories += "src/res_gregorian"
     }
 
     buildFeatures {
@@ -80,7 +66,18 @@ android {
             signingConfig = signingConfigs.getByName("main")
         }
     }
-    lint { checkReleaseBuilds = false }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
+    }
+}
+
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_24
+    }
 }
 
 dependencies {

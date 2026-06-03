@@ -60,7 +60,7 @@ object Numerals {
  */
 data class NumeralType(
     val kClass: KClass<*>?,
-    @StringRes val name: Int,
+    @field:StringRes val name: Int,
 ) {
     fun name(): String? = kClass?.java?.simpleName
 }
