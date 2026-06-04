@@ -302,10 +302,11 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     }
 
     private fun resolveIntent(intent: Intent) {
+        if (VariabilisDialog.active) return
         val toLuna: String? =
             c.sp.getString(Fortuna.SP_VARIABILIS_LUNA, null)
                 ?: intent.getStringExtra(EXTRA_LUNA)
-        if (toLuna != null && !VariabilisDialog.active) {
+        if (toLuna != null) {
             c.luna = toLuna
             c.date = c.lunaToDate(c.luna)
             updatePanel()
