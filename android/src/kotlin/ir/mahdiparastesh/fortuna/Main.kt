@@ -124,6 +124,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     companion object {
         const val EXTRA_LUNA = "luna"
         const val EXTRA_DIES = "dies"
+        const val EXTRA_TODAY = "today"
         const val HANDLE_NEW_DAY = 0
         const val HANDLE_VITA_DAY_CHANGED = 1
         const val HANDLE_SERVER_STATUS_CHANGED = 2
@@ -303,6 +304,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
     private fun resolveIntent(intent: Intent) {
         if (VariabilisDialog.active) return
+        if (intent.hasExtra(EXTRA_TODAY)) {
+            intent.putExtra(EXTRA_LUNA, c.todayLuna)
+            intent.putExtra(EXTRA_DIES, c.todayDate[ChronoField.DAY_OF_MONTH])
+        }
         val toLuna: String? =
             c.sp.getString(Fortuna.SP_VARIABILIS_LUNA, null)
                 ?: intent.getStringExtra(EXTRA_LUNA)

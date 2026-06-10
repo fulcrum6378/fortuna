@@ -12,7 +12,7 @@ android {
         minSdk = 30
         targetSdk = 37
         versionCode = 15
-        versionName = "16.9.7"
+        versionName = "16.9.9"
     }
 
     flavorDimensions += "calendar"

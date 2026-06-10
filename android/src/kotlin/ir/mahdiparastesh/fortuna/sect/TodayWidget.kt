@@ -1,17 +1,20 @@
 package ir.mahdiparastesh.fortuna.sect
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.widget.RemoteViews
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import ir.mahdiparastesh.fortuna.Fortuna
+import ir.mahdiparastesh.fortuna.Main
 import ir.mahdiparastesh.fortuna.R
-import ir.mahdiparastesh.fortuna.util.AndroidUtils
 import ir.mahdiparastesh.fortuna.util.NumberUtils.write
 import ir.mahdiparastesh.fortuna.util.Numerals
 import java.time.temporal.ChronoField
@@ -38,7 +41,7 @@ class TodayWidget : AppWidgetProvider() {
         }
 
         private fun update(c: Fortuna) = RemoteViews(
-                c.packageName, R.layout.today_widget
+            c.packageName, R.layout.today_widget
         ).apply {
             val date = c.chronology.dateNow()
             val den = c.resources.displayMetrics.density
@@ -54,7 +57,13 @@ class TodayWidget : AppWidgetProvider() {
                     it.toBitmap((den * size[0]).toInt(), (den * size[1]).toInt())
                 })
             setOnClickPendingIntent(
-                R.id.root, AndroidUtils.openInDate(c, date, 1)
+                R.id.root,
+                PendingIntent.getActivity(
+                    c, 1, Intent(c, Main::class.java)
+                        .putExtra(Main.EXTRA_TODAY, true),
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                        PendingIntent.FLAG_MUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+                )
             )
             setTextViewText(
                 R.id.dies, Numerals.build(
