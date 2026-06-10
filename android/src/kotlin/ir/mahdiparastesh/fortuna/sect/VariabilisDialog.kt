@@ -71,6 +71,7 @@ class VariabilisDialog : BaseDialogue() {
         requireArguments().also { args ->
             i = args.getInt(ARG_DAY)
         }
+        active = true
     }
 
     @SuppressLint("ClickableViewAccessibility")

@@ -251,7 +251,15 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             override fun handleMessage(msg: Message) {
                 when (msg.what) {
                     HANDLE_NEW_DAY -> {
+                        val wasWatchingThisMonth = c.todayLuna == c.luna
                         c.updateToday()
+                        if (wasWatchingThisMonth &&
+                            !VariabilisDialog.active && !ChronometerDialog.active
+                        ) {
+                            c.luna = c.todayLuna
+                            c.date = c.lunaToDate(c.luna)
+                            updatePanel()
+                        }
                         updateGrid()
                     }
 

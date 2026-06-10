@@ -1,6 +1,7 @@
 package ir.mahdiparastesh.fortuna.sect
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
@@ -38,9 +39,12 @@ class ChronometerDialog : BaseDialogue() {
     companion object {
         const val TAG = "chronometer"
         const val ARG_DAY = "day"
+        var active = false
 
         /** @param day starting from 0 */
-        fun newInstance(day: Int): ChronometerDialog {
+        fun newInstance(day: Int): ChronometerDialog? {
+            if (active) return null
+            active = true
             return ChronometerDialog().apply {
                 arguments = Bundle().apply {
                     putInt(ARG_DAY, day)
@@ -133,6 +137,11 @@ class ChronometerDialog : BaseDialogue() {
                 )
             }
         }.show()
+    }
+
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        active = false
     }
 
     private fun dateComparison(dit: ChronoLocalDate, dat: ChronoLocalDate): String {

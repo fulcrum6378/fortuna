@@ -129,7 +129,7 @@ class Grid(private val c: Main) : ListAdapter {
         b.root.setOnClickListener { c.variabilis(i) }
         b.root.setOnLongClickListener {
             ChronometerDialog.newInstance(i)
-                .show(c.supportFragmentManager, ChronometerDialog.TAG)
+                ?.show(c.supportFragmentManager, ChronometerDialog.TAG)
             true
         }
 
