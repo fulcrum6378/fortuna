@@ -4,6 +4,7 @@ plugins {
 }
 
 tasks.register("clean", Delete::class) {
+    description = "Delete temporary files"
     delete(
         "$rootDir/.kotlin",
         "$rootDir/build",

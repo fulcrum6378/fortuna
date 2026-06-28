@@ -1,12 +1,13 @@
 [versions]
 agp = "9.2.1"
-kotlin = "2.3.21"
+kotlin = "2.4.0"
 activityKtx = "1.13.0"
 constraintLayout = "2.2.1"
 coreKtx = "1.19.0"
 drawerLayout = "1.2.0"
 recyclerView = "1.4.0"
-dropBox = "7.0.0"
+#noinspection GradleDependency,NewerVersionAvailable
+dropBox = "7.0.0"  # version 8.0.0 throws a weird exception when trying to upload!
 coroutines = "1.11.0"
 material = "1.14.0"
 nanoHttpd = "2.3.1"
