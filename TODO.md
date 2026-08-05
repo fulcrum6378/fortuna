@@ -8,7 +8,6 @@
 ### 🔮 Data Access
 
 * Nostalgia: to remember what you did last year(s) this day! (in a NostalgiaDialog?)
-* Index `Luna`s as serialized in cache
 * Make diagrams out of search results in web
 
 ### 🚀 UI

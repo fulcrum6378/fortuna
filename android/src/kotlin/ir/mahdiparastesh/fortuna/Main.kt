@@ -545,7 +545,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
      * @param day starting from 0
      */
     fun variabilis(day: Int) {
-        VariabilisDialog.newInstance(day)?.show(supportFragmentManager, VariabilisDialog.TAG)
+        VariabilisDialog.newInstance(c.luna, day)
+            ?.show(supportFragmentManager, VariabilisDialog.TAG)
     }
 
     override fun onDateChanged() {

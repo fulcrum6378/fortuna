@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -37,30 +38,35 @@ import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.text.split
 
 /** A dialog box which lets the user change the scores of days, emojis and verbum descriptions */
 class VariabilisDialog : BaseDialogue() {
 
     private lateinit var dialogue: AlertDialog
+    private lateinit var lunaKey: String
     private var i: Int = 0
     private val date: ChronoLocalDate by lazy {
-        c.c.date.with(ChronoField.DAY_OF_MONTH, if (i != -1) i + 1L else 1)
+        val spl = lunaKey.split(".")
+        c.c.chronology.date(spl[0].toInt(), spl[1].toInt(), if (i != -1) i + 1 else 1)
     }
-    private val luna: Luna by lazy { c.c.vita[c.c.luna] }
+    private val luna: Luna by lazy { c.c.vita[lunaKey] }
     private val b: VariabilisDialogBinding by lazy { VariabilisDialogBinding.inflate(c.layoutInflater) }
 
     companion object {
         const val TAG = "variabilis"
-        const val ARG_DAY = "day"
+        const val ARG_LUNA = "luna"
+        const val ARG_DIES = "dies"
         var active = false
 
         /** @param day starting from 0 */
-        fun newInstance(day: Int): VariabilisDialog? {
+        fun newInstance(lunaKey: String, day: Int): VariabilisDialog? {
             if (active) return null
             active = true
             return VariabilisDialog().apply {
                 arguments = Bundle().apply {
-                    putInt(ARG_DAY, day)
+                    putString(ARG_LUNA, lunaKey)
+                    putInt(ARG_DIES, day)
                 }
             }
         }
@@ -69,7 +75,8 @@ class VariabilisDialog : BaseDialogue() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireArguments().also { args ->
-            i = args.getInt(ARG_DAY)
+            lunaKey = args.getString(ARG_LUNA)!!
+            i = args.getInt(ARG_DIES)
         }
         active = true
     }
@@ -79,7 +86,7 @@ class VariabilisDialog : BaseDialogue() {
         arrayOf(b.highlight, b.verbum).forEach { it.background = c.varFieldBg }
 
         c.c.sp.edit {
-            putString(Fortuna.SP_VARIABILIS_LUNA, c.c.luna)
+            putString(Fortuna.SP_VARIABILIS_LUNA, lunaKey)
             putInt(Fortuna.SP_VARIABILIS_DIES, i)
         }
         val variabilisScore: Int? = c.c.sp
@@ -105,7 +112,7 @@ class VariabilisDialog : BaseDialogue() {
             if (variabilisScore != null) isCancelable = false
             setOnValueChangedListener { _, _, newVal ->
                 c.c.sp.edit { putInt(Fortuna.SP_VARIABILIS_SCORE, newVal) }
-                dialogue.setCancelable(false)
+                isCancelable = false
             }
         }
 
@@ -117,7 +124,7 @@ class VariabilisDialog : BaseDialogue() {
             if (variabilisEmoji != null) isCancelable = false
             addTextChangedListener {
                 c.c.sp.edit { putString(Fortuna.SP_VARIABILIS_EMOJI, it.toString()) }
-                dialogue.setCancelable(false)
+                isCancelable = false
             }
         }
 
@@ -127,7 +134,7 @@ class VariabilisDialog : BaseDialogue() {
             if (variabilisVerbum != null) isCancelable = false
             addTextChangedListener {
                 c.c.sp.edit { putString(Fortuna.SP_VARIABILIS_VERBUM, it.toString()) }
-                dialogue.setCancelable(false)
+                isCancelable = false
             }
             setOnTouchListener { v, event ->  // scroll inside ScrollView
                 var ret = false
@@ -149,11 +156,11 @@ class VariabilisDialog : BaseDialogue() {
 
         dialogue = MaterialAlertDialogBuilder(c).apply {
             setTitle(
-                if (i != -1) "${c.c.luna}.${z(i + 1)}"
+                if (i != -1) "${lunaKey}.${z(i + 1)}"
                 else c.getString(R.string.defValue)
             )
             setView(b.root)
-            setNegativeButton(R.string.cancel, null)
+            setNegativeButton(R.string.cancel) { _, _ -> }
             setPositiveButton(R.string.save) { _, _ ->
                 c.saveDies(
                     luna, i, b.picker.value.toScore(),
@@ -187,6 +194,16 @@ class VariabilisDialog : BaseDialogue() {
                     }
                 }
             }
+        }
+
+        dialogue.getButton(AlertDialog.BUTTON_NEGATIVE).apply {
+            setOnClickListener(object : LimitedToastAlert(c, R.string.holdLonger) {
+                override fun onClick(v: View?) {
+                    if (isCancelable) dialogue.dismiss()
+                    else super.onClick(v)
+                }
+            })
+            setOnLongClickListener { dialogue.dismiss(); true }
         }
 
         dialogue.getButton(AlertDialog.BUTTON_NEUTRAL).apply {
@@ -223,8 +240,8 @@ class VariabilisDialog : BaseDialogue() {
     @SuppressLint("SetTextI18n")
     private fun TextView.appendCrushDates(day: Short, year: Short) {
         val lunar = day == (-1).toShort()
-        val yr = c.c.date[ChronoField.YEAR].toShort()
-        val mo = c.c.date[ChronoField.MONTH_OF_YEAR].toShort()
+        val yr = date[ChronoField.YEAR].toShort()
+        val mo = date[ChronoField.MONTH_OF_YEAR].toShort()
         val da = (day + 1).toShort()
 
         val birthdays = c.m.sexbook.value?.birthdayCrushes
@@ -292,8 +309,8 @@ class VariabilisDialog : BaseDialogue() {
     private fun TextView.appendSexReports(i: Int) {
         if (i == -1) return
 
-        val yr = c.c.date[ChronoField.YEAR].toShort()
-        val mo = c.c.date[ChronoField.MONTH_OF_YEAR].toShort()
+        val yr = date[ChronoField.YEAR].toShort()
+        val mo = date[ChronoField.MONTH_OF_YEAR].toShort()
         val da = (i + 1).toShort()
         val sex = c.m.sexbook.value?.reports?.filter { x ->
             x.year == yr && x.month == mo && x.day == da

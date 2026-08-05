@@ -45,7 +45,7 @@ abstract class DoubleClickListener(private val span: Long = 500) : View.OnClickL
 }
 
 /** Subclass of [View.OnClickListener] which shows one [Toast] at a time */
-class LimitedToastAlert(private val c: Context, @field:StringRes private val msg: Int) :
+open class LimitedToastAlert(private val c: Context, @field:StringRes private val msg: Int) :
     View.OnClickListener {
     private var last = 0L
 
