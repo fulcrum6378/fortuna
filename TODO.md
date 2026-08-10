@@ -18,6 +18,5 @@
 * Make white areas of the background more silver-cyan
 * A shutdown button inside web
 * Special emoji icons?
-* Open a full-screen verbum in `VariabilisDialog` when its text is long
 
 ### ✨ Special

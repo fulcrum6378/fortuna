@@ -12,6 +12,7 @@ import android.text.InputFilter
 import android.text.Spanned
 import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -38,7 +39,6 @@ import java.time.chrono.ChronoLocalDate
 import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import kotlin.text.split
 
 /** A dialog box which lets the user change the scores of days, emojis and verbum descriptions */
 class VariabilisDialog : BaseDialogue() {
@@ -215,6 +215,9 @@ class VariabilisDialog : BaseDialogue() {
                 dialogue.dismiss(); true
             }
         }
+
+        // make scrolling through texts easier
+        dialogue.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
 
         return dialogue
     }
