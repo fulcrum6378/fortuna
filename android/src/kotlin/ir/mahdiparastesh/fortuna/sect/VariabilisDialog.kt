@@ -216,9 +216,6 @@ class VariabilisDialog : BaseDialogue() {
             }
         }
 
-        // make scrolling through texts easier
-        dialogue.window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-
         return dialogue
     }
 
