@@ -102,9 +102,10 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
     /** Improved drawable for the fields in [VariabilisDialog] and [ChronometerDialog] */
     val varFieldBg: MaterialShapeDrawable by lazy {
         MaterialShapeDrawable(
-            ShapeAppearanceModel.Builder()
-                .setAllCorners(CornerFamily.CUT, c.resources.getDimension(R.dimen.smallCornerSize))
-                .build()
+            ShapeAppearanceModel.Builder().setAllCorners(
+                CornerFamily.CUT,
+                c.resources.getDimension(R.dimen.smallCornerSize)
+            ).build()
         ).apply { fillColor = c.resources.getColorStateList(R.color.varField, null) }
     }
 
@@ -147,7 +148,8 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
 
         // Toolbar & Navigation
         object : ActionBarDrawerToggle(
-            this, b.root, b.toolbar, R.string.navOpen, R.string.navClose
+            this, b.root, b.toolbar,
+            R.string.navOpen, R.string.navClose
         ) {
             override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
@@ -493,7 +495,7 @@ class Main : FragmentActivity(), MainPage, NavigationView.OnNavigationItemSelect
             val scores = grid.luna.collectScores(grid.maximumStats ?: 0)
             mean = grid.luna.mean(0, scores)
             b.lunaMean.text = "∑ : " + grid.luna.sum(0, scores) +
-                    " - x̄: " + String.format(Locale.UK, "%.2f", mean)
+                    " - x̄: " + String.format(Locale.UK, "%.1f", mean)
             b.lunaSize.text = AndroidUtils.showBytes(this@Main, grid.luna.size)
             b.lunaSize.isInvisible = grid.luna.size == 0L
             b.verbumIcon.isVisible = grid.luna.verbum?.isNotBlank() == true

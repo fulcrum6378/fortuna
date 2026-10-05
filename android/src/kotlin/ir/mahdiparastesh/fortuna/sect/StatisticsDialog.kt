@@ -26,7 +26,7 @@ import java.time.temporal.ChronoField
  * A dialog box for displaying statistics based on a user's [Vita]
  *
  * Making statistics in a way that it'll show every year since the minimum scored days till the
- * maximum scored days could cause a super huge table in irregular scoring accident, e. g. if
+ * maximum scored days could cause a super huge table in irregular scoring accident, e.g. if
  * someone accidentally or deliberately score a day in year 25 or 8000.
  */
 class StatisticsDialog : BaseDialogue() {
@@ -104,7 +104,7 @@ class StatisticsDialog : BaseDialogue() {
                     "${monthNames[month]} $year${score?.groupDigits()?.let { "\n$it" } ?: ""}"
                 cell.setOnClickListener(object : DoubleClickListener() {
                     override fun onDoubleClick() {
-                        c.c.date = c.c.chronology.date(year, month, 1)
+                        c.c.date = c.c.chronology.date(year, month + 1, 1)
                         c.onDateChanged()
                         dialogue?.cancel()
                         c.closeDrawer()
